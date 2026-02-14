@@ -4,184 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protocolo Inteligencia | Orbita Roja</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --mars-core: #ff3333;
-            --mars-dark: #8b0000;
-            --void: #020205;
-            --hud-glass: rgba(20, 0, 0, 0.6);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--void);
-            font-family: 'Share Tech Mono', monospace;
-            color: white;
-            overflow-x: hidden;
-            height: 100vh;
-            perspective: 1000px; /* Para efecto 3D */
-        }
-
-        /* --- FONDO PLANETARIO ANIMADO --- */
-        .mars-atmosphere {
-            position: fixed;
-            bottom: -50vh;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200vw;
-            height: 200vw;
-            background: radial-gradient(circle, var(--mars-core) 0%, var(--mars-dark) 40%, transparent 70%);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.6;
-            box-shadow: 0 -50px 150px rgba(255, 50, 50, 0.2);
-            animation: planetRotation 60s linear infinite;
-        }
-
-        /* Textura del planeta */
-        .mars-atmosphere::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.5;
-            border-radius: 50%;
-            animation: textureSpin 120s linear infinite;
-        }
-
-        @keyframes planetRotation { 0% { transform: translateX(-50%) rotate(0deg); } 100% { transform: translateX(-50%) rotate(360deg); } }
-        @keyframes textureSpin { 0% { background-position: 0 0; } 100% { background-position: 1000px 0; } }
-
-        /* ESTRELLAS DE FONDO */
-        .stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/starie-night.png');
-            z-index: -2; opacity: 0.8;
-        }
-
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 10;
-            transform-style: preserve-3d;
-        }
-
-        /* CABECERA */
-        header { text-align: center; margin-bottom: 60px; animation: slideDown 1s ease-out; }
-        
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            color: white;
-            text-shadow: 0 0 20px var(--mars-core);
-            letter-spacing: 5px;
-            text-transform: uppercase;
-        }
-        
-        .sub-header { color: var(--mars-core); font-size: 1.2rem; letter-spacing: 3px; border-bottom: 1px solid var(--mars-dark); display: inline-block; padding-bottom: 10px; }
-
-        /* --- GRID DE 6 TARJETAS (SIMETRÍA) --- */
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            margin-bottom: 80px;
-        }
-
-        /* TARJETAS NEGRAS CON DESTELLOS */
-        .black-module {
-            background: black;
-            border: 1px solid #330000;
-            padding: 30px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 0 15px rgba(0,0,0,1);
-            /* Clip path para esquinas recortadas futuristas */
-            clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
-        }
-
-        .black-module:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--mars-core);
-            box-shadow: 0 0 30px rgba(255, 50, 50, 0.4);
-            background: linear-gradient(180deg, #100000 0%, #000 100%);
-        }
-
-        /* EFECTO DESTELLO ROJO (SCANNER) */
-        .black-module::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.4), transparent);
-            transform: skewX(-20deg);
-            animation: scan 4s infinite ease-in-out;
-            pointer-events: none;
-        }
-
-        /* Retraso de animación para que no se vean todos iguales */
-        .black-module:nth-child(even)::before { animation-delay: 2s; }
-        
-        @keyframes scan {
-            0% { left: -100%; }
-            50% { left: 200%; }
-            100% { left: 200%; }
-        }
-
-        .module-icon { font-size: 2rem; color: var(--mars-core); margin-bottom: 15px; display: block; }
-        .module-title { font-family: 'Orbitron'; font-size: 1.3rem; margin-bottom: 10px; color: white; }
-        .module-desc { color: #888; font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px; }
-        .module-price { color: var(--mars-core); font-weight: bold; font-size: 1.1rem; text-align: right; border-top: 1px solid #330000; padding-top: 10px; }
-
-        /* --- PROMO APP FINAL (RED ORBIT) --- */
-        .promo-container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid var(--mars-core);
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            margin-top: 50px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 0 50px rgba(255, 0, 0, 0.2);
-            animation: pulseGlow 4s infinite;
-        }
-
-        @keyframes pulseGlow { 0% { box-shadow: 0 0 20px #500; } 50% { box-shadow: 0 0 60px var(--mars-dark); } 100% { box-shadow: 0 0 20px #500; } }
-
-        .promo-title { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--mars-core); margin-bottom: 10px; }
-        .promo-img { width: 100px; height: 100px; margin: 0 auto 20px; display: block; border-radius: 50%; background: radial-gradient(circle, red, black); box-shadow: 0 0 20px red; }
-
-        .btn-orbit {
-            background: var(--mars-core); color: black; font-family: 'Orbitron';
-            padding: 15px 40px; font-size: 1.2rem; font-weight: 900;
-            text-decoration: none; display: inline-block; margin-top: 20px;
-            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
-            transition: 0.3s;
-        }
-        .btn-orbit:hover { background: white; box-shadow: 0 0 30px white; }
-
-        /* BOTÓN VOLVER */
-        .back-link {
-            position: fixed; top: 20px; left: 20px; color: rgba(255,255,255,0.5);
-            text-decoration: none; border: 1px solid rgba(255,255,255,0.2);
-            padding: 5px 15px; font-size: 0.8rem; z-index: 999;
-            transition: 0.3s;
-        }
-        .back-link:hover { color: var(--mars-core); border-color: var(--mars-core); background: rgba(0,0,0,0.8); }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.5rem; }
-            .mars-atmosphere { bottom: -20vh; }
-        }
-        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    </style>
+    
+    <link rel="stylesheet" href="css/ia.css">
 </head>
 <body>
 
@@ -198,10 +24,8 @@
             <p style="color: #aaa; margin-top:10px;">SELECCIONA TU MÓDULO DE EXPANSIÓN</p>
         </header>
 
-        <!-- GRID DE 6 MÓDULOS -->
         <div class="modules-grid">
             
-            <!-- 1 -->
             <div class="black-module">
                 <span class="module-icon">◈</span>
                 <h3 class="module-title">CHRONOS</h3>
@@ -209,7 +33,6 @@
                 <div class="module-price">:: $350 USD</div>
             </div>
 
-            <!-- 2 -->
             <div class="black-module">
                 <span class="module-icon">❖</span>
                 <h3 class="module-title">NEXUS QR</h3>
@@ -217,7 +40,6 @@
                 <div class="module-price">:: $250 USD</div>
             </div>
 
-            <!-- 3 -->
             <div class="black-module">
                 <span class="module-icon">⟁</span>
                 <h3 class="module-title">VIGÍA FINANCIERO</h3>
@@ -225,7 +47,6 @@
                 <div class="module-price">:: $400 USD</div>
             </div>
 
-            <!-- 4 -->
             <div class="black-module">
                 <span class="module-icon">▚</span>
                 <h3 class="module-title">BÚNKER STOCK</h3>
@@ -233,7 +54,6 @@
                 <div class="module-price">:: $500 USD</div>
             </div>
 
-            <!-- 5 -->
             <div class="black-module">
                 <span class="module-icon">👁</span>
                 <h3 class="module-title">CENTINELA AI</h3>
@@ -241,7 +61,6 @@
                 <div class="module-price">:: $300 USD/m</div>
             </div>
 
-            <!-- 6 (LA NUEVA PARA COMPLETAR) -->
             <div class="black-module">
                 <span class="module-icon">🛡</span>
                 <h3 class="module-title">AEGIS SECURITY</h3>
@@ -251,7 +70,6 @@
 
         </div>
 
-        <!-- PROMO FINAL -->
         <div class="promo-container">
             <div class="promo-img"></div>
             <h2 class="promo-title">RED ORBIT SYSTEM</h2>
@@ -265,5 +83,6 @@
 
     </div>
 
+    <script src="js/ia.js"></script>
 </body>
 </html>

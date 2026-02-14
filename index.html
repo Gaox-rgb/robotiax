@@ -4,176 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROBOTIAX | El Futuro es Inevitable</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" type="image/png" href="assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --color-background: #050505;
-            --color-primary-cyan: #00ffff;
-            --color-secondary-purple: #9e00ff; 
-            --color-alert-red: #ff003c;
-            --color-gold: #D4AF37;
-            --color-text-light: #f5f5f5;
-            --color-text-medium: #b0b0b0;
-            --color-border: rgba(0, 255, 255, 0.1); 
-        }
-
-        /* --- 1. CAPAS DE TRANSICIÓN (EFECTOS NUEVOS) --- */
-        
-        /* A. MATRIX BOOT (Para Diagnóstico) */
-        .trans-matrix {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 99999; display: flex; justify-content: center; align-items: center;
-            transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.83, 0, 0.17, 1);
-        }
-        .trans-matrix.active { transform: translateY(0); }
-        .trans-matrix::after { content: 'SYSTEM_BOOT_SEQUENCE...'; color: #0f0; font-family: 'Roboto Mono'; font-size: 2vw; }
-
-        /* B. HYPER WARP (Para IA) */
-        .trans-warp {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 99999; opacity: 0; pointer-events: none;
-            transition: opacity 0.4s ease-in;
-        }
-        .trans-warp.active { opacity: 1; }
-
-        /* C. TV OFF (Para Seguridad) */
-        .trans-tv {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 99999; opacity: 0; pointer-events: none;
-        }
-        .trans-tv.active { opacity: 1; animation: tvOffAnim 0.5s forwards; }
-        @keyframes tvOffAnim {
-            0% { transform: scale(1, 1); background: white; }
-            50% { transform: scale(1, 0.005); background: white; }
-            100% { transform: scale(0, 0.005); background: black; }
-        }
-
-        /* D. GOLDEN GATE (Para Membresía) */
-        .trans-gold-layer {
-            position: fixed; top: 0; width: 50%; height: 100%; background: #000; z-index: 99999;
-            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1); border-right: 2px solid var(--color-gold);
-        }
-        .t-left { left: 0; transform: translateX(-100%); }
-        .t-right { right: 0; transform: translateX(100%); border-left: 2px solid var(--color-gold); border-right: none; }
-        
-        .trans-gold-container.active .t-left { transform: translateX(0); }
-        .trans-gold-container.active .t-right { transform: translateX(0); }
-
-
-        /* --- 2. ESTILOS ORIGINALES ROBOTIAX (MUTILADOS ANTES, RESTAURADOS AHORA) --- */
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        
-        body {
-            background-color: var(--color-background);
-            background-image: 
-                linear-gradient(var(--color-border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-attachment: fixed;
-            color: var(--color-text-medium);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.7;
-            overflow-x: hidden;
-        }
-
-        .container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
-        
-        /* Tipografía Impactante */
-        h2 { font-size: clamp(2.5rem, 5vw, 4rem); color: var(--color-text-light); font-weight: 900; line-height: 1.1; text-align: center; margin-bottom: 1rem; }
-        h3 { font-size: 1.5rem; color: var(--color-primary-cyan); font-family: 'Roboto Mono', monospace; margin-bottom: 2rem; }
-        p { font-size: 1.2rem; text-align: center; max-width: 65ch; margin: 0 auto 2rem auto; }
-        strong { color: var(--color-primary-cyan); font-weight: 800; }
-
-        /* Animaciones de Scroll */
-        .protocol-section {
-            padding: 8rem 0; min-height: 100vh; display: flex;
-            flex-direction: column; justify-content: center; align-items: center;
-            border-bottom: 1px solid var(--color-border);
-            opacity: 0; transition: opacity 1s, transform 1s;
-        }
-        .protocol-section.is-visible { opacity: 1; animation: fadeInUp 0.8s forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Tags de Máquina de Escribir */
-        .section-tag {
-            display: inline-block; padding: 0.5rem 1rem; border: 1px solid var(--color-border);
-            font-family: 'Roboto Mono', monospace; color: var(--color-primary-cyan);
-            font-weight: 700; margin-bottom: 2rem; background: rgba(0,0,0,0.5);
-        }
-        .typewriter {
-            display: inline-block; overflow: hidden; white-space: nowrap;
-            border-right: .15em solid var(--color-primary-cyan);
-            animation: typing 3s steps(30, end) infinite alternate, blink-caret .75s step-end infinite;
-        }
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink-caret { 50% { border-color: transparent } }
-
-        /* HERO SECTION */
-        .hero { justify-content: center; text-align: center; }
-        .robotiax-title {
-            font-family: 'Roboto Mono', monospace;
-            font-size: clamp(3rem, 12vw, 7rem);
-            font-weight: 900; color: var(--color-primary-cyan);
-            text-align: center; margin-bottom: 1.5rem;
-            text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-        .robotiax-title span { display: inline-block; transition: transform 0.2s; }
-        .robotiax-title.powered-up { animation: finalPowerUp 0.5s ease-in-out; }
-        @keyframes finalPowerUp { 50% { transform: scale(1.1); text-shadow: 0 0 50px var(--color-secondary-purple); } }
-
-        /* BOTONES PODEROSOS (Restaurados) */
-        .content-wrapper { width: 100%; display: flex; flex-direction: column; align-items: center; }
-        
-        .action-button {
-            display: inline-block; width: 100%; max-width: 400px;
-            padding: 1.5rem 1rem; margin-top: 1rem;
-            border: 2px solid var(--color-primary-cyan); border-radius: 4px;
-            background: linear-gradient(90deg, var(--color-primary-cyan), var(--color-secondary-purple), var(--color-primary-cyan));
-            background-size: 200% 200%; color: #000;
-            font-family: 'Roboto Mono', monospace; font-size: 1.3rem; font-weight: 800;
-            text-align: center; text-decoration: none; text-transform: uppercase;
-            transition: all 0.3s;
-            animation: buttonFlow 3s ease infinite;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-            cursor: pointer;
-        }
-        .action-button:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 10px 40px rgba(0, 255, 255, 0.6); }
-        @keyframes buttonFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        /* Variaciones de botones por sección */
-        .btn-ia { 
-            border-color: var(--color-secondary-purple); 
-            background: linear-gradient(90deg, var(--color-secondary-purple), #ff00ff, var(--color-secondary-purple));
-            box-shadow: 0 0 20px rgba(158, 0, 255, 0.4);
-        }
-        .btn-ia:hover { box-shadow: 0 10px 40px rgba(158, 0, 255, 0.6); }
-
-        .btn-sec {
-            border-color: var(--color-alert-red);
-            background: linear-gradient(90deg, var(--color-alert-red), #ff4444, var(--color-alert-red));
-            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
-        }
-        .btn-sec:hover { box-shadow: 0 10px 40px rgba(255, 0, 60, 0.6); }
-
-        .btn-gold {
-            border-color: var(--color-gold);
-            background: linear-gradient(90deg, var(--color-gold), #ffd700, var(--color-gold));
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-        .btn-gold:hover { box-shadow: 0 10px 40px rgba(212, 175, 55, 0.6); }
-
-        footer { padding: 4rem 1.5rem; text-align: center; border-top: 1px solid var(--color-border); font-family: 'Roboto Mono'; }
-
-    </style>
+    
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- ELEMENTOS DE TRANSICIÓN -->
     <div id="fx-matrix" class="trans-matrix"></div>
     <div id="fx-warp" class="trans-warp"></div>
     <div id="fx-tv" class="trans-tv"></div>
@@ -183,14 +22,11 @@
     </div>
 
     <main>
-
-        <!-- SECCIÓN 1: HERO (Diagnóstico) -->
         <section class="protocol-section hero">
             <div class="container">
                 <div id="brand-manifestation" class="robotiax-title"></div>
                 <p>El estancamiento es obsoleto. <strong>Nosotros somos la evolución.</strong></p>
                 <div class="content-wrapper">
-                    <!-- ACCIÓN: TRANSICIÓN MATRIX -> DIAGNOSTICO.HTML -->
                     <a href="#" onclick="runEffect(event, 'diagnostico.html', 'matrix')" class="action-button">
                         INICIAR EVOLUCIÓN
                     </a>
@@ -198,7 +34,6 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 2: WEB (Presencia) -->
         <section class="protocol-section">
             <div class="container">
                 <div class="section-tag"><span class="typewriter">&lt;PROTOCOLO: PRESENCIA&gt;</span></div>
@@ -206,7 +41,6 @@
                 <p>Una web promedio es invisible. Creamos una <strong>presencia digital que resuena</strong>, conecta y se convierte en el estándar de tu industria.</p>
                 <div class="content-wrapper">
                     <h3>De la Invisibilidad al Impacto.</h3>
-                    <!-- ACCIÓN: SIN EFECTO (DIRECTO) -> DESARROLLO-WEB.HTML -->
                     <a href="desarrollo-web.html" class="action-button">
                         CONSTRUIR PRESENCIA
                     </a>
@@ -214,7 +48,6 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 3: IA (Marte) -->
         <section class="protocol-section">
             <div class="container">
                 <div class="section-tag" style="border-color:var(--color-secondary-purple); color:var(--color-secondary-purple)">
@@ -224,7 +57,6 @@
                 <p>Las tareas repetitivas frenan tu crecimiento. Implementamos sistemas de IA que <strong>optimizan, automatizan y aceleran</strong> tu negocio hacia el futuro.</p>
                 <div class="content-wrapper">
                     <h3>De la Operación a la Estrategia.</h3>
-                    <!-- ACCIÓN: TRANSICIÓN WARP -> SOLUCIONES-IA.HTML -->
                     <a href="#" onclick="runEffect(event, 'soluciones-ia.html', 'warp')" class="action-button btn-ia">
                         INTEGRAR INTELIGENCIA
                     </a>
@@ -232,7 +64,6 @@
             </div>
         </section>
 
-        <!-- SECCIÓN 4: SEGURIDAD (Hacker) -->
         <section class="protocol-section">
             <div class="container">
                 <div class="section-tag" style="border-color:var(--color-alert-red); color:var(--color-alert-red)">
@@ -242,7 +73,6 @@
                 <p>Tu infraestructura digital sostiene tu negocio. La protegemos con seguridad de vanguardia, porque la confianza <strong>no es una opción, es una garantía.</strong></p>
                 <div class="content-wrapper">
                     <h3>De la Vulnerabilidad a la Resiliencia.</h3>
-                    <!-- ACCIÓN: TRANSICIÓN TV -> SEGURIDAD-WEB.HTML -->
                     <a href="#" onclick="runEffect(event, 'seguridad-web.html', 'tv')" class="action-button btn-sec">
                         FORTALECER PROYECTO
                     </a>
@@ -250,20 +80,17 @@
             </div>
         </section>
         
-        <!-- SECCIÓN 5: CIERRE (Membresía) -->
         <section class="protocol-section final-cta">
             <div class="container">
                 <h2>El futuro no espera.</h2>
                 <p>La tecnología avanza, con o sin nosotros. La pregunta no es si el cambio llegará, sino qué rol jugarás en él. <strong>¿ERES ESPECTADOR O ERES PIONERO?</strong></p>
                  <div class="content-wrapper">
-                    <!-- ACCIÓN: TRANSICIÓN GOLD -> MEMBRESIA-BLACK.HTML -->
                     <a href="#" onclick="runEffect(event, 'membresia-black.html', 'gold')" class="action-button btn-gold">
                         DECIDIR. AHORA.
                     </a>
                 </div>
             </div>
         </section>
-
     </main>
 
     <footer>
@@ -272,88 +99,6 @@
         </div>
     </footer>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        
-        // 1. ANIMACIÓN SCROLL (OBSERVER)
-        const sections = document.querySelectorAll('.protocol-section');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    // observer.unobserve(entry.target); // Dejar comentado si quieres que se repita
-                }
-            });
-        }, { threshold: 0.2 });
-        sections.forEach(section => observer.observe(section));
-
-        // 2. EFECTO DECODI (TEXT SCRAMBLE)
-        const scrambleChars = '!<>-_\\/[]{}—=+*^?#';
-        const scrambleColors = ['#00ffff', '#9e00ff', '#f5f5f5'];
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-        const getRandomChar = () => scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
-        const getRandomColor = () => scrambleColors[Math.floor(Math.random() * scrambleColors.length)];
-
-        async function runTextScramble(element) {
-            const targetText = 'ROBOTIAX';
-            const targetLetters = targetText.split('');
-            element.innerHTML = '';
-            let letterSpans = [];
-
-            targetLetters.forEach(() => {
-                const span = document.createElement('span');
-                span.textContent = getRandomChar();
-                span.style.color = getRandomColor();
-                element.appendChild(span);
-                letterSpans.push(span);
-            });
-
-            for (let i = 0; i < letterSpans.length; i++) {
-                const currentSpan = letterSpans[i];
-                const targetLetter = targetLetters[i];
-                let scrambleCounter = 0;
-                const scrambleInterval = setInterval(() => {
-                    currentSpan.textContent = getRandomChar();
-                    currentSpan.style.color = getRandomColor();
-                    scrambleCounter++;
-                    if (scrambleCounter > 5) { 
-                        clearInterval(scrambleInterval);
-                        currentSpan.textContent = targetLetter;
-                        currentSpan.style.color = ''; 
-                    }
-                }, 80); 
-                await sleep(150); 
-            }
-            await sleep(200);
-            element.classList.add('powered-up');
-        }
-
-        const titleElement = document.getElementById('brand-manifestation');
-        if (titleElement) runTextScramble(titleElement);
-    });
-
-    // 3. CONTROLADOR DE TRANSICIONES
-    function runEffect(e, url, type) {
-        e.preventDefault(); // Detiene el clic normal
-
-        if(type === 'matrix') {
-            document.getElementById('fx-matrix').classList.add('active');
-            setTimeout(() => { window.location.href = url; }, 800);
-        }
-        else if(type === 'warp') {
-            document.getElementById('fx-warp').classList.add('active');
-            setTimeout(() => { window.location.href = url; }, 500);
-        }
-        else if(type === 'tv') {
-            document.getElementById('fx-tv').classList.add('active');
-            setTimeout(() => { window.location.href = url; }, 600);
-        }
-        else if(type === 'gold') {
-            document.getElementById('fx-gold').classList.add('active');
-            setTimeout(() => { window.location.href = url; }, 900);
-        }
-    }
-    </script>
+    <script src="js/main.js"></script>
 </body>
-
 </html>

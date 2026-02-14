@@ -4,177 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMA COMPROMETIDO | SEGURIDAD</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --hacker-blue: #00eaff; /* Azul Cielo Eléctrico */
-            --alert-red: #ff003c;
-            --static-gray: #1a1a1a;
-            --terminal-black: #050505;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--terminal-black);
-            font-family: 'VT323', monospace;
-            color: var(--hacker-blue);
-            overflow-x: hidden;
-            height: 100vh;
-            text-transform: uppercase;
-        }
-
-        /* --- 1. EFECTO DE TELEVISIÓN ANTIGUA (SCANLINES) --- */
-        .scanlines {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none; z-index: 999;
-            animation: flicker 0.15s infinite;
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.9; } 50% { opacity: 0.95; } 100% { opacity: 0.9; }
-        }
-
-        /* --- NAVEGACIÓN --- */
-        .back-link {
-            position: fixed; top: 20px; left: 20px;
-            color: var(--static-gray); background: var(--hacker-blue);
-            padding: 5px 15px; text-decoration: none; font-size: 1.2rem;
-            z-index: 1000; font-weight: bold; border: 1px solid white;
-        }
-        .back-link:hover { background: white; color: black; box-shadow: 0 0 15px white; }
-
-        /* --- CONTENIDO PRINCIPAL --- */
-        .container {
-            max-width: 1100px; margin: 0 auto; padding: 80px 20px;
-            text-align: center; position: relative; z-index: 10;
-        }
-
-        /* TEXTOS ALARMISTAS */
-        h1 {
-            font-size: 5rem; line-height: 0.9; margin-bottom: 20px;
-            color: white; text-shadow: 2px 2px var(--alert-red), -2px -2px var(--hacker-blue);
-            animation: glitch-anim 2s infinite linear alternate-reverse;
-        }
-
-        .alarm-text {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem; color: #ccc; max-width: 800px; margin: 0 auto 50px;
-            border-left: 4px solid var(--alert-red); padding-left: 20px; text-align: left;
-            background: rgba(255, 0, 60, 0.1); padding: 20px;
-        }
-
-        .highlight-danger { color: var(--alert-red); font-weight: bold; text-decoration: underline; }
-
-        /* --- 6 MÓDULOS GIRATORIOS --- */
-        .security-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            perspective: 1000px; /* Profundidad 3D */
-        }
-
-        .node-card {
-            background: rgba(0, 20, 30, 0.8);
-            border: 1px solid var(--hacker-blue);
-            padding: 20px;
-            height: 250px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative;
-            transition: transform 0.5s;
-            box-shadow: 0 0 15px rgba(0, 234, 255, 0.1);
-            animation: float 6s ease-in-out infinite;
-        }
-
-        /* Animación de rotación desfasada para cada tarjeta */
-        .node-card:nth-child(1) { animation-delay: 0s; }
-        .node-card:nth-child(2) { animation-delay: 1s; }
-        .node-card:nth-child(3) { animation-delay: 2s; }
-        .node-card:nth-child(4) { animation-delay: 3s; }
-        .node-card:nth-child(5) { animation-delay: 4s; }
-        .node-card:nth-child(6) { animation-delay: 5s; }
-
-        .node-card:hover {
-            transform: rotateY(180deg);
-            background: var(--hacker-blue);
-            color: black;
-            box-shadow: 0 0 50px var(--hacker-blue);
-        }
-
-        .node-card h3 { font-size: 2rem; margin-bottom: 10px; border-bottom: 2px dashed currentColor; }
-        .node-card p { font-size: 1.2rem; line-height: 1.2; }
-        
-        /* Icono de advertencia parpadeante */
-        .node-icon { font-size: 3rem; margin-bottom: 15px; animation: blink 1s infinite; }
-
-        /* --- METEORO PROMO (Animación violenta) --- */
-        .meteor-promo {
-            position: fixed;
-            top: 20%; left: -100%; /* Empieza fuera */
-            width: 400px;
-            background: linear-gradient(90deg, var(--alert-red), black);
-            color: white;
-            padding: 15px;
-            border: 2px solid white;
-            z-index: 2000;
-            transform: skewX(-20deg);
-            box-shadow: 10px 10px 50px var(--alert-red);
-            /* Animación de disparo */
-            animation: meteor-strike 8s infinite linear;
-            cursor: pointer;
-        }
-
-        .meteor-promo h2 { font-size: 2rem; margin: 0; }
-        .meteor-promo small { font-size: 1rem; color: yellow; }
-
-        @keyframes meteor-strike {
-            0% { left: -500px; top: 10%; opacity: 0; }
-            10% { left: 110%; top: 40%; opacity: 1; } /* Cruza la pantalla rápido */
-            100% { left: 110%; top: 40%; opacity: 0; } /* Se queda fuera esperando el loop */
-        }
-
-        /* --- FOOTER ALARMISTA --- */
-        .panic-footer {
-            margin-top: 80px;
-            border-top: 5px solid var(--alert-red);
-            padding-top: 40px;
-            animation: shake 3s infinite;
-        }
-
-        .buy-shield-btn {
-            background: white; color: black; font-size: 2.5rem;
-            padding: 20px 50px; text-decoration: none; display: inline-block;
-            font-weight: bold; border: 5px solid var(--hacker-blue);
-            box-shadow: 10px 10px 0px var(--hacker-blue);
-            transition: 0.1s;
-        }
-        .buy-shield-btn:active { transform: translate(5px, 5px); box-shadow: 0 0 0; }
-
-        /* KEYFRAMES */
-        @keyframes glitch-anim {
-            0% { transform: translate(0) } 20% { transform: translate(-2px, 2px) } 40% { transform: translate(-2px, -2px) } 60% { transform: translate(2px, 2px) } 80% { transform: translate(2px, -2px) } 100% { transform: translate(0) }
-        }
-        @keyframes float { 0% { transform: translateY(0px) rotateY(0deg); } 50% { transform: translateY(-20px) rotateY(10deg); } 100% { transform: translateY(0px) rotateY(0deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 { font-size: 3rem; }
-            .meteor-promo { width: 300px; font-size: 0.8rem; }
-        }
-    </style>
+    
+    <link rel="stylesheet" href="css/seguridad.css">
 </head>
 <body>
 
-    <!-- SCANLINES OVERLAY -->
     <div class="scanlines"></div>
 
     <a href="index.html" class="back-link">&lt; DESCONECTARSE</a>
 
-    <!-- PROMO METEORO (PASA VOLANDO CADA 8 SEGUNDOS) -->
     <a href="https://www.paypal.com" target="_blank" style="text-decoration:none">
         <div class="meteor-promo">
             <h2>⚠️ BRECHA DETECTADA</h2>
@@ -189,14 +29,12 @@
 
         <div class="alarm-text">
             <p>> ANÁLISIS DEL SISTEMA: <span class="highlight-danger">CRÍTICO</span></p>
-            <p>> CADA SEGUNDO QUE PASAS SIN CIFRADO, TUS DATOS BANCARIOS, TUS FOTOS PRIVADAS Y TUS CONTRASEÑAS ESTÁN SIENDO SUBASTADAS EN LA DARK WEB.</p>
+            <p>> CADA SEGUNDO QUE PASAS SIN CIFRADO, TUS DATOS BANCARIOS Y CONTRASEÑAS ESTÁN SIENDO SUBASTADAS EN LA DARK WEB.</p>
             <p>> NO ERES DEMASIADO PEQUEÑO. ERES <span class="highlight-danger">PRESA FÁCIL</span>.</p>
             <p>> SI ESTÁS LEYENDO ESTO, YA SABEN DÓNDE ESTÁS.</p>
         </div>
 
-        <!-- 6 MÓDULOS GIRATORIOS -->
         <div class="security-grid">
-            
             <div class="node-card">
                 <div class="node-icon">☠️</div>
                 <h3>ANTI-RANSOMWARE</h3>
@@ -232,7 +70,6 @@
                 <h3>AUTO-DESTRUCCIÓN</h3>
                 <p>Protocolos de borrado remoto en caso de robo físico de tus dispositivos.</p>
             </div>
-
         </div>
 
         <div class="panic-footer">
@@ -243,8 +80,8 @@
             </a>
             <p style="margin-top: 10px; color: #555;">*Oferta válida hasta que cierres esta ventana.</p>
         </div>
-
     </div>
 
+    <script src="js/seguridad.js"></script>
 </body>
 </html>

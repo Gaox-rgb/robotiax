@@ -4,406 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Construye tu Presencia | Desarrollo Web</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;800&family=Bangers&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --pastel-blue: #A2D2FF;
-            --pastel-pink: #FFC8DD;
-            --pastel-yellow: #FFF4BD;
-            --pastel-green: #CDEAC0;
-            --vibrant-action: #FF5A5F;
-            --dark-text: #2D3436;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #FDFBF7; /* Crema suave */
-            color: var(--dark-text);
-            overflow-x: hidden;
-        }
-
-        /* --- 1. TRANSICIÓN EXPLOSIVA AL CARGAR --- */
-        #explosion-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: explodeOut 1.5s forwards ease-in-out;
-            pointer-events: none;
-        }
-
-        .boom-text {
-            color: white;
-            font-size: 5rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            animation: shake 0.5s infinite;
-        }
-
-        @keyframes explodeOut {
-            0% { transform: scale(1); opacity: 1; border-radius: 0; }
-            50% { background: var(--vibrant-action); }
-            90% { transform: scale(5); opacity: 0; border-radius: 50%; }
-            100% { display: none; opacity: 0; }
-        }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-
-        /* --- 2. PROMO BONUS TRAVIESA --- */
-        .promo-banner {
-            background: repeating-linear-gradient(
-                45deg,
-                var(--vibrant-action),
-                var(--vibrant-action) 10px,
-                #FF8E92 10px,
-                #FF8E92 20px
-            );
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 10;
-            animation: pulseBanner 2s infinite;
-            cursor: pointer;
-        }
-
-        .promo-banner span {
-            background: black;
-            padding: 2px 10px;
-            transform: skew(-10deg);
-            display: inline-block;
-        }
-
-        @keyframes pulseBanner {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        /* --- INTRODUCCIÓN AMABLE --- */
-        .intro-section {
-            text-align: center;
-            padding: 60px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0;
-            animation: fadeIn 1s 1.5s forwards; /* Aparece después de la explosión */
-        }
-
-        .intro-section h1 {
-            font-size: 3rem;
-            color: #6C5CE7;
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .intro-section p {
-            font-size: 1.2rem;
-            color: #636e72;
-            line-height: 1.6;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* --- 3. TABLAS DE PRECIOS --- */
-        .pricing-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px 5%;
-            flex-wrap: wrap;
-            opacity: 0;
-            animation: slideUp 1s 1.8s forwards;
-        }
-
-        .price-card {
-            background: white;
-            border-radius: 20px;
-            width: 300px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .price-card:hover {
-            transform: translateY(-15px) scale(1.03);
-            z-index: 2;
-        }
-
-        /* Colores Específicos Pastel */
-        .card-start { border-bottom: 8px solid var(--pastel-blue); background: linear-gradient(to bottom, #fff, #f0f8ff); }
-        .card-pro { border-bottom: 8px solid var(--pastel-pink); background: linear-gradient(to bottom, #fff, #fff0f5); }
-        .card-biz { border-bottom: 8px solid var(--pastel-green); background: linear-gradient(to bottom, #fff, #f0fff0); }
-
-        .price-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: var(--dark-text);
-        }
-
-        .price {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 20px 0;
-            color: var(--dark-text);
-        }
-
-        .features {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 30px;
-            flex-grow: 1;
-        }
-
-        .features li {
-            margin-bottom: 12px;
-            padding-left: 20px;
-            position: relative;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .features li::before {
-            content: '●';
-            position: absolute;
-            left: 0;
-            color: var(--vibrant-action);
-        }
-
-        /* BOTONES */
-        .btn-more {
-            background: transparent;
-            border: 2px solid var(--dark-text);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            margin-bottom: 15px;
-        }
-
-        .btn-more:hover {
-            background: var(--dark-text);
-            color: white;
-        }
-
-        .btn-buy {
-            background: var(--vibrant-action);
-            color: white;
-            text-decoration: none;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-weight: 800;
-            display: block;
-            box-shadow: 0 5px 0 #c0392b;
-            transition: all 0.1s;
-        }
-
-        .btn-buy:active {
-            box-shadow: 0 0 0 #c0392b;
-            transform: translateY(5px);
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* --- 4. MODALES DIVERTIDOS --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 30px 10px 30px 10px;
-            max-width: 500px;
-            text-align: center;
-            position: relative;
-            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            border: 4px dashed var(--pastel-blue);
-        }
-
-        .modal-content h2 {
-            font-family: 'Bangers', cursive;
-            letter-spacing: 2px;
-            font-size: 2.5rem;
-            color: var(--vibrant-action);
-            margin-bottom: 20px;
-            transform: rotate(-2deg);
-        }
-
-        .modal-content p {
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #aaa;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
-        }
-
-        /* --- 5. CIERRE AVASALLADOR --- */
-        .killer-close {
-            background: #2D3436;
-            color: var(--pastel-yellow);
-            padding: 80px 20px;
-            text-align: center;
-            margin-top: 80px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glitch-text {
-            font-size: 4rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 30px;
-            animation: glitch-skew 1s infinite linear alternate-reverse;
-        }
-        
-        /* Efecto Glitch visual */
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-        }
-        .glitch-text::before {
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-            color: var(--vibrant-action);
-            clip: rect(44px, 450px, 56px, 0);
-        }
-        .glitch-text::after {
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-            color: var(--pastel-blue);
-            clip: rect(44px, 450px, 56px, 0);
-        }
-
-        .convincing-text {
-            font-size: 1.5rem;
-            color: #fff;
-            max-width: 700px;
-            margin: 0 auto 40px auto;
-        }
-
-        .big-paypal-btn {
-            font-size: 2rem;
-            padding: 20px 60px;
-            background: #FFC439;
-            color: #000;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            box-shadow: 0 0 20px #FFC439;
-            animation: pulseBtn 1s infinite;
-        }
-
-        @keyframes glitch-skew {
-            0% { transform: skew(0deg); }
-            20% { transform: skew(-2deg); }
-            40% { transform: skew(2deg); }
-            60% { transform: skew(-1deg); }
-            80% { transform: skew(1deg); }
-            100% { transform: skew(0deg); }
-        }
-        @keyframes pulseBtn {
-            0% { box-shadow: 0 0 0 0 rgba(255, 196, 57, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(255, 196, 57, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 196, 57, 0); }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .pricing-container { flex-direction: column; align-items: center; }
-            .glitch-text { font-size: 2.5rem; }
-            .boom-text { font-size: 3rem; }
-        }
-
-    </style>
+    
+    <link rel="stylesheet" href="css/desarrollo.css">
 </head>
 <body>
 
-    <!-- 1. TRANSICIÓN EXPLOSIVA -->
     <div id="explosion-overlay">
         <div class="boom-text">¡BOOOOM!</div>
     </div>
 
-    <!-- 2. PROMO BONUS -->
     <div class="promo-banner" onclick="scrollToTables()">
         <span>🚨 ¡LOCURA TOTAL! PAGINA WEB EXPRES SOLO $200 USD 🚨</span> 
         <small style="display:block; font-size: 0.7rem; font-weight: normal; margin-top: 5px;">*La oferta se autodestruirá si lo piensas mucho. ¡Clic aquí!</small>
     </div>
 
-    <!-- INTRODUCCIÓN -->
     <section class="intro-section">
         <h1>Transforma el Ruido en Música</h1>
         <p>Bienvenido al siguiente eslabón. Ya tienes la visión, ahora construyamos el escenario. Deja de ser uno más en la lista y conviértete en la referencia. Relájate, respira hondo y mira qué fácil es dominar el mundo digital con estilo.</p>
     </section>
 
-    <!-- 3. TABLAS DE PRECIOS -->
     <section class="pricing-container" id="tablas">
         
-        <!-- CARD 1 -->
         <div class="price-card card-start">
             <div>
                 <h3>Presencia Inicial</h3>
@@ -420,7 +43,6 @@
             </div>
         </div>
 
-        <!-- CARD 2 -->
         <div class="price-card card-pro">
             <div>
                 <h3>Identidad Pro</h3>
@@ -437,7 +59,6 @@
             </div>
         </div>
 
-        <!-- CARD 3 -->
         <div class="price-card card-biz">
             <div>
                 <h3>Imperio Digital</h3>
@@ -455,74 +76,41 @@
         </div>
     </section>
 
-    <!-- 4. MODALES (VENTANAS SIMPÁTICAS) -->
-    
-    <!-- Modal 1 -->
     <div class="modal-overlay" id="modal1">
         <div class="modal-content" style="border-color: var(--pastel-blue);">
             <span class="close-modal" onclick="closeModal('modal1')">&times;</span>
             <h2>¡El Despegue! 🚀</h2>
             <p>¿Apenas empiezas? ¡Perfecto! Este paquete es como ese café espresso que te despierta de golpe.</p>
-            <p>Incluye todo lo necesario para que dejen de preguntarte "¿tienes web?" y empiecen a decir "¡wow, qué web!". Ideal para portafolios y emprendedores solitarios.</p>
             <a href="https://www.paypal.com" target="_blank" class="btn-buy">¡LO QUIERO AHORA!</a>
         </div>
     </div>
 
-    <!-- Modal 2 -->
     <div class="modal-overlay" id="modal2">
         <div class="modal-content" style="border-color: var(--pastel-pink);">
             <span class="close-modal" onclick="closeModal('modal2')">&times;</span>
             <h2>¡La Cosa va en Serio! 💼</h2>
-            <p>Oye, te veo muy profesional. Este paquete es el traje a la medida de tu negocio.</p>
-            <p>Más espacio, mejor posicionamiento en Google (para que te encuentren hasta en la sopa) y un blog para que le cuentes al mundo tus hazañas. ¡Es el favorito de la casa!</p>
+            <p>Este paquete es el traje a la medida de tu negocio. Más espacio y mejor posicionamiento.</p>
             <a href="https://www.paypal.com" target="_blank" class="btn-buy">¡DÁMELO YA!</a>
         </div>
     </div>
 
-    <!-- Modal 3 -->
     <div class="modal-overlay" id="modal3">
         <div class="modal-content" style="border-color: var(--pastel-green);">
             <span class="close-modal" onclick="closeModal('modal3')">&times;</span>
             <h2>¡Dominación Mundial! 🌍</h2>
-            <p>Aquí no venimos a jugar, venimos a facturar. Tienda en línea lista para vender mientras duermes.</p>
-            <p>Soporte VIP (nosotros suframos por ti) y SEO avanzado para aplastar a la competencia. Si quieres ser el rey o la reina, este es tu trono.</p>
+            <p>Tienda en línea lista para vender mientras duermes y soporte VIP.</p>
             <a href="https://www.paypal.com" target="_blank" class="btn-buy">¡TOMAR EL TRONO!</a>
         </div>
     </div>
 
-    <!-- 5. CIERRE CONVULSIVO -->
     <footer class="killer-close">
         <div class="glitch-text" data-text="NO HAY MAÑANA">NO HAY MAÑANA</div>
         <p class="convincing-text">
-            El internet no espera a nadie. Cada segundo que pasas dudando, tu competencia está cerrando una venta que <strong>DEBERÍA SER TUYA</strong>.
-            <br><br>
-            Deja de ser un espectador. Sé el protagonista. <br>
             Tu imperio digital comienza con un solo clic.
         </p>
         <a href="https://www.paypal.com" target="_blank" class="big-paypal-btn">PAGAR AHORA O ARREPENTIRSE</a>
     </footer>
 
-    <script>
-        // Lógica de Modales
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        // Cerrar modal al hacer clic fuera
-        window.onclick = function(event) {
-            if (event.target.className === 'modal-overlay') {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Scroll suave a tablas
-        function scrollToTables() {
-            document.getElementById('tablas').scrollIntoView({behavior: 'smooth'});
-        }
-    </script>
+    <script src="js/desarrollo.js"></script>
 </body>
 </html>

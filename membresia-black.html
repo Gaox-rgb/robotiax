@@ -4,153 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGENCIA PARTNER | ACCESO RESTRINGIDO</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --gold: #D4AF37;
-            --black-matte: #0a0a0a;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: black;
-            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 90%);
-            font-family: 'Montserrat', sans-serif;
-            min-height: 100vh;
-            color: white;
-            overflow-x: hidden; /* Sin scroll horizontal */
-            overflow-y: auto;   /* Scroll vertical permitido */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- PUERTAS DE BÓVEDA --- */
-        .gate {
-            position: fixed; top: 0; width: 50%; height: 100%;
-            background: #050505; z-index: 9999;
-            transition: transform 1.5s cubic-bezier(0.7, 0, 0.3, 1);
-            border-right: 2px solid #222;
-        }
-        .gate-left { left: 0; }
-        .gate-right { right: 0; border-left: 2px solid #222; border-right: none; }
-
-        /* Al abrirse */
-        .gate-open .gate-left { transform: translateX(-100%); }
-        .gate-open .gate-right { transform: translateX(100%); }
-        .gate-open .gate { pointer-events: none; } /* Para que no estorben click */
-
-        .gate-text {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #333; font-family: 'Cinzel', serif; z-index: 10000;
-            transition: opacity 0.5s; letter-spacing: 5px; pointer-events: none;
-        }
-        .gate-open .gate-text { opacity: 0; }
-
-        /* --- CONTENIDO PRINCIPAL --- */
-        .main-wrapper {
-            width: 100%;
-            max-width: 1000px; /* ANCHO PARA LAPTOP */
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0; transform: scale(0.95);
-            transition: opacity 1s 0.8s, transform 1s 0.8s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gate-open .main-wrapper { opacity: 1; transform: scale(1); }
-
-        /* TITULOS */
-        h1 {
-            font-family: 'Cinzel', serif;
-            color: var(--gold);
-            font-size: 3.5rem; /* Tamaño controlado */
-            letter-spacing: 4px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-            line-height: 1;
-        }
-        
-        .sub-tag {
-            color: #666; font-size: 0.9rem; letter-spacing: 4px; text-transform: uppercase;
-            margin-bottom: 40px; border-bottom: 1px solid #333; display: inline-block; padding-bottom: 10px;
-        }
-
-        /* --- TARJETA 3D (DIMENSIONES NORMALES) --- */
-        .card-scene {
-            perspective: 1000px;
-            width: 360px; height: 220px;
-            margin: 0 auto 30px auto;
-        }
-
-        .card {
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1c1c1c, #000);
-            border-radius: 15px; border: 1px solid #444;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 0 2px var(--gold);
-            position: relative;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transform-style: preserve-3d;
-            animation: float 6s infinite ease-in-out;
-        }
-
-        .card::before {
-            content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
-            transform: rotate(45deg); animation: shine 5s infinite;
-        }
-
-        .card-logo { font-family: 'Cinzel', serif; font-size: 1.6rem; color: #fff; z-index: 2; margin-bottom: 10px;}
-        .chip { width: 45px; height: 30px; background: linear-gradient(135deg, #FFD700, #996515); border-radius: 5px; margin-bottom: 15px; }
-
-        @keyframes float { 0%, 100% { transform: translateY(0) rotateY(0); } 50% { transform: translateY(-15px) rotateY(5deg); } }
-        @keyframes shine { 0% { left: -100%; top: -100%; } 50% { left: 100%; top: 100%; } 100% { left: 100%; top: 100%; } }
-
-        /* PRECIO Y BOTON */
-        .price-tag { font-family: 'Cinzel', serif; font-size: 2.2rem; color: white; margin-bottom: 5px; }
-        .price-sub { font-size: 0.9rem; color: #888; }
-        
-        .alert-text { color: #d63031; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; margin: 15px 0; }
-
-        .btn-gold {
-            background: linear-gradient(to bottom, #f5d669, #9e7d28);
-            color: black; padding: 18px 50px; border-radius: 4px;
-            font-weight: 800; text-transform: uppercase; text-decoration: none;
-            display: inline-block; transition: 0.3s; letter-spacing: 1px;
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.2);
-        }
-        .btn-gold:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(212, 175, 55, 0.5); color: #330000; }
-
-        /* BOTON VOLVER */
-        .back-btn {
-            position: absolute; top: 30px; left: 30px; color: #555; text-decoration: none;
-            border: 1px solid #333; padding: 8px 15px; font-size: 0.8rem; transition: 0.3s;
-        }
-        .back-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-        /* Responsive Móvil */
-        @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; }
-            .card-scene { width: 300px; height: 180px; }
-            .main-wrapper { padding-top: 80px; }
-        }
-    </style>
+    
+    <link rel="stylesheet" href="css/membresia.css">
 </head>
 <body id="body">
 
-    <!-- PUERTAS -->
     <div class="gate gate-left"></div>
     <div class="gate gate-right"></div>
     <div class="gate-text">ACCEDIENDO...</div>
 
     <a href="index.html" class="back-btn">VOLVER</a>
 
-    <!-- CONTENIDO -->
     <div class="main-wrapper">
         <h1>MEMBRESÍA BLACK</h1>
         <div class="sub-tag">SOLO POR INVITACIÓN</div>
@@ -173,10 +39,6 @@
         </div>
     </div>
 
-    <script>
-        window.onload = function() {
-            setTimeout(() => { document.getElementById('body').classList.add('gate-open'); }, 500);
-        };
-    </script>
+    <script src="js/membresia.js"></script>
 </body>
 </html>
