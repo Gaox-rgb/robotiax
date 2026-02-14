@@ -1,0 +1,138 @@
+:root {
+    --pastel-blue: #A2D2FF;
+    --pastel-pink: #FFC8DD;
+    --pastel-yellow: #FFF4BD;
+    --pastel-green: #CDEAC0;
+    --vibrant-action: #FF5A5F;
+    --dark-text: #2D3436;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #FDFBF7;
+    color: var(--dark-text);
+    overflow-x: hidden;
+}
+
+/* --- TRANSICIÓN EXPLOSIVA --- */
+#explosion-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 9999; display: flex;
+    justify-content: center; align-items: center;
+    animation: explodeOut 1.5s forwards ease-in-out;
+    pointer-events: none;
+}
+
+.boom-text {
+    color: white; font-size: 5rem; font-weight: 800;
+    text-transform: uppercase; animation: shake 0.5s infinite;
+}
+
+@keyframes explodeOut {
+    0% { transform: scale(1); opacity: 1; border-radius: 0; }
+    50% { background: var(--vibrant-action); }
+    90% { transform: scale(5); opacity: 0; border-radius: 50%; }
+    100% { display: none; opacity: 0; }
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    /* ... (resto de frames del shake) ... */
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+/* --- PROMO BANNER --- */
+.promo-banner {
+    background: repeating-linear-gradient(45deg, var(--vibrant-action), var(--vibrant-action) 10px, #FF8E92 10px, #FF8E92 20px);
+    color: white; text-align: center; padding: 15px; font-weight: 800;
+    position: relative; z-index: 10; animation: pulseBanner 2s infinite; cursor: pointer;
+}
+
+@keyframes pulseBanner {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* --- SECCIONES E INTRO --- */
+.intro-section {
+    text-align: center; padding: 60px 20px; max-width: 800px;
+    margin: 0 auto; opacity: 0; animation: fadeIn 1s 1.5s forwards;
+}
+
+.intro-section h1 { font-size: 3rem; color: #6C5CE7; margin-bottom: 20px; font-weight: 800; }
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+/* --- TABLAS DE PRECIOS --- */
+.pricing-container {
+    display: flex; justify-content: center; gap: 30px;
+    padding: 20px 5%; flex-wrap: wrap; opacity: 0;
+    animation: slideUp 1s 1.8s forwards;
+}
+
+.price-card {
+    background: white; border-radius: 20px; width: 300px; padding: 30px;
+    text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; flex-direction: column; justify-content: space-between;
+}
+
+.price-card:hover { transform: translateY(-15px) scale(1.03); z-index: 2; }
+
+.card-start { border-bottom: 8px solid var(--pastel-blue); }
+.card-pro { border-bottom: 8px solid var(--pastel-pink); }
+.card-biz { border-bottom: 8px solid var(--pastel-green); }
+
+.price { font-size: 2.5rem; font-weight: 800; margin: 20px 0; }
+
+.features { list-style: none; text-align: left; margin-bottom: 30px; flex-grow: 1; }
+.features li { margin-bottom: 12px; padding-left: 20px; position: relative; font-size: 0.9rem; }
+.features li::before { content: '●'; position: absolute; left: 0; color: var(--vibrant-action); }
+
+/* --- BOTONES --- */
+.btn-buy {
+    background: var(--vibrant-action); color: white; text-decoration: none;
+    padding: 15px 20px; border-radius: 10px; font-weight: 800;
+    display: block; box-shadow: 0 5px 0 #c0392b; transition: all 0.1s;
+}
+
+.btn-buy:active { box-shadow: 0 0 0 #c0392b; transform: translateY(5px); }
+
+/* --- MODALES --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; justify-content: center;
+    align-items: center; z-index: 1000; backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: white; padding: 40px; border-radius: 30px 10px 30px 10px;
+    max-width: 500px; text-align: center; position: relative;
+    animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+@keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+/* --- FOOTER GLITCH --- */
+.killer-close {
+    background: #2D3436; color: var(--pastel-yellow);
+    padding: 80px 20px; text-align: center; margin-top: 80px;
+}
+
+.glitch-text {
+    font-size: 4rem; font-weight: 900; position: relative;
+    display: inline-block; animation: glitch-skew 1s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-skew {
+    0%, 100% { transform: skew(0deg); }
+    20% { transform: skew(-2deg); }
+    60% { transform: skew(-1deg); }
+}
+
+@media (max-width: 768px) {
+    .pricing-container { flex-direction: column; align-items: center; }
+}

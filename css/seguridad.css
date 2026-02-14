@@ -1,0 +1,106 @@
+:root {
+    --hacker-blue: #00eaff;
+    --alert-red: #ff003c;
+    --static-gray: #1a1a1a;
+    --terminal-black: #050505;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--terminal-black);
+    font-family: 'VT323', monospace;
+    color: var(--hacker-blue);
+    overflow-x: hidden;
+    height: 100vh;
+    text-transform: uppercase;
+}
+
+/* --- EFECTO TV ANTIGUA --- */
+.scanlines {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none; z-index: 999;
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 0.9; } 50% { opacity: 0.95; }
+}
+
+/* --- NAVEGACIÓN --- */
+.back-link {
+    position: fixed; top: 20px; left: 20px;
+    color: var(--static-gray); background: var(--hacker-blue);
+    padding: 5px 15px; text-decoration: none; font-size: 1.2rem;
+    z-index: 1000; font-weight: bold; border: 1px solid white;
+}
+
+/* --- GRID Y TARJETAS --- */
+.container {
+    max-width: 1100px; margin: 0 auto; padding: 80px 20px;
+    text-align: center; position: relative; z-index: 10;
+}
+
+h1 {
+    font-size: 5rem; line-height: 0.9; margin-bottom: 20px;
+    color: white; text-shadow: 2px 2px var(--alert-red), -2px -2px var(--hacker-blue);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+.security-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px; perspective: 1000px;
+}
+
+.node-card {
+    background: rgba(0, 20, 30, 0.8); border: 1px solid var(--hacker-blue);
+    padding: 20px; height: 250px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; transition: transform 0.5s;
+    animation: float 6s ease-in-out infinite;
+}
+
+.node-card:hover {
+    transform: rotateY(180deg); background: var(--hacker-blue); color: black;
+}
+
+/* --- METEORO PROMO --- */
+.meteor-promo {
+    position: fixed; top: 20%; left: -100%; width: 400px;
+    background: linear-gradient(90deg, var(--alert-red), black);
+    color: white; padding: 15px; border: 2px solid white; z-index: 2000;
+    transform: skewX(-20deg); box-shadow: 10px 10px 50px var(--alert-red);
+    animation: meteor-strike 8s infinite linear;
+}
+
+@keyframes meteor-strike {
+    0% { left: -500px; top: 10%; opacity: 0; }
+    10% { left: 110%; top: 40%; opacity: 1; }
+    100% { left: 110%; top: 40%; opacity: 0; }
+}
+
+/* --- ANIMACIONES --- */
+@keyframes glitch-anim {
+    0% { transform: translate(0) }
+    20% { transform: translate(-2px, 2px) }
+    40% { transform: translate(-2px, -2px) }
+    60% { transform: translate(2px, 2px) }
+    80% { transform: translate(2px, -2px) }
+    100% { transform: translate(0) }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotateY(0deg); }
+    50% { transform: translateY(-20px) rotateY(10deg); }
+}
+
+.panic-footer { margin-top: 80px; border-top: 5px solid var(--alert-red); animation: shake 3s infinite; }
+
+@keyframes shake {
+    0%, 100% { transform: translate(1px, 1px) rotate(0deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+}

@@ -1,0 +1,128 @@
+:root {
+    --mars-core: #ff3333;
+    --mars-dark: #8b0000;
+    --void: #020205;
+    --hud-glass: rgba(20, 0, 0, 0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--void);
+    font-family: 'Share Tech Mono', monospace;
+    color: white;
+    overflow-x: hidden;
+    height: 100vh;
+    perspective: 1000px;
+}
+
+/* --- FONDO PLANETARIO --- */
+.mars-atmosphere {
+    position: fixed; bottom: -50vh; left: 50%;
+    transform: translateX(-50%); width: 200vw; height: 200vw;
+    background: radial-gradient(circle, var(--mars-core) 0%, var(--mars-dark) 40%, transparent 70%);
+    border-radius: 50%; z-index: -1; opacity: 0.6;
+    box-shadow: 0 -50px 150px rgba(255, 50, 50, 0.2);
+    animation: planetRotation 60s linear infinite;
+}
+
+.mars-atmosphere::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.5; border-radius: 50%; animation: textureSpin 120s linear infinite;
+}
+
+@keyframes planetRotation { 0% { transform: translateX(-50%) rotate(0deg); } 100% { transform: translateX(-50%) rotate(360deg); } }
+@keyframes textureSpin { 0% { background-position: 0 0; } 100% { background-position: 1000px 0; } }
+
+.stars {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/starie-night.png');
+    z-index: -2; opacity: 0.8;
+}
+
+/* --- CONTENEDOR Y CABECERA --- */
+.main-container {
+    max-width: 1200px; margin: 0 auto; padding: 40px 20px;
+    position: relative; z-index: 10; transform-style: preserve-3d;
+}
+
+header { text-align: center; margin-bottom: 60px; animation: slideDown 1s ease-out; }
+
+h1 {
+    font-family: 'Orbitron', sans-serif; font-size: 4rem;
+    color: white; text-shadow: 0 0 20px var(--mars-core);
+    letter-spacing: 5px; text-transform: uppercase;
+}
+
+.sub-header { 
+    color: var(--mars-core); font-size: 1.2rem; letter-spacing: 3px; 
+    border-bottom: 1px solid var(--mars-dark); display: inline-block; padding-bottom: 10px; 
+}
+
+/* --- GRID DE MÓDULOS --- */
+.modules-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px; margin-bottom: 80px;
+}
+
+.black-module {
+    background: black; border: 1px solid #330000; padding: 30px;
+    position: relative; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 15px rgba(0,0,0,1);
+    clip-path: polygon(20px 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%, 0 20px);
+}
+
+.black-module:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--mars-core);
+    box-shadow: 0 0 30px rgba(255, 50, 50, 0.4);
+    background: linear-gradient(180deg, #100000 0%, #000 100%);
+}
+
+.black-module::before {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.4), transparent);
+    transform: skewX(-20deg); animation: scan 4s infinite ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes scan { 0% { left: -100%; } 50%, 100% { left: 200%; } }
+
+.module-icon { font-size: 2rem; color: var(--mars-core); margin-bottom: 15px; display: block; }
+.module-title { font-family: 'Orbitron'; font-size: 1.3rem; margin-bottom: 10px; }
+.module-desc { color: #888; font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px; }
+.module-price { 
+    color: var(--mars-core); font-weight: bold; text-align: right; 
+    border-top: 1px solid #330000; padding-top: 10px; 
+}
+
+/* --- PROMO FINAL --- */
+.promo-container {
+    background: rgba(0, 0, 0, 0.8); border: 2px solid var(--mars-core);
+    padding: 40px; text-align: center; margin-top: 50px;
+    backdrop-filter: blur(5px); animation: pulseGlow 4s infinite;
+}
+
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px #500; } 50% { box-shadow: 0 0 60px var(--mars-dark); } }
+
+.promo-img { 
+    width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; 
+    background: radial-gradient(circle, red, black); box-shadow: 0 0 20px red; 
+}
+
+.btn-orbit {
+    background: var(--mars-core); color: black; font-family: 'Orbitron';
+    padding: 15px 40px; font-weight: 900; text-decoration: none; display: inline-block;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    transition: 0.3s;
+}
+
+.back-link {
+    position: fixed; top: 20px; left: 20px; color: rgba(255,255,255,0.5);
+    text-decoration: none; border: 1px solid rgba(255,255,255,0.2);
+    padding: 5px 15px; font-size: 0.8rem; z-index: 999;
+}
+
+@keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
