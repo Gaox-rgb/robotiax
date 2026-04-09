@@ -9,8 +9,17 @@ function nextStep(step) {
     document.getElementById('step' + step).classList.add('active');
 }
 
+function showProtocolStatus(message, isSuccess = true) {
+    const notify = document.createElement('div');
+    notify.style = `position:fixed; bottom:20px; left:20px; background:black; color:#0f0; padding:15px; font-family:'Fira Code',monospace; z-index:10000; border:1px solid #0f0; box-shadow:0 0 15px #004400;`;
+    notify.innerHTML = `[${isSuccess ? 'INFO' : 'ALERT'}]: ${message}`;
+    document.body.appendChild(notify);
+    setTimeout(() => notify.remove(), 3000);
+}
+
 // Finalizar diagnóstico y preparar transición
 function finalize(type) {
+    showProtocolStatus('TRAYECTORIA CALCULADA. INICIANDO WARP...');
     // 1. Mostrar pantalla de carga
     document.querySelectorAll('.question-box').forEach(el => el.classList.remove('active'));
     document.getElementById('loading').classList.add('active');

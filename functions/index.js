@@ -28,13 +28,25 @@ const client = () => new paypal.core.PayPalHttpClient(environment());
 // Usamos el bucket por defecto para evitar errores de resolución en el emulador
 const bucket = admin.storage().bucket();
 
-// --- OPTIMIZACIÓN: Cargar archivos estáticos una sola vez ---
-const tailwindCssPromise = fs.readFile(path.join(__dirname, 'assets', 'css', 'tailwind.css'), 'utf8');
-const fontAwesomeCssPromise = fs.readFile(path.join(__dirname, 'assets', 'css', 'fontawesome.css'), 'utf8');
+// Importación de la v2 para HTTPS (Solo una vez)
+const { onRequest } = require("firebase-functions/v2/https");
 
-exports.generateDemo = functions.runWith({ memory: "512MiB", timeoutSeconds: 60 }).https.onRequest((req, res) => {
-    cors(req, res, async () => {
-        try {
+// Función auxiliar para carga segura de assets (Evita el Crash Global)
+async function loadAsset(filePath) {
+    try {
+        return await fs.readFile(path.join(__dirname, filePath), 'utf8');
+    } catch (e) {
+        console.warn(`Asset no encontrado: ${filePath}`);
+        return "";
+    }
+}
+
+exports.generateDemo = onRequest({ 
+    memory: "1GiB", 
+    timeoutSeconds: 120, 
+    cors: true 
+}, async (req, res) => {
+    try {
             const templateName = req.query.template || 'medico-01-template.html';
             
             const templatePath = path.join(__dirname, 'templates', templateName);
@@ -46,8 +58,8 @@ exports.generateDemo = functions.runWith({ memory: "512MiB", timeoutSeconds: 60 
             const [templateContent, dataContent, tailwindCss, fontAwesomeCss] = await Promise.all([
                 fs.readFile(templatePath, 'utf8'),
                 fs.readFile(dataPath, 'utf8').catch(() => '{}'), // Si falla, devuelve un JSON vacío
-                tailwindCssPromise,
-                fontAwesomeCssPromise
+                loadAsset('assets/css/tailwind.css'),
+                loadAsset('assets/css/fontawesome.css')
             ]);
 
             const demoData = JSON.parse(dataContent);
@@ -87,22 +99,19 @@ exports.generateDemo = functions.runWith({ memory: "512MiB", timeoutSeconds: 60 
             console.error("CRASH LOG:", error);
             res.status(500).send(`ERROR_INTERNO: ${error.message}`);
         }
-    });
 });
 
 // --- Funciones de Pago PayPal ---
 
 // 1. Crea una orden en PayPal y devuelve el ID de la orden al cliente.
-exports.createPaypalOrder = functions.https.onRequest((req, res) => {
-    cors(req, res, async () => {
-        const request = new paypal.orders.OrdersCreateRequest();
+exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
+    const request = new paypal.orders.OrdersCreateRequest();
         request.prefer("return=representation");
         
-        // ¡CAMBIO CLAVE! Los datos ahora vienen del frontend.
-        const { amount, currency, productId } = req.body;
-        if (!amount || !currency || !productId) {
-            return res.status(400).json({ status: "error", message: "Faltan detalles del producto (amount, currency, productId)." });
-        }
+        // Aseguramos la captura de datos del body para evitar errores de conexión
+        const amount = req.body.amount || "200.00"; 
+        const currency = req.body.currency || "USD";
+        const productId = req.body.productId || "default-service";
 
         request.requestBody({
             intent: 'CAPTURE',
@@ -123,110 +132,81 @@ exports.createPaypalOrder = functions.https.onRequest((req, res) => {
             console.error("Error al crear la orden de PayPal:", error);
             res.status(500).send("Error al crear la orden de pago.");
         }
-    });
 });
 
 // 2. Captura el pago después de que el usuario aprueba en el frontend.
-exports.capturePaypalOrder = functions.https.onRequest((req, res) => {
-    cors(req, res, async () => {
-        const { orderID } = req.body;
-        if (!orderID) {
-            return res.status(400).json({ status: "error", message: "El ID de la orden es requerido." });
+exports.capturePaypalOrder = onRequest({ cors: true }, async (req, res) => {
+    const { orderID } = req.body;
+    if (!orderID) {
+        return res.status(400).json({ status: "error", message: "El ID de la orden es requerido." });
+    }
+
+    const request = new paypal.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    try {
+        const capture = await client().execute(request);
+        const captureStatus = capture.result.status;
+        console.log("Estado de la captura:", captureStatus);
+
+        if (captureStatus === 'COMPLETED') {
+            console.log("¡PAGO COMPLETADO EXITOSAMENTE!");
+
+            const accessToken = admin.firestore().collection('invoices').doc().id;
+            const productId = req.body.productId;
+
+            await db.collection('purchases').doc(accessToken).set({
+                paypalOrderId: orderID,
+                productId: productId,
+                purchaseDate: admin.firestore.FieldValue.serverTimestamp(),
+                status: 'completed'
+            });
+
+            res.status(200).json({ 
+                status: "success", 
+                message: "Pago completado y registrado",
+                accessToken: accessToken 
+            });
+        } else {
+            res.status(400).json({ status: "failed", message: `El pago no se completó. Estado: ${captureStatus}` });
         }
-
-        const request = new paypal.orders.OrdersCaptureRequest(orderID);
-        request.requestBody({});
-
-        try {
-            const capture = await client().execute(request);
-            const captureStatus = capture.result.status;
-            console.log("Estado de la captura:", captureStatus);
-
-            if (captureStatus === 'COMPLETED') {
-                console.log("¡PAGO COMPLETADO EXITOSAMENTE!");
-
-                // Generamos un token de acceso único y seguro
-                const accessToken = admin.firestore().collection('invoices').doc().id;
-                const productId = req.body.productId; // Usamos un ID genérico
-
-                // Creamos el registro de la compra en Firestore
-                await db.collection('purchases').doc(accessToken).set({
-                    paypalOrderId: orderID,
-                    productId: productId,
-                    purchaseDate: admin.firestore.FieldValue.serverTimestamp(),
-                    status: 'completed',
-                    // En el futuro, aquí iría el ID del usuario
-                    // userId: 'some_user_id' 
-                });
-
-                // Devolvemos el token de acceso al frontend
-                res.status(200).json({ 
-                    status: "success", 
-                    message: "Pago completado y registrado",
-                    accessToken: accessToken 
-                });
-            } else {
-                res.status(400).json({ status: "failed", message: `El pago no se completó. Estado: ${captureStatus}` });
-            }
-        } catch (error) {
-            // Log de diagnóstico mejorado para obtener la causa raíz
-            console.error("ERROR CRÍTICO AL CAPTURAR ORDEN PAYPAL. OBJETO COMPLETO:", JSON.stringify(error, null, 2));
-
-            // Extraemos un mensaje más útil para el frontend
-            let detailedMessage = "Error interno al comunicarse con PayPal.";
-            if (error.message) {
-                try {
-                    // El mensaje de error del SDK de PayPal a menudo es un JSON stringificado
-                    const errorDetails = JSON.parse(error.message);
-                    if (errorDetails.details && errorDetails.details.length > 0) {
-                        detailedMessage = errorDetails.details.map(d => `${d.issue}: ${d.description}`).join('; ');
-                    } else {
-                        detailedMessage = errorDetails.name || error.message;
-                    }
-                } catch (e) {
-                    // Si no es JSON, usamos el mensaje de error tal cual
-                    detailedMessage = error.message;
-                }
-            }
-            
-            res.status(500).json({ status: "error", message: `Fallo en el servidor: ${detailedMessage}` });
-        }
-    });
+    } catch (error) {
+        console.error("ERROR CRÍTICO AL CAPTURAR ORDEN PAYPAL:", error);
+        let detailedMessage = error.message || "Error interno al comunicarse con PayPal.";
+        res.status(500).json({ status: "error", message: `Fallo en el servidor: ${detailedMessage}` });
+    }
 });
 
 // ... al final de todo el archivo
 
-exports.getUploadUrl = functions.https.onRequest((req, res) => {
-    cors(req, res, async () => {
-        if (req.method !== 'POST') {
-            return res.status(405).send('Method Not Allowed');
-        }
+exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
 
-        const { contentType, templateId } = req.body;
-        if (!contentType || !templateId) {
-            return res.status(400).json({ error: 'Faltan contentType o templateId.' });
-        }
+    const { contentType, templateId } = req.body;
+    if (!contentType || !templateId) {
+        return res.status(400).json({ error: 'Faltan contentType o templateId.' });
+    }
 
-        // Genera un nombre de archivo único para evitar colisiones
-        const fileName = `user_uploads/${templateId}_${Date.now()}_${Math.random().toString(36).substring(2)}`;
-        const file = bucket.file(fileName);
+    const fileName = `user_uploads/${templateId}_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+    const file = bucket.file(fileName);
 
-        const options = {
-            version: 'v4',
-            action: 'write',
-            expires: Date.now() + 15 * 60 * 1000, // 15 minutos de validez
-            contentType: contentType,
-        };
+    const options = {
+        version: 'v4',
+        action: 'write',
+        expires: Date.now() + 15 * 60 * 1000,
+        contentType: contentType,
+    };
 
-        try {
-            const [uploadUrl] = await file.getSignedUrl(options);
-            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-            
-            res.status(200).json({ uploadUrl, publicUrl });
-        } catch (error) {
-            console.error("Error al generar la URL firmada:", error);
-            res.status(500).json({ error: 'Error al generar URL firmada.' });
-        }
-    });
+    try {
+        const [uploadUrl] = await file.getSignedUrl(options);
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+        
+        res.status(200).json({ uploadUrl, publicUrl });
+    } catch (error) {
+        console.error("Error al generar la URL firmada:", error);
+        res.status(500).json({ error: 'Error al generar URL firmada.' });
+    }
 });
             

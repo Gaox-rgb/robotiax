@@ -16,20 +16,18 @@
         <div class="boom-text">¡BOOOOM!</div>
     </div>
 
-    <div class="top-bar">
-        <a href="index.html" class="logo">ROBOTIAX</a>
-    </div>
+    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid #eee;">
 
     <div class="promo-banner" onclick="scrollToTables()">
-        <span>🚨 ¡LOCURA TOTAL! PAGINA WEB EXPRES SOLO $200 USD 🚨</span> 
-        <small style="display:block; font-size: 0.7rem; font-weight: normal; margin-top: 5px;">*La oferta se autodestruirá si lo piensas mucho. ¡Clic aquí!</small>
+        <span>🚨 ¡OFERTA RELÁMPAGO! WEB PROFESIONAL POR $200 USD 🚨</span> 
+        <small style="display:block; font-size: 0.7rem; font-weight: 400; margin-top: 5px; text-transform: uppercase;">Haz clic para elegir tu diseño ahora</small>
     </div>
 
     <header class="main-header">
         <nav class="main-nav">
-            <a href="desarrollo-web.html" class="nav-link active">Desarrollo Web</a>
-            <a href="desarrollo-apps.html" class="nav-link">Desarrollo de Apps</a>
-            <a href="ciberseguridad.html" class="nav-link">Ciberseguridad</a>
+            <a href="desarrollo-web.html" class="nav-link active">1. WEB</a>
+            <a href="soluciones-ia.html" class="nav-link">2. INTELIGENCIA IA</a>
+            <a href="seguridad-web.html" class="nav-link">3. CIBERSEGURIDAD</a>
         </nav>
     </header>
 
@@ -122,15 +120,10 @@
             </div>
         </div>
     </section>
+   
     <footer class="killer-close">
-        <div class="glitch-text" data-text="NO HAY MAÑANA">NO HAY MAÑANA</div>
+        <div class="glitch-text">ROBOTIAX</div>
         <p class="convincing-text">
-            Tu imperio digital comienza con un solo clic.
-        </p>
-        <a href="#payment" id="payment-button" class="big-paypal-btn">ELIGE UNA PLANTILLA PARA CONTINUAR</a>
-    </footer>
-
-    <p class="convincing-text">
             Tu imperio digital comienza con un solo clic.
         </p>
         <!-- Contenedor para el botón de PayPal. Se oculta hasta que se elige plantilla -->
@@ -142,6 +135,8 @@
 
     <!-- SDK de PayPal. Reemplaza TU_PAYPAL_CLIENT_ID_DE_PRUEBA con tu Client ID de Sandbox -->
     <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/editor.js"></script>
     <script src="js/desarrollo.js"></script>
 <!-- ============================================= -->
     <!-- ==           MODAL DE PAGO PAYPAL          == -->

@@ -66,17 +66,49 @@ body {
 
 .container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
 
-h2 { font-size: clamp(2.5rem, 5vw, 4rem); color: var(--color-text-light); font-weight: 900; line-height: 1.1; text-align: center; margin-bottom: 1rem; }
-h3 { font-size: 1.5rem; color: var(--color-primary-cyan); font-family: 'Roboto Mono', monospace; margin-bottom: 2rem; }
-p { font-size: 1.2rem; text-align: center; max-width: 65ch; margin: 0 auto 2rem auto; }
+h2 { 
+    font-size: clamp(2rem, 9vw, 4.5rem); 
+    color: var(--color-text-light); 
+    font-weight: 900; 
+    line-height: 1.3; /* Espacio suficiente entre líneas */
+    text-align: center; 
+    margin-bottom: 1.5rem; 
+    letter-spacing: -0.01em;
+    width: 100%;
+    display: block;
+    word-break: keep-all; /* Evita que rompa palabras a la mitad */
+}
+h3 { 
+    font-size: clamp(1rem, 4.5vw, 1.6rem); 
+    color: var(--color-primary-cyan); 
+    font-family: 'Roboto Mono', monospace; 
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    line-height: 1.5; /* Subtítulo con aire para no asfixiar el diseño */
+    width: 100%;
+    text-align: center;
+    padding: 0 5px;
+}
+p { 
+    font-size: clamp(1rem, 4vw, 1.15rem); 
+    text-align: center; 
+    max-width: 100%; /* En móvil debe ocupar el ancho disponible */
+    margin: 0 auto 2rem auto; 
+    line-height: 1.6;
+}
 strong { color: var(--color-primary-cyan); font-weight: 800; }
 
 /* --- COMPONENTES --- */
 .protocol-section {
-    padding: 8rem 0; min-height: 100vh; display: flex;
-    flex-direction: column; justify-content: center; align-items: center;
+    padding: clamp(4rem, 15vh, 8rem) 0; 
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
     border-bottom: 1px solid var(--color-border);
-    opacity: 0; transition: opacity 1s, transform 1s;
+    opacity: 0; 
+    transition: opacity 1s, transform 1s;
 }
 .protocol-section.is-visible { opacity: 1; animation: fadeInUp 0.8s forwards; }
 
@@ -100,10 +132,39 @@ strong { color: var(--color-primary-cyan); font-weight: 800; }
 .hero { justify-content: center; text-align: center; }
 .robotiax-title {
     font-family: 'Roboto Mono', monospace;
-    font-size: clamp(3rem, 12vw, 7rem);
-    font-weight: 900; color: var(--color-primary-cyan);
-    text-align: center; margin-bottom: 1.5rem;
-    text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    font-size: clamp(2.8rem, 13vw, 8rem); 
+    font-weight: 900; 
+    color: var(--color-primary-cyan);
+    text-align: center; 
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    text-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+    width: 100%;
+    min-height: 1.2em; /* Reserva espacio para evitar saltos en el bucle */
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1.5rem; 
+        overflow: hidden; /* Evita cualquier scroll lateral fantasma */
+    }
+    .protocol-section {
+        padding: 5rem 0; /* Más espacio vertical para que no se encime nada */
+    }
+    .robotiax-title {
+        min-height: 2.5em; /* Evita que el resto del contenido salte cuando cambia el texto */
+    }
+}
+
+.section-tag {
+    display: inline-block; 
+    padding: 0.4rem 0.8rem; 
+    border: 1px solid var(--color-border);
+    font-family: 'Roboto Mono', monospace; 
+    color: var(--color-primary-cyan);
+    font-size: 0.8rem;
+    background: rgba(0,0,0,0.8);
+    max-width: 100%;
 }
 .robotiax-title span { display: inline-block; transition: transform 0.2s; }
 .robotiax-title.powered-up { animation: finalPowerUp 0.5s ease-in-out; }
@@ -128,7 +189,19 @@ strong { color: var(--color-primary-cyan); font-weight: 800; }
 .action-button:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 10px 40px rgba(0, 255, 255, 0.6); }
 
 @keyframes buttonFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
+@media (max-width: 768px) {
+    .action-button {
+        padding: 1.1rem 1rem;
+        font-size: 1.1rem;
+        max-width: 90%;
+    }
+    .protocol-section {
+        padding: 4rem 0;
+    }
+    .container {
+        padding: 0 1rem;
+    }
+}
 .btn-ia { 
     border-color: var(--color-secondary-purple); 
     background: linear-gradient(90deg, var(--color-secondary-purple), #ff00ff, var(--color-secondary-purple));
@@ -161,11 +234,34 @@ strong { color: var(--color-primary-cyan); font-weight: 800; }
     backdrop-filter: blur(5px);
     z-index: 10000;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
+    flex-direction: column; /* Apilado vertical por defecto (Mobile-First) */
+    gap: 15px;
+    padding: 15px;
+    background-color: #050505; /* Unificado con el ADN de Robotiax */
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 8px;
+}
+
+/* Solo se aplica Flexbox horizontal en pantallas grandes */
+@media (min-width: 1024px) {
+    #editor-panel {
+        flex-direction: row;
+        gap: 20px;
+        padding: 20px;
+    }
+}
+
+.controls-panel {
+    width: 100%; /* Ocupa todo el ancho en móvil */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@media (min-width: 1024px) {
+    .controls-panel {
+        flex: 1; /* Vuelve a flex en laptop */
+    }
 }
 
 .payment-modal-overlay.visible {

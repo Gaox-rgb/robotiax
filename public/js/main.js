@@ -21,35 +21,47 @@ document.addEventListener("DOMContentLoaded", () => {
     async function runTextScramble(element) {
         const targetText = 'ROBOTIAX';
         const targetLetters = targetText.split('');
-        element.innerHTML = '';
-        let letterSpans = [];
+        
+        while(true) { // BUCLE INFINITO
+            element.innerHTML = '';
+            let letterSpans = [];
+            element.classList.remove('powered-up');
 
-        targetLetters.forEach(() => {
-            const span = document.createElement('span');
-            span.textContent = getRandomChar();
-            span.style.color = getRandomColor();
-            element.appendChild(span);
-            letterSpans.push(span);
-        });
+            targetLetters.forEach(() => {
+                const span = document.createElement('span');
+                span.textContent = getRandomChar();
+                span.style.color = getRandomColor();
+                element.appendChild(span);
+                letterSpans.push(span);
+            });
 
-        for (let i = 0; i < letterSpans.length; i++) {
-            const currentSpan = letterSpans[i];
-            const targetLetter = targetLetters[i];
-            let scrambleCounter = 0;
-            const scrambleInterval = setInterval(() => {
-                currentSpan.textContent = getRandomChar();
-                currentSpan.style.color = getRandomColor();
-                scrambleCounter++;
-                if (scrambleCounter > 5) { 
-                    clearInterval(scrambleInterval);
-                    currentSpan.textContent = targetLetter;
-                    currentSpan.style.color = ''; 
-                }
-            }, 80); 
-            await sleep(150); 
+            // Fase de Decodificación
+            for (let i = 0; i < letterSpans.length; i++) {
+                const currentSpan = letterSpans[i];
+                const targetLetter = targetLetters[i];
+                let scrambleCounter = 0;
+                
+                const scrambleInterval = setInterval(() => {
+                    currentSpan.textContent = getRandomChar();
+                    currentSpan.style.color = getRandomColor();
+                    scrambleCounter++;
+                    if (scrambleCounter > 6) { 
+                        clearInterval(scrambleInterval);
+                        currentSpan.textContent = targetLetter;
+                        currentSpan.style.color = ''; 
+                    }
+                }, 60); 
+                await sleep(100); 
+            }
+
+            element.classList.add('powered-up');
+            await sleep(4000); // Se queda quieto 4 segundos antes de volver a fallar
+            
+            // Fase de Glitch/Salida
+            element.style.opacity = '0.7';
+            await sleep(100);
+            element.style.opacity = '1';
         }
-        await sleep(200);
-        element.classList.add('powered-up');
     }
 
     const titleElement = document.getElementById('brand-manifestation');

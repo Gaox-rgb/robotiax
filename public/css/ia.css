@@ -62,8 +62,10 @@ h1 {
 
 /* --- GRID DE MÓDULOS --- */
 .modules-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px; margin-bottom: 80px;
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 20px; 
+    margin-bottom: 60px;
 }
 
 .black-module {
