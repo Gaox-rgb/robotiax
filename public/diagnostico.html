@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA DE DIAGNÓSTICO | TRIAGE</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/diagnostico.css">
+</head>
+<body>
+
+    <div class="crt-overlay"></div>
+
+    <a href="index.html" class="back-btn">CANCELAR OPERACIÓN</a>
+
+    <div class="terminal-container">
+        <h1>SISTEMA DE DIAGNÓSTICO v.4.0</h1>
+        
+        <div id="step1" class="question-box active">
+            <p style="margin-bottom: 20px;">[SISTEMA]: ESTADO ACTUAL DEL SUJETO:</p>
+            <button class="btn-option" onclick="nextStep(2)">A. MI NEGOCIO SOBREVIVE</button>
+            <button class="btn-option" onclick="nextStep(2)">B. QUIERO DOMINACIÓN TOTAL</button>
+        </div>
+
+        <div id="step2" class="question-box">
+            <p style="margin-bottom: 20px;">[SISTEMA]: IDENTIFIQUE SU PUNTO DE FALLO CRÍTICO:</p>
+            <button class="btn-option" onclick="finalize('web')">1. SOY INVISIBLE (NADIE ME ENCUENTRA)</button>
+            <button class="btn-option" onclick="finalize('ia')">2. SOY LENTO (PIERDO TIEMPO EN RUTINA)</button>
+            <button class="btn-option" onclick="finalize('sec')">3. SOY VULNERABLE (MIEDO A HACKERS)</button>
+        </div>
+
+        <div id="loading" class="question-box">
+            <p>CALCULANDO RUTA ÓPTIMA...</p>
+            <div class="loader" id="bar"></div>
+        </div>
+    </div>
+
+    <div class="hyperspace-overlay" id="warp">
+        <div class="warp-speed">EJECUTANDO...</div>
+    </div>
+
+    <script src="js/diagnostico.js"></script>
+</body>
+</html>

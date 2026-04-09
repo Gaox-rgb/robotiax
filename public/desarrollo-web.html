@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construye tu Presencia | Desarrollo Web</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;800&family=Bangers&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/desarrollo.css">
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+<body>
+
+    <div id="explosion-overlay">
+        <div class="boom-text">¡BOOOOM!</div>
+    </div>
+
+    <div class="top-bar">
+        <a href="index.html" class="logo">ROBOTIAX</a>
+    </div>
+
+    <div class="promo-banner" onclick="scrollToTables()">
+        <span>🚨 ¡LOCURA TOTAL! PAGINA WEB EXPRES SOLO $200 USD 🚨</span> 
+        <small style="display:block; font-size: 0.7rem; font-weight: normal; margin-top: 5px;">*La oferta se autodestruirá si lo piensas mucho. ¡Clic aquí!</small>
+    </div>
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <a href="desarrollo-web.html" class="nav-link active">Desarrollo Web</a>
+            <a href="desarrollo-apps.html" class="nav-link">Desarrollo de Apps</a>
+            <a href="ciberseguridad.html" class="nav-link">Ciberseguridad</a>
+        </nav>
+    </header>
+
+    <section class="intro-section">
+        <h1>Tu Página Web Profesional. Hoy. $200.</h1>
+        <p>Elige un diseño de élite. Personalízalo en minutos con tus datos. Lanza tu presencia digital hoy mismo. Sin complicaciones, sin esperas, sin precios ocultos. El futuro es así de simple.</p>
+    </section>
+
+    <section class="pricing-container" id="tablas">
+        
+        <div class="gallery-grid">
+            <!-- INICIO DE LA TARJETA DE PLANTILLA -->
+            <div id="editor-panel" class="template-card" style="display:none; padding: 20px;">
+                <h2 style="color:var(--brand-color); font-size: 1.5rem;">Personaliza tu Web</h2>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Nombre del Negocio:</label>
+                    <input type="text" id="edit-name" placeholder="Ej: Clínica Dental García" style="width:100%; padding:8px;">
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Eslogan (texto corto debajo del nombre):</label>
+                    <input type="text" id="edit-tagline" placeholder="Ej: Especialistas en Salud" style="width:100%; padding:8px;">
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Encabezado Principal:</label>
+                    <textarea id="edit-headline" placeholder="Ej: Tu salud es nuestra prioridad número uno." style="width:100%; padding:8px; min-height: 80px;"></textarea>
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Texto del Botón Principal:</label>
+                    <input type="text" id="edit-cta" placeholder="Ej: Reserva tu consulta" style="width:100%; padding:8px;">
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="edit-phone" placeholder="+52 55 1234 5678" style="width:100%; padding:8px;">
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Email de Contacto:</label>
+                    <input type="email" id="edit-email" placeholder="contacto@ejemplo.com" style="width:100%; padding:8px;">
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Dirección:</label>
+                    <textarea id="edit-address" placeholder="Ej: Centro Médico de Especialidades, Piso 4." style="width:100%; padding:8px; min-height: 60px;"></textarea>
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Horarios de Atención:</label>
+                     <input type="text" id="edit-hours" placeholder="Lunes a Viernes de 9:00 AM a 7:00 PM" style="width:100%; padding:8px;">
+                </div>
+                 <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Costo de la Consulta:</label>
+                    <input type="text" id="edit-fee" placeholder="Consulta Presencial: $800 MXN" style="width:100%; padding:8px;">
+                </div>
+                <div class="edit-group" style="margin-bottom:15px;">
+                    <label>Imagen Principal de Portada:</label>
+                    <input type="file" id="edit-image-upload" accept="image/jpeg, image/png, image/webp" onchange="window.app.handleImageUpload(event)">
+                    <small style="display: block; margin-top: 5px; opacity: 0.7;">Recomendado: 1200x800px. La previsualización se actualizará al subir.</small>
+                    <input type="hidden" id="edit-image-url">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn-choose" onclick="window.app.previewChanges()" style="flex:1;">Actualizar Previsualización</button>
+                    <button class="btn-secondary" onclick="window.app.openFullPreview()" style="flex:1;">Vista Completa</button>
+                </div>
+                <button class="btn-publish" style="width: 100%; background-color: #ccc; cursor: not-allowed; margin-top: 10px;" disabled>Publicar Sitio</button>
+            </div>
+
+            <div class="template-card" id="card-medico-01">
+                <div class="template-preview">
+                    <iframe id="iframe-medico-01" class="template-iframe" src="/demos/demo_medico_01.html" frameborder="0" scrolling="no"></iframe>
+                </div>
+                <div class="template-actions">
+                    <h3>Plantilla Médico 01</h3>
+                    <button class="btn-choose" onclick="window.app.openEditor('medico-01', 'Plantilla Médico 01')">Elegir y Personalizar</button>
+                </div>
+            </div>
+            <!-- FIN DE LA TARJETA DE PLANTILLA -->
+
+            <!-- Las próximas 17 plantillas irán aquí -->
+        </div>
+    </section>
+
+    <section class="includes-section">
+        <h2>Tu Compra Incluye Todo Para Empezar</h2>
+        <div class="includes-content">
+            <p>Por tu pago único de <strong>$200 USD</strong>, obtienes:</p>
+            <ul>
+                <li>✅ <strong>Tu Landing Page Profesional:</strong> Un diseño de élite que eliges y personalizas. Es tuya para siempre.</li>
+                <li>✅ <strong>30 Días de Despliegue Inmediato GRATIS:</strong> Alojamos tu página en nuestros servidores de máxima velocidad y te damos una dirección web profesional en nuestro dominio <strong>ikal.info</strong> para que puedas compartirla al instante.</li>
+            </ul>
+            <div class="next-step">
+                <h3>¿Y después de los 30 días?</h3>
+                <p>Tú decides. Para mantener tu página online y obtener tu propio dominio .com, puedes activar nuestro <strong>Plan de Continuidad</strong> por solo <strong>$15 USD al mes</strong>. Si decides no continuar, tu página simplemente se desactivará. Sin contratos, sin compromisos, sin cargos ocultos.</p>
+            </div>
+        </div>
+    </section>
+    <footer class="killer-close">
+        <div class="glitch-text" data-text="NO HAY MAÑANA">NO HAY MAÑANA</div>
+        <p class="convincing-text">
+            Tu imperio digital comienza con un solo clic.
+        </p>
+        <a href="#payment" id="payment-button" class="big-paypal-btn">ELIGE UNA PLANTILLA PARA CONTINUAR</a>
+    </footer>
+
+    <p class="convincing-text">
+            Tu imperio digital comienza con un solo clic.
+        </p>
+        <!-- Contenedor para el botón de PayPal. Se oculta hasta que se elige plantilla -->
+        <div id="payment-container" style="display: none; max-width: 500px; margin: 20px auto 0;">
+             <div id="paypal-button-container"></div>
+        </div>
+        <div id="payment-placeholder" class="big-paypal-btn">ELIGE UNA PLANTILLA PARA CONTINUAR</div>
+    </footer>
+
+    <!-- SDK de PayPal. Reemplaza TU_PAYPAL_CLIENT_ID_DE_PRUEBA con tu Client ID de Sandbox -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6"></script>
+    <script src="js/desarrollo.js"></script>
+<!-- ============================================= -->
+    <!-- ==           MODAL DE PAGO PAYPAL          == -->
+    <!-- ============================================= -->
+    <div id="payment-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="window.app.closeModal()">×</button>
+            <h2>Finaliza tu Compra</h2>
+            <p>Estás a punto de adquirir la <strong id="modal-template-name">Plantilla X</strong> por un pago único de <strong>$200 USD</strong>.</p>
+            <p class="small-text">Una vez completado el pago, podrás personalizarla con tus datos.</p>
+            <div id="modal-paypal-container">
+                <!-- El botón de PayPal se renderizará aquí -->
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

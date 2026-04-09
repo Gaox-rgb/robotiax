@@ -1,0 +1,73 @@
+{
+  "seo": {
+    "title": "Dr. Alejandro Morales | Especialista en Medicina Interna",
+    "description": "Atención médica de vanguardia con un enfoque humano. Agenda tu cita hoy y recupera tu bienestar."
+  },
+  "branding": {
+    "business_name": "Dr. Alejandro Morales",
+    "tagline": "MEDICAL",
+    "primary_color": "#2563eb",
+    "secondary_color": "#f8fafc"
+  },
+  "navigation": {
+    "cta_button_text": "Agendar Cita",
+    "cta_button_link": "#contacto"
+  },
+  "hero_section": {
+    "badge": "ATENCIÓN ESPECIALIZADA",
+    "headline": "Tu salud es nuestra <span class='text-primary italic'>prioridad</span> número uno.",
+    "subheadline": "Brindamos atención médica de vanguardia con un enfoque humano y tecnología de última generación. Recupera tu bienestar hoy mismo.",
+    "primary_cta_text": "Reserva tu consulta",
+    "secondary_cta_text": "Ver especialidades",
+    "image": {
+        "value": "https://firebasestorage.googleapis.com/v0/b/robotiax.firebasestorage.app/o/demo_assets%2Fmedico%2Fmedico-01-hero-retrato.webp?alt=media&token=ecc09157-218a-4ac4-9b51-b53b23e93498",
+        "alt_text": "Retrato profesional del Dr. Alejandro Morales"
+    }
+  },
+  "services_section": {
+    "title": "Especialidades <span class='text-primary'>Médicas</span>",
+    "services": [
+      {
+        "icon_class": "fa-heart-pulse",
+        "name": "Check-up Integral",
+        "description": "Evaluación completa de tu estado de salud para prevenir riesgos futuros y optimizar tu vitalidad."
+      },
+      {
+        "icon_class": "fa-stethoscope",
+        "name": "Consulta General",
+        "description": "Atención personalizada para el diagnóstico y tratamiento de padecimientos comunes con calidez humana."
+      },
+      {
+        "icon_class": "fa-flask",
+        "name": "Análisis Clínicos",
+        "description": "Contamos con convenios en laboratorios de primer nivel para resultados precisos y rápidos."
+      }
+    ]
+  },
+  "about_section": {
+    "doctor_name": "Dr. Alejandro Morales",
+    "doctor_title": "ESPECIALISTA EN MEDICINA INTERNA POR LA UNAM",
+    "bio": "<p>Con más de 12 años de experiencia clínica, el Dr. Morales se ha dedicado a transformar la vida de sus pacientes a través de la medicina preventiva.</p><p>Su enfoque combina la evidencia científica más reciente con un trato empático, asegurando que cada paciente se sienta escuchado y comprendido.</p>",
+    "image": {
+        "value": "https://firebasestorage.googleapis.com/v0/b/robotiax.firebasestorage.app/o/demo_assets%2Fmedico%2Fmedico-01-about-consultorio.webp?alt=media&token=d1ba1145-a9cd-40ee-be67-00bde7d6771d",
+        "alt_text": "Foto del consultorio médico profesional"
+    },
+    "stats": [
+      {
+        "value": "1500+",
+        "label": "Pacientes Felices"
+      },
+      {
+        "value": "12+",
+        "label": "Años de Exp."
+      }
+    ]
+  },
+  "contact_section": {
+    "headline": "¿Listo para mejorar tu salud?",
+    "address": "Estamos ubicados en el Centro Médico de Especialidades, Piso 4.",
+    "phone": "+52 55 1234 5678",
+    "email": "contacto@dralemorales.com",
+    "copyright_text": "&copy; 2026 Dr. Alejandro Morales. Todos los derechos reservados. Creado por Robotiax."
+  }
+}

@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Permite la lectura pública de todos los archivos de demos
+    match /demo_assets/{allPaths=**} {
+      allow read;
+      allow write: if false; // Nadie puede escribir/borrar
+    }
+    // Todas las demás rutas siguen siendo privadas por defecto
+    match /{allPaths=**} {
+       allow read, write: if request.auth != null; // Solo usuarios autenticados (más adelante)
+    }
+  }
+}
