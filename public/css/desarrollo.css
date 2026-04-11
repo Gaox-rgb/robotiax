@@ -193,6 +193,57 @@ body::after {
     border-radius: 2px;
 }
 
+/* --- BOTÓN DE ESCAPE ESTILO HUD --- */
+.btn-escape-hud {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-decoration: none;
+    color: #00f2ff !important;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    padding: 5px 12px;
+    border-left: 3px solid #ff003c;
+    background: rgba(0, 242, 255, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1001;
+}
+
+.btn-escape-hud:hover {
+    background: rgba(255, 0, 60, 0.1);
+    border-left: 3px solid #00f2ff;
+    padding-left: 18px;
+    color: #fff !important;
+    text-shadow: 0 0 10px #00f2ff;
+}
+
+.hud-arrow {
+    font-size: 0.9rem;
+    animation: pulseArrow 1.5s infinite;
+}
+
+@keyframes pulseArrow {
+    0%, 100% { opacity: 1; transform: translateX(0); }
+    50% { opacity: 0.3; transform: translateX(-3px); }
+}
+
+/* Responsividad para no chocar con el menú en móviles */
+@media (max-width: 768px) {
+    .btn-escape-hud {
+        position: static;
+        transform: none;
+        margin: 10px auto;
+        width: fit-content;
+        justify-content: center;
+    }
+}
+
 /* ============================================= */
 /* ==             INTRO SECTION               == */
 /* ============================================= */
