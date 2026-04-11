@@ -12,7 +12,24 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => overlay.remove(), 600);
         }, 1500);
     }
-
+// 1.5. Verificar Plantillas Compradas
+    const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+    owned.forEach(templateId => {
+        // Buscamos todos los botones que tengan el ID de esta plantilla
+        const buttons = document.querySelectorAll(`button[onclick*="'${templateId}'"]`);
+        buttons.forEach(btn => {
+            btn.innerHTML = '✔️ ESTADO: COMPRADA';
+            btn.style.background = '#0f172a';
+            btn.style.color = '#2ecc71';
+            btn.style.borderColor = '#2ecc71';
+            btn.disabled = true;
+            btn.onclick = null; // Desactivar el clic
+            
+            // Opcional: Marcar la tarjeta visualmente
+            const card = btn.closest('.template-card');
+            if (card) card.style.borderColor = '#2ecc71';
+        });
+    });
     // 2. Escucha de Eventos Globales
     document.addEventListener('payment-completed', (e) => {
         const { templateId } = e.detail;
@@ -27,24 +44,56 @@ window.app = window.app || {};
 window.app.ui = {
     selectedTemplate: { id: null, name: null },
 
+    closeModal: function() {
+        const modal = document.getElementById('payment-modal-overlay');
+        if (modal) modal.classList.remove('visible');
+    },
+
     openEditor: function(templateId, templateName) {
+        this.closeModal(); 
+        const panel = document.getElementById('editor-panel');
+        if (panel) {
+            document.body.classList.add('editor-open'); // Congela el fondo
+            panel.classList.add('active'); 
+            window.app.editor.init(templateId);
+        }
+    },
+
+    closeEditor: function() {
+        const panel = document.getElementById('editor-panel');
+        if (panel) {
+            document.body.classList.remove('editor-open'); // Libera el fondo
+            panel.classList.remove('active');
+        }
+    },
+
+    requestPurchase: function(templateId, templateName) {
+        console.log("Iniciando compra de:", templateId);
         this.selectedTemplate.id = templateId;
         this.selectedTemplate.name = templateName;
 
-        // Verificamos acceso usando el especialista en pagos
         if (window.app.payments.checkAccess(templateId)) {
-            console.log(`Acceso verificado para: ${templateId}`);
-            window.app.editor.init(templateId);
+            this.openEditor(templateId, templateName);
         } else {
-            // Abrir flujo de compra
-            document.getElementById('modal-template-name').textContent = templateName;
-            document.getElementById('payment-modal-overlay').classList.add('visible');
+            const modal = document.getElementById('payment-modal-overlay');
+            const nameLabel = document.getElementById('modal-template-name');
+            if (nameLabel) nameLabel.textContent = templateName;
+            if (modal) modal.classList.add('visible');
+            // LIMPIEZA NUCLEAR DEL CONTENEDOR PARA EVITAR ERRORES DE SDK
+            const container = document.querySelector('#modal-paypal-container');
+            if (container) container.innerHTML = '<div style="color:white; text-align:center; padding:20px;">Cargando búnker de pago...</div>';
+            
             window.app.payments.initPaypalButton(templateId, '#modal-paypal-container');
         }
     },
 
-    closeModal: function() {
-        document.getElementById('payment-modal-overlay').classList.remove('visible');
+    closeEditor: function() {
+        const panel = document.getElementById('editor-panel');
+        if (panel) {
+            panel.classList.remove('active');
+            const target = document.getElementById('tablas');
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
     },
 
     showSuccessMessage: function(templateId) {
@@ -77,5 +126,6 @@ function scrollToTables() {
 window.app.openEditor = (id, name) => window.app.ui.openEditor(id, name);
 window.app.closeModal = () => window.app.ui.closeModal();
 window.app.previewChanges = () => window.app.editor.preview();
-window.app.openFullPreview = () => window.app.editor.preview(); // Opcional: window.open en editor.js
+window.app.openFullPreview = () => window.app.editor.openFullPreview();
 window.app.handleImageUpload = (e) => window.app.editor.handleUpload(e);
+window.app.ui.requestPurchase = window.app.ui.requestPurchase.bind(window.app.ui);

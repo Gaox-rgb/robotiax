@@ -6,15 +6,27 @@ const handlebars = require("handlebars");
 const {defineString} = require('firebase-functions/params');
 const paypal = require("@paypal/checkout-server-sdk");
 const cors = require("cors")({origin: true});
+const nodemailer = require('nodemailer');
 
-admin.initializeApp();
+// BLINDAJE: Solo inicializa si no hay apps activas
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 
-// Definimos los parámetros que nuestra función necesita
+const db = admin.firestore();
+
+// Configuración ÚNICA del transporte de correo
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'geniosdeltalento@gmail.com',
+        pass: 'bcnmvqwyvfkhxpxd' 
+    }
+});
+
+// Definimos los parámetros de PayPal
 const paypalClientId = defineString('PAYPAL_CLIENT_ID');
 const paypalSecret = defineString('PAYPAL_SECRET');
-
-// Inicializamos Firestore
-const db = admin.firestore();
 
 // --- Configuración del Entorno PayPal ---
 const environment = () => {
@@ -25,8 +37,8 @@ const environment = () => {
 };
 const client = () => new paypal.core.PayPalHttpClient(environment());
 
-// Usamos el bucket por defecto para evitar errores de resolución en el emulador
-const bucket = admin.storage().bucket();
+// Forzamos el nombre del bucket de tu proyecto Robotiax
+const bucket = admin.storage().bucket('robotiax.appspot.com');
 
 // Importación de la v2 para HTTPS (Solo una vez)
 const { onRequest } = require("firebase-functions/v2/https");
@@ -73,6 +85,13 @@ exports.generateDemo = onRequest({
                 headline: req.query.headline || demoData.hero_section?.headline,
                 primary_cta_text: req.query.cta || demoData.hero_section?.primary_cta_text
             };
+
+            // Mapeo de Servicios (asumiendo formato de texto o lista en plantilla)
+            if (req.query.services) {
+                demoData.services_section = { ...demoData.services_section,
+                    description: req.query.services 
+                };
+            }
             demoData.contact_section = { ...demoData.contact_section,
                 phone: req.query.phone || demoData.contact_section?.phone,
                 email: req.query.email || demoData.contact_section?.email,
@@ -118,8 +137,8 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
             purchase_units: [{
                 description: `Activación de Super-App: ${productId}`, // Mejor trazabilidad
                 amount: {
-                    currency_code: currency, // Dinámico
-                    value: amount          // Dinámico
+                    currency_code: 'MXN',
+                    value: '99.00'
                 }
             }]
         });
@@ -155,17 +174,18 @@ exports.capturePaypalOrder = onRequest({ cors: true }, async (req, res) => {
             const accessToken = admin.firestore().collection('invoices').doc().id;
             const productId = req.body.productId;
 
-            await db.collection('purchases').doc(accessToken).set({
+            const orderRef = db.collection('pending_orders').doc();
+            await orderRef.set({
                 paypalOrderId: orderID,
-                productId: productId,
-                purchaseDate: admin.firestore.FieldValue.serverTimestamp(),
-                status: 'completed'
+                customerData: req.body.customerData || {},
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                status: 'paid_pending'
             });
 
             res.status(200).json({ 
                 status: "success", 
-                message: "Pago completado y registrado",
-                accessToken: accessToken 
+                accessToken: orderRef.id,
+                message: "Pago completado y registrado"
             });
         } else {
             res.status(400).json({ status: "failed", message: `El pago no se completó. Estado: ${captureStatus}` });
@@ -200,13 +220,91 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
     };
 
     try {
+        if (!bucket.name) throw new Error("Bucket no inicializado correctamente.");
+        
         const [uploadUrl] = await file.getSignedUrl(options);
         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
         
-        res.status(200).json({ uploadUrl, publicUrl });
+        console.log("URL Firmada generada para:", fileName);
+        res.status(200).send({ uploadUrl, publicUrl });
     } catch (error) {
-        console.error("Error al generar la URL firmada:", error);
-        res.status(500).json({ error: 'Error al generar URL firmada.' });
+        console.error("CRASH getUploadUrl:", error.message);
+        res.status(500).send({ status: "error", message: error.message });
     }
 });
-            
+  
+exports.submitFinalOrder = onRequest({ cors: true }, async (req, res) => {
+    const { template, details } = req.body;
+    const clientEmail = details.email;
+
+    try {
+        // 1. GUARDAR EN FIRESTORE (Respaldo técnico)
+        const orderRef = await db.collection('orders_to_fulfill').add({
+            template,
+            ...details,
+            processed: false,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 2. CONFIGURAR EMAIL PARA TI (ADMIN)
+        const adminMailOptions = {
+            from: 'MAKUMOTO SYSTEM <geniosdeltalento@gmail.com>',
+            to: 'geniosdeltalento@gmail.com',
+            subject: `🚨 NUEVA VENTA: ${template} - ${details.negocio}`,
+            html: `
+                <div style="font-family:sans-serif; border:2px solid #00f2ff; padding:20px; background:#fafafa;">
+                    <h2 style="color: #0f172a;">Nueva Orden de Despliegue</h2>
+                    <p><strong>ID Firestore:</strong> ${orderRef.id}</p>
+                    <p><strong>Plantilla Elegida:</strong> ${template}</p>
+                    <hr>
+                    <p><strong>Negocio:</strong> ${details.negocio}</p>
+                    <p><strong>Eslogan:</strong> ${details.eslogan}</p>
+                    <p><strong>Encabezado (Headline):</strong> ${details.headline}</p>
+                    <p><strong>Servicios:</strong> ${details.servicios}</p>
+                    <p><strong>Texto Botón (CTA):</strong> ${details.cta}</p>
+                    <p><strong>Costo Consulta:</strong> ${details.costo}</p>
+                    <hr>
+                    <p><strong>WhatsApp Contacto:</strong> ${details.telefono}</p>
+                    <p><strong>Email Cliente:</strong> ${details.email}</p>
+                    <p><strong>Dirección:</strong> ${details.direccion}</p>
+                    <p><strong>Horarios:</strong> ${details.horarios}</p>
+                </div>
+            `
+        };
+
+        // 3. CONFIGURAR EMAIL PARA EL CLIENTE (RECIBO)
+        const clientMailOptions = {
+            from: 'Robotiax & Makumoto <geniosdeltalento@gmail.com>',
+            to: clientEmail,
+            subject: `🚀 ¡Gracias! Tu sitio web ${details.negocio} está en proceso`,
+            html: `
+                <div style="font-family: Arial; padding: 25px; color: #333; line-height: 1.6;">
+                    <h2 style="color: #2ecc71;">¡Pago y Datos Confirmados!</h2>
+                    <p>Hola, hemos recibido correctamente la información para activar tu sitio web profesional.</p>
+                    
+                    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; border-left: 5px solid #2ecc71; margin: 20px 0;">
+                        <strong>¿Qué sigue ahora?</strong><br>
+                        Nuestros ingenieros están configurando tu <strong>Hosting Premium y Dominio .info</strong>.<br>
+                        Este beneficio es <strong>totalmente GRATIS POR 30 DÍAS</strong>.
+                    </div>
+
+                    <p><strong>Enviaremos</strong> el link de acceso final tanto a este correo como a tu WhatsApp en un plazo menor a 24 horas.</p>
+                    
+                    <p style="font-size: 0.9rem; color: #64748b;">Gracias por elegir la tecnología de Robotiax.</p>
+                </div>
+            `
+        };
+
+        // 4. DISPARAR ENVÍOS SIMULTÁNEOS (Aquí se usa Nodemailer con tu Gmail)
+        await Promise.all([
+            transporter.sendMail(adminMailOptions),
+            transporter.sendMail(clientMailOptions)
+        ]);
+
+        res.status(200).json({ status: 'ok', message: 'Correos enviados y orden registrada' });
+
+    } catch (error) {
+        console.error("ERROR CRÍTICO EN SUBMIT_ORDER:", error);
+        res.status(500).send({ status: 'error', message: error.message });
+    }
+});

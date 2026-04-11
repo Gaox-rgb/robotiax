@@ -7,151 +7,333 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;800&family=Bangers&display=swap" rel="stylesheet">
     
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/desarrollo.css">
     <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
 <body>
 
-    <div id="explosion-overlay">
-        <div class="boom-text">¡BOOOOM!</div>
-    </div>
+    <!-- Estructura Saneada: El overlay se mantiene, los avisos van dentro del editor -->
 
-    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid #eee;">
+    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000;">
 
     <div class="promo-banner" onclick="scrollToTables()">
-        <span>🚨 ¡OFERTA RELÁMPAGO! WEB PROFESIONAL POR $200 USD 🚨</span> 
-        <small style="display:block; font-size: 0.7rem; font-weight: 400; margin-top: 5px; text-transform: uppercase;">Haz clic para elegir tu diseño ahora</small>
+        <span>🚨 ¡OFERTA DE LANZAMIENTO! TU WEB PROFESIONAL POR $99 MXN 🚨</span>
+            <small style="display:block; font-size: 0.7rem; font-weight: 400; margin-top: 5px; text-transform: uppercase;">Haz clic para elegir tu diseño ahora</small>
+        </div>
+
+        <header class="main-header">
+            <nav class="main-nav">
+                <a href="desarrollo-web.html" class="nav-link active">1. WEB</a>
+                <a href="soluciones-ia.html" class="nav-link">2. INTELIGENCIA IA</a>
+                <a href="seguridad-web.html" class="nav-link">3. CIBERSEGURIDAD</a>
+            </nav>
+        </header>
     </div>
 
-    <header class="main-header">
-        <nav class="main-nav">
-            <a href="desarrollo-web.html" class="nav-link active">1. WEB</a>
-            <a href="soluciones-ia.html" class="nav-link">2. INTELIGENCIA IA</a>
-            <a href="seguridad-web.html" class="nav-link">3. CIBERSEGURIDAD</a>
-        </nav>
-    </header>
-
     <section class="intro-section">
-        <h1>Tu Página Web Profesional. Hoy. $200.</h1>
-        <p>Elige un diseño de élite. Personalízalo en minutos con tus datos. Lanza tu presencia digital hoy mismo. Sin complicaciones, sin esperas, sin precios ocultos. El futuro es así de simple.</p>
+        <h1>Tu Página Web Profesional. Hoy. $99 MXN.</h1>
+        <p>Elige el diseño que mejor represente tu marca. Completa tus datos, realiza el pago y nosotros nos encargamos del resto. Tu presencia digital de élite, lista en menos de 24 horas.</p>
     </section>
 
-    <section class="pricing-container" id="tablas">
-        
-        <div class="gallery-grid">
-            <!-- INICIO DE LA TARJETA DE PLANTILLA -->
-            <div id="editor-panel" class="template-card" style="display:none; padding: 20px;">
-                <h2 style="color:var(--brand-color); font-size: 1.5rem;">Personaliza tu Web</h2>
-                <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Nombre del Negocio:</label>
-                    <input type="text" id="edit-name" placeholder="Ej: Clínica Dental García" style="width:100%; padding:8px;">
-                </div>
-                <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Eslogan (texto corto debajo del nombre):</label>
-                    <input type="text" id="edit-tagline" placeholder="Ej: Especialistas en Salud" style="width:100%; padding:8px;">
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Encabezado Principal:</label>
-                    <textarea id="edit-headline" placeholder="Ej: Tu salud es nuestra prioridad número uno." style="width:100%; padding:8px; min-height: 80px;"></textarea>
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Texto del Botón Principal:</label>
-                    <input type="text" id="edit-cta" placeholder="Ej: Reserva tu consulta" style="width:100%; padding:8px;">
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Teléfono:</label>
-                    <input type="tel" id="edit-phone" placeholder="+52 55 1234 5678" style="width:100%; padding:8px;">
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Email de Contacto:</label>
-                    <input type="email" id="edit-email" placeholder="contacto@ejemplo.com" style="width:100%; padding:8px;">
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Dirección:</label>
-                    <textarea id="edit-address" placeholder="Ej: Centro Médico de Especialidades, Piso 4." style="width:100%; padding:8px; min-height: 60px;"></textarea>
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Horarios de Atención:</label>
-                     <input type="text" id="edit-hours" placeholder="Lunes a Viernes de 9:00 AM a 7:00 PM" style="width:100%; padding:8px;">
-                </div>
-                 <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Costo de la Consulta:</label>
-                    <input type="text" id="edit-fee" placeholder="Consulta Presencial: $800 MXN" style="width:100%; padding:8px;">
-                </div>
-                <div class="edit-group" style="margin-bottom:15px;">
-                    <label>Imagen Principal de Portada:</label>
-                    <input type="file" id="edit-image-upload" accept="image/jpeg, image/png, image/webp" onchange="window.app.handleImageUpload(event)">
-                    <small style="display: block; margin-top: 5px; opacity: 0.7;">Recomendado: 1200x800px. La previsualización se actualizará al subir.</small>
-                    <input type="hidden" id="edit-image-url">
-                </div>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button class="btn-choose" onclick="window.app.previewChanges()" style="flex:1;">Actualizar Previsualización</button>
-                    <button class="btn-secondary" onclick="window.app.openFullPreview()" style="flex:1;">Vista Completa</button>
-                </div>
-                <button class="btn-publish" style="width: 100%; background-color: #ccc; cursor: not-allowed; margin-top: 10px;" disabled>Publicar Sitio</button>
+    <section class="pricing-container" id="tablas" style="background: transparent; display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <h2 class="tech-note" style="max-width: 1100px; margin: 0 auto 40px; text-align: center;">
+            [ NOTA TÉCNICA: Todas las plantillas son 100% adaptables a cualquier actividad o giro comercial ]
+        </h2>
+        <div class="gallery-grid" id="templates-container">
+
+        <!-- La galería se genera dinámicamente o manualmente aquí -->
+        <!-- 1. BIENES RAÍCES -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/bienes raíces-01.jpg"></div>
+                <div class="template-actions"><h3>Bienes Raíces 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('bienes-raices-01', 'Bienes Raíces 01')">COMPRAR AHORA - $99 MXN</button></div>
             </div>
 
-            <div class="template-card" id="card-medico-01">
-                <div class="template-preview">
-                    <iframe id="iframe-medico-01" class="template-iframe" src="/demos/demo_medico_01.html" frameborder="0" scrolling="no"></iframe>
-                </div>
-                <div class="template-actions">
-                    <h3>Plantilla Médico 01</h3>
-                    <button class="btn-choose" onclick="window.app.openEditor('medico-01', 'Plantilla Médico 01')">Elegir y Personalizar</button>
-                </div>
+            <!-- 2. CIRUJANO PLÁSTICO -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/cirujano plástico-01.jpg"></div>
+                <div class="template-actions"><h3>Cirujano Plástico 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('cirujano-01', 'Cirujano Plástico 01')">COMPRAR AHORA - $99 MXN</button></div>
             </div>
-            <!-- FIN DE LA TARJETA DE PLANTILLA -->
 
-            <!-- Las próximas 17 plantillas irán aquí -->
+            <!-- 3. CLÍNICA -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/clínica-01.jpg"></div>
+                <div class="template-actions"><h3>Clínica Médica 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('clinica-01', 'Clínica 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 4. CONSULTORÍA 01 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/consultoría-01.jpg"></div>
+                <div class="template-actions"><h3>Consultoría 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('consultoria-01', 'Consultoría 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 5. CONSULTORÍA 02 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/consultoría-02.jpg"></div>
+                <div class="template-actions"><h3>Consultoría 02</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('consultoria-02', 'Consultoría 02')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 6. CONSULTORÍA 03 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/consultoría-03.jpg"></div>
+                <div class="template-actions"><h3>Consultoría Elite 03</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('consultoria-03', 'Consultoría 03')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 7. CONTADOR -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/contador-01.jpg"></div>
+                <div class="template-actions"><h3>Contabilidad 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('contador-01', 'Contador 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 8. CURSOS 01 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/cursos-01.jpg"></div>
+                <div class="template-actions"><h3>E-Learning 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('cursos-01', 'Cursos 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 9. CURSOS 02 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/cursos-02.jpg"></div>
+                <div class="template-actions"><h3>Academy 02</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('cursos-02', 'Cursos 02')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 10. EMPRESA -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/empresa-01.jpg"></div>
+                <div class="template-actions"><h3>Corporativo 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('empresa-01', 'Empresa 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 11. GYM 01 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/gym-o1.jpg"></div>
+                <div class="template-actions"><h3>Fitness 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('gym-01', 'Gym 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 12. GYM 02 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/gym-o2.jpg"></div>
+                <div class="template-actions"><h3>Power Gym 02</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('gym-02', 'Gym 02')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 13. INDUSTRY -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/industry-01.jpg"></div>
+                <div class="template-actions"><h3>Industrial 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('industry-01', 'Industry 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 14. INFLUENCER 01 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/influencer-01.jpg"></div>
+                <div class="template-actions"><h3>Influencer 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('influencer-01', 'Influencer 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 15. INFLUENCER 02 -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/influencer-02.jpg"></div>
+                <div class="template-actions"><h3>Creator 02</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('influencer-02', 'Influencer 02')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 16. LEGAL -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/legal-01.jpg"></div>
+                <div class="template-actions"><h3>Legal Services 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('legal-01', 'Legal 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 17. MÉDICO -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/médico-01.jpg"></div>
+                <div class="template-actions"><h3>Médico Especialista 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('medico-01', 'Médico 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 18. SECURITY -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/security-01.jpg"></div>
+                <div class="template-actions"><h3>Cyber Security 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('security-01', 'Security 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 19. SPA -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/spa-01.jpg"></div>
+                <div class="template-actions"><h3>Wellness Spa 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('spa-01', 'Spa 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 20. TECH -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/tech-1.jpg"></div>
+                <div class="template-actions"><h3>Tech Global 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('tech-01', 'Tech 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 21. VENTAS -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/ventas-01.jpg"></div>
+                <div class="template-actions"><h3>Sales Landing 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('ventas-01', 'Ventas 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div>
+
+            <!-- 22. YOGA -->
+            <div class="template-card">
+                <div class="template-preview"><img src="assets/thumbnails/yoga-01.jpg"></div>
+                <div class="template-actions"><h3>Yoga Studio 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('yoga-01', 'Yoga 01')">COMPRAR AHORA - $99 MXN</button></div>
+            </div> <!-- CIERRE DE gallery-grid -->
+    </section> <!-- CIERRE DE pricing-container -->
+
+    <!-- AHORA LAS SECCIONES SIGUIENTES ESTARÁN FUERA DEL GRID -->
+    <section class="includes-section">
+        <!-- ============================================= -->
+        <div id="editor-panel">
+
+<!-- NOTIFICACIÓN DE ÉXITO LÍMPIDA -->
+        <div id="success-notif" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:1000000; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(15px);">
+            <div style="background: #fff; width: 100%; max-width: 400px; padding: 40px; border-radius: 12px; box-shadow: 0 40px 100px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0;">
+                <div style="width: 60px; height: 60px; background: #2ecc71; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 1.5rem; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);">✓</div>
+                
+                <h3 style="color: #0f172a; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">¡GRACIAS POR TU COMPRA!</h3>
+                <p style="font-family: 'Rajdhani', sans-serif; color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Has adquirido la <strong id="notif-template-name" style="color:#0f172a;">Plantilla</strong> por <strong style="color:#2ecc71;">$99 MXN</strong></p>
+                
+                <div style="font-family: 'Rajdhani', sans-serif; color: #475569; font-size: 1rem; line-height: 1.5; margin-bottom: 30px; text-align: left;">
+                    <p style="margin-bottom: 15px;"><strong>Enviaremos</strong> una confirmación de orden y tus credenciales de acceso a tu <strong>Correo Electrónico</strong>.</p>
+                    
+                    <p style="background: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #2ecc71;">
+                        <strong>Activación Profesional:</strong><br>
+                        Estamos configurando tu <strong>Hosting Premium y Dominio .info</strong>. Te entregamos este beneficio <strong>GRATIS POR 30 DÍAS</strong>.
+                    </p>
+
+                    <p style="color: #e11d48; font-weight: 700; margin-top: 15px; text-align: center; border: 1px dashed #e11d48; padding: 10px;">
+                        ⚠️ IMPORTANTE: Si no ves nuestro correo en 5 minutos, revisa tu carpeta de CORREO NO DESEADO (SPAM).
+                    </p>
+                    
+                    <p style="margin-top: 15px; text-align: center; color: #0f172a; font-weight: 700;">Recibirás el link de acceso total en un plazo de 24h.</p>
+                </div>
+
+                <button onclick="window.location.reload()" style="background: #2ecc71; color: #fff; border: none; padding: 15px 40px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; width: 100%; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;">ENTENDIDO</button>
+            </div>
         </div>
-    </section>
 
+        <div class="editor-content-wrapper">
+
+            <h2 style="color:var(--brand-color); font-size: 1.8rem; text-align:center; margin-bottom:20px;">Personaliza tu Web</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="edit-group">
+                    <label>Nombre del Negocio:</label>
+                    <input type="text" id="edit-name" placeholder="Ej: Clínica Dental García" style="width:100%; padding:10px;">
+                </div>
+                <div class="edit-group">
+                    <label>Eslogan:</label>
+                    <input type="text" id="edit-tagline" placeholder="Ej: Especialistas en Salud" style="width:100%; padding:10px;">
+                </div>
+            </div>
+
+            <div class="edit-group" style="margin-top:15px;">
+                <label>Encabezado Principal (Headline):</label>
+                <textarea id="edit-headline" placeholder="Tu salud es nuestra prioridad..." style="width:100%; padding:10px; min-height: 80px;"></textarea>
+            </div>
+
+            <div class="edit-group" style="margin-top:15px;">
+                <label>Servicios (Separados por comas):</label>
+                <textarea id="edit-services" placeholder="Servicio 1, Servicio 2, Servicio 3..." style="width:100%; padding:10px; min-height: 60px;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:15px;">
+                <div class="edit-group">
+                    <label>Texto del Botón (CTA):</label>
+                    <input type="text" id="edit-cta" placeholder="Reserva ahora" style="width:100%; padding:10px;">
+                </div>
+                <div class="edit-group">
+                    <label>Costo de Consulta:</label>
+                    <input type="text" id="edit-fee" placeholder="Ej: $800 MXN" style="width:100%; padding:10px;">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:15px;">
+                <div class="edit-group">
+                    <label style="color: #2ecc71 !important;">WhatsApp de Contacto:</label>
+                    <input type="tel" id="edit-phone" placeholder="Ej: +52 1 55..." style="width:100%; padding:12px; border: 1px solid #2ecc71;">
+                    <small style="color: #64748b; font-size: 0.7rem; display:block; margin-top:5px;">* Para soporte técnico directo.</small>
+                </div>
+                <div class="edit-group">
+                    <label style="color: #2ecc71 !important;">Email de Respaldo:</label>
+                    <input type="email" id="edit-email" placeholder="Tu mejor correo..." style="width:100%; padding:12px; border: 1px solid #2ecc71;">
+                    <small style="color: #64748b; font-size: 0.7rem; display:block; margin-top:5px;">* Recibirás las credenciales de acceso.</small>
+                </div>
+            </div>
+
+            <div class="edit-group" style="margin-top:15px;">
+                <label>Dirección Física:</label>
+                <textarea id="edit-address" placeholder="Av. Principal #123..." style="width:100%; padding:10px; min-height: 60px;"></textarea>
+            </div>
+
+            <div class="edit-group" style="margin-top:15px;">
+                <label>Horarios:</label>
+                <input type="text" id="edit-hours" placeholder="Lunes a Viernes 9am - 6pm" style="width:100%; padding:10px;">
+            </div>
+
+            <!-- SECCIÓN FINAL DE CONTROL -->
+            <div id="form-error-msg" style="display:none; margin: 20px auto; padding: 12px; background: #fff1f2; border: 1px solid #fda4af; color: #991b1b; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700; border-radius: 4px; max-width: 500px; text-align: center; text-transform: uppercase; letter-spacing: 1px;"></div>
+
+            <div style="margin-top: 50px; text-align: center; border-top: 1px solid rgba(0, 242, 255, 0.1); padding-top: 30px;">
+                <button class="btn-publish" onclick="window.app.editor.submitOrder()" 
+                    style="max-width: 450px; width: 100%; background: #2ecc71; color: white; border: none; padding: 18px; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 0 #27ae60; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;">
+                    🚀 ACTIVAR MI WEB AHORA
+                </button>
+                
+                <p style="color: #2ecc71; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; margin: 15px 0 40px; font-weight: 700; letter-spacing: 1px; opacity: 0.8;">
+                    [ TRANSMISIÓN DE DATOS ENCRIPTADA A CENTRO DE DESPLIEGUE ]
+                </p>
+
+                <button class="btn-secondary" onclick="window.app.ui.closeEditor()" 
+                    style="background: transparent; color: #ff4757; border: 1px solid #ff4757; padding: 8px 25px; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; cursor: pointer; border-radius: 2px; font-size: 0.8rem; transition: all 0.3s;">
+                    ✖ ABORTAR OPERACIÓN
+                </button>
+            </div>
+            
+
+        </div> <!-- CIERRE DE editor-window-content (si lo usaste) -->
+    </div> <!-- CIERRE DEFINITIVO DE editor-panel: ESTO SACA A LOS DEMOS DE LA VENTANA BLANCA -->
+
+    
     <section class="includes-section">
         <h2>Tu Compra Incluye Todo Para Empezar</h2>
         <div class="includes-content">
-            <p>Por tu pago único de <strong>$200 USD</strong>, obtienes:</p>
-            <ul>
-                <li>✅ <strong>Tu Landing Page Profesional:</strong> Un diseño de élite que eliges y personalizas. Es tuya para siempre.</li>
-                <li>✅ <strong>30 Días de Despliegue Inmediato GRATIS:</strong> Alojamos tu página en nuestros servidores de máxima velocidad y te damos una dirección web profesional en nuestro dominio <strong>ikal.info</strong> para que puedas compartirla al instante.</li>
+            <p style="font-size: 1.4rem; margin-bottom: 20px;">Por tu pago único de <strong style="color: #FFD700;">$99 MXN</strong>, obtienes:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 15px; font-size: 1.1rem;">✅ <strong style="color: #00f2ff;">Landing Page Pro:</strong> Diseño de élite adaptable a tu negocio.</li>
+                <li style="margin-bottom: 15px; font-size: 1.1rem;">✅ <strong style="color: #00f2ff;">Hosting + Dominio:</strong> 30 días de despliegue incluidos en ikal.info.</li>
+                <li style="margin-bottom: 15px; font-size: 1.1rem;">✅ <strong style="color: #00f2ff;">Soporte Técnico:</strong> Activación garantizada en 24 horas.</li>
             </ul>
-            <div class="next-step">
-                <h3>¿Y después de los 30 días?</h3>
-                <p>Tú decides. Para mantener tu página online y obtener tu propio dominio .com, puedes activar nuestro <strong>Plan de Continuidad</strong> por solo <strong>$15 USD al mes</strong>. Si decides no continuar, tu página simplemente se desactivará. Sin contratos, sin compromisos, sin cargos ocultos.</p>
-            </div>
         </div>
     </section>
-   
+
     <footer class="killer-close">
         <div class="glitch-text">ROBOTIAX</div>
-        <p class="convincing-text">
-            Tu imperio digital comienza con un solo clic.
-        </p>
-        <!-- Contenedor para el botón de PayPal. Se oculta hasta que se elige plantilla -->
-        <div id="payment-container" style="display: none; max-width: 500px; margin: 20px auto 0;">
-             <div id="paypal-button-container"></div>
+        <p class="convincing-text">Tu imperio digital comienza con un solo clic.</p>
+        <div style="margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px;">
+            <p style="font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; letter-spacing: 2px; opacity: 0.4; text-transform: uppercase;">
+                © 2025 MAKUMOTO & ROBOTIAX ENGINE. TODOS LOS DERECHOS RESERVADOS. 
+                <br>SISTEMA DE DESPLIEGUE AUTOMATIZADO V.2.0
+            </p>
         </div>
-        <div id="payment-placeholder" class="big-paypal-btn">ELIGE UNA PLANTILLA PARA CONTINUAR</div>
     </footer>
 
-    <!-- SDK de PayPal. Reemplaza TU_PAYPAL_CLIENT_ID_DE_PRUEBA con tu Client ID de Sandbox -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6"></script>
-    <script src="js/payments.js"></script>
-    <script src="js/editor.js"></script>
-    <script src="js/desarrollo.js"></script>
-<!-- ============================================= -->
+    <!-- ============================================= -->
     <!-- ==           MODAL DE PAGO PAYPAL          == -->
     <!-- ============================================= -->
     <div id="payment-modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="window.app.closeModal()">×</button>
-            <h2>Finaliza tu Compra</h2>
-            <p>Estás a punto de adquirir la <strong id="modal-template-name">Plantilla X</strong> por un pago único de <strong>$200 USD</strong>.</p>
-            <p class="small-text">Una vez completado el pago, podrás personalizarla con tus datos.</p>
-            <div id="modal-paypal-container">
-                <!-- El botón de PayPal se renderizará aquí -->
-            </div>
+            <h2 style="font-family: 'Orbitron', sans-serif; color: #FFD700; margin-bottom: 10px;">ORDEN DE ACTIVACIÓN</h2>
+            <p style="font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;">
+                Adquiere la <strong id="modal-template-name" style="color: #00f2ff;">Plantilla</strong> 
+                por solo <strong style="color: #FFD700;">$99 MXN</strong>.
+            </p>
+            <div id="modal-paypal-container" style="margin-top:30px; min-height: 150px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 4px;"></div>
         </div>
     </div>
+
+    <!-- SCRIPTS EN ORDEN DE DEPENDENCIA (Sincronizados en MXN) -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6&currency=MXN"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/desarrollo.js"></script>
 
 </body>
 </html>

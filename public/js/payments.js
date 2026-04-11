@@ -18,7 +18,7 @@ window.app.payments = {
                 return fetch(window.app.payments.endpoints.create, { 
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId: templateId, amount: "200.00" })
+                    body: JSON.stringify({ productId: templateId, amount: "99.00" })
                 })
                 .then(res => res.json())
                 .then(orderData => orderData.orderID);
@@ -28,21 +28,26 @@ window.app.payments = {
                 return fetch(window.app.payments.endpoints.capture, {
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderID: data.orderID, productId: templateId })
+                    body: JSON.stringify({ 
+                        orderID: data.orderID, 
+                        productId: templateId,
+                        customerData: {} // Enviamos objeto vacío, los datos vendrán después
+                    })
                 })
                 .then(res => res.json())
                 .then(orderData => {
                     console.log("Respuesta de Captura:", orderData);
-                    if (orderData.status === 'success') {
-                        // Guardar acceso y notificar
+                    if (orderData.accessToken) {
+                        // 1. Guardar token de acceso
                         window.app.payments.saveAccess(templateId, orderData.accessToken);
                         
-                        // Cierre imperativo del modal
-                        window.app.ui.closeModal(); 
+                        // 2. Notificar al sistema
+                        console.log("Pago validado. Desbloqueando unidad...");
                         
-                        document.dispatchEvent(new CustomEvent('payment-completed', { 
-                            detail: { templateId: templateId } 
-                        }));
+                        // 3. Transición Directa al Editor
+                        window.app.ui.openEditor(templateId, "Unidad Activada");
+                    } else {
+                        throw new Error("Respuesta de servidor incompleta");
                     }
                 })
                 .catch(err => {
