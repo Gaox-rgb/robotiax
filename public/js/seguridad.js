@@ -1,83 +1,48 @@
-/**
- * Protocolo de Seguridad Web - ROBOTIAX
- * Manejo de alertas y nodos de red
- */
-
 document.addEventListener("DOMContentLoaded", () => {
-    console.warn("ALERTA: Accediendo a zona comprometida.");
+    console.warn("Protocolo Fortaleza: Escaneando perímetros...");
     
-    const simulateHacks = () => {
-        const actions = ["Bloqueando IP intrusa", "Cifrando túnel VPN", "Neutralizando Ransomware"];
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
-        console.log(`[ESCUDO]: ${randomAction}... OK`);
-    };
-    setInterval(simulateHacks, 3000);
+    const secContainer = document.getElementById('security-container');
+    const loadMoreBtn = document.getElementById('btn-load-more-sec');
 
-    // Inicializar botones de compra de nodos
-    document.querySelectorAll('.btn-node-purchase').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const product = {
-                id: btn.dataset.productId,
-                name: btn.dataset.productName,
-                price: btn.dataset.productPrice,
-                currency: btn.dataset.productCurrency
-            };
-            openPaymentModal(product);
+    const renderSecurity = (filterTop = true) => {
+        const items = window.app.catalog.security.filter(item => item.top === filterTop);
+        
+        items.forEach(node => {
+            const card = document.createElement('div');
+            card.className = 'node-card';
+            card.innerHTML = `
+                <div class="node-icon">${node.icon}</div>
+                <h3>${node.name}</h3>
+                <p>${node.desc}</p>
+                <a href="#" class="btn-node-purchase" 
+                   onclick="window.app.ui.requestSecPurchase('${node.id}')">ACTIVAR ESCUDO</a>
+                <div class="node-footer">
+                    <a href="#" class="node-details-link">&lt;DETALLES&gt;</a>
+                    <div class="node-price">$${node.price} ${node.currency}</div>
+                </div>
+            `;
+            secContainer.appendChild(card);
         });
-    });
+    };
 
-    // Cerrar modal
-    document.querySelector('.modal-close-button')?.addEventListener('click', closePaymentModal);
+    // Carga inicial (Top 6)
+    renderSecurity(true);
+
+    // Expansión del Búnker
+    loadMoreBtn.addEventListener('click', () => {
+        renderSecurity(false);
+        loadMoreBtn.style.display = 'none';
+    });
 });
 
-function openPaymentModal(product) {
-    document.getElementById('modal-template-name').textContent = product.name;
-    const modal = document.getElementById('payment-modal-overlay');
-    modal.classList.add('visible');
-    initPaypalButton(product);
-}
+// PUENTE CON EL MOTOR DE PAGOS
+window.app.ui.requestSecPurchase = (productId) => {
+    const secData = window.app.catalog.security.find(p => p.id === productId);
+    if(!secData) return;
 
-function closePaymentModal() {
-    document.getElementById('payment-modal-overlay').classList.remove('visible');
-}
-
-function showProtocolStatus(message, isSuccess = true) {
-    const notify = document.createElement('div');
-    notify.style = `position:fixed; top:20px; right:20px; background:${isSuccess ? '#00eaff' : '#ff003c'}; color:black; padding:20px; font-family:'VT323',monospace; z-index:10000; border:2px solid white; box-shadow:0 0 20px ${isSuccess ? '#00eaff' : '#ff003c'}; clip-path:polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0% 30%); animation:slideIn 0.5s forwards;`;
-    notify.innerHTML = `<div style="font-weight:bold; font-size:1.2rem;">${isSuccess ? '[SISTEMA_OK]' : '[ERROR_CRÍTICO]'}</div><div>${message}</div>`;
-    document.body.appendChild(notify);
-    setTimeout(() => { notify.style.animation = 'slideOut 0.5s forwards'; setTimeout(() => notify.remove(), 500); }, 4000);
-}
-
-function initPaypalButton(product) {
-    const container = document.getElementById('modal-paypal-container');
-    container.innerHTML = ''; 
-
-    paypal.Buttons({
-        createOrder: (data, actions) => {
-            return fetch('https://createpaypalorder-bh64qprvqa-uc.a.run.app', { 
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: product.price, currency: product.currency, productId: product.id })
-            })
-            .then(res => res.json())
-            .then(orderData => orderData.orderID);
-        },
-        onApprove: (data, actions) => {
-            return fetch('https://capturepaypalorder-bh64qprvqa-uc.a.run.app', {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderID: data.orderID, productId: product.id })
-            }).then(res => res.json())
-            .then(orderData => {
-                if (orderData.status === 'success') {
-                    showProtocolStatus('ESCUDO ACTIVADO. Amenazas neutralizadas.');
-                    closePaymentModal();
-                } else {
-                    showProtocolStatus('Fallo en la secuencia de pago.', false);
-                }
-            });
-        }
-    }).render('#modal-paypal-container');
-}
+    document.getElementById('modal-template-name').textContent = secData.name;
+    document.getElementById('payment-modal-overlay').classList.add('visible');
+    
+    // Iniciar PayPal dinámico (Detección automática de USD/MXN en payments.js)
+    window.app.payments.initPaypalButton(productId, '#modal-paypal-container');
+};

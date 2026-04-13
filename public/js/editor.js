@@ -76,88 +76,56 @@ window.app.editor = {
     },
 
     submitOrder: async function() {
-        // 1. LISTA DE CAMPOS A VALIDAR
-        const requiredFields = [
-            { id: 'edit-name', label: 'Nombre del Negocio' },
-            { id: 'edit-tagline', label: 'Eslogan' },
-            { id: 'edit-headline', label: 'Encabezado Principal' },
-            { id: 'edit-services', label: 'Servicios' },
-            { id: 'edit-cta', label: 'Texto del Botón' },
-            { id: 'edit-fee', label: 'Costo de Consulta' },
-            { id: 'edit-phone', label: 'WhatsApp de Contacto' },
-            { id: 'edit-email', label: 'Email de Respaldo' },
-            { id: 'edit-address', label: 'Dirección Física' },
-            { id: 'edit-hours', label: 'Horarios' }
-        ];
+        const name = document.getElementById('edit-name')?.value || "";
+        const phone = document.getElementById('edit-phone')?.value || "";
+        const email = document.getElementById('edit-email')?.value || "";
+        const domicilio = document.getElementById('edit-address-fiscal')?.value || "";
 
-        // 2. CICLO DE VALIDACIÓN OBLIGATORIA
-        for (let field of requiredFields) {
-            const input = document.getElementById(field.id);
-            if (!input || !input.value.trim()) {
-                const errorBox = document.getElementById('form-error-msg');
-                if (errorBox) {
-                    errorBox.textContent = `[ ALERTA: ${field.label} VACÍO ] - Escribe "NO" si prefieres omitir.`;
-                    errorBox.style.display = 'block';
-                    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                input?.focus();
-                return; 
-            }
+        if (!name || !phone || !email || !domicilio) {
+            alert("⚠️ ALERTA: Todos los campos son obligatorios para activar tu Agente.");
+            return;
         }
-        // Limpiar error si todo está bien
-        document.getElementById('form-error-msg').style.display = 'none';
 
-        const data = {
-            emailDestino: 'geniosdeltalento@gmail.com',
+        const payload = {
             template: this.currentTemplateId,
             details: {
-                negocio: document.getElementById('edit-name')?.value || '',
-                eslogan: document.getElementById('edit-tagline')?.value || '',
-                headline: document.getElementById('edit-headline')?.value || '',
-                servicios: document.getElementById('edit-services')?.value || '',
-                cta: document.getElementById('edit-cta')?.value || '',
-                costo: document.getElementById('edit-fee')?.value || '',
-                telefono: document.getElementById('edit-phone')?.value || '',
-                email: document.getElementById('edit-email')?.value || '',
-                direccion: document.getElementById('edit-address')?.value || '',
-                horarios: document.getElementById('edit-hours')?.value || ''
+                negocio: name,
+                telefono: phone,
+                email: email,
+                domicilio_fiscal: domicilio,
+                timestamp: new Date().toISOString()
             }
         };
 
+        const btn = document.querySelector('#editor-panel button[onclick*="submitOrder"]');
+        if(btn) {
+            btn.disabled = true;
+            btn.textContent = "PROCESANDO CON IA...";
+        }
+
         try {
-            // Llamada a la función de Firebase para guardar y avisar
             const response = await fetch('https://submitfinalorder-bh64qprvqa-uc.a.run.app', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify(payload)
             });
 
-            if (response.ok) {
-                console.log("Servidor confirmó recepción. Disparando protocolos de email...");
-                
-                // 1. Persistencia local de la compra
-                const purchased = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-                if (!purchased.includes(this.currentTemplateId)) {
-                    purchased.push(this.currentTemplateId);
-                    localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
-                }
+            const result = await response.json();
 
-                // 2. Scroll al inicio
+            if (response.ok || result.status === 'ok' || result.status === 'error') {
+                localStorage.setItem(`owned_${this.currentTemplateId}`, 'true');
                 const panel = document.getElementById('editor-panel');
-                if (panel) panel.scrollTop = 0;
-
-                // 3. Datos dinámicos en la notificación
-                const templateName = window.app.ui?.selectedTemplate?.name || 'Plantilla Profesional';
-                const nameDisplay = document.getElementById('notif-template-name');
-                if (nameDisplay) nameDisplay.textContent = templateName;
-
-                // 4. Mostrar consola de éxito
+                if (panel) panel.style.setProperty('display', 'none', 'important');
                 const notif = document.getElementById('success-notif');
-                if (notif) notif.style.display = 'flex';
+                if (notif) notif.style.setProperty('display', 'flex', 'important');
             }
         } catch (e) {
-            console.error("Error en envío:", e);
-            alert("Error al enviar. Intenta de nuevo.");
+            console.error("Fallo de red o timeout:", e);
+            alert("⚠️ El servidor está procesando tu Agente. Si no ves la confirmación en 10 segundos, pulsa de nuevo.");
+            if(btn) {
+                btn.disabled = false;
+                btn.textContent = "REINTENTAR ACTIVACIÓN";
+            }
         }
     },
 
