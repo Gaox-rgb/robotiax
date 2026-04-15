@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const items = window.app.catalog.ia.filter(item => item.top === filterTop);
         
         items.forEach(app => {
+            const isOwned = localStorage.getItem(`owned_${app.id}`) === 'true';
             const card = document.createElement('div');
             card.className = 'black-module';
             card.innerHTML = `
@@ -16,11 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 <h3 class="module-title">${app.name}</h3>
                 <p class="module-desc">${app.desc}</p>
                 <div style="color: #ff3333; font-family: 'Orbitron'; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem;">$${app.price} ${app.currency}</div>
-                <a href="#" class="action-button-purchase btn-module-purchase" 
-                   onclick="window.app.payments.openModal('${app.id}', '${app.name}', '${app.price}', '${app.currency}')">COMPRAR AHORA</a>
+                ${isOwned ? 
+                    `<div style="background: #111; color: #ff3333; border: 1px solid #ff3333; padding: 15px; text-align: center; font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 1px;">ADQUIRIDO / EN ACTIVACIÓN</div>` :
+                    `<a href="#" class="action-button-purchase btn-module-purchase" 
+                       onclick="window.app.ui.requestIAPurchase('${app.id}')">COMPRAR AHORA</a>`
+                }
                 <div class="module-footer">
                     <div class="module-price">:: $${app.price} ${app.currency}</div>
-                    <a href="#" class="module-details-link">DETALLES TÁCTICOS >></a>
+                    <a href="arsenal-completo.html" class="module-details-link">VER LISTADO DE PRECIOS >></a>
                 </div>
             `;
             iaContainer.appendChild(card);

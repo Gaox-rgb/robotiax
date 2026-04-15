@@ -33,8 +33,14 @@ window.app.payments = {
         container.innerHTML = ''; 
 
         console.log("🚀 Cargando pasarela para ID:", templateId);
-        // BUSQUEDA DINÁMICA EN EL CATÁLOGO MAESTRO
-        const allProducts = [...window.app.catalog.web, ...window.app.catalog.ia, ...window.app.catalog.security];
+        console.log("🚀 Cargando pasarela para ID:", templateId);
+        
+        // Búsqueda segura: Si una categoría no existe, usa un array vacío para no romper el script
+        const iaProducts = window.app.catalog.ia || [];
+        const secProducts = window.app.catalog.security || [];
+        const webProducts = window.app.catalog.web || [];
+        
+        const allProducts = [...webProducts, ...iaProducts, ...secProducts];
         const product = allProducts.find(p => p.id === templateId);
 
         if (!product) {

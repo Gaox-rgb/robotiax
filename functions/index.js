@@ -286,38 +286,37 @@ exports.submitFinalOrder = onRequest({
         try {
             const generativeModel = getVertexAI().getGenerativeModel({ 
                 model: modelAI,
-                // Aumentamos a 4096 para evitar que se corte la respuesta técnica
-                generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
+                generationConfig: { temperature: 0.2, maxOutputTokens: 2500 }
             }); 
 
-            const promptMaestro = `SISTEMA ROBOTIAX - INSTRUCCIONES TÉCNICAS
-            MÓDULO: ${pData.name}
-            NEGOCIO: ${details.negocio}
-            
-            TAREA: Genera la arquitectura del agente. 
-            Sé conciso pero completo en:
-            1. System Prompt (La personalidad y reglas del agente).
-            2. Herramientas Vertex AI recomendadas.
-            3. Estrategia de Maquila (Pasos para entrega en <5 min).
-            
-            NO uses introducciones largas, ve directo a los puntos.`;
+            const promptMaestro = `Eres el Arquitecto Senior de Robotiax. 
+            MÓDULO: ${pData.name}. CLIENTE: ${details.negocio}.
+            INSTRUCCIÓN: Sé técnico y directo. No saludes.
+            ESTRUCTURA: 1. System Prompt. 2. Herramientas Vertex. 3. Plan de Maquila.`;
 
             const aiResult = await generativeModel.generateContent(promptMaestro);
             const aiResponse = await aiResult.response;
-            
-            // Acceso más seguro a la respuesta de texto
-            const textResponse = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            if (textResponse) {
-                vertexAnalysis = textResponse;
-                console.log("LOG: IA Generada con éxito para folio:", folio);
-            } else {
-                vertexAnalysis = "IA sin contenido. Revisión manual requerida.";
-            }
+            vertexAnalysis = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisión manual requerida.";
 
         } catch (aiErr) {
-            console.error("DETALLE ERROR VERTEX:", aiErr.message);
-            vertexAnalysis = `MAQUILA MANUAL: Error en Vertex AI (${aiErr.message}).`;
+            console.error("ERROR VERTEX:", aiErr.message);
+            vertexAnalysis = `MAQUILA MANUAL: Error en Vertex AI.`;
+        }
+
+        // LÓGICA DE REQUERIMIENTOS ROBOTIAX v2.0
+        const reqLibrary = {
+            'BIZ': "• Lista de Servicios y Precios detallados\n• Horarios de atención al público\n• Logo del negocio o marca (adjuntar a este correo)\n• Resumen breve de la visión del negocio",
+            'MKT': "• Enlaces a Redes Sociales activas\n• Enlace a perfil de Google Maps / Reseñas\n• Descripción de tu público objetivo principal",
+            'SEC_P': "• PROTECCIÓN DE DATOS ACTIVA: No solicitamos información técnica ni sensible por este medio.\n• Instrucciones de Activación: Junto con tu enlace de acceso, recibirás un instructivo privado para configurar tu protocolo de forma autónoma y segura.",
+            'SEC_B': "• PROTOCOLO EMPRESARIAL ACTIVADO.\n• No se requiere envío de datos sensibles por correo electrónico.\n• Recibirás un Manual de Configuración Cifrado junto con tu acceso para la implementación en tu servidor o red local."
+        };
+
+        // BLINDAJE ABSOLUTO: Si el ID empieza con 'sec-', forzamos la respuesta de privacidad.
+        let requirements = "";
+        if (template.startsWith('sec-')) {
+            requirements = reqLibrary['SEC_P'];
+        } else {
+            requirements = reqLibrary[pData.reqId] || reqLibrary['BIZ'];
         }
 
         const orderRef = await db.collection('orders_to_fulfill').add({
@@ -332,18 +331,31 @@ exports.submitFinalOrder = onRequest({
         });
 
         const clientReceiptHtml = `
-            <div style="font-family: Arial; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                <h2 style="color: #ff3333; text-align: center;">ORDEN CONFIRMADA</h2>
-                <p>Hola <strong>${details.negocio}</strong>, hemos recibido tu pedido correctamente.</p>
-                <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; margin: 20px 0;">
-                    <p><strong>FOLIO:</strong> ${folio}</p>
-                    <p><strong>PRODUCTO:</strong> ${pData.name}</p>
-                    <p><strong>ESTATUS:</strong> Procesando Activación</p>
+            <div style="font-family: Arial; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333; line-height: 1.6;">
+                <h2 style="color: #ff3333; text-align: center;">ORDEN DE ACTIVACIÓN CONFIRMADA</h2>
+                <p>Hola <strong>${details.negocio}</strong>, el pago por tu agente inteligente ha sido procesado con éxito.</p>
+                
+                <div style="background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; border: 1px solid #ddd;">
+                    <p style="margin: 5px 0;"><strong>FOLIO DE PEDIDO:</strong> ${folio}</p>
+                    <p style="margin: 5px 0;"><strong>PRODUCTO:</strong> ${pData.name}</p>
+                    <p style="margin: 5px 0;"><strong>TOTAL PAGADO:</strong> $${pData.price} ${pData.currency}</p>
+                    <p style="margin: 5px 0; color: #ff3333; font-weight:bold;">ESTATUS: ESPERANDO TU INFORMACIÓN</p>
                 </div>
-                <p style="background: #ecfdf5; padding: 15px; border-radius: 6px; border: 1px solid #6ee7b7; color: #065f46; font-weight: bold; text-align:center;">
-                    🎁 BENEFICIO: Tu servicio es totalmente GRATIS durante los primeros 30 DÍAS.
+
+                <h3 style="color: #ff3333; border-bottom: 2px solid #ff3333; padding-bottom: 5px;">⚠️ ACCIÓN REQUERIDA PARA LA ENTREGA:</h3>
+                <p>Para activar tu servicio en menos de 24 horas, es <strong>INDISPENSABLE</strong> que respondas a este correo adjuntando o escribiendo la siguiente información:</p>
+                
+                <div style="background: #fffafa; border: 1px dashed #ff3333; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 15px; color: #1a1a1a; white-space: pre-wrap; font-weight: bold;">${requirements}</div>
+
+                <p style="font-size: 14px; color: #333;"><em>Nota: El plazo de activación de 24 horas inicia en el momento que recibamos tu respuesta con estos datos técnicos.</em></p>
+                
+                <p style="font-size: 13px; color: #666; margin-top: 20px;">
+                    Nuestro equipo de ingeniería iniciará la <strong>configuración técnica</strong> de tu protocolo inteligente en cuanto los datos sean validados.
                 </p>
-                <p>Tu link de acceso personalizado estará listo en un plazo máximo de <strong>24 HORAS</strong>.</p>
+                <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; font-size: 11px; color: #999; text-align: center;">
+                    <p>Promoción: Los primeros 30 días de hosting y dominio son cortesía de Robotiax.</p>
+                    <p>Facturación: Tu CFDI será enviado a este correo entre los días 2 y 3 del mes entrante.</p>
+                </div>
             </div>
         `;
 
