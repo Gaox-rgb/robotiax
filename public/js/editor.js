@@ -7,6 +7,26 @@ window.app = window.app || {};
 
 window.app.editor = {
     currentTemplateId: null,
+    // Motor de Notificaciones (Fuera de endpoints para que this.notify funcione)
+    notify: function(msg, type = 'error') {
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-msg ${type}`;
+        toast.innerHTML = `<span style="color:${type === 'error' ? '#ff003c' : '#2ecc71'}">[!]</span> ${msg}`;
+        
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'toastFadeOut 0.5s ease forwards';
+            setTimeout(() => toast.remove(), 500);
+        }, 4000);
+    },
 
     endpoints: {
         generate: 'https://generatedemo-bh64qprvqa-uc.a.run.app',
@@ -76,52 +96,57 @@ window.app.editor = {
     },
 
     submitOrder: async function() {
-        const name = document.getElementById('edit-name')?.value || "";
-        const phone = document.getElementById('edit-phone')?.value || "";
-        const email = document.getElementById('edit-email')?.value || "";
-        const domicilio = document.getElementById('edit-address-fiscal')?.value || "";
+        // CAPTURA TOTAL DE CAMPOS PARA DESARROLLO WEB
+        const details = {
+            negocio: document.getElementById('edit-name')?.value || "",
+            tagline: document.getElementById('edit-tagline')?.value || "",
+            headline: document.getElementById('edit-headline')?.value || "",
+            servicios: document.getElementById('edit-services')?.value || "",
+            cta: document.getElementById('edit-cta')?.value || "",
+            fee: document.getElementById('edit-fee')?.value || "",
+            telefono: document.getElementById('edit-phone')?.value || "",
+            email: document.getElementById('edit-email')?.value || "",
+            direccion: document.getElementById('edit-address')?.value || "",
+            horarios: document.getElementById('edit-hours')?.value || "",
+            timestamp: new Date().toISOString()
+        };
 
-        if (!name || !phone || !email || !domicilio) {
-            alert("⚠️ ALERTA: Todos los campos son obligatorios para activar tu Agente.");
+        if (!details.negocio || !details.telefono || !details.email || !details.direccion) {
+            this.notify("ERROR: Nombre, WhatsApp, Email y Dirección son obligatorios.", "error");
             return;
         }
-
-        const payload = {
-            template: this.currentTemplateId,
-            details: {
-                negocio: name,
-                telefono: phone,
-                email: email,
-                domicilio_fiscal: domicilio,
-                timestamp: new Date().toISOString()
-            }
-        };
 
         const btn = document.querySelector('#editor-panel button[onclick*="submitOrder"]');
         if(btn) {
             btn.disabled = true;
-            btn.textContent = "PROCESANDO CON IA...";
+            btn.textContent = "REGISTRANDO PEDIDO...";
         }
 
         try {
             const response = await fetch('https://submitfinalorder-bh64qprvqa-uc.a.run.app', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ template: this.currentTemplateId, details })
             });
 
-            const result = await response.json();
-
-            if (response.ok || result.status === 'ok' || result.status === 'error') {
-                localStorage.setItem(`owned_${this.currentTemplateId}`, 'true');
+            if (response.ok) {
+                // SINCRONIZACIÓN CON GALERÍA: Guardar en makumoto_owned
+                const purchased = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+                if (!purchased.includes(this.currentTemplateId)) {
+                    purchased.push(this.currentTemplateId);
+                    localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
+                }
+                
+                // Ocultar formulario y mostrar ventana de éxito
                 const panel = document.getElementById('editor-panel');
                 if (panel) panel.style.setProperty('display', 'none', 'important');
                 const notif = document.getElementById('success-notif');
                 if (notif) notif.style.setProperty('display', 'flex', 'important');
             }
+
         } catch (e) {
             console.error("Fallo de red o timeout:", e);
-            alert("⚠️ El servidor está procesando tu Agente. Si no ves la confirmación en 10 segundos, pulsa de nuevo.");
+            this.notify("ERROR DE CONEXIÓN. REINTENTANDO...", "error");
             if(btn) {
                 btn.disabled = false;
                 btn.textContent = "REINTENTAR ACTIVACIÓN";

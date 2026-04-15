@@ -319,13 +319,16 @@
     <!-- ============================================= -->
     <div id="payment-modal-overlay" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close" onclick="window.app.closeModal()">×</button>
-            <h2 style="font-family: 'Orbitron', sans-serif; color: #FFD700; margin-bottom: 10px;">ORDEN DE ACTIVACIÓN</h2>
-            <p style="font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;">
-                Adquiere la <strong id="modal-template-name" style="color: #00f2ff;">Plantilla</strong> 
-                por solo <strong style="color: #FFD700;">$99 MXN</strong>.
+            <h2 style="font-family: 'Orbitron', sans-serif; color: #FFD700; margin-bottom: 10px; font-size: 1.2rem;">ORDEN DE ACTIVACIÓN</h2>
+            <p style="font-family: 'Rajdhani', sans-serif; color: #fff; margin-bottom: 20px;">
+                <span id="modal-template-name">Plantilla</span> | $99 MXN
             </p>
-            <div id="modal-paypal-container" style="margin-top:30px; min-height: 150px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 4px;"></div>
+
+            <div id="paypal-actual-button" style="width: 100%;">
+                <!-- Aquí PayPal inyectará sus botones oficiales -->
+            </div>
+
+            <button onclick="window.app.ui.closeModal()" style="background:transparent; border:none; color:#ff003c; font-family:'Rajdhani'; cursor:pointer; margin-top:25px; font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; opacity:0.8;">❮ CANCELAR Y VOLVER</button>
         </div>
     </div>
 

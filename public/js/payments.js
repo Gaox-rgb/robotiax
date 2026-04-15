@@ -7,118 +7,67 @@ window.app.payments = {
         capture: 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app'
     },
 
-    openModal: function(id, name, price, currency) {
+openModal: function(id, name, price, currency) {
         const modal = document.getElementById('payment-modal-overlay');
         const title = document.getElementById('modal-template-name');
         
-        window.app.editor.currentTemplateId = id;
-        window.app.editor.currentName = name;
-        window.app.editor.currentPrice = price;
-        window.app.editor.currentCurrency = currency;
+        window.app.activePurchase = { id, name, price, currency };
 
-        if(title) title.textContent = `${name} ($${price} ${currency})`;
-        if(modal) modal.style.setProperty('display', 'flex', 'important');
+        if(title) title.textContent = name;
+        if(modal) modal.classList.add('visible');
         
-        this.initPaypalButton(id, '#modal-paypal-container');
+        this.renderOfficialButtons();
+    },
+
+    renderOfficialButtons: function() {
+        const btnBox = document.getElementById('paypal-actual-button');
+        if (!btnBox) return;
+        
+        btnBox.innerHTML = '<div id="sdk-loading" style="color:#00f2ff; text-align:center; padding:20px; font-family:Rajdhani;">INICIANDO TERMINAL SEGURA...</div>';
+
+        const { id, price, currency } = window.app.activePurchase;
+
+        paypal.Buttons({
+            style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+            createOrder: (data, actions) => {
+                return fetch(this.endpoints.create, { 
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: id, amount: price, currency: currency })
+                }).then(res => res.json()).then(d => d.orderID);
+            },
+            onApprove: (data, actions) => {
+                return fetch(this.endpoints.capture, {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderID: data.orderID, productId: id })
+                }).then(res => res.json()).then(res => {
+                    if (res.status === 'success') {
+                        this.closeModal();
+                        window.app.editor.init(id);
+                    }
+                });
+            }
+        }).render('#paypal-actual-button').then(() => {
+            const loading = document.getElementById('sdk-loading');
+            if (loading) loading.remove();
+        });
+    },
+
+    resetUI: function() {
+        const btn = document.getElementById('paypal-actual-button');
+        if (btn) btn.innerHTML = '';
     },
 
     closeModal: function() {
         const modal = document.getElementById('payment-modal-overlay');
-        if (modal) modal.style.setProperty('display', 'none', 'important');
+        if (modal) modal.classList.remove('visible');
+        this.resetUI();
     },
 
-    initPaypalButton: function(templateId, containerSelector) {
-        const container = document.querySelector(containerSelector);
-        if (!container) return;
-        container.innerHTML = ''; 
-
-        console.log("🚀 Cargando pasarela para ID:", templateId);
-        console.log("🚀 Cargando pasarela para ID:", templateId);
-        
-        // Búsqueda segura: Si una categoría no existe, usa un array vacío para no romper el script
-        const iaProducts = window.app.catalog.ia || [];
-        const secProducts = window.app.catalog.security || [];
-        const webProducts = window.app.catalog.web || [];
-        
-        const allProducts = [...webProducts, ...iaProducts, ...secProducts];
-        const product = allProducts.find(p => p.id === templateId);
-
-        if (!product) {
-            console.error("ERROR CRÍTICO: Producto no encontrado en catálogo:", templateId);
-            return;
-        }
-
-        paypal.Buttons({
-            createOrder: (data, actions) => {
-                return fetch(window.app.payments.endpoints.create, { 
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        productId: product.id, 
-                        amount: product.price, 
-                        currency: product.currency 
-                    })
-                })
-                .then(async res => {
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        alert("🚨 ERROR DEL ARSENAL: " + errorText);
-                        throw new Error(errorText);
-                    }
-                    return res.json();
-                })
-                .then(orderData => orderData.orderID);
-            },
-            onApprove: (data, actions) => {
-                // Usamos la ruta completa para evitar errores de contexto 'this'
-                return fetch(window.app.payments.endpoints.capture, {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        orderID: data.orderID, 
-                        productId: templateId,
-                        customerData: {} // Enviamos objeto vacío, los datos vendrán después
-                    })
-                })
-                .then(res => res.json())
-                .then(orderData => {
-                    console.log("Respuesta de Captura exitosa para:", templateId);
-                    if (orderData.status === 'success') {
-                        // 1. Ocultar Modal de Pago
-                        document.getElementById('payment-modal-overlay').style.setProperty('display', 'none', 'important');
-                        
-                        // 2. Preparar el Editor/Formulario con el ID del producto comprado
-                        window.app.editor = window.app.editor || {}; 
-                        window.app.editor.currentTemplateId = templateId;
-                        
-                        const templateName = window.app.catalog.ia.find(p => p.id === templateId)?.name || 
-                                           window.app.catalog.security.find(p => p.id === templateId)?.name || "Servicio";
-                        
-                        // 3. Inyectar Datos Reales en el Formulario (FIX PRECIO)
-                        const product = [...window.app.catalog.ia, ...window.app.catalog.security].find(p => p.id === templateId);
-                        if (product) {
-                            document.getElementById('display-product-name').textContent = product.name;
-                            document.getElementById('display-product-price').textContent = `$${product.price} ${product.currency}`;
-                        }
-
-                        // 4. Abrir el Panel de Activación
-                        const editorPanel = document.getElementById('editor-panel');
-                        if(editorPanel) {
-                            editorPanel.style.setProperty('display', 'block', 'important');
-                            editorPanel.scrollTop = 0;
-                        }
-                        
-                        console.log("Pago exitoso. Protocolo de Captura de Datos activado.");
-                    } else {
-                        throw new Error("Respuesta de servidor incompleta");
-                    }
-                })
-                .catch(err => {
-                    console.error('Error Crítico en Captura:', err);
-                    alert('El pago se realizó pero hubo un error al sincronizar. Recarga la página.');
-                });
-            }
-        }).render(containerSelector);
+    // Bridge para compatibilidad con desarrollo.js
+    initPaypalButton: function() {
+        this.resetUI();
     },
 
     saveAccess: function(templateId, token) {

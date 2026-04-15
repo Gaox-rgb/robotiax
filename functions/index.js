@@ -35,11 +35,17 @@ const modelAI = 'gemini-2.5-flash';
 let transporter;
 const getTransporter = () => {
     if (!transporter) {
+        console.log("🛠️ Inicializando nuevo transporte Nodemailer...");
         transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // true para puerto 465
             auth: {
                 user: 'geniosdeltalento@gmail.com',
-                pass: 'bcnmvqwyvfkhxpxd' 
+                pass: 'bcnmvqwyvfkhxpxd' // Verifica que este código siga activo en Google
+            },
+            tls: {
+                rejectUnauthorized: false // Evita bloqueos por certificados locales
             }
         });
     }
@@ -267,133 +273,145 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
 });
   
 exports.submitFinalOrder = onRequest({ 
-    cors: true, 
-    timeoutSeconds: 120, 
-    memory: "1GiB"     
+    cors: true, timeoutSeconds: 120, memory: "1GiB"     
 }, async (req, res) => {
     const { template, details } = req.body;
-    const clientEmail = details.email || details.correo; // Soporte para ambos nombres de campo
+    const clientEmail = details.email || details.correo; 
 
     try {
         const productSnap = await db.collection('products').doc(template).get();
-        const pData = productSnap.exists ? productSnap.data() : { name: template, price: "20", currency: "USD" };
+        const pData = productSnap.exists ? productSnap.data() : { name: template, price: "99", currency: "MXN" };
 
         const now = new Date();
         const folio = `ORD-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        let vertexAnalysis = "";
-        
-        try {
-            const generativeModel = getVertexAI().getGenerativeModel({ 
-                model: modelAI,
-                generationConfig: { temperature: 0.2, maxOutputTokens: 2500 }
-            }); 
+        const isWebProduct = !template.startsWith('ia-') && !template.startsWith('sec-');
+        let vertexInstructions = "";
 
-            const promptMaestro = `Eres el Arquitecto Senior de Robotiax. 
-            MÓDULO: ${pData.name}. CLIENTE: ${details.negocio}.
-            INSTRUCCIÓN: Sé técnico y directo. No saludes.
-            ESTRUCTURA: 1. System Prompt. 2. Herramientas Vertex. 3. Plan de Maquila.`;
-
-            const aiResult = await generativeModel.generateContent(promptMaestro);
-            const aiResponse = await aiResult.response;
-            vertexAnalysis = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisión manual requerida.";
-
-        } catch (aiErr) {
-            console.error("ERROR VERTEX:", aiErr.message);
-            vertexAnalysis = `MAQUILA MANUAL: Error en Vertex AI.`;
+        // SOLO ACTIVAR IA SI NO ES WEB
+        if (!isWebProduct) {
+            try {
+                const generativeModel = getVertexAI().getGenerativeModel({ model: modelAI });
+                const aiResult = await generativeModel.generateContent(`Genera instrucciones de maquila para: ${pData.name}`);
+                const aiResponse = await aiResult.response;
+                vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            } catch (e) { vertexInstructions = "Error IA."; }
         }
 
-        // LÓGICA DE REQUERIMIENTOS ROBOTIAX v2.0
-        const reqLibrary = {
-            'BIZ': "• Lista de Servicios y Precios detallados\n• Horarios de atención al público\n• Logo del negocio o marca (adjuntar a este correo)\n• Resumen breve de la visión del negocio",
-            'MKT': "• Enlaces a Redes Sociales activas\n• Enlace a perfil de Google Maps / Reseñas\n• Descripción de tu público objetivo principal",
-            'SEC_P': "• PROTECCIÓN DE DATOS ACTIVA: No solicitamos información técnica ni sensible por este medio.\n• Instrucciones de Activación: Junto con tu enlace de acceso, recibirás un instructivo privado para configurar tu protocolo de forma autónoma y segura.",
-            'SEC_B': "• PROTOCOLO EMPRESARIAL ACTIVADO.\n• No se requiere envío de datos sensibles por correo electrónico.\n• Recibirás un Manual de Configuración Cifrado junto con tu acceso para la implementación en tu servidor o red local."
-        };
-
-        // BLINDAJE ABSOLUTO: Si el ID empieza con 'sec-', forzamos la respuesta de privacidad.
-        let requirements = "";
-        if (template.startsWith('sec-')) {
-            requirements = reqLibrary['SEC_P'];
-        } else {
-            requirements = reqLibrary[pData.reqId] || reqLibrary['BIZ'];
-        }
-
+        // REGISTRO EN BASE DE DATOS
         const orderRef = await db.collection('orders_to_fulfill').add({
             orderNumber: folio,
             productName: pData.name,
-            pricePaid: pData.price,
-            currency: pData.currency,
+            isWeb: isWebProduct,
             ...details,
-            ai_instructions: vertexAnalysis,
-            processed: false,
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
 
+        // EMAIL PARA EL CLIENTE (LIMPIO DE REQUERIMIENTOS SI ES WEB)
         const clientReceiptHtml = `
-            <div style="font-family: Arial; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333; line-height: 1.6;">
-                <h2 style="color: #ff3333; text-align: center;">ORDEN DE ACTIVACIÓN CONFIRMADA</h2>
-                <p>Hola <strong>${details.negocio}</strong>, el pago por tu agente inteligente ha sido procesado con éxito.</p>
+            <div style="font-family: Arial; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
+                <h2 style="color: #2ecc71; text-align: center;">¡TODO LISTO! TU WEB ESTÁ EN PROCESO</h2>
+                <p>Hola <strong>${details.negocio}</strong>, hemos recibido tus datos correctamente.</p>
                 
-                <div style="background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; border: 1px solid #ddd;">
-                    <p style="margin: 5px 0;"><strong>FOLIO DE PEDIDO:</strong> ${folio}</p>
-                    <p style="margin: 5px 0;"><strong>PRODUCTO:</strong> ${pData.name}</p>
-                    <p style="margin: 5px 0;"><strong>TOTAL PAGADO:</strong> $${pData.price} ${pData.currency}</p>
-                    <p style="margin: 5px 0; color: #ff3333; font-weight:bold;">ESTATUS: ESPERANDO TU INFORMACIÓN</p>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
+                    <p><strong>FOLIO:</strong> ${folio}</p>
+                    <p><strong>PRODUCTO:</strong> ${pData.name}</p>
+                    <p><strong>PAGO:</strong> $${pData.price} ${pData.currency}</p>
                 </div>
 
-                <h3 style="color: #ff3333; border-bottom: 2px solid #ff3333; padding-bottom: 5px;">⚠️ ACCIÓN REQUERIDA PARA LA ENTREGA:</h3>
-                <p>Para activar tu servicio en menos de 24 horas, es <strong>INDISPENSABLE</strong> que respondas a este correo adjuntando o escribiendo la siguiente información:</p>
-                
-                <div style="background: #fffafa; border: 1px dashed #ff3333; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 15px; color: #1a1a1a; white-space: pre-wrap; font-weight: bold;">${requirements}</div>
-
-                <p style="font-size: 14px; color: #333;"><em>Nota: El plazo de activación de 24 horas inicia en el momento que recibamos tu respuesta con estos datos técnicos.</em></p>
-                
-                <p style="font-size: 13px; color: #666; margin-top: 20px;">
-                    Nuestro equipo de ingeniería iniciará la <strong>configuración técnica</strong> de tu protocolo inteligente en cuanto los datos sean validados.
+                <p><strong>¿Qué sigue ahora?</strong> Nuestros ingenieros han iniciado la configuración de tu <strong>Hosting Premium y Dominio .info</strong> (Gratis por 30 días).</p>
+                <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6;">
+                    No es necesario que hagas nada más. En un plazo de <strong>24 horas</strong> recibirás el link de tu página web ya activa.
                 </p>
-                <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; font-size: 11px; color: #999; text-align: center;">
-                    <p>Promoción: Los primeros 30 días de hosting y dominio son cortesía de Robotiax.</p>
-                    <p>Facturación: Tu CFDI será enviado a este correo entre los días 2 y 3 del mes entrante.</p>
-                </div>
+                <p style="font-size: 11px; color: #999; margin-top: 30px;">Robotiax Engine - Despliegue Automatizado</p>
             </div>
         `;
 
+        // EMAIL PARA TI (CON TODOS LOS DATOS DEL FORMULARIO)
         const adminMailHtml = `
-            <div style="font-family: sans-serif; background: #0a0a0a; color: white; padding: 30px; border: 3px solid #ff3333;">
-                <h2 style="color: #ff3333;">🚨 NUEVA ORDEN: ${folio}</h2>
-                <p><strong>CLIENTE:</strong> ${details.negocio}</p>
-                <p><strong>WHATSAPP:</strong> ${details.telefono}</p>
-                <hr style="border: 0; border-top: 1px solid #333;">
-                <h3 style="color: #00eaff;">INSTRUCCIONES DE MAQUILA (IA):</h3>
-                <div style="background: #111; padding: 15px; border: 1px solid #222; color: #ccc; font-family: monospace;">
-                    ${vertexAnalysis}
+            <div style="font-family: sans-serif; background: #0a0a0a; color: white; padding: 30px; border: 3px solid #00f2ff;">
+                <h2 style="color: #00f2ff;">🚨 NUEVA MAQUILA WEB: ${details.negocio}</h2>
+                <div style="background: #111; padding: 20px; border: 1px solid #222; line-height: 1.8;">
+                    <p><strong>Folio:</strong> ${folio}</p>
+                    <p><strong>Plantilla:</strong> ${template}</p>
+                    <hr>
+                    <p><strong>Eslogan:</strong> ${details.tagline || 'N/A'}</p>
+                    <p><strong>Headline:</strong> ${details.headline || 'N/A'}</p>
+                    <p><strong>Servicios:</strong> ${details.servicios || 'N/A'}</p>
+                    <p><strong>WhatsApp:</strong> ${details.telefono}</p>
+                    <p><strong>Email:</strong> ${details.email}</p>
+                    <p><strong>Dirección:</strong> ${details.direccion || 'N/A'}</p>
+                    <p><strong>Horarios:</strong> ${details.horarios || 'N/A'}</p>
+                    <p><strong>Costo Consulta:</strong> ${details.fee || 'N/A'}</p>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #666;">ID Firestore: ${orderRef.id}</p>
+                <p style="font-size: 10px; color: #444; margin-top:10px;">ID Firestore: ${orderRef.id}</p>
             </div>
         `;
 
-        await Promise.all([
-            getTransporter().sendMail({
-                from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
-                to: clientEmail,
-                subject: `✅ Confirmación de Pedido: ${folio}`,
-                html: clientReceiptHtml
-            }),
-            getTransporter().sendMail({
-                from: '"CENTRAL ROBOTIAX" <geniosdeltalento@gmail.com>',
+        const mailer = getTransporter();
+
+        // 1. Envío al Administrador (Tú)
+        try {
+            await mailer.sendMail({
+                from: '"ROBOTIAX CENTRAL" <geniosdeltalento@gmail.com>',
                 to: 'geniosdeltalento@gmail.com',
                 replyTo: clientEmail,
-                subject: `⚡ NUEVA MAQUILA: ${details.negocio} (${folio})`,
+                subject: `⚡ MAQUILA: ${details.negocio} (${folio})`,
                 html: adminMailHtml
-            })
-        ]);
+            });
+            console.log("📧 Correo Admin enviado con éxito.");
+        } catch (err) {
+            console.error("❌ ERROR CORREO ADMIN:", err.message);
+        }
+
+        // 2. Envío al Cliente
+        try {
+            await mailer.sendMail({
+                from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                to: clientEmail,
+                subject: `✅ Orden Confirmada: ${folio}`,
+                html: clientReceiptHtml
+            });
+            console.log("📧 Correo Cliente enviado con éxito a:", clientEmail);
+        } catch (err) {
+            console.error("❌ ERROR CORREO CLIENTE:", err.message);
+        }
 
         return res.status(200).json({ status: 'ok', folio: folio });
 
     } catch (error) {
-        console.error("ERROR EN PROCESO DE PEDIDO:", error);
-        return res.status(200).json({ status: 'error', message: 'Orden recibida con retraso en IA. Procesando manualmente.' });
+        console.error("ERROR CRÍTICO EN PROCESO DE PEDIDO:", error);
+        return res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+// Bloque de activación Vertex (Última función del archivo)
+exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, memory: "1GiB" }, async (req, res) => {
+    const { productId, clientData } = req.body;
+    
+    try {
+        const generativeModel = getVertexAI().getGenerativeModel({
+            model: modelAI,
+            generationConfig: { maxOutputTokens: 8192, temperature: 0.2 }
+        });
+
+        const prompt = `Eres el Ingeniero de Activación de Robotiax. Producto: ${productId}. Datos: ${JSON.stringify(clientData)}. Genera plan técnico en JSON.`;
+
+        const result = await generativeModel.generateContent(prompt);
+        const response = result.response.candidates[0].content.parts[0].text;
+        
+        await db.collection('activated_agents').add({
+            productId,
+            clientEmail: clientData.email,
+            config: response,
+            status: 'ready',
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        res.status(200).json({ status: "Agent Trained" });
+    } catch (error) {
+        console.error("Vertex Error:", error);
+        res.status(500).send(error.message);
     }
 });
 
@@ -404,7 +422,7 @@ exports.activateAgentWithVertex = onRequest({ cors: true }, async (req, res) => 
     // Usamos los helpers globales para consistencia y evitar fallos de conexión
     const generativeModel = getVertexAI().getGenerativeModel({
         model: modelAI,
-        generationConfig: { maxOutputTokens: 2048, temperature: 0.2 }
+        generationConfig: { maxOutputTokens: 8192, temperature: 0.2 }
     });
 
     const prompt = `

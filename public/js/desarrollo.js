@@ -12,24 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => overlay.remove(), 600);
         }, 1500);
     }
-// 1.5. Verificar Plantillas Compradas
-    const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-    owned.forEach(templateId => {
-        // Buscamos todos los botones que tengan el ID de esta plantilla
-        const buttons = document.querySelectorAll(`button[onclick*="'${templateId}'"]`);
-        buttons.forEach(btn => {
-            btn.innerHTML = '✔️ ESTADO: COMPRADA';
-            btn.style.background = '#0f172a';
-            btn.style.color = '#2ecc71';
-            btn.style.borderColor = '#2ecc71';
-            btn.disabled = true;
-            btn.onclick = null; // Desactivar el clic
-            
-            // Opcional: Marcar la tarjeta visualmente
-            const card = btn.closest('.template-card');
-            if (card) card.style.borderColor = '#2ecc71';
+// 1.5. Verificar Plantillas Compradas (Reforzado)
+    const updateOwnedButtons = () => {
+        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+        owned.forEach(templateId => {
+            // Buscamos botones que contengan el ID en su atributo onclick
+            const buttons = document.querySelectorAll(`button[onclick*="${templateId}"]`);
+            buttons.forEach(btn => {
+                btn.innerHTML = '✔️ ADQUIRIDA';
+                btn.style.setProperty('background', '#2ecc71', 'important');
+                btn.style.setProperty('color', '#ffffff', 'important');
+                btn.style.setProperty('border-color', '#2ecc71', 'important');
+                btn.style.cursor = 'default';
+                btn.disabled = true;
+                btn.onclick = null; 
+
+                const card = btn.closest('.template-card');
+                if (card) card.style.borderColor = '#2ecc71';
+            });
         });
-    });
+    };
+    
+    updateOwnedButtons();
     // 2. Escucha de Eventos Globales
     document.addEventListener('payment-completed', (e) => {
         const { templateId } = e.detail;
@@ -75,15 +79,8 @@ window.app.ui = {
         if (window.app.payments.checkAccess(templateId)) {
             this.openEditor(templateId, templateName);
         } else {
-            const modal = document.getElementById('payment-modal-overlay');
-            const nameLabel = document.getElementById('modal-template-name');
-            if (nameLabel) nameLabel.textContent = templateName;
-            if (modal) modal.classList.add('visible');
-            // LIMPIEZA NUCLEAR DEL CONTENEDOR PARA EVITAR ERRORES DE SDK
-            const container = document.querySelector('#modal-paypal-container');
-            if (container) container.innerHTML = '<div style="color:white; text-align:center; padding:20px;">Cargando búnker de pago...</div>';
-            
-            window.app.payments.initPaypalButton(templateId, '#modal-paypal-container');
+            // DELEGACIÓN TOTAL A PAYMENTS.JS PARA ASEGURAR DATOS
+            window.app.payments.openModal(templateId, templateName, 99, 'MXN');
         }
     },
 
