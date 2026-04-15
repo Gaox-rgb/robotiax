@@ -5,23 +5,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadMoreBtn = document.getElementById('btn-load-more-sec');
 
     const renderSecurity = (filterTop = true) => {
-        const items = window.app.catalog.security.filter(item => item.top === filterTop);
+        // Lógica de segmentación: Top 6 o Resto
+        const items = filterTop 
+            ? window.app.catalog.security.slice(0, 6) 
+            : window.app.catalog.security.slice(6);
         
         items.forEach(node => {
-            const isOwned = localStorage.getItem(`owned_${node.id}`) === 'true';
             const card = document.createElement('div');
             card.className = 'node-card';
             card.innerHTML = `
-                <div class="node-icon">${node.icon}</div>
+                <div class="node-icon">${node.icon || '🛡️'}</div>
                 <h3>${node.name}</h3>
-                ${isOwned ? 
-                    `<div style="background:rgba(0,234,255,0.1); color:#00eaff; border:1px dashed #00eaff; padding:12px; text-align:center; font-family:'VT323'; font-size:1.2rem; letter-spacing:1px;">ADQUIRIDO / EN COLA DE ACTIVACIÓN</div>` :
-                    `<a href="#" class="btn-node-purchase" 
-                       onclick="window.app.ui.requestSecPurchase('${node.id}')">COMPRAR ESCUDO</a>`
-                }
+                <p style="color:#888; font-family:'Share Tech Mono'; font-size:0.9rem; margin-bottom:15px;">${node.desc || ''}</p>
+                <a href="#" class="btn-node-purchase" 
+                   onclick="window.app.ui.requestSecPurchase('${node.id}'); return false;">COMPRAR ESCUDO</a>
                 <div class="node-footer">
-                    <a href="arsenal-completo.html" class="node-details-link">[ LISTADO MAESTRO ]</a>
                     <div class="node-price">$${node.price} ${node.currency}</div>
+                    <div style="color:#444; font-size:0.7rem;">ID: ${node.id}</div>
                 </div>
             `;
             secContainer.appendChild(card);
@@ -31,11 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Carga inicial (Top 6)
     renderSecurity(true);
 
-    // Expansión del Búnker
-    loadMoreBtn.addEventListener('click', () => {
-        renderSecurity(false);
-        loadMoreBtn.style.display = 'none';
-    });
+    // La expansión ahora se maneja por enlace directo a arsenal-completo.html
+    // Se elimina el listener para evitar el error de elemento nulo
 });
 
 // PUENTE CON EL MOTOR DE PAGOS
@@ -53,7 +50,7 @@ window.app.ui.requestSecPurchase = (productId) => {
     // Abrir Modal de PayPal
     document.getElementById('modal-template-name').textContent = secData.name;
     const overlay = document.getElementById('payment-modal-overlay');
-    if(overlay) overlay.style.setProperty('display', 'flex', 'important');
+    if(overlay) overlay.classList.add('visible');
     
     window.app.payments.initPaypalButton(productId, '#modal-paypal-container');
 };

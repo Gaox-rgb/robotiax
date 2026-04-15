@@ -1,61 +1,76 @@
 /**
- * payments.js - Versión Corregida (Context Safe)
+ * payments.js - Motor Maestro de Pagos Robotiax
+ * Versión Certificada 4.2 - Sin Errores de Sintaxis
  */
+window.app = window.app || {};
+
 window.app.payments = {
     endpoints: {
         create: 'https://createpaypalorder-bh64qprvqa-uc.a.run.app',
         capture: 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app'
     },
 
-openModal: function(id, name, price, currency) {
+    /**
+     * Abre el modal y prepara el terreno para PayPal
+     */
+    openModal: function(id, name, price, currency) {
+        console.log("Preparando pasarela para:", id);
         const modal = document.getElementById('payment-modal-overlay');
         const title = document.getElementById('modal-template-name');
         
         window.app.activePurchase = { id, name, price, currency };
 
-        if(title) title.textContent = name;
-        if(modal) modal.classList.add('visible');
+        if (title) title.textContent = name;
+        if (modal) modal.classList.add('visible');
         
-        this.renderOfficialButtons();
+        // Determinar contenedor según la página (desarrollo-web vs las otras)
+        const container = document.getElementById('paypal-actual-button') ? '#paypal-actual-button' : '#modal-paypal-container';
+        this.initPaypalButton(id, container);
     },
 
-    renderOfficialButtons: function() {
-        const btnBox = document.getElementById('paypal-actual-button');
+    /**
+     * Renderiza el botón de PayPal oficial
+     */
+    initPaypalButton: function(productId, containerSelector) {
+        const targetId = containerSelector.replace('#', '');
+        const btnBox = document.getElementById(targetId);
         if (!btnBox) return;
         
-        btnBox.innerHTML = '<div id="sdk-loading" style="color:#00f2ff; text-align:center; padding:20px; font-family:Rajdhani;">INICIANDO TERMINAL SEGURA...</div>';
+        btnBox.innerHTML = '<div style="text-align:center; padding:20px;"><div style="border:3px solid #333; border-top:3px solid #00f2ff; border-radius:50%; width:30px; height:30px; animation:spinPay 1s linear infinite; margin:0 auto 15px;"></div><p style="font-family:Rajdhani; color:#00f2ff; font-size:0.8rem; letter-spacing:2px;">SALTANDO A PASARELA...</p></div><style>@keyframes spinPay{to{transform:rotate(360deg)}}</style>';
 
-        const { id, price, currency } = window.app.activePurchase;
+        // Buscar el producto en el catálogo si no está en la variable global
+        let product = window.app.activePurchase || 
+                      window.app.catalog.ia.find(p => p.id === productId) || 
+                      window.app.catalog.security.find(p => p.id === productId);
 
-        paypal.Buttons({
-            style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
-            createOrder: (data, actions) => {
-                return fetch(this.endpoints.create, { 
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId: id, amount: price, currency: currency })
-                }).then(res => res.json()).then(d => d.orderID);
-            },
-            onApprove: (data, actions) => {
-                return fetch(this.endpoints.capture, {
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ orderID: data.orderID, productId: id })
-                }).then(res => res.json()).then(res => {
-                    if (res.status === 'success') {
-                        this.closeModal();
-                        window.app.editor.init(id);
-                    }
-                });
+        if (!product) {
+            console.error("❌ Producto no encontrado en el catálogo:", productId);
+            btnBox.innerHTML = '<p style="color:red; font-size:0.7rem;">ERROR: PRODUCTO NO IDENTIFICADO</p>';
+            return;
+        }
+
+        fetch(this.endpoints.create, { 
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                productId: product.id, 
+                amount: product.price, 
+                currency: product.currency,
+                returnPage: window.location.pathname.split('/').pop() // Captura 'soluciones-ia.html', 'seguridad.html', etc.
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.approveUrl) {
+                localStorage.setItem('pending_purchase_id', product.id);
+                window.location.href = data.approveUrl;
             }
-        }).render('#paypal-actual-button').then(() => {
-            const loading = document.getElementById('sdk-loading');
-            if (loading) loading.remove();
-        });
+        })
+        .catch(err => { btnBox.innerHTML = '<p style="color:red; font-size:0.7rem;">ERROR DE CONEXIÓN</p>'; });
     },
 
     resetUI: function() {
-        const btn = document.getElementById('paypal-actual-button');
+        const btn = document.getElementById('paypal-actual-button') || document.getElementById('modal-paypal-container');
         if (btn) btn.innerHTML = '';
     },
 
@@ -65,16 +80,25 @@ openModal: function(id, name, price, currency) {
         this.resetUI();
     },
 
-    // Bridge para compatibilidad con desarrollo.js
-    initPaypalButton: function() {
-        this.resetUI();
-    },
-
-    saveAccess: function(templateId, token) {
-        localStorage.setItem(`access_${templateId}`, token);
-    },
-
     checkAccess: function(templateId) {
-        return localStorage.getItem(`access_${templateId}`) !== null;
+        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+        return owned.includes(templateId);
+    },
+
+    handleReturn: function() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('status') === 'success') {
+            const pendingId = localStorage.getItem('pending_purchase_id');
+            if (pendingId) {
+                const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+                if (!owned.includes(pendingId)) owned.push(pendingId);
+                localStorage.setItem('makumoto_owned', JSON.stringify(owned));
+                localStorage.removeItem('pending_purchase_id');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                setTimeout(() => { if(window.app.ui) window.app.ui.showSuccessMessage(pendingId); }, 1000);
+            }
+        }
     }
 };
+
+window.app.payments.handleReturn();

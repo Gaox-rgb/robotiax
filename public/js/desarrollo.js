@@ -33,13 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
     
-    updateOwnedButtons();
+
     // 2. Escucha de Eventos Globales
-    document.addEventListener('payment-completed', (e) => {
-        const { templateId } = e.detail;
-        window.app.ui.closeModal();
-        window.app.ui.showSuccessMessage(templateId);
-        window.app.editor.init(templateId);
+    updateOwnedButtons();
+    
+    // Escuchador de cambios en localStorage (Para marcar como adquirido sin refrescar si es necesario)
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'makumoto_owned') updateOwnedButtons();
     });
 });
 
@@ -76,11 +76,14 @@ window.app.ui = {
         this.selectedTemplate.id = templateId;
         this.selectedTemplate.name = templateName;
 
-        if (window.app.payments.checkAccess(templateId)) {
+        const payments = window.app.payments;
+        if (!payments) return console.error("Error: payments.js no cargado.");
+
+        if (payments.checkAccess(templateId)) {
             this.openEditor(templateId, templateName);
         } else {
-            // DELEGACIÓN TOTAL A PAYMENTS.JS PARA ASEGURAR DATOS
-            window.app.payments.openModal(templateId, templateName, 99, 'MXN');
+            // El precio en MXN es fijo para desarrollo-web según briefing
+            payments.openModal(templateId, templateName, 99, 'MXN');
         }
     },
 

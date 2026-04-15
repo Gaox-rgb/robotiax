@@ -158,6 +158,8 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
         // Aseguramos la captura de datos del body para evitar errores de conexión
         const productId = req.body.productId;
 
+        const returnPage = req.body.returnPage || 'index.html';
+
         if (!productId) {
             return res.status(400).send("Falta ID de producto.");
         }
@@ -179,13 +181,21 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
                     currency_code: productData.currency,
                     value: productData.price.toString()
                 }
-            }]
+            }],
+            application_context: {
+                return_url: `${BASE_URL}/${returnPage}?status=success`,
+                cancel_url: `${BASE_URL}/${returnPage}?status=cancel`,
+                landing_page: 'BILLING', // <--- ESTO OBLIGA A MOSTRAR TARJETAS PRIMERO
+                user_action: 'PAY_NOW',
+                shipping_preference: 'NO_SHIPPING'
+            }
         });
 
         try {
             const order = await client().execute(request);
             console.log("Orden de PayPal creada:", order.result.id);
-            res.status(200).json({ orderID: order.result.id });
+            const approveUrl = order.result.links.find(link => link.rel === 'approve').href;
+            res.status(200).json({ orderID: order.result.id, approveUrl: approveUrl });
         } catch (error) {
             console.error("Error al crear la orden de PayPal:", error);
             res.status(500).send("Error al crear la orden de pago.");
