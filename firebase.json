@@ -3,12 +3,10 @@
     {
       "source": "functions",
       "codebase": "default",
-      "disallowLegacyRuntimeConfig": true,
       "ignore": [
         "node_modules",
         ".git",
         "firebase-debug.log",
-        "firebase-debug.*.log",
         "*.local"
       ]
     }
@@ -19,7 +17,23 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    "rewrites": [
+      {
+        "source": "/agente/**",
+        "destination": "/agente.html"
+      },
+      {
+        "source": "/agente",
+        "destination": "/agente.html"
+      },
+      {
+        "source": "/maquila/:cliente/**",
+        "destination": "/maquila/:cliente/index.html"
+      }
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
   },
   "storage": {
     "rules": "storage.rules"

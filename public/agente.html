@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA OPERATIVO | ROBOTIAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto+Mono:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-color: #00f2ff;
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --border-color: #1a1a1a;
+            --user-msg-bg: #002224;
+            --agent-msg-bg: #111111;
+        }
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: calc(100% - 450px);
+            padding: 40px;
+        }
+        .hud {
+            border-left: 1px solid var(--accent-color);
+            padding-left: 20px;
+        }
+        .hud .status-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            color: var(--accent-color);
+        }
+        .hud .client-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--text-color);
+            text-transform: uppercase;
+        }
+        .chat-interface {
+            width: 450px;
+            height: 100vh;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+        #messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
+        .user-message {
+            background-color: var(--user-msg-bg);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .agent-message {
+            background-color: var(--agent-msg-bg);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .typing-indicator {
+            align-self: flex-start;
+        }
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        #chat-form {
+            display: flex;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        #user-input {
+            flex-grow: 1;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #user-input:focus {
+            border-color: var(--accent-color);
+        }
+        #chat-form button {
+            background: var(--accent-color);
+            border: none;
+            color: var(--bg-color);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+        #chat-form button:hover {
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="hud">
+            <div class="status-label">[ ESTATUS: <span id="status-text">SISTEMA ACTIVO</span> ]</div>
+            <div class="client-name">ROBOTIAX SALES ARCHITECT</div>
+        </div>
+    </div>
+
+    <div class="chat-interface">
+        <div id="messages"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Inicia la consulta..." autocomplete="off">
+            <button type="submit">ENVIAR</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('user-input');
+        const messagesContainer = document.getElementById('messages');
+        
+        // URL generada tras el deploy de Firebase
+        // URL PARA PRUEBAS LOCALES (EMULADOR)
+        const cloudFunctionUrl = 'http://localhost:5001/robotiax/us-central1/getSalesAgentResponse'; 
+        
+        // URL PARA PRODUCCIÓN (DESCOMENTAR CUANDO SUBAS)
+        // const cloudFunctionUrl = 'https://us-central1-robotiax.cloudfunctions.net/getSalesAgentResponse'; 
+
+        // MEMORIA LOCAL DEL CHAT
+        let conversationHistory = [];
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = messagesContainer.querySelector('.typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userQuery = input.value.trim();
+            if (!userQuery) return;
+
+            addMessage(userQuery, 'user');
+            input.value = '';
+            showTypingIndicator();
+
+            try {
+                console.log('>>> [FRONTEND] Llamando a:', cloudFunctionUrl);
+                
+                const response = await fetch(cloudFunctionUrl, {
+                    method: 'POST',
+                    mode: 'cors', // Forzamos modo CORS
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        userQuery: userQuery,
+                        chatHistory: conversationHistory 
+                    })
+                });
+
+                console.log('>>> [FRONTEND] Respuesta recibida status:', response.status);
+
+                const data = await response.json();
+                
+                // Quitamos los puntos inmediatamente después de recibir CUALQUIER respuesta
+                removeTypingIndicator();
+
+                if (!response.ok) {
+                    addMessage(`⚠️ ERROR: ${data.response || data.message || 'Error en el servidor'}`, 'agent');
+                    return;
+                }
+
+                addMessage(data.response, 'agent');
+
+                // ACTUALIZAR MEMORIA: Guardamos la ida y la vuelta en formato Vertex AI
+                conversationHistory.push({ role: 'user', parts: [{ text: userQuery }] });
+                conversationHistory.push({ role: 'model', parts: [{ text: data.response }] });
+
+            } catch (error) {
+                console.error('Error al conectar con el agente:', error);
+                removeTypingIndicator();
+                addMessage(`❌ ERROR CRÍTICO: ${error.message}`, 'agent');
+            }
+        });
+
+        // Mensaje de bienvenida inicial
+        window.addEventListener('load', () => {
+            addMessage('Sistema inicializado. Soy el Arquitecto de Ventas de Robotiax. ¿Qué desafío tecnológico enfrentas hoy?', 'agent');
+        });
+    </script>
+</body>
+</html>

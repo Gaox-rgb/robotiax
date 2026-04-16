@@ -281,7 +281,53 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
         res.status(500).send({ status: "error", message: error.message });
     }
 });
-  
+
+exports.getSalesAgentResponse = onRequest({ 
+    timeoutSeconds: 120, 
+    memory: "1GiB" 
+}, async (req, res) => {
+    // Usamos el middleware cors (línea 9) que ya maneja Preflight y Headers automáticamente
+    return cors(req, res, async () => {
+        try {
+            const { userQuery, chatHistory = [] } = req.body;
+            if (!userQuery) return res.status(400).json({ response: "La consulta está vacía." });
+
+            console.log(">>> [BACKEND] Procesando con Gemini 2.5 Flash...");
+
+            const vAI = getVertexAI();
+            const model = vAI.getGenerativeModel({ 
+                model: modelAI,
+                generationConfig: { maxOutputTokens: 2048, temperature: 0.3 }
+            });
+
+            const dataStorePath = `projects/robotiax/locations/global/collections/default_collection/dataStores/catalogo-maestro-robotiax_1716345604104`;
+
+            // Mapeo limpio para asegurar que Vertex reciba el formato correcto
+            const contents = chatHistory.length > 0 
+                ? [...chatHistory, { role: 'user', parts: [{ text: userQuery }] }]
+                : [{ role: 'user', parts: [{ text: userQuery }] }];
+
+            const result = await model.generateContent({
+                contents: contents,
+                tools: [{ retrieval: { vertexAiSearch: { datastore: dataStorePath } } }],
+                systemInstruction: { 
+                    parts: [{ text: "Eres Robotiax Sales Architect. Usa el catálogo de Robotiax para responder de forma tecnológica y breve." }] 
+                }
+            });
+
+            const responseText = result.response.candidates[0].content.parts[0].text;
+            return res.status(200).json({ response: responseText });
+
+        } catch (error) {
+            console.error(">>> [ERROR]:", error.message);
+            // Devolvemos 200 con el error para evitar que el fetch del front lance un Failed to fetch genérico
+            return res.status(200).json({ 
+                response: "⚠️ Error de conexión: " + error.message 
+            });
+        }
+    });
+});
+
 exports.submitFinalOrder = onRequest({ 
     cors: true, timeoutSeconds: 120, memory: "1GiB"     
 }, async (req, res) => {
@@ -410,46 +456,6 @@ exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, m
         const result = await generativeModel.generateContent(prompt);
         const response = result.response.candidates[0].content.parts[0].text;
         
-        await db.collection('activated_agents').add({
-            productId,
-            clientEmail: clientData.email,
-            config: response,
-            status: 'ready',
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-        });
-
-        res.status(200).json({ status: "Agent Trained" });
-    } catch (error) {
-        console.error("Vertex Error:", error);
-        res.status(500).send(error.message);
-    }
-});
-
-// Bloque de activación Vertex
-exports.activateAgentWithVertex = onRequest({ cors: true }, async (req, res) => {
-    const { productId, clientData } = req.body;
-    
-    // Usamos los helpers globales para consistencia y evitar fallos de conexión
-    const generativeModel = getVertexAI().getGenerativeModel({
-        model: modelAI,
-        generationConfig: { maxOutputTokens: 8192, temperature: 0.2 }
-    });
-
-    const prompt = `
-        Eres el Ingeniero de Activación de Robotiax. 
-        Se ha comprado el producto: ${productId}.
-        Datos del cliente: ${JSON.stringify(clientData)}.
-        
-        Misión: Genera un plan de configuración técnica y un mensaje de bienvenida 
-        personalizado que mencione los beneficios específicos para su negocio.
-        Responde en formato JSON para ser procesado por el sistema de entrega.
-    `;
-
-    try {
-        const result = await generativeModel.generateContent(prompt);
-        const response = result.response.candidates[0].content.parts[0].text;
-        
-        // Guardar la "mente" del agente personalizada en Firestore
         await db.collection('activated_agents').add({
             productId,
             clientEmail: clientData.email,
