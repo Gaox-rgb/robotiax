@@ -19,13 +19,48 @@
             background: var(--bg-color);
             color: var(--text-color);
             font-family: 'Roboto', sans-serif;
-            display: flex;
+            display: grid;
+            grid-template-columns: 40% 60%;
             height: 100vh;
             overflow: hidden;
         }
         .sidebar {
-            width: calc(100% - 450px);
             padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            border-right: 1px solid var(--border-color);
+            background: radial-gradient(circle at top left, #00151a 0%, #000 70%);
+        }
+        /* Contenedores de Datos Dinámicos */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.5s ease;
+        }
+        .dashboard-card.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        }
+        .card-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .card-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        .value-neon { color: var(--accent-color); text-shadow: 0 0 10px var(--accent-color); }
+
+        @media (max-width: 900px) {
+            body { grid-template-columns: 100%; grid-template-rows: auto 1fr; }
+            .sidebar { padding: 20px; border-right: none; border-bottom: 1px solid var(--border-color); }
         }
         .hud {
             border-left: 1px solid var(--accent-color);
@@ -140,6 +175,21 @@
             <div class="status-label">[ ESTATUS: <span id="status-text">SISTEMA ACTIVO</span> ]</div>
             <div class="client-name">ROBOTIAX SALES ARCHITECT</div>
         </div>
+
+        <div class="dashboard-card" id="card-service">
+            <div class="card-label">Protocolo Sugerido</div>
+            <div class="card-value" id="val-service">---</div>
+        </div>
+
+        <div class="dashboard-card" id="card-investment">
+            <div class="card-label">Folio de Inversión</div>
+            <div class="card-value value-neon" id="val-investment">---</div>
+        </div>
+
+        <div class="dashboard-card" id="card-time">
+            <div class="card-label">Tiempo de Maquila</div>
+            <div class="card-value" id="val-time">---</div>
+        </div>
     </div>
 
     <div class="chat-interface">
@@ -168,11 +218,22 @@
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
-            // Procesamiento básico de Markdown (Negritas y Saltos de línea)
-            let formattedText = text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Negritas
-                .replace(/^\* (.*$)/gim, '• $1') // Listas básicas
-                .replace(/\n/g, '<br>'); // Saltos de línea
+            // Extracción de metadatos para el Dashboard (Pilar 3)
+            const serviceMatch = text.match(/\[SERVICIO:\s*(.*?)\]/i);
+            const priceMatch = text.match(/\[PRECIO:\s*(.*?)\]/i);
+            const timeMatch = text.match(/\[TIEMPO:\s*(.*?)\]/i);
+
+            if (serviceMatch) { document.getElementById('val-service').textContent = serviceMatch[1]; document.getElementById('card-service').classList.add('active'); }
+            if (priceMatch) { document.getElementById('val-investment').textContent = priceMatch[1]; document.getElementById('card-investment').classList.add('active'); }
+            if (timeMatch) { document.getElementById('val-time').textContent = timeMatch[1]; document.getElementById('card-time').classList.add('active'); }
+
+            // Limpiar etiquetas del texto visible
+            let cleanText = text.replace(/\[.*?\]/g, '').trim();
+
+            let formattedText = cleanText
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^\* (.*$)/gim, '• $1')
+                .replace(/\n/g, '<br>');
 
             messageDiv.innerHTML = formattedText;
             messagesContainer.appendChild(messageDiv);

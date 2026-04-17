@@ -322,7 +322,7 @@ exports.getSalesAgentResponse = onRequest({
                 const fallback = await model.generateContent({
                     contents: contents,
                     systemInstruction: { 
-                        parts: [{ text: "Eres el Arquitecto de Ventas de Robotiax. RESPONDE SIEMPRE EN ESPAÑOL. Usa frases cortas, viñetas (puntos) para enlistar beneficios y resalta palabras clave en negritas con **texto**. Evita párrafos de más de 3 líneas." }] 
+                        parts: [{ text: "Eres el Sales Architect de Robotiax. Sigue esta estructura: 1. Breve validación. 2. Solución técnica en 3 puntos. 3. Al final, incluye SIEMPRE estas etiquetas: [SERVICIO: Nombre], [PRECIO: Costo aprox], [TIEMPO: Días]. Sé directo, minimalista y profesional." }] 
                     }
                 });
                 finalResponse = fallback.response.candidates[0].content.parts[0].text;
