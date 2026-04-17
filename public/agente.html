@@ -9,20 +9,34 @@
         :root {
             --accent-color: #00f2ff;
             --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #1a1a1a;
-            --user-msg-bg: #002224;
-            --agent-msg-bg: #111111;
+            --text-color: #e0e0e0;
+            --border-color: #00f2ff33;
+            --user-msg-bg: #003336;
+            --agent-msg-bg: #0a0a0a;
+            --neon-glow: 0 0 10px rgba(0, 242, 255, 0.4);
+        }
+        /* Efecto de Scanlines Retro */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 1000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.15;
         }
         body {
             margin: 0;
             background: var(--bg-color);
             color: var(--text-color);
             font-family: 'Roboto', sans-serif;
-            display: grid;
-            grid-template-columns: 40% 60%;
-            height: 100vh;
+            display: flex;
+            height: 100dvh;
+            width: 100vw;
             overflow: hidden;
+            flex-direction: row;
         }
         .sidebar {
             padding: 40px;
@@ -32,17 +46,24 @@
             border-right: 1px solid var(--border-color);
             background: radial-gradient(circle at top left, #00151a 0%, #000 70%);
         }
-        /* Contenedores de Datos Dinámicos */
         .dashboard-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 242, 255, 0.1);
             padding: 20px;
             border-radius: 8px;
-            transition: all 0.5s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dashboard-card.active {
             border-color: var(--accent-color);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            background: rgba(0, 242, 255, 0.05);
+            transform: scale(1.02);
+            animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
         }
         .card-label {
             font-family: 'Roboto Mono', monospace;
@@ -58,9 +79,49 @@
         }
         .value-neon { color: var(--accent-color); text-shadow: 0 0 10px var(--accent-color); }
 
+        .mobile-only { display: none; }
+
         @media (max-width: 900px) {
-            body { grid-template-columns: 100%; grid-template-rows: auto 1fr; }
-            .sidebar { padding: 20px; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .mobile-only { display: block; }
+            body { grid-template-columns: 100%; }
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                width: 80%;
+                height: 100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+                background: #000;
+                box-shadow: 10px 0 20px rgba(0,0,0,0.5);
+            }
+            .sidebar.show { left: 0; }
+            .chat-header {
+                padding: 15px 20px;
+                background: #0a0a0a;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                height: 60px;
+                box-sizing: border-box;
+            }
+            #open-menu {
+                color: var(--accent-color);
+                font-family: 'Orbitron', sans-serif;
+                font-size: 0.8rem;
+                cursor: pointer;
+            }
+            .chat-interface {
+                height: 100dvh !important; /* Altura dinámica para móviles */
+            }
+            #close-menu {
+                position: absolute;
+                right: 20px;
+                top: 20px;
+                font-size: 1.5rem;
+                color: var(--accent-color);
+                cursor: pointer;
+            }
         }
         .hud {
             border-left: 1px solid var(--accent-color);
@@ -81,28 +142,47 @@
             text-transform: uppercase;
         }
         .chat-interface {
-            width: 450px;
-            height: 100vh;
-            border-left: 1px solid var(--border-color);
+            width: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
             background-color: var(--bg-color);
+            overflow: hidden;
+            position: relative;
         }
         #messages {
-            flex-grow: 1;
+            flex: 1;
             overflow-y: auto;
             padding: 20px;
+            padding-bottom: 100px; /* Espacio para el form */
             display: flex;
             flex-direction: column;
             gap: 15px;
+            -webkit-overflow-scrolling: touch;
         }
         .message {
             max-width: 85%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            line-height: 1.5;
-            font-size: 0.95rem;
+            padding: 15px;
+            border-radius: 4px;
+            line-height: 1.6;
+            font-size: 0.9rem;
             white-space: pre-wrap;
+            border-left: 2px solid transparent;
+            font-family: 'Roboto Mono', monospace;
+            box-shadow: var(--neon-glow);
+        }
+        .agent-message {
+            background-color: var(--agent-msg-bg);
+            align-self: flex-start;
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+        .user-message {
+            background-color: var(--user-msg-bg);
+            align-self: flex-end;
+            border-right: 3px solid #ff00ff;
+            color: #fff;
         }
         .user-message {
             background-color: var(--user-msg-bg);
@@ -135,10 +215,30 @@
         #chat-form {
             display: flex;
             padding: 20px;
-            border-top: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--accent-color);
+            z-index: 1100;
+            box-sizing: border-box;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        }
+        @media (max-width: 900px) {
+            #chat-form { 
+                left: 0; 
+                width: 100vw;
+            }
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 120px; /* Margen para el input fixed */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         #user-input {
-            flex-grow: 1;
+            flex: 1;
             background: transparent;
             border: 1px solid var(--border-color);
             border-radius: 20px;
@@ -174,6 +274,7 @@
         <div class="hud">
             <div class="status-label">[ ESTATUS: <span id="status-text">SISTEMA ACTIVO</span> ]</div>
             <div class="client-name">ROBOTIAX SALES ARCHITECT</div>
+            <div id="close-menu" class="mobile-only">✕</div>
         </div>
 
         <div class="dashboard-card" id="card-service">
@@ -193,6 +294,9 @@
     </div>
 
     <div class="chat-interface">
+        <div class="chat-header mobile-only">
+            <div id="open-menu">☰ DASHBOARD</div>
+        </div>
         <div id="messages"></div>
         <form id="chat-form">
             <input type="text" id="user-input" placeholder="Inicia la consulta..." autocomplete="off">
@@ -205,34 +309,61 @@
         const input = document.getElementById('user-input');
         const messagesContainer = document.getElementById('messages');
         
-        // URL generada tras el deploy de Firebase
-        // URL PARA PRUEBAS LOCALES (EMULADOR)
-        const cloudFunctionUrl = 'http://localhost:5001/robotiax/us-central1/getSalesAgentResponse'; 
-        
-        // URL PARA PRODUCCIÓN (DESCOMENTAR CUANDO SUBAS)
-        // const cloudFunctionUrl = 'https://us-central1-robotiax.cloudfunctions.net/getSalesAgentResponse'; 
+        // Detecta si estás en local (emulador) o en producción
+        const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const cloudFunctionUrl = isLocal 
+            ? 'http://127.0.0.1:5001/robotiax/us-central1/getSalesAgentResponse' 
+            : 'https://us-central1-robotiax.cloudfunctions.net/getSalesAgentResponse';
 
-        // MEMORIA LOCAL DEL CHAT
+        const RULES = { MAX_DIAGNOSIS_WORDS: 15, REQUIRED_PILARS: ['DIAGNÓSTICO', 'SOLUCIÓN', 'METADATOS'] };
+
+        const CATALOGO_MAESTRO = {
+            WEB_99_MXN: ["Bienes Raíces 01", "Cirujano Plástico 01", "Clínica Médica 01", "Consultoría 01", "Consultoría 02", "Consultoría Elite 03", "Contabilidad 01", "E-Learning 01", "Academy 02", "Corporativo 01", "Fitness 01", "Power Gym 02", "Industrial 01", "Influencer 01", "Creator 02", "Legal Services 01", "Médico Especialista 01", "Cyber Security 01", "Wellness Spa 01", "Tech Global 01", "Sales Landing 01", "Yoga Studio 01"],
+            IA_USD: {
+                "Asistente Contable IA": 49, "Asistente Legal": 79, "Arquitecto Proyección": 89, "Sintetizador Nómina": 59, "Radar Costos Ocultos": 49,
+                "Gestor Gastos Voz": 20, "Inspirador Táctico": 20, "Analista Rentabilidad": 69, "Interventor Caja Chica": 39, "Consultor Inversión": 99,
+                "Chronos AI": 20, "Monitor Rendimiento": 59, "Sintetizador Instrucciones": 20, "Vigía Calidad": 79, "Coordinador Suministros": 49,
+                "Gestor Correcciones": 69, "Seguimiento Post-Servicio": 39, "Optimizador Logística": 89, "Radar Mantenimiento": 59, "Mando Crisis Operativa": 129,
+                "Sales Sniper": 20, "Avatar Ventas 24/7": 149, "Arquitecto Identidad": 69, "Radar Reseñas": 20, "Campañas Guerrilla": 59,
+                "Socio Expansión": 199, "Máquina Retención": 89, "Analista Sentimiento": 49, "Lanzador Ofertas": 39, "Portal Influencia": 129
+            },
+            SECURITY_USD: {
+                "Protocolo Fantasma": 20, "Bóveda Herencia": 49, "Analista Ingeniería Social": 39, "Escudo Anti-Phishing": 20, "Limpiador Metadatos": 20,
+                "Escudo Deepfake": 149, "Bóveda Identidad AI": 20, "Caja Fuerte Zero-Knowledge": 59, "Monitor Perímetro IoT": 79, "Bot Anti-Extorsión": 99,
+                "Inmunizador POS": 129, "Vigía Lealtad": 89, "Auditor Red Local": 49, "Escudo Facturación": 79, "Backup Táctico": 149,
+                "Asistente Privacidad": 39, "Escáner Vulnerabilidad": 69, "Acceso Biométrico IA": 199, "Filtro Seguridad Interna": 59, "Asesor Ransomware": 299,
+                "SOC IA Central": 499, "Cazador Amenaza Interna": 249, "Honey-Pot": 179, "Cifrado de Mando": 399, "Auditor APIs": 159,
+                "Simulador Desastres": 299, "Gobernanza Archivos": 189, "Protector Cloud": 349, "Identidad Unificada IAM": 229, "Reporte Resiliencia": 149
+            }
+        };
+
         let conversationHistory = [];
 
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
-            // Extracción de metadatos para el Dashboard (Pilar 3)
-            const serviceMatch = text.match(/\[SERVICIO:\s*(.*?)\]/i);
-            const priceMatch = text.match(/\[PRECIO:\s*(.*?)\]/i);
-            const timeMatch = text.match(/\[TIEMPO:\s*(.*?)\]/i);
+            if (sender === 'agent') {
+                const extract = (k) => {
+                    const m = text.match(new RegExp(`\\[${k}:\\s*(.*?)\\]`, 'i'));
+                    return m ? m[1].trim() : null;
+                };
 
-            if (serviceMatch) { document.getElementById('val-service').textContent = serviceMatch[1]; document.getElementById('card-service').classList.add('active'); }
-            if (priceMatch) { document.getElementById('val-investment').textContent = priceMatch[1]; document.getElementById('card-investment').classList.add('active'); }
-            if (timeMatch) { document.getElementById('val-time').textContent = timeMatch[1]; document.getElementById('card-time').classList.add('active'); }
+                const s = extract('SERVICIO'), p = extract('PRECIO'), t = extract('TIEMPO');
+                if (s) { document.getElementById('val-service').innerText = s; document.getElementById('card-service').classList.add('active'); }
+                if (p) { document.getElementById('val-investment').innerText = p; document.getElementById('card-investment').classList.add('active'); }
+                if (t) { document.getElementById('val-time').innerText = t; document.getElementById('card-time').classList.add('active'); }
+            }
 
-            // Limpiar etiquetas del texto visible
-            let cleanText = text.replace(/\[.*?\]/g, '').trim();
+            let cleanText = text
+                .replace(/\[SERVICIO:.*?\]/gi, '')
+                .replace(/\[PRECIO:.*?\]/gi, '')
+                .replace(/\[TIEMPO:.*?\]/gi, '')
+                .replace(/METADATOS:/gi, '')
+                .trim();
 
             let formattedText = cleanText
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/^\* (.*$)/gim, '• $1')
+                .replace(/^\s*[•\-\*]\s+/gm, '• ')
                 .replace(/\n/g, '<br>');
 
             messageDiv.innerHTML = formattedText;
@@ -269,10 +400,8 @@
                 
                 const response = await fetch(cloudFunctionUrl, {
                     method: 'POST',
-                    mode: 'cors', // Forzamos modo CORS
                     headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ 
                         userQuery: userQuery,
@@ -304,6 +433,14 @@
                 addMessage(`❌ ERROR CRÍTICO: ${error.message}`, 'agent');
             }
         });
+
+        // CONTROL DE MENÚ MÓVIL
+        const sidebar = document.querySelector('.sidebar');
+        const openMenu = document.getElementById('open-menu');
+        const closeMenu = document.getElementById('close-menu');
+
+        openMenu.addEventListener('click', () => sidebar.classList.add('show'));
+        closeMenu.addEventListener('click', () => sidebar.classList.remove('show'));
 
         // Mensaje de bienvenida inicial
         window.addEventListener('load', () => {

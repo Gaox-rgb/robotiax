@@ -284,59 +284,45 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
 
 exports.getSalesAgentResponse = onRequest({ 
     timeoutSeconds: 120, 
-    memory: "1GiB" 
+    memory: "1GiB",
+    cors: true 
 }, async (req, res) => {
-    return cors(req, res, async () => {
-        try {
-            const { userQuery, chatHistory = [] } = req.body;
-            if (!userQuery) return res.status(400).json({ response: "La consulta está vacía." });
+    try {
+        if (req.method !== 'POST') return res.status(405).send('Use POST');
+        const { userQuery, chatHistory = [] } = req.body;
+        if (!userQuery) return res.status(400).json({ response: "La consulta está vacía." });
 
-            const vAI = getVertexAI();
-            const model = vAI.getGenerativeModel({ 
-                model: modelAI,
-                generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
-            });
+        const vAI = getVertexAI();
+        const model = vAI.getGenerativeModel({ 
+            model: modelAI,
+            generationConfig: { maxOutputTokens: 1200, temperature: 0.3, topP: 0.8 }
+        });
 
-            // Ruta forzada según tu último error 404
-            const dataStorePath = `projects/865178027771/locations/global/collections/default/dataStores/catalogo-maestro-robotiax_1716345604104`;
+        const contents = chatHistory.length > 0 
+            ? [...chatHistory, { role: 'user', parts: [{ text: userQuery }] }]
+            : [{ role: 'user', parts: [{ text: userQuery }] }];
 
-            const contents = chatHistory.length > 0 
-                ? [...chatHistory, { role: 'user', parts: [{ text: userQuery }] }]
-                : [{ role: 'user', parts: [{ text: userQuery }] }];
-
-            let finalResponse = "";
-
-            try {
-                // PRIMER INTENTO: CON CATÁLOGO
-                const result = await model.generateContent({
-                    contents: contents,
-                    tools: [{ retrieval: { vertexAiSearch: { datastore: dataStorePath } } }],
-                    systemInstruction: { 
-                        parts: [{ text: "Eres el Arquitecto de Ventas de Robotiax. Usa el catálogo para dar especificaciones técnicas y precios." }] 
-                    }
-                });
-                finalResponse = result.response.candidates[0].content.parts[0].text;
-            } catch (innerError) {
-                console.error(">>> [CATÁLOGO CAÍDO]: Rescatando con IA pura.");
-                // SEGUNDO INTENTO: SIN CATÁLOGO (Inmune a errores de Data Store)
-                const fallback = await model.generateContent({
-                    contents: contents,
-                    systemInstruction: { 
-                        parts: [{ text: "Eres el Sales Architect de Robotiax. Sigue esta estructura: 1. Breve validación. 2. Solución técnica en 3 puntos. 3. Al final, incluye SIEMPRE estas etiquetas: [SERVICIO: Nombre], [PRECIO: Costo aprox], [TIEMPO: Días]. Sé directo, minimalista y profesional." }] 
-                    }
-                });
-                finalResponse = fallback.response.candidates[0].content.parts[0].text;
+        const result = await model.generateContent({
+            contents: contents,
+            systemInstruction: { 
+                parts: [{ text: `IDENTIDAD: Sales Architect de Robotiax.
+                REGLAS: PROHIBIDO SALUDAR. Inicia con la solución. Precios WEB siempre 99 MXN. Precios IA/SECURITY en USD.
+                CATÁLOGO WEB (99 MXN): Bienes Raíces 01, Cirujano Plástico 01, Clínica Médica 01, Consultoría 01/02/Elite 03, Contabilidad 01, E-Learning 01, Academy 02, Corporativo 01, Fitness 01, Power Gym 02, Industrial 01, Influencer 01, Creator 02, Legal Services 01, Médico Especialista 01, Cyber Security 01, Wellness Spa 01, Tech Global 01, Sales Landing 01, Yoga Studio 01.
+                CATÁLOGO IA (USD): Contable(49), Legal(79), Proyección(89), Nómina(59), Costos(49), Gastos Voz(20), Motivador(20), Rentabilidad(69), Caja Chica(39), Inversión(99), Chronos(20), Rendimiento(59), Manuales(20), Calidad(79), Suministros(49), Correcciones(69), Post-Servicio(39), Rutas(89), Mantenimiento(59), Crisis(129), Sniper(20), Avatar(149), Identidad(69), Reseñas(20), Guerrilla(59), Expansión(199), Retención(89), Sentimiento(49), Ofertas(39), Influencia(129).
+                CATÁLOGO SECURITY (USD): Fantasma(20), Herencia(49), Ing. Social(39), Phishing(20), Metadatos(20), Deepfake(149), Bóveda ID(20), Zero-Knowledge(59), IoT(79), Extorsión(99), POS(129), Lealtad(89), Auditor Red(49), Facturación(79), Backup(149), Privacidad(39), Web-Scan(69), Biométrico(199), Interna(59), Ransomware(299), SOC IA(499), Amenaza(249), Honey-Pot(179), Mando(399), APIs(159), Simulador(299), Gobernanza(189), Cloud(349), IAM(229), Resiliencia(149).
+                METADATOS OBLIGATORIOS AL FINAL: [SERVICIO: Nombre], [PRECIO: Valor], [TIEMPO: 24H].` }]
             }
+        });
 
-            return res.status(200).json({ response: finalResponse });
+        const finalResponse = result.response.candidates[0].content.parts[0].text;
+        return res.status(200).json({ response: finalResponse });
 
-        } catch (error) {
-            console.error(">>> [FALLO CRÍTICO]:", error.message);
-            return res.status(200).json({ 
-                response: "Sistema en modo de diagnóstico. ¿En qué puedo ayudarte con respecto a Robotiax?" 
-            });
-        }
-    });
+    } catch (error) {
+        console.error(">>> [FALLO CRÍTICO]:", error.message);
+        return res.status(500).json({ 
+            response: "ERROR DE PROTOCOLO: Reiniciando núcleo. ¿Requerimiento técnico?" 
+        });
+    }
 });
 
 exports.submitFinalOrder = onRequest({ 
