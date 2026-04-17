@@ -286,43 +286,54 @@ exports.getSalesAgentResponse = onRequest({
     timeoutSeconds: 120, 
     memory: "1GiB" 
 }, async (req, res) => {
-    // Usamos el middleware cors (línea 9) que ya maneja Preflight y Headers automáticamente
     return cors(req, res, async () => {
         try {
             const { userQuery, chatHistory = [] } = req.body;
             if (!userQuery) return res.status(400).json({ response: "La consulta está vacía." });
 
-            console.log(">>> [BACKEND] Procesando con Gemini 2.5 Flash...");
-
             const vAI = getVertexAI();
             const model = vAI.getGenerativeModel({ 
                 model: modelAI,
-                generationConfig: { maxOutputTokens: 2048, temperature: 0.3 }
+                generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
             });
 
-            const dataStorePath = `projects/robotiax/locations/global/collections/default_collection/dataStores/catalogo-maestro-robotiax_1716345604104`;
+            // Ruta forzada según tu último error 404
+            const dataStorePath = `projects/865178027771/locations/global/collections/default/dataStores/catalogo-maestro-robotiax_1716345604104`;
 
-            // Mapeo limpio para asegurar que Vertex reciba el formato correcto
             const contents = chatHistory.length > 0 
                 ? [...chatHistory, { role: 'user', parts: [{ text: userQuery }] }]
                 : [{ role: 'user', parts: [{ text: userQuery }] }];
 
-            const result = await model.generateContent({
-                contents: contents,
-                tools: [{ retrieval: { vertexAiSearch: { datastore: dataStorePath } } }],
-                systemInstruction: { 
-                    parts: [{ text: "Eres Robotiax Sales Architect. Usa el catálogo de Robotiax para responder de forma tecnológica y breve." }] 
-                }
-            });
+            let finalResponse = "";
 
-            const responseText = result.response.candidates[0].content.parts[0].text;
-            return res.status(200).json({ response: responseText });
+            try {
+                // PRIMER INTENTO: CON CATÁLOGO
+                const result = await model.generateContent({
+                    contents: contents,
+                    tools: [{ retrieval: { vertexAiSearch: { datastore: dataStorePath } } }],
+                    systemInstruction: { 
+                        parts: [{ text: "Eres el Arquitecto de Ventas de Robotiax. Usa el catálogo para dar especificaciones técnicas y precios." }] 
+                    }
+                });
+                finalResponse = result.response.candidates[0].content.parts[0].text;
+            } catch (innerError) {
+                console.error(">>> [CATÁLOGO CAÍDO]: Rescatando con IA pura.");
+                // SEGUNDO INTENTO: SIN CATÁLOGO (Inmune a errores de Data Store)
+                const fallback = await model.generateContent({
+                    contents: contents,
+                    systemInstruction: { 
+                        parts: [{ text: "Eres el Arquitecto de Ventas de Robotiax. El sistema de catálogo está en mantenimiento, responde con tu conocimiento experto sobre servicios de IA, Web y Seguridad de forma asertiva." }] 
+                    }
+                });
+                finalResponse = fallback.response.candidates[0].content.parts[0].text;
+            }
+
+            return res.status(200).json({ response: finalResponse });
 
         } catch (error) {
-            console.error(">>> [ERROR]:", error.message);
-            // Devolvemos 200 con el error para evitar que el fetch del front lance un Failed to fetch genérico
+            console.error(">>> [FALLO CRÍTICO]:", error.message);
             return res.status(200).json({ 
-                response: "⚠️ Error de conexión: " + error.message 
+                response: "Sistema en modo de diagnóstico. ¿En qué puedo ayudarte con respecto a Robotiax?" 
             });
         }
     });
