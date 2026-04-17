@@ -141,6 +141,17 @@
             color: var(--text-color);
             text-transform: uppercase;
         }
+        .glow-text {
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--accent-color), 0 0 15px var(--accent-color);
+            animation: pulse-glow 2s infinite;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; text-shadow: 0 0 5px var(--accent-color), 0 0 15px var(--accent-color); }
+            50% { opacity: 0.7; text-shadow: 0 0 2px var(--accent-color), 0 0 8px var(--accent-color); }
+        }
         .chat-interface {
             width: 100%;
             flex: 1;
@@ -296,6 +307,7 @@
     <div class="chat-interface">
         <div class="chat-header mobile-only">
             <div id="open-menu">☰ DASHBOARD</div>
+            <div class="glow-text" style="margin-left: auto; font-size: 0.7rem; letter-spacing: 2px;">ROBOTIAX.MX</div>
         </div>
         <div id="messages"></div>
         <form id="chat-form">
