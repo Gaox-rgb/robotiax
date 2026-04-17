@@ -168,7 +168,13 @@
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
-            messageDiv.textContent = text;
+            // Procesamiento básico de Markdown (Negritas y Saltos de línea)
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Negritas
+                .replace(/^\* (.*$)/gim, '• $1') // Listas básicas
+                .replace(/\n/g, '<br>'); // Saltos de línea
+
+            messageDiv.innerHTML = formattedText;
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
