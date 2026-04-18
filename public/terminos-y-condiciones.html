@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolo de Términos | Robotiax</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --brand: #00f2ff; --punk: #ff003c; --bg: #050505; --text: #f5f5f5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+            line-height: 1.6; padding-bottom: 100px;
+        }
+        .legal-header { 
+            padding: 60px 20px; text-align: center; border-bottom: 1px solid rgba(0, 242, 255, 0.2); 
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+        }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--brand); letter-spacing: 4px; text-transform: uppercase; font-size: 2.5rem; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .protocol-block { 
+            border-left: 2px solid var(--brand); padding-left: 25px; margin-bottom: 40px; 
+            background: rgba(255,255,255,0.02); padding: 30px; border-radius: 0 10px 10px 0;
+        }
+        h2 { font-family: 'Orbitron', sans-serif; color: var(--brand); font-size: 1.1rem; margin-bottom: 15px; letter-spacing: 2px; }
+        p { color: #aaa; margin-bottom: 15px; font-size: 1rem; }
+        .highlight { color: var(--punk); font-weight: bold; }
+        .back-btn { 
+            position: fixed; bottom: 30px; right: 30px; background: var(--brand); color: #000;
+            padding: 10px 25px; font-family: 'Orbitron'; text-decoration: none; font-weight: bold;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            transition: 0.3s; z-index: 100;
+        }
+        .back-btn:hover { background: #fff; transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+    <header class="legal-header">
+        <h1>Términos y Condiciones</h1>
+        <p style="color: var(--punk); letter-spacing: 5px;">[ PROTOCOLO DE ACUERDO DE SERVICIO ]</p>
+    </header>
+
+    <div class="container">
+        <div class="protocol-block">
+            <h2>01. ACEPTACIÓN DEL PROTOCOLO</h2>
+            <p>Al acceder a los servicios de Robotiax y Makumoto, el usuario acepta de manera irrevocable someterse a las condiciones aquí establecidas para el despliegue de software, agentes de IA y desarrollos web.</p>
+        </div>
+
+        <div class="protocol-block" style="border-color: var(--punk);">
+            <h2>02. POLÍTICA DE CANCELACIÓN Y REEMBOLSO</h2>
+            <p>Robotiax establece una política de garantía de satisfacción bajo los siguientes parámetros:</p>
+            <p>• <span class="highlight">AGENTES IA Y SEGURIDAD:</span> El cliente dispone de un periodo de <strong>72 horas (3 días naturales)</strong> a partir de la compra para solicitar una devolución total, siempre y cuando <span class="highlight">no se haya iniciado el uso operativo</span> de la aplicación o agente configurado.</p>
+            <p>• <span class="highlight">DESARROLLO WEB:</span> Las solicitudes de reembolso para plantillas web adquiridas deberán realizarse dentro de los primeros <strong>3 días naturales</strong> posteriores al pago. Una vez entregadas las credenciales de acceso finales, el servicio se considera ejecutado y no sujeto a devolución.</p>
+        </div>
+
+        <div class="protocol-block">
+            <h2>03. PROPIEDAD INTELECTUAL</h2>
+            <p>Todo el código, prompts de sistema, y estructuras de seguridad desarrolladas por Robotiax son propiedad intelectual de Makumoto. Se otorga al cliente una licencia de uso perpetua para el fin comercial adquirido, prohibiéndose su reventa o ingeniería inversa.</p>
+        </div>
+
+        <div class="protocol-block">
+            <h2>04. LIMITACIÓN DE RESPONSABILIDAD</h2>
+            <p>Robotiax no se hace responsable por el mal uso de los agentes de inteligencia artificial o fallos externos derivados de plataformas de terceros como PayPal, Firebase o Vertex AI.</p>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-btn">VOLVER AL CENTRO</a>
+</body>
+</html>
