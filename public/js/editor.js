@@ -47,6 +47,10 @@ window.app.editor = {
             const priceEl = document.getElementById('display-product-price');
             if(nameEl) nameEl.textContent = product.name;
             if(priceEl) priceEl.textContent = `$${product.price} ${product.currency}`;
+            
+            // Guardamos la categoría para el submitOrder
+            this.currentCategory = product.category;
+            this.currentProductName = product.name;
         }
 
         const panel = document.getElementById('editor-panel');
@@ -100,12 +104,17 @@ window.app.editor = {
     },
 
     submitOrder: async function() {
+        if (!this.currentTemplateId) {
+            alert("❌ ERROR CRÍTICO: No se detectó ID de producto. Reinicie el proceso.");
+            return;
+        }
+
         // CAPTURA TOTAL DE CAMPOS PARA DESARROLLO WEB
         const details = {
             negocio: document.getElementById('edit-name')?.value || "",
             tagline: document.getElementById('edit-tagline')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
-            servicios: "Módulo IA Arsenal",
+            servicios: this.currentProductName || "Arsenal Robotiax",
             cta: "Activación Directa",
             fee: "Pagado",
             telefono: document.getElementById('edit-phone')?.value || "",
@@ -150,9 +159,16 @@ window.app.editor = {
                 const notif = document.getElementById('success-notif');
                 if (notif) {
                     notif.style.setProperty('display', 'flex', 'important');
-                    // El botón "ENTENDIDO" de esta ventana debe reiniciar el flujo
+                    // Forzar que el scroll suba para ver la notificación
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
                     const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
-                    if(okBtn) okBtn.onclick = () => location.reload();
+                    if(okBtn) {
+                        okBtn.onclick = () => {
+                            localStorage.removeItem('pending_purchase_id');
+                            location.reload();
+                        };
+                    }
                 }
             }
 

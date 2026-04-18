@@ -49,8 +49,13 @@ window.app.payments = {
                 // 1. FORZADO INMEDIATO DE INTERFAZ (LATENCIA CERO)
                 const panel = document.getElementById('editor-panel');
                 if (panel) {
+                    console.log("🔥 [SISTEMA]: Pago detectado. Forzando Panel de Activación para:", pendingId);
                     panel.style.setProperty('display', 'block', 'important');
-                    panel.style.zIndex = "200000"; // Por encima de todo
+                    panel.style.zIndex = "200000";
+                    
+                    // Asegurar que el overlay de pago se cierre si quedó abierto
+                    const overlay = document.getElementById('payment-modal-overlay');
+                    if (overlay) overlay.style.setProperty('display', 'none', 'important');
                 }
 
                 // 2. Persistencia de compra
@@ -62,8 +67,14 @@ window.app.payments = {
 
                 // 3. Inicialización de datos
                 const checkDependencies = () => {
-                    if (window.app.editor && window.app.editor.init) {
-                        window.app.editor.init(pendingId);
+                    if (window.app.editor) {
+                        // Si estamos en seguridad, usamos el inicializador de seguridad
+                        if (window.location.pathname.includes('seguridad')) {
+                            if (window.app.ui.initEditorForSecurity) window.app.ui.initEditorForSecurity(pendingId);
+                        } else if (window.app.editor.init) {
+                            window.app.editor.init(pendingId);
+                        }
+                        
                         // Limpiar URL una vez asegurado el panel
                         const cleanUrl = window.location.origin + window.location.pathname;
                         window.history.replaceState({}, document.title, cleanUrl);

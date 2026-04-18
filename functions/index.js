@@ -366,49 +366,25 @@ exports.submitFinalOrder = onRequest({
 
         if (!isWebProduct) {
             try {
-                // 1. INSTRUCCIONES PARA ADMIN (PROTOCOLO DE ACTIVACIÓN ESTRUCTURAL)
                 const promptMaquila = `
                 ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
-                Genera un PROTOCOLO DE ACTIVACIÓN ESTRUCTURAL integral para el producto: ${pData.name}.
-                DATOS DEL CLIENTE: Empresa: ${details.negocio}, Contacto: ${details.telefono}.
+                Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio}.
 
-                ESTA ORDEN TÉCNICA ES DEFINITIVA Y NO DEBE OMITIR NINGUNA DE ESTAS SECCIONES:
-                
-                1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT): 
-                   Crea las instrucciones maestras, amplias y ultra-específicas para el comportamiento de este Agente. Define su personalidad, su base de conocimientos y su flujo de resolución.
-                
-                2. ⚙️ CONFIGURACIÓN DE PARÁMETROS:
-                   - Temperatura exacta (ej. 0.1 para precisión absoluta).
-                   - Estilo: Profesional, ejecutivo, CERO verborrea.
-                
-                3. 📋 DOCUMENTACIÓN REQUERIDA AL CLIENTE:
-                   Genera la lista exacta de documentos, bases de datos o accesos que debemos solicitarle al cliente para que esta unidad sea operativa y altamente competitiva.
-                
-                4. 🚀 LOGÍSTICA Y FASES DE DESPLIEGUE:
-                   Cronograma técnico desde la recepción de datos hasta la puesta en marcha.
-
-                5. 🏆 DIFERENCIACIÓN Y ESTRATEGIA COMPETITIVA:
-                   - Cómo el agente debe diferenciarse para ser el más eficiente del mercado.
-                   - Reglas de oro para evitar errores críticos en el sector de ${pData.name}.
-
-                No omitas nada del formato anterior. Prioriza la amplitud del SYSTEM PROMPT y la claridad de la DOCUMENTACIÓN REQUERIDA. Sé exhaustivo y técnico.`;
+                ESTE REPORTE DEBE SER EXHAUSTIVO Y SECCIONADO:
+                1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT): Instrucciones maestras y personalidad de la unidad.
+                2. ⚙️ PARÁMETROS TÉCNICOS: Temperatura, TopP y estilo de respuesta.
+                3. 📋 DOCUMENTACIÓN BÁSICA REQUERIDA: Qué pedirle al cliente HOY mismo para arrancar.
+                4. ⚡ PROTOCOLO DE IMPLEMENTACIÓN BÁSICA (< 5 MIN): Pasos exactos para que el Admin deje operativa la unidad en 5 minutos con la info básica.
+                5. 💎 PROTOCOLO DE INSTALACIÓN AVANZADA ($50 USD): Ingeniería de prompts profunda y carga masiva de conocimiento.
+                6. ⏳ CRONOGRAMA AVANZADO (24H): Lapsos de tiempo (Análisis, Ingesta, Calibración, Test de Estrés y Entrega) y qué se ejecuta en cada fase.
+                No omitas nada. Prioriza la operatividad inmediata del Admin.`;
 
                 const aiResult = await getVertexAI().getGenerativeModel({ model: modelAI }).generateContent(promptMaquila);
                 const aiResponse = await aiResult.response;
-                vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno de activación.";
-
-                // 2. REQUERIMIENTOS PARA EL CLIENTE
-                const promptReqs = `Como Especialista en Implementación de Robotiax, genera una lista de 5 requerimientos CRÍTICOS que el cliente ${details.negocio} debe enviarnos para que su Agente IA (${pData.name}) sea altamente competitivo y eficiente.
-                Los puntos deben ser técnicos pero comprensibles. 
-                Empieza con: 'PARA QUE TU AGENTE DOMINE TU SECTOR, REQUERIMOS LA SIGUIENTE INFORMACIÓN TÉCNICA:'`;
-
-                const aiReqsResult = await getVertexAI().getGenerativeModel({ model: modelAI }).generateContent(promptReqs);
-                const aiReqsResponse = await aiReqsResult.response;
-                customerRequirements = aiReqsResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Por favor, contacta a soporte para obtener la lista de requerimientos técnicos.";
+                vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno.";
             } catch (e) { 
-                console.error("Error en generación de Protocolo Vertex:", e);
-                vertexInstructions = "Error en el protocolo de generación técnica del núcleo."; 
-                customerRequirements = "Nuestro equipo técnico se pondrá en contacto a la brevedad para solicitar la información de activación.";
+                console.error("Error Vertex:", e);
+                vertexInstructions = "Error en generación técnica."; 
             }
         }
 
@@ -452,17 +428,26 @@ exports.submitFinalOrder = onRequest({
                     <p><strong>INVERSIÓN:</strong> $${pData.price} ${pData.currency}</p>
                 </div>
                 
-                <div style="background: #fffef3; border: 1px solid #f1f5f9; padding: 25px; margin: 20px 0; border-left: 5px solid #ff3333;">
-                    <h3 style="color: #ff3333; margin-top: 0; font-family: 'Courier New', monospace;">📋 REQUERIMIENTOS DE ACTIVACIÓN:</h3>
-                    <div style="font-size: 15px; line-height: 1.6; color: #1e293b; white-space: pre-wrap;">${customerRequirements}</div>
-                </div>
-
                 <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #334155;">
-                    <h3 style="color: #38bdf8; margin-top: 0; font-size: 16px;">🛡️ SELECCIÓN DE PROTOCOLO DE CONFIGURACIÓN</h3>
-                    <p style="font-size: 14px;">Para garantizar el desempeño óptimo de su unidad, indíquenos vía respuesta a este correo:</p>
-                    <p><strong>1. Asistencia Robotiax:</strong> Desarrollaremos su <em>System Instruction</em> optimizado.</p>
-                    <p><strong>2. Autogestión Técnica:</strong> Entregaremos la unidad en estado base para su configuración interna.</p>
-                    <p style="margin-top: 15px; font-size: 13px; color: #38bdf8;">Una vez confirmada su elección, liberaremos su Link de Acceso y Manual Operativo a su WhatsApp y Correo.</p>
+                    <h3 style="color: #ff3333; margin-top: 0; font-family: 'Orbitron', sans-serif;">🛡️ ESTATUS DE ACTIVACIÓN: SELECCIÓN DE PROTOCOLO</h3>
+                    <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">Para proceder con la liberación de su unidad, es imperativo que responda a este correo seleccionando una de las siguientes tres vías de implementación:</p>
+                    
+                    <div style="margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
+                        <p><strong>1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</strong></p>
+                        <p style="font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su agente.</p>
+                    </div>
+
+                    <div style="margin-top: 15px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
+                        <p><strong>2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</strong></p>
+                        <p style="font-size: 13px; color: #94a3b8;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <p><strong style="color: #38bdf8;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</strong></p>
+                        <p style="font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Agente 100% operativo y listo para producción inmediata.</p>
+                    </div>
+
+                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo máximo de 24 horas.</p>
                 </div>
 
                 <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
@@ -530,7 +515,6 @@ exports.submitFinalOrder = onRequest({
 
 
 });
-
 
 exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, memory: "1GiB" }, async (req, res) => {
     const { productId, clientData } = req.body;
