@@ -4,8 +4,13 @@
  */
 
 window.onload = function() {
-    // Retraso de 500ms antes de abrir las puertas para permitir que carguen los estilos
     setTimeout(() => { 
         document.getElementById('body').classList.add('gate-open'); 
+        
+        // ELIMINACIÓN FÍSICA DE GATES PARA LIBERAR ESPACIO
+        setTimeout(() => {
+            const elements = document.querySelectorAll('.gate, .gate-text');
+            elements.forEach(el => el.remove());
+        }, 1500);
     }, 500);
 };

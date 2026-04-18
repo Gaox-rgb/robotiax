@@ -4,39 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGENCIA PARTNER | ACCESO RESTRINGIDO</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/membresia.css">
 </head>
 <body id="body">
 
+    <!-- PUERTAS DE ACCESO (SE ELIMINAN POR JS TRAS ABRIRSE) -->
     <div class="gate gate-left"></div>
     <div class="gate gate-right"></div>
     <div class="gate-text">ACCEDIENDO...</div>
 
-    <a href="index.html#protocolo-black" class="back-btn" style="color: var(--gold); border: 1px solid var(--gold); padding: 10px 25px; z-index: 1000; background: rgba(0,0,0,0.5); font-weight: bold;">« SALIR DE LA BÓVEDA</a>
-
+    <!-- CONTENIDO MAESTRO ÚNICO -->
     <div class="main-wrapper">
-        <h1>MEMBRESÍA BLACK</h1>
-        <div class="sub-tag">SOLO POR INVITACIÓN</div>
+        <header class="header-section">
+            <h1>MEMBRESÍA BLACK</h1>
+            <div class="sub-tag">SOLO POR INVITACIÓN</div>
+        </header>
 
         <div class="card-scene">
             <div class="card">
                 <div class="chip"></div>
                 <div class="card-logo">AGENCIA ∞ PARTNER</div>
-                <div style="font-size: 0.7rem; color: var(--gold); letter-spacing: 3px;">ACCESO TOTAL /// 2026</div>
+                <div class="card-date">ACCESO TOTAL /// 2026</div>
             </div>
         </div>
 
-        <div>
-            <div class="price-tag">$1,997 USD <span style="font-size:1rem; color:#888;">/ MES</span></div>
+        <div class="action-zone">
+            <div class="price-tag">$1,997 USD <span class="per-month">/ MES</span></div>
             <div class="alert-text">⚠ 98% CAPACIDAD LLENA</div>
             
             <a href="https://www.paypal.com" target="_blank" class="btn-gold">
                 RECLAMAR MI LUGAR
             </a>
         </div>
+    </div>
+
+    <!-- BOTÓN DE ESCAPE HUD (SIEMPRE VISIBLE AL PIE) -->
+    <div class="footer-escape">
+        <a href="index.html#protocolo-black" class="back-btn-hud">« SALIR DE LA BÓVEDA</a>
     </div>
 
     <script src="js/membresia.js"></script>
