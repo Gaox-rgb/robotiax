@@ -7,6 +7,20 @@ window.app = window.app || {};
 
 window.app.editor = {
     currentTemplateId: null,
+
+// Inyección de Animaciones Tácticas
+    injectStyles: function() {
+        if (document.getElementById('editor-style-fix')) return;
+        const style = document.createElement('style');
+        style.id = 'editor-style-fix';
+        style.innerHTML = `
+            #toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000001; }
+            @keyframes toastFadeIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        `;
+        document.head.appendChild(style);
+    },
+    currentTemplateId: null,
+
     // Motor de Notificaciones (Fuera de endpoints para que this.notify funcione)
     notify: function(msg, type = 'error') {
         let container = document.getElementById('toast-container');
@@ -20,10 +34,27 @@ window.app.editor = {
         toast.className = `toast-msg ${type}`;
         toast.innerHTML = `<span style="color:${type === 'error' ? '#ff003c' : '#2ecc71'}">[!]</span> ${msg}`;
         
+        // Estilo Minimalista Forzado
+        Object.assign(toast.style, {
+            background: '#000',
+            color: type === 'error' ? '#ff003c' : '#00f2ff',
+            border: `1px solid ${type === 'error' ? '#ff003c' : '#00f2ff'}`,
+            padding: '12px 20px',
+            marginBottom: '10px',
+            fontFamily: "'Rajdhani', sans-serif",
+            fontSize: '0.8rem',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            zIndex: '2000000',
+            animation: 'toastFadeIn 0.3s ease-out'
+        });
+
         container.appendChild(toast);
 
         setTimeout(() => {
-            toast.style.animation = 'toastFadeOut 0.5s ease forwards';
+            toast.style.opacity = '0';
+            toast.style.transition = '0.5s';
             setTimeout(() => toast.remove(), 500);
         }, 4000);
     },
@@ -40,8 +71,9 @@ window.app.editor = {
         this.currentTemplateId = templateId;
         
         const product = window.app.catalog.ia.find(p => p.id === templateId) || 
-                        window.app.catalog.security.find(p => p.id === templateId);
-        
+                        window.app.catalog.security.find(p => p.id === templateId) ||
+                        window.app.catalog.web.find(p => p.id === templateId);
+
         if(product) {
             const nameEl = document.getElementById('display-product-name');
             const priceEl = document.getElementById('display-product-price');
@@ -114,20 +146,21 @@ window.app.editor = {
             negocio: document.getElementById('edit-name')?.value || "",
             tagline: document.getElementById('edit-tagline')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
-            servicios: this.currentProductName || "Arsenal Robotiax",
-            cta: "Activación Directa",
-            fee: "Pagado",
+            servicios: document.getElementById('edit-services')?.value || this.currentProductName,
+            cta: document.getElementById('edit-cta')?.value || "Activación Directa",
+            fee: document.getElementById('edit-fee')?.value || "Pagado",
             telefono: document.getElementById('edit-phone')?.value || "",
             email: document.getElementById('edit-email')?.value || "",
-            direccion: document.getElementById('edit-address-fiscal')?.value || "",
-            horarios: "N/A",
+            direccion: document.getElementById('edit-address')?.value || document.getElementById('edit-address-fiscal')?.value || "No proporcionada",
+            horarios: document.getElementById('edit-hours')?.value || "No proporcionado",
             timestamp: new Date().toISOString()
         };
 
         const inputs = document.querySelectorAll('#editor-panel input, #editor-panel textarea');
         for (let input of inputs) {
             if (!input.value.trim()) {
-                alert("⚠️ Error: Todos los campos son obligatorios. Si no aplica, escriba 'no'.");
+                this.notify("CAMPOS INCOMPLETOS. REVISE EL FORMULARIO.", "error");
+                input.style.borderColor = "#ff003c";
                 input.focus();
                 return;
             }
@@ -158,8 +191,8 @@ window.app.editor = {
                 document.getElementById('editor-panel').style.setProperty('display', 'none', 'important');
                 const notif = document.getElementById('success-notif');
                 if (notif) {
+                    console.log("✅ [EDITOR]: Orden completada. Mostrando éxito.");
                     notif.style.setProperty('display', 'flex', 'important');
-                    // Forzar que el scroll suba para ver la notificación
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     
                     const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
@@ -234,7 +267,7 @@ window.app.editor = {
             console.error('Error Crítico en Upload:', error);
             uploadStatus.style.color = "red";
             uploadStatus.textContent = "Error: " + error.message;
-            alert('Fallo al subir imagen. Revisa tu conexión.');
+            this.notify("FALLO EN CARGA DE IMAGEN.", "error");
         }
     }
 };

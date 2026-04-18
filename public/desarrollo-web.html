@@ -179,36 +179,26 @@
     <!-- AHORA LAS SECCIONES SIGUIENTES ESTARÁN FUERA DEL GRID -->
     <section class="includes-section">
         <!-- ============================================= -->
-        <div id="editor-panel">
+        <div class="editor-content-wrapper" style="visibility: visible !important; opacity: 1 !important;">
 
-<!-- NOTIFICACIÓN DE ÉXITO LÍMPIDA -->
-        <div id="success-notif" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:1000000; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(15px);">
-            <div style="background: #fff; width: 100%; max-width: 400px; padding: 40px; border-radius: 12px; box-shadow: 0 40px 100px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0;">
-                <div style="width: 60px; height: 60px; background: #2ecc71; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 1.5rem; box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3);">✓</div>
-                
-                <h3 style="color: #0f172a; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">¡GRACIAS POR TU COMPRA!</h3>
-                <p style="font-family: 'Rajdhani', sans-serif; color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Has adquirido la <strong id="notif-template-name" style="color:#0f172a;">Plantilla</strong> por <strong style="color:#2ecc71;">$99 MXN</strong></p>
-                
-                <div style="font-family: 'Rajdhani', sans-serif; color: #475569; font-size: 1rem; line-height: 1.5; margin-bottom: 30px; text-align: left;">
-                    <p style="margin-bottom: 15px;"><strong>Enviaremos</strong> una confirmación de orden y tus credenciales de acceso a tu <strong>Correo Electrónico</strong>.</p>
-                    
-                    <p style="background: #f8fafc; padding: 15px; border-radius: 6px; border-left: 4px solid #2ecc71;">
-                        <strong>Activación Profesional:</strong><br>
-                        Estamos configurando tu <strong>Hosting Premium y Dominio .info</strong>. Te entregamos este beneficio <strong>GRATIS POR 30 DÍAS</strong>.
-                    </p>
+</section>
 
-                    <p style="color: #e11d48; font-weight: 700; margin-top: 15px; text-align: center; border: 1px dashed #e11d48; padding: 10px;">
-                        ⚠️ IMPORTANTE: Si no ves nuestro correo en 5 minutos, revisa tu carpeta de CORREO NO DESEADO (SPAM).
-                    </p>
-                    
-                    <p style="margin-top: 15px; text-align: center; color: #0f172a; font-weight: 700;">Recibirás el link de acceso total en un plazo de 24h.</p>
-                </div>
-
-                <button onclick="window.location.reload()" style="background: #2ecc71; color: #fff; border: none; padding: 15px 40px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; width: 100%; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;">ENTENDIDO</button>
+    <!-- NOTIFICACIÓN DE ÉXITO (FUERA DE LAS SECCIONES PARA EVITAR CIERRE ACCIDENTAL) -->
+    <div id="success-notif" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:1000000; align-items:center; justify-content:center; padding:20px; backdrop-filter: blur(15px);">
+        <div style="background: #fff; width: 100%; max-width: 400px; padding: 40px; border-radius: 12px; box-shadow: 0 40px 100px rgba(0,0,0,0.1); text-align: center; border: 1px solid #e2e8f0;">
+            <div style="width: 60px; height: 60px; background: #2ecc71; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 1.5rem;">✓</div>
+            <h3 style="color: #0f172a; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; margin-bottom: 10px; font-weight: 700; text-transform: uppercase;">¡GRACIAS POR TU COMPRA!</h3>
+            <p style="font-family: 'Rajdhani', sans-serif; color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">Has adquirido tu <strong id="notif-template-name" style="color:#0f172a;">Página Web</strong> por <strong style="color:#2ecc71;">$99 MXN</strong></p>
+            <div style="font-family: 'Rajdhani', sans-serif; color: #475569; font-size: 1rem; line-height: 1.5; margin-bottom: 30px; text-align: left;">
+                <p>Recibirás tu acceso, dominio y hosting gratis por 30 días en un plazo máximo de <strong>24 horas</strong>.</p>
+                <p style="color: #e11d48; font-weight: 700; margin-top: 15px; border: 1px dashed #e11d48; padding: 10px;">⚠️ REVISA TU CARPETA DE SPAM.</p>
             </div>
+            <button onclick="window.location.reload()" style="background: #2ecc71; color: #fff; border: none; padding: 15px 40px; font-family: 'Orbitron', sans-serif; cursor: pointer; width: 100%; border-radius: 6px; font-weight: 700;">ENTENDIDO</button>
         </div>
+    </div>
 
-        <div class="editor-content-wrapper">
+    <section class="includes-section">
+        <div id="editor-panel">
 
             <h2 style="color:var(--brand-color); font-size: 1.8rem; text-align:center; margin-bottom:20px;">Personaliza tu Web</h2>
             

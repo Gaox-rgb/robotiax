@@ -57,7 +57,9 @@ window.app.ui = {
         this.closeModal(); 
         const panel = document.getElementById('editor-panel');
         if (panel) {
-            document.body.classList.add('editor-open'); // Congela el fondo
+            console.log("🛠️ [DESARROLLO]: Abriendo editor para:", templateName);
+            document.body.classList.add('editor-open');
+            panel.style.setProperty('display', 'block', 'important');
             panel.classList.add('active'); 
             window.app.editor.init(templateId);
         }

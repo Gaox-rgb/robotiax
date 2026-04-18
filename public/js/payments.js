@@ -41,6 +41,22 @@ window.app.payments = {
         if (modal) modal.style.setProperty('display', 'none', 'important');
     },
 
+    checkAccess: function(productId) {
+        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+        return owned.includes(productId);
+    },
+
+    openModal: function(productId, productName, price, currency) {
+        const modal = document.getElementById('payment-modal-overlay');
+        const nameEl = document.getElementById('modal-template-name');
+        if (modal) {
+            if (nameEl) nameEl.textContent = productName;
+            modal.style.setProperty('display', 'flex', 'important');
+            modal.classList.add('visible');
+            this.initPaypalButton(productId, '#paypal-actual-button');
+        }
+    },
+
     handleReturn: function() {
         const params = new URLSearchParams(window.location.search);
         if (params.get('status') === 'success') {

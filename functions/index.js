@@ -466,6 +466,12 @@ exports.submitFinalOrder = onRequest({
                     <hr style="border:0; border-top:1px solid #333;">
                     <p><strong>WhatsApp:</strong> ${details.telefono}</p>
                     <p><strong>Email:</strong> ${details.email}</p>
+                    <p><strong>Eslogan:</strong> ${details.tagline}</p>
+                    <p><strong>Headline:</strong> ${details.headline}</p>
+                    <p><strong>Servicios:</strong> ${details.servicios}</p>
+                    <p><strong>Dirección:</strong> ${details.direccion}</p>
+                    <p><strong>Horarios:</strong> ${details.horarios}</p>
+                    <p><strong>Costo/Fee:</strong> ${details.fee}</p>
                 </div>
             </div>` : `
             <div style="font-family: 'Courier New', monospace; background: #000; color: #00f2ff; padding: 40px; border: 4px solid #ff003c;">
