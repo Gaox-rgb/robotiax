@@ -34,7 +34,8 @@ window.app.ui.requestIAPurchase = function(productId) {
     if (overlay) overlay.style.setProperty('display', 'flex', 'important');
     
     if (window.app.payments) {
-        window.app.payments.initPaypalButton(productId, '#modal-paypal-container');
+        // Llamada unificada al nuevo sistema de Doble Botón
+        window.app.payments.openModal(productId, appData.name, appData.price, appData.currency);
     }
 };
 

@@ -153,29 +153,26 @@ exports.generateDemo = onRequest({
 
 // 1. Crea una orden en PayPal y devuelve el ID de la orden al cliente.
 exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
-    const request = new paypal.orders.OrdersCreateRequest();
-        request.prefer("return=representation");
-        
-        // Aseguramos la captura de datos del body para evitar errores de conexión
-        const productId = req.body.productId;
+    try {
+        const { productId, fundingType, returnUrl } = req.body;
 
-        const returnPage = req.body.returnPage || 'index.html';
+        if (!productId) return res.status(400).send("Falta ID de producto.");
 
-        if (!productId) {
-            return res.status(400).send("Falta ID de producto.");
-        }
+        // 1. Determinación de URL de Retorno (Local vs Producción)
+        const isLocal = req.headers.host && req.headers.host.includes('localhost');
+        const finalReturnUrl = returnUrl || (isLocal ? 'http://localhost:5000/desarrollo-web.html' : `${BASE_URL}/desarrollo-web.html`);
 
-        // Prioridad a la URL que mande el frontend para evitar saltos a producción
-        const finalReturnUrl = req.body.returnUrl || `${BASE_URL}/soluciones-ia.html`;
-
+        // 2. Obtención de datos del producto
         const productDoc = await getDb().collection('products').doc(productId).get();
-        
-        if (!productDoc.exists) {
-            return res.status(404).send("Producto no reconocido en el Arsenal.");
-        }
-
+        if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
         const productData = productDoc.data();
 
+        // 3. Configuración de la Solución de Pago (Fuerza Tarjeta si es necesario)
+        const landingSelection = (fundingType === 'card') ? 'BILLING' : 'LOGIN';
+        const solutionSelection = (fundingType === 'card') ? 'SOLE' : 'MARK';
+
+        const request = new paypal.orders.OrdersCreateRequest();
+        request.prefer("return=representation");
         request.requestBody({
             intent: 'CAPTURE',
             purchase_units: [{
@@ -188,28 +185,23 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
             application_context: {
                 return_url: `${finalReturnUrl}?status=success`,
                 cancel_url: `${finalReturnUrl}?status=cancel`,
-                landing_page: 'BILLING',
-                user_action: 'PAY_NOW',
-                shipping_preference: 'NO_SHIPPING'
+                landing_page: landingSelection,
+                user_action: (fundingType === 'card') ? 'CONTINUE' : 'PAY_NOW',
+                shipping_preference: 'NO_SHIPPING',
+                brand_name: 'ROBOTIAX PROTOCOL',
+                solution: solutionSelection
             }
         });
 
-            try {
-            const order = await getPaypalClient().execute(request);
-            console.log("Orden de PayPal creada:", order.result.id);
-            const approveUrl = order.result.links.find(link => link.rel === 'approve').href;
-            res.status(200).json({ orderID: order.result.id, approveUrl: approveUrl });
-        } catch (error) {
-            // LOG DETALLADO PARA DEPURAR EL 500
-            console.error(">>> [PAYPAL ERROR]:", error.message);
-            if (error.stack) console.error(error.stack);
-            
-            res.status(500).json({ 
-                error: "Fallo en Pasarela", 
-                details: error.message,
-                note: "Verifica que PAYPAL_CLIENT_ID y PAYPAL_SECRET estén configurados en Firebase" 
-            });
-        }
+        const order = await getPaypalClient().execute(request);
+        const approveUrl = order.result.links.find(link => link.rel === 'approve').href;
+        
+        return res.status(200).json({ orderID: order.result.id, approveUrl: approveUrl });
+
+    } catch (error) {
+        console.error(">>> [PAYPAL ERROR]:", error.message);
+        return res.status(500).json({ error: "Fallo en Pasarela", details: error.message });
+    }
 });
 
 // 2. Captura el pago después de que el usuario aprueba en el frontend.

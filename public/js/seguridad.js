@@ -60,7 +60,8 @@ window.app.ui.requestSecPurchase = (productId) => {
     const overlay = document.getElementById('payment-modal-overlay');
     if(overlay) overlay.classList.add('visible');
     
-    window.app.payments.initPaypalButton(productId, '#modal-paypal-container');
+    // Llamada unificada al nuevo sistema de Doble Botón
+    window.app.payments.openModal(productId, secData.name, secData.price, secData.currency);
 };
 
 // Función para repoblar el panel tras el regreso de PayPal
