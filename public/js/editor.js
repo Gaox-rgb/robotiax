@@ -38,22 +38,26 @@ window.app.editor = {
      */
     init: function(templateId) {
         this.currentTemplateId = templateId;
-        if (window.app.ui && window.app.ui.selectedTemplate) {
-            window.app.ui.selectedTemplate.id = templateId;
+        
+        const product = window.app.catalog.ia.find(p => p.id === templateId) || 
+                        window.app.catalog.security.find(p => p.id === templateId);
+        
+        if(product) {
+            const nameEl = document.getElementById('display-product-name');
+            const priceEl = document.getElementById('display-product-price');
+            if(nameEl) nameEl.textContent = product.name;
+            if(priceEl) priceEl.textContent = `$${product.price} ${product.currency}`;
         }
-        console.log("Editor inicializado para:", templateId);
 
         const panel = document.getElementById('editor-panel');
-        
         if (panel) {
-            panel.style.display = 'block';
+            panel.style.setProperty('display', 'block', 'important');
+            panel.style.visibility = 'visible';
+            panel.style.opacity = '1';
             panel.classList.add('active');
-            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            // Carga inicial de datos
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             window.app.editor.preview();
-        } else {
-            console.error("Error Crítico: No se encontró el contenedor #editor-panel");
         }
     },
 
@@ -101,19 +105,23 @@ window.app.editor = {
             negocio: document.getElementById('edit-name')?.value || "",
             tagline: document.getElementById('edit-tagline')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
-            servicios: document.getElementById('edit-services')?.value || "",
-            cta: document.getElementById('edit-cta')?.value || "",
-            fee: document.getElementById('edit-fee')?.value || "",
+            servicios: "Módulo IA Arsenal",
+            cta: "Activación Directa",
+            fee: "Pagado",
             telefono: document.getElementById('edit-phone')?.value || "",
             email: document.getElementById('edit-email')?.value || "",
-            direccion: document.getElementById('edit-address')?.value || "",
-            horarios: document.getElementById('edit-hours')?.value || "",
+            direccion: document.getElementById('edit-address-fiscal')?.value || "",
+            horarios: "N/A",
             timestamp: new Date().toISOString()
         };
 
-        if (!details.negocio || !details.telefono || !details.email || !details.direccion) {
-            this.notify("ERROR: Nombre, WhatsApp, Email y Dirección son obligatorios.", "error");
-            return;
+        const inputs = document.querySelectorAll('#editor-panel input, #editor-panel textarea');
+        for (let input of inputs) {
+            if (!input.value.trim()) {
+                alert("⚠️ Error: Todos los campos son obligatorios. Si no aplica, escriba 'no'.");
+                input.focus();
+                return;
+            }
         }
 
         const btn = document.querySelector('#editor-panel button[onclick*="submitOrder"]');
@@ -137,11 +145,15 @@ window.app.editor = {
                     localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
                 }
                 
-                // Ocultar formulario y mostrar ventana de éxito
-                const panel = document.getElementById('editor-panel');
-                if (panel) panel.style.setProperty('display', 'none', 'important');
+                // Ocultar formulario y mostrar ventana de éxito final
+                document.getElementById('editor-panel').style.setProperty('display', 'none', 'important');
                 const notif = document.getElementById('success-notif');
-                if (notif) notif.style.setProperty('display', 'flex', 'important');
+                if (notif) {
+                    notif.style.setProperty('display', 'flex', 'important');
+                    // El botón "ENTENDIDO" de esta ventana debe reiniciar el flujo
+                    const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
+                    if(okBtn) okBtn.onclick = () => location.reload();
+                }
             }
 
         } catch (e) {
