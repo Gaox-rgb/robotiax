@@ -53,7 +53,14 @@ window.app.payments = {
             if (nameEl) nameEl.textContent = productName;
             modal.style.setProperty('display', 'flex', 'important');
             modal.classList.add('visible');
-            this.initPaypalButton(productId, '#paypal-actual-button');
+
+            // Detectar qué contenedor existe en el DOM (Web vs IA/Arsenal)
+            const container = document.getElementById('modal-paypal-container') 
+                ? '#modal-paypal-container' 
+                : '#paypal-actual-button';
+
+            console.log("💳 [PAYMENTS]: Renderizando botón en:", container);
+            this.initPaypalButton(productId, container);
         }
     },
 
@@ -85,8 +92,18 @@ window.app.payments = {
                 const checkDependencies = () => {
                     if (window.app.editor) {
                         // Si estamos en seguridad, usamos el inicializador de seguridad
-                        if (window.location.pathname.includes('seguridad')) {
-                            if (window.app.ui.initEditorForSecurity) window.app.ui.initEditorForSecurity(pendingId);
+                        const path = window.location.pathname;
+                        if (path.includes('seguridad') || path.includes('arsenal-completo')) {
+                            // Sincronización manual para listados y seguridad
+                            window.app.editor.currentTemplateId = pendingId;
+                            const product = [...window.app.catalog.ia, ...window.app.catalog.security].find(p => p.id === pendingId);
+                            if (product) {
+                                window.app.editor.currentProductName = product.name;
+                                const n = document.getElementById('display-product-name');
+                                const p = document.getElementById('display-product-price');
+                                if (n) n.textContent = product.name;
+                                if (p) p.textContent = `$${product.price} ${product.currency}`;
+                            }
                         } else if (window.app.editor.init) {
                             window.app.editor.init(pendingId);
                         }

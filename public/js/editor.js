@@ -14,8 +14,23 @@ window.app.editor = {
         const style = document.createElement('style');
         style.id = 'editor-style-fix';
         style.innerHTML = `
-            #toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000001; }
-            @keyframes toastFadeIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+            #toast-container { 
+                position: fixed; 
+                top: 20%; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                z-index: 2000001; 
+                width: 100%; 
+                max-width: 400px; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                pointer-events: none;
+            }
+            @keyframes alertPop { 
+                from { transform: scale(0.9); opacity: 0; } 
+                to { transform: scale(1); opacity: 1; } 
+            }
         `;
         document.head.appendChild(style);
     },
@@ -34,21 +49,31 @@ window.app.editor = {
         toast.className = `toast-msg ${type}`;
         toast.innerHTML = `<span style="color:${type === 'error' ? '#ff003c' : '#2ecc71'}">[!]</span> ${msg}`;
         
-        // Estilo Minimalista Forzado
+        // Diseño Táctico en Amarillo Oro
+        const brandColor = '#FFD700'; // Amarillo Oro para alertas
         Object.assign(toast.style, {
-            background: '#000',
-            color: type === 'error' ? '#ff003c' : '#00f2ff',
-            border: `1px solid ${type === 'error' ? '#ff003c' : '#00f2ff'}`,
-            padding: '12px 20px',
-            marginBottom: '10px',
+            background: 'rgba(0, 0, 0, 0.95)',
+            color: brandColor,
+            border: `1px solid ${brandColor}`,
+            padding: '20px 30px',
+            marginBottom: '15px',
             fontFamily: "'Rajdhani', sans-serif",
-            fontSize: '0.8rem',
-            letterSpacing: '1px',
+            fontSize: '0.9rem',
+            fontWeight: '700',
+            letterSpacing: '2px',
             textTransform: 'uppercase',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            textAlign: 'center',
+            boxShadow: `0 0 30px rgba(255, 215, 0, 0.2)`,
             zIndex: '2000000',
-            animation: 'toastFadeIn 0.3s ease-out'
+            pointerEvents: 'auto',
+            backdropFilter: 'blur(10px)',
+            animation: 'alertPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
         });
+
+        toast.innerHTML = `
+            <div style="font-size: 0.7rem; opacity: 0.6; margin-bottom: 5px;">[ PROTOCOLO DE ALERTA ]</div>
+            <div>${msg}</div>
+        `;
 
         container.appendChild(toast);
 

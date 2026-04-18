@@ -157,6 +157,7 @@
 
         /* MODALES */
         .modal-overlay { display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:10000; justify-content:center; align-items:center; }
+        .modal-overlay.visible { display: flex !important; }
         .modal-content { background: #000; border: 2px solid #333; padding: 30px; width: 90%; max-width: 400px; text-align: center; }
         
         /* PANEL DE ACTIVACIÓN CORREGIDO */
@@ -267,20 +268,17 @@
 
     <!-- 3. VENTANA DE ÉXITO -->
     <div id="success-notif" class="modal-overlay">
-        <div class="modal-content" style="border-color: #00eaff;">
-            <h3 style="font-family: 'Orbitron'; color: #00eaff;">ORDEN RECIBIDA</h3>
-            <p>Tu recibo e instrucciones han sido enviados por correo.</p>
-            <p style="color: #ff3333; font-weight: bold; border: 1px dashed #ff3333; padding: 10px;">⚠️ REVISA TU BANDEJA DE SPAM</p>
-            <button onclick="window.location.reload()" style="margin-top:20px; background:#00eaff; color:#000; border:none; padding:15px 40px; cursor:pointer; font-family:'Orbitron'; font-weight:900;">ENTENDIDO</button>
+       <div class="modal-content" style="border: 2px solid #00eaff; background: #000; padding: 40px;">
+            <div style="width: 60px; height: 60px; background: #00eaff; color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.5rem; font-weight: bold;">✓</div>
+            <h3 style="font-family: 'Orbitron'; color: #fff; letter-spacing: 2px;">PROTOCOLO ACTIVADO</h3>
+            <p style="font-family: 'Rajdhani'; color: #888; margin: 15px 0;">Tu orden de pedido ha sido registrada en el sistema central.</p>
+            <div style="background: rgba(0,234,255,0.05); border: 1px dashed #00eaff; padding: 15px; color: #00eaff; font-family: 'Share Tech Mono'; font-size: 0.9rem;">
+                📩 REVISA TU CORREO (Y SPAM) PARA LAS INSTRUCCIONES DE DESPLIEGUE.
+            </div>
+            <button onclick="window.location.reload()" style="margin-top:30px; background:#00eaff; color:#000; border:none; padding:15px; width: 100%; cursor:pointer; font-family:'Orbitron'; font-weight:900; text-transform: uppercase;">VOLVER AL ARSENAL</button>
         </div>
     </div>
     
-    <script>
-        // Inicialización forzada de namespace para evitar errores de undefined
-        window.app = window.app || {};
-        window.app.payments = window.app.payments || {};
-        window.app.editor = window.app.editor || {};
-    </script>
     <script src="js/catalog.js"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6&currency=USD"></script>
     <script src="js/payments.js"></script>
@@ -311,10 +309,12 @@
         <div class="p-desc">${p.desc}</div>
         <div class="p-price">$${p.price} ${p.currency}</div>
         <div>
-            ${localStorage.getItem('owned_' + p.id) 
-                ? `<button class="btn-buy btn-owned">ADQUIRIDO ✓</button>` 
-                : `<button class="btn-buy ${btnClass}" onclick="window.app.payments.openModal('${p.id}', '${p.name}', '${p.price}', '${p.currency}')">COMPRAR</button>`
-            }
+            ${(() => {
+                const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+                return owned.includes(p.id) 
+                    ? `<button class="btn-buy btn-owned">ADQUIRIDO ✓</button>` 
+                    : `<button class="btn-buy ${btnClass}" onclick="window.app.payments.openModal('${p.id}', '${p.name}', '${p.price}', '${p.currency}')">COMPRAR</button>`;
+            })()}
         </div>
     </div>
 `;
