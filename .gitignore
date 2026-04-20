@@ -68,3 +68,5 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 service-account-key.json
+
+llave.json
