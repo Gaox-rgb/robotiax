@@ -5,6 +5,13 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Gestión del Overlay de Entrada
+    window.onscroll = function() {
+        const btn = document.getElementById('btn-up');
+        if (btn) {
+            btn.style.display = (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) ? "flex" : "none";
+        }
+    };
+
     const overlay = document.getElementById('explosion-overlay');
     if (overlay) {
         setTimeout(() => {

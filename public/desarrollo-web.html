@@ -12,28 +12,21 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
 <body>
-    <!-- CARGA DE CATÁLOGO MAESTRO (Indispensable para PayPal y UI) -->
     <script src="js/catalog.js"></script>
-    <!-- Estructura Saneada: El overlay se mantiene, los avisos van dentro del editor -->
+    
+    <a href="index.html#protocolo-presencia" class="back-link">❮ VOLVER</a>
 
-    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000;">
+    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
 
-    <div class="promo-banner" onclick="scrollToTables()">
-        <span>🚨 ¡OFERTA DE LANZAMIENTO! TU WEB PROFESIONAL POR $99 MXN 🚨</span>
-            <small style="display:block; font-size: 0.7rem; font-weight: 400; margin-top: 5px; text-transform: uppercase;">Haz clic para elegir tu diseño ahora</small>
+    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000; background:#000;">
+        <div class="promo-banner" onclick="scrollToTables()">
+            <span>🚨 ¡OFERTA DE LANZAMIENTO! TU WEB PROFESIONAL POR $99 MXN 🚨</span>
         </div>
-
-        <header class="main-header" style="display: flex; justify-content: center; align-items: center; min-height: 60px; position: relative;">
-            <!-- RETORNO DE IMPACTO AL PROTOCOLO DE PRESENCIA -->
-            <a href="index.html#protocolo-presencia" class="btn-escape-hud" style="text-decoration: none; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">
-                <span class="hud-arrow">❮</span> VOLVER AL CONSTRUCTOR DE TU FUTURO
-            </a>
-        </header>
     </div>
 
     <section class="intro-section">
         <h1>Tu Página Web Profesional. Hoy. $99 MXN.</h1>
-        <p>Elige el diseño que mejor represente tu marca. Completa tus datos, realiza el pago y nosotros nos encargamos del resto. Tu presencia digital de élite, lista en menos de 24 horas.</p>
+        <p>Elige el diseño que mejor represente tu marca. Completa tus datos, realiza el pago y nosotros nos encargamos del resto. Tu presencia digital de élite, lista en menos de 24 horas. **Incluye dominio .info y hosting profesional gratis por 30 días.**</p>
     </section>
 
     <section class="pricing-container" id="tablas" style="background: transparent; display: flex; flex-direction: column; align-items: center; width: 100%;">
@@ -175,6 +168,13 @@
                 <div class="template-actions"><h3>Yoga Studio 01</h3><button class="btn-choose" onclick="window.app.ui.requestPurchase('yoga-01', 'Yoga 01')">COMPRAR AHORA - $99 MXN</button></div>
             </div> <!-- CIERRE DE gallery-grid -->
     </section> <!-- CIERRE DE pricing-container -->
+
+    <div class="arsenal-promo-section">
+        <span class="arsenal-subtitle">¿BUSCAS SOLUCIONES DE INTELIGENCIA Y SEGURIDAD?</span>
+        <a href="arsenal-completo.html" class="btn-arsenal-pulse">
+            DESBLOQUEAR ARSENAL COMPLETO (+50 UNIDADES)
+        </a>
+    </div>
 
     <!-- AHORA LAS SECCIONES SIGUIENTES ESTARÁN FUERA DEL GRID -->
     <section class="includes-section">
@@ -318,7 +318,7 @@
                 <!-- Aquí PayPal inyectará sus botones oficiales -->
             </div>
 
-            <button onclick="window.app.ui.closeModal()" style="background:transparent; border:none; color:#ff003c; font-family:'Rajdhani'; cursor:pointer; margin-top:25px; font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; opacity:0.8;">❮ CANCELAR Y VOLVER</button>
+            <button onclick="window.app.payments.closeModal()" style="background:transparent; border:none; color:#ffffff; font-family:'Rajdhani'; cursor:pointer; margin-top:25px; font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; opacity:1;">❮ CANCELAR Y VOLVER</button>
         </div>
     </div>
 

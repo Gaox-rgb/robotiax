@@ -67,6 +67,7 @@ window.app.payments = {
         const modal = document.getElementById('payment-modal-overlay');
         if (modal) {
             modal.classList.remove('visible');
+            modal.style.display = 'none';
             modal.style.setProperty('display', 'none', 'important');
         }
     },
