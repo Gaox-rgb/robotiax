@@ -22,19 +22,7 @@ window.app.ui.requestIAPurchase = function(productId) {
     const appData = window.app.catalog.ia.find(p => p.id === productId);
     if(!appData) return;
 
-    const nameEl = document.getElementById('display-product-name');
-    const priceEl = document.getElementById('display-product-price');
-    const modalTitle = document.getElementById('modal-template-name');
-
-    if (nameEl) nameEl.textContent = appData.name;
-    if (priceEl) priceEl.textContent = `$${appData.price} ${appData.currency}`;
-    if (modalTitle) modalTitle.textContent = appData.name;
-    
-    const overlay = document.getElementById('payment-modal-overlay');
-    if (overlay) overlay.style.setProperty('display', 'flex', 'important');
-    
     if (window.app.payments) {
-        // Llamada unificada al nuevo sistema de Doble Botón
         window.app.payments.openModal(productId, appData.name, appData.price, appData.currency);
     }
 };

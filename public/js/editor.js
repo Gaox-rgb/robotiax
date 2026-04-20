@@ -15,26 +15,12 @@ window.app.editor = {
         style.id = 'editor-style-fix';
         style.innerHTML = `
             #toast-container { 
-                position: fixed; 
-                top: 20%; 
-                left: 50%; 
-                transform: translateX(-50%); 
-                z-index: 2000001; 
-                width: 100%; 
-                max-width: 400px; 
-                display: flex; 
-                flex-direction: column; 
-                align-items: center; 
-                pointer-events: none;
+                position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 2000001; width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; pointer-events: none;
             }
-            @keyframes alertPop { 
-                from { transform: scale(0.9); opacity: 0; } 
-                to { transform: scale(1); opacity: 1; } 
-            }
+            @keyframes alertPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         `;
         document.head.appendChild(style);
     },
-    currentTemplateId: null,
 
     // Motor de Notificaciones (Fuera de endpoints para que this.notify funcione)
     notify: function(msg, type = 'error') {

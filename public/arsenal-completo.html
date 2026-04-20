@@ -311,9 +311,10 @@
         <div>
             ${(() => {
                 const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-                return owned.includes(p.id) 
-                    ? `<button class="btn-buy btn-owned">ADQUIRIDO ✓</button>` 
-                    : `<button class="btn-buy ${btnClass}" onclick="window.app.payments.openModal('${p.id}', '${p.name}', '${p.price}', '${p.currency}')">COMPRAR AHORA</button>`;
+                if (owned.includes(p.id)) {
+                    return `<button class="btn-buy btn-owned" disabled>ADQUIRIDO ✓</button>`;
+                }
+                return `<button class="btn-buy ${btnClass}" onclick="window.app.payments.openModal('${p.id}', '${p.name}', ${p.price}, '${p.currency}')">COMPRAR AHORA</button>`;
             })()}
         </div>
     </div>

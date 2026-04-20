@@ -49,19 +49,9 @@ window.app.ui.requestSecPurchase = (productId) => {
     const secData = window.app.catalog.security.find(p => p.id === productId);
     if(!secData) return;
 
-    // Actualizar labels del panel de activación (Editor)
-    const dispName = document.getElementById('display-product-name');
-    const dispPrice = document.getElementById('display-product-price');
-    if(dispName) dispName.textContent = secData.name;
-    if(dispPrice) dispPrice.textContent = `$${secData.price} ${secData.currency}`;
-
-    // Abrir Modal de PayPal
-    document.getElementById('modal-template-name').textContent = secData.name;
-    const overlay = document.getElementById('payment-modal-overlay');
-    if(overlay) overlay.classList.add('visible');
-    
-    // Llamada unificada al nuevo sistema de Doble Botón
-    window.app.payments.openModal(productId, secData.name, secData.price, secData.currency);
+    if (window.app.payments) {
+        window.app.payments.openModal(productId, secData.name, secData.price, secData.currency);
+    }
 };
 
 // Función para repoblar el panel tras el regreso de PayPal

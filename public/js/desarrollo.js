@@ -78,14 +78,12 @@ window.app.ui = {
         this.selectedTemplate.id = templateId;
         this.selectedTemplate.name = templateName;
 
-        const payments = window.app.payments;
-        if (!payments) return console.error("Error: payments.js no cargado.");
+        if (!window.app.payments) return console.error("Error: payments.js no cargado.");
 
-        if (payments.checkAccess(templateId)) {
+        if (window.app.payments.checkAccess(templateId)) {
             this.openEditor(templateId, templateName);
         } else {
-            // El precio en MXN es fijo para desarrollo-web según briefing
-            payments.openModal(templateId, templateName, 99, 'MXN');
+            window.app.payments.openModal(templateId, templateName, 99, 'MXN');
         }
     },
 

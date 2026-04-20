@@ -9,71 +9,6 @@ window.app.payments = {
         capture: 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app'
     },
 
-    // NUEVA FUNCIÓN: Solo dispara el pago cuando el usuario elige el botón
-    executePurchase: function(productId, fundingType) {
-        const btnContainer = document.getElementById('modal-paypal-container') || document.getElementById('paypal-actual-button');
-        if (btnContainer) btnContainer.innerHTML = '<div style="color:#FFD700; font-family:Rajdhani; padding:20px;">INICIANDO PROTOCOLO DE PAGO...</div>';
-
-        fetch(this.endpoints.create, { 
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                productId: productId,
-                fundingType: fundingType, // Enviamos si es 'card' o 'paypal'
-                returnUrl: window.location.origin + window.location.pathname 
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.approveUrl) {
-                localStorage.setItem('pending_purchase_id', productId);
-                window.location.href = data.approveUrl; // Redirección limpia
-            }
-        })
-        .catch(err => {
-            console.error("Fallo en Pasarela:", err);
-            if(btnContainer) btnContainer.innerHTML = '<p style="color:#ff003c;">ERROR DE CONEXIÓN.</p>';
-        });
-    },
-
-    // REFACTORIZADO: Ya no auto-salta, ahora inyecta los dos botones de Robotiax
-    openModal: function(productId, productName, price, currency) {
-        const modal = document.getElementById('payment-modal-overlay');
-        const nameEl = document.getElementById('modal-template-name');
-        const btnBox = document.getElementById('modal-paypal-container') || document.getElementById('paypal-actual-button');
-
-        if (modal && btnBox) {
-            if (nameEl) nameEl.textContent = productName;
-            modal.style.setProperty('display', 'flex', 'important');
-            modal.classList.add('visible');
-
-            // INYECCIÓN DE BOTONES PERSONALIZADOS
-            btnBox.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'paypal')" 
-                        style="background: #FFD700; color: #000; border: none; padding: 15px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px;">
-                        PAGAR CON PAYPAL
-                    </button>
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'card')" 
-                        style="background: #000; color: #00f2ff; border: 2px solid #00f2ff; padding: 15px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px;">
-                        TARJETA CRÉDITO / DÉBITO
-                    </button>
-                </div>
-            `;
-        }
-    },
-
-    closeModal: function() {
-        const modal = document.getElementById('payment-modal-overlay');
-        if (modal) modal.style.setProperty('display', 'none', 'important');
-    },
-
-    checkAccess: function(productId) {
-        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-        return owned.includes(productId);
-    },
-
-    // NUEVA FUNCIÓN: Ejecuta el pago solo al pulsar uno de los dos botones
     executePurchase: function(productId, fundingType) {
         const targetId = document.getElementById('modal-paypal-container') ? 'modal-paypal-container' : 'paypal-actual-button';
         const btnBox = document.getElementById(targetId);
@@ -97,6 +32,7 @@ window.app.payments = {
             }
         })
         .catch(err => {
+            console.error("Fallo en Pasarela:", err);
             if(btnBox) btnBox.innerHTML = '<p style="color:#ff003c;">ERROR DE PROTOCOLO. REINTENTE.</p>';
         });
     },
@@ -112,7 +48,6 @@ window.app.payments = {
             modal.style.setProperty('display', 'flex', 'important');
             modal.classList.add('visible');
 
-            // INYECTAMOS NUESTROS BOTONES (ADESTRANDO AL PAYPAL)
             btnBox.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
                     <button onclick="window.app.payments.executePurchase('${productId}', 'paypal')" 
@@ -126,6 +61,19 @@ window.app.payments = {
                 </div>
             `;
         }
+    },
+
+    closeModal: function() {
+        const modal = document.getElementById('payment-modal-overlay');
+        if (modal) {
+            modal.classList.remove('visible');
+            modal.style.setProperty('display', 'none', 'important');
+        }
+    },
+
+    checkAccess: function(productId) {
+        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+        return owned.includes(productId);
     },
 
     handleReturn: function() {
