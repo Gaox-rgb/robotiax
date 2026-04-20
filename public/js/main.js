@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (titleElement) runTextScramble(titleElement);
 });
 
+
 // 3. CONTROLADOR DE TRANSICIONES
 // Se mantiene fuera del DOMContentLoaded para ser accesible desde el atributo onclick del HTML
 function runEffect(e, url, type) {

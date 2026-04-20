@@ -10,11 +10,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="/css/style.css">
+<link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
 <body>
 
     <div id="fx-matrix" class="trans-matrix"></div>
+    
+    <style>
+        .btn-scroll-top {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: #00f2ff; color: #000; border: none; border-radius: 50%;
+            display: none; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 9999; font-size: 1.5rem; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+        .btn-scroll-top:hover { transform: scale(1.1); background: #fff; }
+    </style>
+
+    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
     <div id="fx-warp" class="trans-warp"></div>
+
+    <!-- SISTEMA DE RETORNO INDEPENDIENTE -->
+    <style>
+        .btn-scroll-top {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: #00f2ff; color: #000; border: none; border-radius: 50%;
+            display: none; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 9999; font-size: 1.5rem; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+        .btn-scroll-top:hover { transform: scale(1.1); background: #fff; }
+    </style>
+
+    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            var btn = document.getElementById('btn-up');
+            if (btn) {
+                btn.style.display = (window.pageYOffset > 600) ? 'flex' : 'none';
+            }
+        });
+    </script>
+
+    <style>
+        .btn-scroll-top {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: #00f2ff; color: #000; border: none; border-radius: 50%;
+            display: none; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 9999; font-size: 1.5rem; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+        .btn-scroll-top:hover { transform: scale(1.1); background: #fff; }
+    </style>
+
+    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
     <div id="fx-tv" class="trans-tv"></div>
     <div id="fx-gold" class="trans-gold-container">
         <div class="trans-gold-layer t-left"></div>
@@ -40,7 +90,7 @@
                 <h2>Tu potencial online está esperando.</h2>
                 <p>Una web promedio es invisible. Creamos una <strong>presencia digital que resuena</strong>, conecta y se convierte en el estándar de tu industria.</p>
                 <div class="content-wrapper">
-                    <h3>De la Invisibilidad al Impacto.</h3>
+                    <h3>Convierte visitas en facturación. Diseñamos infraestructuras de venta, no simples páginas web.</h3>
                     <a href="desarrollo-web.html" class="action-button">
                         CONSTRUIR PRESENCIA
                     </a>
@@ -56,7 +106,7 @@
                 <h2>La eficiencia es tu mayor activo.</h2>
                 <p>Las tareas repetitivas frenan tu crecimiento. Implementamos sistemas de IA que <strong>optimizan, automatizan y aceleran</strong> tu negocio hacia el futuro.</p>
                 <div class="content-wrapper">
-                    <h3>De la Operación a la Estrategia.</h3>
+                    <h3>Crece sin límites y sin aumentar tu nómina. Pon tu negocio en piloto automático con agentes de IA 24/7.</h3>
                     <a href="#" onclick="runEffect(event, 'soluciones-ia.html', 'warp')" class="action-button btn-ia">
                         INTEGRAR INTELIGENCIA
                     </a>
@@ -72,7 +122,7 @@
                 <h2>La confianza es la base del éxito.</h2>
                 <p>Tu infraestructura digital sostiene tu negocio. La protegemos con seguridad de vanguardia, porque la confianza <strong>no es una opción, es una garantía.</strong></p>
                 <div class="content-wrapper">
-                    <h3>De la Vulnerabilidad a la Resiliencia.</h3>
+                    <h3>No esperes a ser el blanco de un ataque. Blinda tu patrimonio digital con inmunidad técnica total.</h3>
                     <a href="#" onclick="runEffect(event, 'seguridad-web.html', 'tv')" class="action-button btn-sec">
                         FORTALECER PROYECTO
                     </a>
@@ -82,8 +132,8 @@
         
         <section id="protocolo-black" class="protocol-section final-cta">
             <div class="container">
-                <h2>El futuro no espera.</h2>
-                <p>La tecnología avanza, con o sin nosotros. La pregunta no es si el cambio llegará, sino qué rol jugarás en él. <strong>¿ERES ESPECTADOR O ERES PIONERO?</strong></p>
+                <h2>Acceso restringido para quienes exigen lo mejor.</h2>
+                <p>Entra al círculo de élite donde la tecnología no tiene fronteras. <strong>¿ERES ESPECTADOR O ERES PIONERO?</strong></p>
                  <div class="content-wrapper">
                     <a href="#" onclick="runEffect(event, 'membresia-black.html', 'gold')" class="action-button btn-gold">
                         DECIDIR. AHORA.
@@ -102,7 +152,9 @@
                 <a href="#" onclick="runEffect(event, 'soluciones-ia.html', 'warp')" style="color: #a29bfe; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ INTELIGENCIA ]</a>
                 <a href="#" onclick="runEffect(event, 'seguridad-web.html', 'tv')" style="color: #ff7675; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ FORTALEZA ]</a>
                 <a href="#" onclick="runEffect(event, 'membresia-black.html', 'gold')" style="color: #fdcb6e; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ BLACK ]</a>
+                <a href="arsenal-completo.html" style="color: #39ff14; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #39ff14;">[ CATÁLOGO DE APPS ]</a>
             </div>
+            
 
             <!-- NIVEL 2: LEGALES -->
             <div class="footer-legal" style="margin-bottom: 20px; display: flex; justify-content: center; gap: 30px;">
