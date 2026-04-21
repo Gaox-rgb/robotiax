@@ -13,6 +13,14 @@ if (!admin.apps.length) {
     admin.initializeApp();
 }
 
+// PROTOCOLO PORTERO: VALIDACIÓN DE IDENTIDAD DE APP
+const validarAcceso = (req) => {
+    const token = req.headers['x-robotiax-token'];
+    const secret = 'RBX-PRT-99-MXN-SECURE-2025';
+    // Si trae el token correcto, permitimos el acceso sin importar el header de origen (más seguro para InPrivate)
+    return token === secret;
+};
+
 // Getters de Carga Perezosa (Lazy Loading) para evitar Timeouts de 10s
 let _db;
 const getDb = () => { if (!_db) _db = admin.firestore(); return _db; };
@@ -154,6 +162,8 @@ exports.generateDemo = onRequest({
 // 1. Crea una orden en PayPal y devuelve el ID de la orden al cliente.
 exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
     try {
+        if (!validarAcceso(req)) return res.status(403).json({ error: "PROTOCOLO_BLOQUEADO" });
+
         const { productId, fundingType, returnUrl } = req.body;
 
         if (!productId) return res.status(400).send("Falta ID de producto.");
@@ -256,6 +266,8 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
         return res.status(405).send('Method Not Allowed');
     }
 
+    if (!validarAcceso(req)) return res.status(403).json({ error: "SUBIDA_BLOQUEADA" });
+
     const { contentType, templateId } = req.body;
     if (!contentType || !templateId) {
         return res.status(400).json({ error: 'Faltan contentType o templateId.' });
@@ -289,6 +301,8 @@ exports.getSalesAgentResponse = onRequest({
     cors: true 
 }, async (req, res) => {
     try {
+        if (!validarAcceso(req)) return res.status(403).json({ response: "ACCESO_DENEGADO_NUCLEO" });
+
         if (req.method !== 'POST') return res.status(405).send('Use POST');
         const { userQuery, chatHistory = [] } = req.body;
         if (!userQuery) return res.status(400).json({ response: "La consulta está vacía." });
@@ -340,6 +354,8 @@ exports.getSalesAgentResponse = onRequest({
 exports.submitFinalOrder = onRequest({ 
     cors: true, timeoutSeconds: 120, memory: "1GiB"     
 }, async (req, res) => {
+    if (!validarAcceso(req)) return res.status(403).json({ error: "ORDEN_RECHAZADA_PORTERO" });
+
     const { template, details } = req.body;
     const clientEmail = details.email || details.correo; 
 

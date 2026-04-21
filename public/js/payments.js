@@ -17,7 +17,10 @@ window.app.payments = {
 
         fetch(this.endpoints.create, { 
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Robotiax-Token': (window.app && window.app.vault) ? window.app.vault : 'RBX-PRT-99-MXN-SECURE-2025'
+            },
             body: JSON.stringify({ 
                 productId: productId,
                 fundingType: fundingType,

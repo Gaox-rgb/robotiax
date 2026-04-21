@@ -186,7 +186,10 @@ window.app.editor = {
         try {
             const response = await fetch('https://submitfinalorder-bh64qprvqa-uc.a.run.app', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Robotiax-Token': window.app.vault || 'RBX-PRT-99-MXN-SECURE-2025'
+                },
                 body: JSON.stringify({ template: this.currentTemplateId, details })
             });
 

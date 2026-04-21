@@ -68,9 +68,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (titleElement) runTextScramble(titleElement);
 });
 
+// INICIALIZACIÓN GLOBAL SEGURA (PORTERO ACTIVO)
+window.app = window.app || {};
+window.app.vault = 'RBX-PRT-99-MXN-SECURE-2025';
+
+
+// LLAVE DE ACCESO AL PROTOCOLO
+window.app.vault = 'RBX-PRT-99-MXN-SECURE-2025';
 
 // 3. CONTROLADOR DE TRANSICIONES
 // Se mantiene fuera del DOMContentLoaded para ser accesible desde el atributo onclick del HTML
+// ASEGURAR EXISTENCIA DEL NAMESPACE GLOBAL
+window.app = window.app || {};
+window.app.vault = 'RBX-PRT-99-MXN-SECURE-2025';
+
 function runEffect(e, url, type) {
     e.preventDefault(); 
 
