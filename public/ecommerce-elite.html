@@ -12,7 +12,7 @@
 
         /* NAVEGACIÓN UNIFICADA */
         .nexus-nav { display: flex; justify-content: center; gap: 20px; background: #000; padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.2); position: sticky; top: 0; z-index: 1000; }
-        .nexus-item { color: #fff; text-decoration: none; font-family: 'Orbitron'; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .nexus-item { color: #ffffff; text-decoration: none; font-family: 'Orbitron'; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 1 !important; }
         .nexus-item.active { opacity: 1; border-bottom: 1px solid #fff; }
 
         /* ANIMACIONES */
@@ -54,12 +54,51 @@
         .hero-shop .subtitle {
             font-family: 'Roboto Mono'; font-size: 0.7rem; letter-spacing: 1px;
             line-height: 1.8; text-transform: uppercase; color: #fff;
-            margin: 0; min-height: 3em; display: inline;
+           margin: 0; min-height: 3em; display: inline; opacity: 1 !important;
         }
         .cursor {
-            display: inline-block; width: 8px; height: 1em; background: var(--ghost-white);
+            display: inline-block; width: 8px; height: 1em; background: #ffffff;
             margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle;
         }
+        /* E-COMMERCE ESTRATEGIA DE VENTAS */
+        .sales-funnel { padding: 80px 5%; background: #000; text-align: center; border-top: 1px solid var(--ghost-white); }
+        .sales-funnel h2 { font-family: 'Orbitron'; color: #fff; font-size: 2rem; margin-bottom: 25px; letter-spacing: 5px; }
+        .sales-funnel p { max-width: 850px; margin: 0 auto 50px; font-size: 1.1rem; line-height: 1.8; color: #bbb; }
+        
+        .tech-stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 60px; }
+        .stack-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 40px 25px; transition: 0.4s; }
+        .stack-box:hover { background: #fff; color: #000; transform: translateY(-10px); }
+        .stack-box h4 { font-family: 'Orbitron'; margin-bottom: 15px; letter-spacing: 2px; }
+
+        .platform-bridge { 
+            background: #000; padding: 60px 20px; border: 1px solid var(--ghost-white);
+            margin: 60px auto; max-width: 90%; width: 850px;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: inset 0 0 30px rgba(255,255,255,0.05);
+        }
+        .platform-bridge h3 { font-family: 'Orbitron'; margin-bottom: 40px; font-size: 1.4rem; color: #fff; letter-spacing: 5px; }
+        .platform-icons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; width: 100%; }
+        
+        .platform-badge {
+            padding: 12px 25px; border: 1px solid var(--ghost-white); color: #fff;
+            font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 2px;
+            background: rgba(255,255,255,0.02); transition: 0.4s; cursor: crosshair;
+        }
+        .platform-icons { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; width: 100%; padding: 40px 0; }
+        .platform-badge {
+            padding: 15px 30px; border: 1px solid rgba(255,255,255,0.2); color: #fff;
+            font-family: 'Orbitron'; font-size: 0.75rem; letter-spacing: 2px;
+            background: #000; transition: 0.4s; position: relative;
+        }
+        .platform-badge.shopify:hover { border-color: #96bf48; color: #96bf48; box-shadow: 0 0 20px #96bf48; }
+        .platform-badge.ml:hover { border-color: #fff159; color: #fff159; box-shadow: 0 0 20px #fff159; }
+        .platform-badge.amazon:hover { border-color: #ff9900; color: #ff9900; box-shadow: 0 0 20px #ff9900; }
+        .platform-badge.woo:hover { border-color: #96588a; color: #96588a; box-shadow: 0 0 20px #96588a; }
+        .platform-badge.stripe:hover { border-color: #635bff; color: #635bff; box-shadow: 0 0 20px #635bff; }
+        
+        .bridge-note { margin-top: 50px; font-size: 0.85rem; color: #ffffff; max-width: 600px; line-height: 1.8; opacity: 1 !important; letter-spacing: 1px; }
+
+        .package-selector-header { padding: 60px 0; border-top: 1px solid rgba(255,255,255,0.05); }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* GRID DE TARJETAS (RESTAURADO) */
@@ -113,6 +152,51 @@
             <div class="subtitle-container">
                 <p class="subtitle" id="typewriter-text"></p><span class="cursor"></span>
             </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE MARKETING E-COMMERCE -->
+    <section class="sales-funnel">
+        <h2>TU TIENDA NO ES UN GASTO, ES UN ACTIVO 💰</h2>
+        <p>
+            ¡Hola! 👋 Deja de soñar con vender y empieza a despachar pedidos. En <b>Robotiax</b> eliminamos la fricción técnica: nosotros nos encargamos del <b>Dominio Pro, Hosting de alta velocidad y Certificado SSL</b>. Tú solo te encargas de lo más importante: <b>CRECER</b>.
+        </p>
+
+        <div class="tech-stack">
+            <div class="stack-box">
+                <h4>INFRAESTRUCTURA TOTAL</h4>
+                <p>Tu propia web con dominio (.com, .mx) y hosting incluido. Eres el dueño absoluto de tu plataforma, sin rentas mensuales ocultas.</p>
+            </div>
+            <div class="stack-box">
+                <h4>CONEXIÓN GLOBAL</h4>
+                <p>No te limites. Integramos tu inventario con las pasarelas de pago más seguras del planeta como PayPal, Stripe y Mercado Pago.</p>
+            </div>
+            <div class="stack-box">
+                <h4>LOGÍSTICA INTELIGENTE</h4>
+                <p>Cálculo de envíos automático y rastreo de pedidos en tiempo real. La experiencia de compra que tus clientes exigen.</p>
+            </div>
+        </div>
+
+        <div class="platform-bridge">
+            <h3>NEXUS MULTIPLATAFORMA</h3>
+            <div class="platform-icons">
+                <div class="platform-badge shopify">SHOPIFY</div>
+                <div class="platform-badge ml">MERCADO LIBRE</div>
+                <div class="platform-badge amazon">AMAZON</div>
+                <div class="platform-badge woo">WOOCOMMERCE</div>
+                <div class="platform-badge stripe">STRIPE</div>
+            </div>
+            <p class="bridge-note">
+                INGENIERÍA DE SINCRONIZACIÓN: CONECTAMOS TU ARSENAL CON LOS MARKETPLACES MÁS GRANDES DEL MUNDO. VENDE DONDE TUS CLIENTES YA ESTÁN COMPRANDO.
+            </p>
+        </div>
+
+        <div class="package-selector-header">
+            <h3 style="font-family: 'Orbitron'; color: #fff; font-size: 1.5rem;">DESPLIEGA TU UNIDAD DE VENTA</h3>
+            <p style="margin-top: 15px;">
+                Desde el <b>Nexus Drop</b> para dropshipping ágil, el <b>Storefront Pro</b> para dueños de inventario real, hasta el <b>Omnicanal Élite</b> para dominación total en redes y marketplaces.
+            </p>
+            <p style="font-size: 0.7rem; color: var(--ghost-white); letter-spacing: 3px; font-weight: bold;">↓↓ SELECCIONA TU NIVEL DE COMERCIO ↓↓</p>
         </div>
     </section>
 
