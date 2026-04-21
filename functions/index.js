@@ -72,7 +72,7 @@ const paypalSecret = defineString('PAYPAL_SECRET');
 const getPaypalClient = () => {
     const clientId = paypalClientId.value();
     const clientSecret = paypalSecret.value();
-    const env = new paypal.core.SandboxEnvironment(clientId, clientSecret);
+    const env = new paypal.core.LiveEnvironment(clientId, clientSecret);
     return new paypal.core.PayPalHttpClient(env);
 };
 

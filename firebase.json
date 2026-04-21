@@ -18,22 +18,22 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "cleanUrls": true,
+    "trailingSlash": false,
     "rewrites": [
       {
-        "source": "/agente/**",
+        "source": "/agente",
         "destination": "/agente.html"
       },
       {
-        "source": "/agente",
+        "source": "/agente/**",
         "destination": "/agente.html"
       },
       {
         "source": "/maquila/:cliente/**",
         "destination": "/maquila/:cliente/index.html"
       }
-    ],
-    "cleanUrls": true,
-    "trailingSlash": false
+    ]
   },
   "storage": {
     "rules": "storage.rules"
