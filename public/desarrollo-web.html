@@ -14,14 +14,32 @@
 <body>
     <script src="js/catalog.js"></script>
     
-    <a href="index.html#protocolo-presencia" class="back-link">❮ VOLVER</a>
+    <style>
+        .back-link { position: absolute; left: 10px; top: 8px; z-index: 1100; color: #fff; border: 1px solid #fff; padding: 4px 10px; font-size: 0.6rem; font-family: 'Orbitron'; background: #000; }
+        .nexus-nav { display: flex; justify-content: center; gap: 30px; background: #000; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .nexus-item { color: #ffffff !important; text-decoration: none; font-family: 'Orbitron'; font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; opacity: 1 !important; transition: 0.3s; font-weight: 700; white-space: nowrap; }
+        .nexus-item:hover, .nexus-item.active { text-shadow: 0 0 12px rgba(255,255,255,0.8); }
+        .btn-bottom-back { display: block; width: 100%; max-width: 300px; margin: 40px auto; padding: 15px; border: 1px solid #fff; color: #fff; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; text-align: center; transition: 0.3s; }
+        .btn-bottom-back:hover { background: #fff; color: #000; }
+        .nexus-item.active { border-bottom: 1px solid #fff; }
+    @keyframes alert-warning {
+            0%, 100% { color: #ff0000; text-shadow: 0 0 15px rgba(255,0,0,0.8); }
+            50% { color: #ffff00; text-shadow: 0 0 25px rgba(255,255,0,0.9); }
+        }
+        .intro-section h1 {
+            animation: alert-warning 1.2s infinite ease-in-out;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+    </style>
 
-    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
-
-    <div class="top-bar" style="position: sticky; top: 0; z-index: 1000; background:#000;">
-        <div class="promo-banner" onclick="scrollToTables()">
-            <span>🚨 ¡OFERTA DE LANZAMIENTO! TU WEB PROFESIONAL POR $99 MXN 🚨</span>
-        </div>
+   <div class="top-bar" style="position: sticky; top: 0; z-index: 1000; background:#000; border-bottom: 1px solid rgba(255,255,255,0.2);">
+        <nav class="nexus-nav" style="display: flex; justify-content: center; gap: 20px; padding: 15px 10px;">
+            <a href="desarrollo-web.html" class="nexus-item active">Páginas Web</a>
+            <a href="redes-sociales.html" class="nexus-item">Redes Sociales</a>
+            <a href="ecommerce-elite.html" class="nexus-item">E-Commerce</a>
+        </nav>
     </div>
 
     <section class="intro-section">
@@ -291,6 +309,7 @@
                 <li style="margin-bottom: 15px; font-size: 1.1rem;">✅ <strong style="color: #00f2ff;">Soporte Técnico:</strong> Activación garantizada en 24 horas.</li>
             </ul>
         </div>
+        <a href="index.html" class="btn-bottom-back">VOLVER AL INICIO</a>
     </section>
 
     <!-- BLOQUE KILLER CLOSE ELIMINADO PARA COMPACTAR DISEÑO -->

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-COMMERCE ÉLITE | ROBOTIAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #ffffff; --bg-red: #1a0000; --card-dark: #0a0000; --ghost-white: rgba(255, 255, 255, 0.5); }
+        
+        body { background: var(--bg-red); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; overflow-x: hidden; }
+
+        /* NAVEGACIÓN UNIFICADA */
+        .nexus-nav { display: flex; justify-content: center; gap: 20px; background: #000; padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.2); position: sticky; top: 0; z-index: 1000; }
+        .nexus-item { color: #fff; text-decoration: none; font-family: 'Orbitron'; font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .nexus-item.active { opacity: 1; border-bottom: 1px solid #fff; }
+
+        /* ANIMACIONES */
+        @keyframes glitch-anim {
+            0% { text-shadow: 2px 0 #ff0000, -2px 0 #00f2ff; transform: translate(0); }
+            25% { text-shadow: -2px 0 #ff0000, 2px 0 #00f2ff; transform: translate(-1px, 1px); }
+            50% { text-shadow: 2px 0 #ff0000, -2px 0 #00f2ff; transform: translate(1px, -1px); }
+            75% { text-shadow: -2px 0 #ff0000, 2px 0 #00f2ff; transform: translate(-1px, -1px); }
+            100% { text-shadow: 2px 0 #ff0000, -2px 0 #00f2ff; transform: translate(0); }
+        }
+
+        @keyframes type-reveal {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HERO SECCIÓN */
+        .hero-shop {
+            min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: linear-gradient(to bottom, #000, var(--bg-red)); padding: 40px 20px; text-align: center;
+        }
+        
+        .command-frame {
+            border: 1px solid rgba(255,255,255,0.3); padding: 40px; width: 90%; max-width: 700px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); position: relative;
+        }
+        .command-frame::before { content: "[ SECURITY_ACCESS ]"; position: absolute; top: -10px; left: 15px; background: #fff; color: #000; font-size: 0.5rem; padding: 2px 8px; font-weight: 900; }
+
+        .hero-shop h1 {
+            font-family: 'Orbitron'; font-size: clamp(1.8rem, 8vw, 3.2rem);
+            margin: 0; color: #fff; letter-spacing: 8px; font-weight: 900;
+            animation: glitch-anim 0.2s infinite; white-space: nowrap;
+        }
+
+        .subtitle-container {
+            max-width: 85%; margin: 30px auto 0; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;
+        }
+
+        .hero-shop .subtitle {
+            font-family: 'Roboto Mono'; font-size: 0.7rem; letter-spacing: 1px;
+            line-height: 1.8; text-transform: uppercase; color: #fff;
+            margin: 0; min-height: 3em; display: inline;
+        }
+        .cursor {
+            display: inline-block; width: 8px; height: 1em; background: var(--ghost-white);
+            margin-left: 5px; animation: blink 0.8s infinite; vertical-align: middle;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* GRID DE TARJETAS (RESTAURADO) */
+        .grid-commerce { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px; padding: 60px 5%; background: var(--bg-red);
+        }
+        
+        .card-shop { 
+            background: var(--card-dark); border: 1px solid rgba(255,255,255,0.1); 
+            padding: 40px; transition: 0.4s; display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .card-shop:hover { border-color: #fff; transform: translateY(-10px); background: #1f0000; }
+        
+        .card-shop h3 { font-family: 'Orbitron'; color: #fff; margin: 0 0 20px; font-size: 1.3rem; letter-spacing: 2px; }
+        
+        .package-details { font-size: 0.9rem; text-align: left; margin: 0 0 30px; padding: 0; flex-grow: 1; }
+        .package-details li { margin-bottom: 12px; list-style: none; display: flex; align-items: center; gap: 10px; opacity: 0.8; }
+        .package-details li::before { content: "◈"; color: var(--alert-red); font-size: 1.1rem; }
+
+        .price-box { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: auto; }
+        .price { font-size: 2.2rem; font-weight: 900; font-family: 'Orbitron'; color: #fff; }
+        .price span { font-size: 0.8rem; opacity: 0.4; text-decoration: line-through; display: block; margin-bottom: 5px; }
+
+        .btn-buy { 
+            width: 100%; padding: 18px; background: transparent; border: 1px solid #fff; 
+            color: #fff; font-family: 'Orbitron'; cursor: pointer; font-weight: 900; 
+            transition: 0.3s; margin-top: 20px; letter-spacing: 2px;
+        }
+        .btn-buy:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
+
+        /* FOOTER ESCAPE GHOST STYLE */
+        .escape-zone { padding: 80px 20px; text-align: center; background: #000; border-top: 1px solid var(--ghost-white); }
+        .btn-escape { border: 1px solid var(--ghost-white); color: var(--ghost-white); padding: 15px 50px; text-decoration: none; font-family: 'Orbitron'; font-size: 0.65rem; transition: 0.4s; display: inline-block; letter-spacing: 3px; }
+        .btn-escape:hover { border-color: #fff; color: #000; background: #fff; box-shadow: 0 0 40px rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+    <nav class="nexus-nav">
+        <a href="desarrollo-web.html" class="nexus-item">Páginas Web</a>
+        <a href="redes-sociales.html" class="nexus-item">Redes Sociales</a>
+        <a href="ecommerce-elite.html" class="nexus-item active">E-Commerce</a>
+    </nav>
+    
+    <section class="hero-shop">
+        <div class="command-frame">
+            <div style="font-size: 0.6rem; opacity: 0.5; margin-bottom: 10px;">PROTOCOL_ID: SALES_NEXUS_V2</div>
+            <h1>E-COMMERCE</h1>
+            <div class="subtitle-container">
+                <p class="subtitle" id="typewriter-text"></p><span class="cursor"></span>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid-commerce">
+        <div class="card-shop">
+            <h3>NEXUS DROP</h3>
+            <ul class="package-details">
+                <li>Sincronización con Proveedores</li>
+                <li>Inventario de 50 Productos</li>
+                <li>Pasarela PayPal / Stripe</li>
+                <li>Optimización para Móviles</li>
+            </ul>
+            <div class="price-box">
+                <div class="price"><span>$4,000</span> $1,999</div>
+                <button class="btn-buy" onclick="window.app.ui.requestPurchase('nexus-drop', 'Nexus Drop')">COMPRAR</button>
+            </div>
+        </div>
+
+        <div class="card-shop" style="border: 2px solid #fff;">
+            <div style="position:absolute; top:-12px; right:20px; background:#fff; color:#000; padding:2px 10px; font-size:0.6rem; font-weight:900;">POPULAR</div>
+            <h3>STOREFRONT PRO</h3>
+            <ul class="package-details">
+                <li>Inventario Ilimitado</li>
+                <li>Panel de Administración Real</li>
+                <li>Facturación Automática</li>
+                <li>SEO Avanzado en Google</li>
+            </ul>
+            <div class="price-box">
+                <div class="price"><span>$7,000</span> $3,499</div>
+                <button class="btn-buy" style="background:#fff; color:#000;" onclick="window.app.ui.requestPurchase('storefront-pro', 'Storefront Pro')">COMPRAR</button>
+            </div>
+        </div>
+
+        <div class="card-shop">
+            <h3>OMNICANAL ÉLITE</h3>
+            <ul class="package-details">
+                <li>Sincronización FB/Instagram Shop</li>
+                <li>App Móvil Web (PWA)</li>
+                <li>Soporte Prioritario 24/7</li>
+                <li>IA de Recomendaciones</li>
+            </ul>
+            <div class="price-box">
+                <div class="price"><span>$15,000</span> $7,499</div>
+                <button class="btn-buy" onclick="window.app.ui.requestPurchase('omnicanal-elite', 'Omnicanal Elite')">COMPRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="escape-zone">
+        <a href="desarrollo-web.html" class="btn-escape">ABORTAR Y VOLVER AL ARSENAL</a>
+    </footer>
+
+<script>
+        const text = "COMIENZA A VENDER. DESPEGA. QUE TUS SERVICIOS NO SE QUEDEN EN TU IMAGINACIÓN. ACTUAMOS Y TE ASISTIMOS PARA QUE LO QUE COMERCIALICES SEA UN ÉXITO TOTAL.";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter-text").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 40);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', typeWriter);
+    </script>
+</body>
+</html>

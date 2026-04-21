@@ -165,13 +165,57 @@ body::after {
 /* ============================================= */
 /* ==           HEADER Y NAVEGACIÓN           == */
 /* ============================================= */
+/* Corrección de la Barra Superior y Botón Volver */
 .top-bar {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: #fff;
-    border-bottom: 1px solid var(--border-soft);
+    background: #000;
+    border-bottom: 1px solid rgba(0, 242, 255, 0.2);
 }
+
+.back-link {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Orbitron';
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    padding: 5px 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.8);
+}
+
+/* El Nuevo Nexus de Navegación Minimalista */
+.nexus-nav {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    background: #050505;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nexus-item {
+    color: #666;
+    text-decoration: none;
+    font-family: 'Orbitron';
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    transition: 0.4s;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nexus-item:hover { color: #00f2ff; text-shadow: 0 0 10px #00f2ff; }
+.nexus-item.active { color: #fff; border-bottom: 1px solid #fff; }
+.nexus-item span { font-size: 0.8rem; }
 
 .promo-banner {
     background: repeating-linear-gradient(45deg, var(--vibrant-action), var(--vibrant-action) 10px, #FF8E92 10px, #FF8E92 20px);

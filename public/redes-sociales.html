@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCIAL NEXUS | ROBOTIAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto+Mono:wght@400;700&family=Inter:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-social: #ff00ff; /* Magenta Cyber */
+            --neon-blue: #00f2ff;
+            --bg-dark: #050505;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* ESTILO 1: HERO "THE VIRAL VORTEX" */
+        .hero-social {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #1a001a 0%, #050505 100%);
+            border-bottom: 2px solid var(--neon-social);
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-social h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            text-transform: uppercase;
+            letter-spacing: -5px;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, var(--neon-social));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.5));
+        }
+
+        /* ESTILO 2: "THE FEED GRID" (PAQUETES) */
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 50px;
+            background: #000;
+        }
+
+        .card-nexus {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 0, 255, 0.2);
+            padding: 30px;
+            position: relative;
+            transition: 0.4s;
+            overflow: hidden;
+        }
+
+        .card-nexus:hover {
+            background: rgba(255, 0, 255, 0.05);
+            border-color: var(--neon-social);
+            transform: translateY(-10px);
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.2);
+        }
+
+        .card-nexus h3 { font-family: 'Orbitron'; color: var(--neon-social); }
+        .price { font-size: 2rem; font-weight: bold; margin: 20px 0; }
+        .price span { font-size: 0.8rem; text-decoration: line-through; opacity: 0.5; }
+
+        /* ESTILO 3: "NEURAL NETWORK" (DISEÑO ECOMMERCE BRIDGE) */
+        .ecommerce-teaser {
+            padding: 100px 50px;
+            background: linear-gradient(45deg, #000, #001a1a);
+            text-align: center;
+            border-top: 1px solid var(--neon-blue);
+        }
+
+        .btn-glitch {
+            background: var(--neon-blue);
+            color: #000;
+            padding: 20px 40px;
+            font-family: 'Orbitron';
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.3s;
+        }
+
+        .btn-glitch:hover {
+            background: #fff;
+            box-shadow: 0 0 50px var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar" style="background:#000; position: sticky; top:0; z-index:1000; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <nav style="display: flex; justify-content: center; gap: 20px; padding: 15px 10px;">
+            <a href="desarrollo-web.html" style="color:#fff; text-decoration:none; font-family:'Orbitron'; font-size:0.55rem; letter-spacing:1px; text-transform:uppercase;">Páginas Web</a>
+            <a href="redes-sociales.html" style="color:#fff; text-decoration:none; font-family:'Orbitron'; font-size:0.55rem; letter-spacing:1px; text-transform:uppercase; border-bottom: 1px solid #fff;">Redes Sociales</a>
+            <a href="ecommerce-elite.html" style="color:#fff; text-decoration:none; font-family:'Orbitron'; font-size:0.55rem; letter-spacing:1px; text-transform:uppercase; opacity:0.6;">E-Commerce</a>
+        </nav>
+    </div>
+
+    <style>
+        .hero-social {
+            height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, #2a002a 0%, #000 100%);
+            perspective: 1000px; overflow: hidden; position: relative;
+        }
+        .hero-social .glitch-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
+        @keyframes titan-glow {
+            0%, 100% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff; transform: translateY(0); }
+            50% { text-shadow: 0 0 50px #ff00ff, 0 0 80px #00f2ff; transform: translateY(-10px); }
+        }
+        .hero-social h1 {
+            font-family: 'Inter', sans-serif; font-weight: 900; font-size: clamp(4rem, 18vw, 12rem); line-height: 0.85;
+            margin: 0; text-transform: uppercase; letter-spacing: -0.8vw; color: #fff;
+            animation: titan-glow 4s ease-in-out infinite; position: relative; z-index: 2;
+        }
+        .hero-social h1 span { color: transparent; -webkit-text-stroke: 2px #ff00ff; display: block; filter: drop-shadow(0 0 15px #ff00ff); }
+        
+        .hero-social .subtitle-box {
+            width: fit-content; max-width: 85%; margin: 40px auto 0;
+            padding: 15px 40px; border-radius: 100px; border: 1px solid #ff00ff;
+            background: rgba(255, 0, 255, 0.05); backdrop-filter: blur(5px);
+            box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.2);
+        }
+        .hero-social .subtitle-text {
+            font-family: 'Roboto Mono', monospace; font-size: 0.9rem; color: #ff00ff;
+            text-transform: uppercase; letter-spacing: 8px; margin: 0; text-align: center;
+        }
+        .hero-social .tagline {
+            font-family: 'Roboto Mono', monospace; font-size: clamp(1.1rem, 4vw, 1.4rem);
+            opacity: 0.7; margin: 30px auto 0; font-weight: 400; text-align: center;
+            max-width: 70%; line-height: 1.6; color: #fff;
+        }
+    </style>
+
+    <section class="hero-social">
+        <div class="glitch-wrap">
+            <h1>VIRAL<br><span>NEXUS</span></h1>
+            <div class="subtitle-box">
+                <p class="subtitle-text">SOCIAL WARFARE PROTOCOL</p>
+            </div>
+            <p class="tagline">No fabricamos contenido. Diseñamos armas de persuasión masiva para el algoritmo.</p>
+        </div>
+    </section>
+
+    <section class="package-grid">
+        <!-- PAQUETE 1 -->
+        <div class="card-nexus">
+            <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-social)">ID: RS-BASIC</div>
+            <h3>PÁGINA COMERCIAL FB/IG</h3>
+            <p>Configuración de perfiles, bio optimizada y 5 diseños de alto impacto.</p>
+            <div class="price"><span>$1,200</span> $599 MXN</div>
+            <button class="btn-glitch" style="font-size:0.7rem; width:100%">ADQUIRIR UNIDAD</button>
+        </div>
+
+        <!-- PAQUETE 2 -->
+        <div class="card-nexus" style="border-color: var(--neon-blue);">
+            <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-blue)">ID: RS-PRO</div>
+            <h3 style="color:var(--neon-blue)">CAMPAÑA CRECIMIENTO</h3>
+            <p>15 Posts, 5 Reels, Gestión de Ads y segmentación de público real.</p>
+            <div class="price"><span>$3,500</span> $1,749 MXN</div>
+            <button class="btn-glitch" style="font-size:0.7rem; width:100%">DESPLEGAR CAMPAÑA</button>
+        </div>
+
+        <!-- PAQUETE 3 -->
+        <div class="card-nexus">
+            <h3>DOMINACIÓN TOTAL</h3>
+            <p>Contenido diario, Community Manager IA, Fotografía y Video profesional.</p>
+            <div class="price"><span>$8,000</span> $3,999 MXN</div>
+            <button class="btn-glitch" style="font-size:0.7rem; width:100%">CONTROL TOTAL</button>
+        </div>
+    </section>
+
+    <section class="ecommerce-teaser">
+        <h2 style="font-family: 'Orbitron'; font-size: 2.5rem;">¿LISTO PARA VENDER EN SERIO?</h2>
+        <p>Tu arsenal social necesita un destino. Próximamente: E-COMMERCE DE ÉLITE.</p>
+        <a href="desarrollo-web.html" class="btn-glitch">REGRESAR AL ARSENAL</a>
+    </section>
+
+</body>
+</html>
