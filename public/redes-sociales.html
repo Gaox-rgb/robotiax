@@ -432,6 +432,30 @@
                 window.app.payments.openModal(productId, productName, price, 'MXN');
             }
         };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const updateOwnedButtons = () => {
+                const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+                owned.forEach(productId => {
+                    const buttons = document.querySelectorAll(`button[onclick*="'${productId}'"]`);
+                    buttons.forEach(btn => {
+                        btn.innerHTML = 'ADQUIRIDO ✓';
+                        btn.style.setProperty('background', '#2ecc71', 'important');
+                        btn.style.setProperty('color', '#ffffff', 'important');
+                        btn.style.setProperty('border-color', '#2ecc71', 'important');
+                        btn.style.cursor = 'default';
+                        btn.disabled = true;
+                        btn.onclick = null; 
+
+                        const card = btn.closest('.card-nexus');
+                        if (card) {
+                            card.style.borderColor = '#2ecc71';
+                        }
+                    });
+                });
+            };
+            updateOwnedButtons();
+        });
     </script>
 
 </body>
