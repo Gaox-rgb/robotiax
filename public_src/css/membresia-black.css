@@ -1,0 +1,286 @@
+:root {
+    --gold: #D4AF37;
+    --black-matte: #0a0a0a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: black;
+    background-image: radial-gradient(circle at center, #1a1a1a 0%, #000 90%);
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden; /* Sin scroll horizontal */
+    overflow-y: auto;   /* Scroll vertical permitido */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- PUERTAS DE BÓVEDA --- */
+.gate {
+    position: fixed; top: 0; width: 50%; height: 100%;
+    background: #050505; z-index: 9999;
+    transition: transform 1.5s cubic-bezier(0.7, 0, 0.3, 1);
+    border-right: 2px solid #222;
+}
+.gate-left { left: 0; }
+.gate-right { right: 0; border-left: 2px solid #222; border-right: none; }
+
+/* Al abrirse */
+.gate-open .gate-left { transform: translateX(-100%); }
+.gate-open .gate-right { transform: translateX(100%); }
+.gate-open .gate { pointer-events: none; } /* Para que no estorben click */
+
+.gate-text {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #333; font-family: 'Cinzel', serif; z-index: 10000;
+    transition: opacity 0.5s; letter-spacing: 5px; pointer-events: none;
+}
+.gate-open .gate-text { opacity: 0; }
+
+/* --- CONTENIDO PRINCIPAL --- */
+body {
+    background-color: black;
+    background-image: radial-gradient(circle at center, #111 0%, #000 100%);
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor Maestro de Centrado */
+body {
+    background-color: black;
+    background-image: radial-gradient(circle at center, #111 0%, #000 100%);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.main-wrapper {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    padding: 40px 20px 120px; /* Padding inferior para no tapar con el botón de escape */
+    opacity: 0;
+    transform: scale(0.98);
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.5s;
+    z-index: 10;
+}
+
+.gate-open .main-wrapper { opacity: 1; transform: scale(1); }
+
+/* BOTÓN DE ESCAPE HUD */
+.footer-escape {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, black);
+    display: flex;
+    justify-content: center;
+    z-index: 10005;
+    pointer-events: none; /* Deja pasar clicks al contenido si no es el botón */
+}
+
+.back-btn {
+    pointer-events: auto;
+    background: rgba(0,0,0,0.8);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 10px 30px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-decoration: none;
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.back-btn:hover { background: var(--gold); color: black; }
+
+.gate-open .main-wrapper { opacity: 1; transform: translateY(0); }
+
+/* Tipografía Fluida */
+h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: clamp(2rem, 8vw, 4rem);
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+.sub-tag {
+    color: rgba(255,255,255,0.4);
+    font-size: clamp(0.7rem, 2vw, 0.9rem);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 4vh;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+/* Escena de Tarjeta Responsiva */
+.card-scene {
+    perspective: 1500px;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1.58 / 1;
+    margin: 0 auto 5vh;
+}
+
+.card {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    border-radius: 18px;
+    position: relative;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(212, 175, 55, 0.1);
+    transform-style: preserve-3d;
+    animation: float 6s infinite ease-in-out;
+}
+
+.card-logo { font-family: 'Cinzel', serif; font-size: clamp(1.2rem, 4vw, 1.8rem); color: #fff; margin-bottom: 8px; }
+.card-date { font-size: 0.7rem; color: var(--gold); letter-spacing: 3px; opacity: 0.8; }
+
+/* Sección de Acción */
+.price-tag { 
+    font-family: 'Cinzel', serif; 
+    font-size: clamp(1.8rem, 5vw, 2.8rem); 
+    color: white; 
+}
+.per-month { font-size: 1rem; color: rgba(255,255,255,0.3); }
+
+.alert-text { 
+    color: #ff4757; 
+    font-size: 0.8rem; 
+    font-weight: 700; 
+    letter-spacing: 2px; 
+    margin: 20px 0; 
+    text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+}
+
+.btn-gold {
+    background: linear-gradient(135deg, #f5d669 0%, #9e7d28 100%);
+    color: #000; padding: 20px 60px; border-radius: 4px;
+    font-weight: 800; text-transform: uppercase; text-decoration: none;
+    display: inline-block; transition: all 0.4s; letter-spacing: 2px;
+    font-size: 0.9rem;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+.gate-open .main-wrapper { opacity: 1; transform: scale(1); }
+
+/* TITULOS */
+h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 3.5rem; /* Tamaño controlado */
+    letter-spacing: 4px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    line-height: 1;
+}
+
+.sub-tag {
+    color: #666; font-size: 0.9rem; letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 40px; border-bottom: 1px solid #333; display: inline-block; padding-bottom: 10px;
+}
+
+/* --- TARJETA 3D (DIMENSIONES NORMALES) --- */
+.card-scene {
+    perspective: 1000px;
+    width: 360px; height: 220px;
+    margin: 0 auto 30px auto;
+}
+
+.card {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1c1c1c, #000);
+    border-radius: 15px; border: 1px solid #444;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 0 2px var(--gold);
+    position: relative;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transform-style: preserve-3d;
+    animation: float 6s infinite ease-in-out;
+}
+
+.card::before {
+    content: ''; position: absolute; top: -100%; left: -100%; width: 300%; height: 300%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: rotate(45deg); animation: shine 5s infinite;
+}
+
+.card-logo { font-family: 'Cinzel', serif; font-size: 1.6rem; color: #fff; z-index: 2; margin-bottom: 10px;}
+.chip { width: 45px; height: 30px; background: linear-gradient(135deg, #FFD700, #996515); border-radius: 5px; margin-bottom: 15px; }
+
+@keyframes float { 0%, 100% { transform: translateY(0) rotateY(0); } 50% { transform: translateY(-15px) rotateY(5deg); } }
+@keyframes shine { 0% { left: -100%; top: -100%; } 50% { left: 100%; top: 100%; } 100% { left: 100%; top: 100%; } }
+
+/* PRECIO Y BOTON */
+.price-tag { font-family: 'Cinzel', serif; font-size: 2.2rem; color: white; margin-bottom: 5px; }
+.price-sub { font-size: 0.9rem; color: #888; }
+
+.alert-text { color: #d63031; font-size: 0.8rem; font-weight: bold; letter-spacing: 1px; margin: 15px 0; }
+
+.btn-gold {
+    background: linear-gradient(to bottom, #f5d669, #9e7d28);
+    color: black; padding: 18px 50px; border-radius: 4px;
+    font-weight: 800; text-transform: uppercase; text-decoration: none;
+    display: inline-block; transition: 0.3s; letter-spacing: 1px;
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.2);
+}
+.btn-gold:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(212, 175, 55, 0.5); color: #330000; }
+
+/* BOTON VOLVER */
+.back-btn {
+    position: fixed; 
+    top: 25px; 
+    left: 25px; 
+    color: black; 
+    background: var(--gold);
+    text-decoration: none;
+    border: 2px solid white; 
+    padding: 12px 25px; 
+    font-size: 0.85rem; 
+    font-weight: 800;
+    z-index: 10005;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.back-btn:hover { 
+    background: white; 
+    color: black; 
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.4);
+}
+
+/* Responsive Móvil */
+@media (max-width: 600px) {
+    h1 { font-size: clamp(1.8rem, 10vw, 2.5rem); }
+    .card-scene { 
+        width: 100%; 
+        max-width: 300px; 
+        height: 180px; 
+        aspect-ratio: 1.6 / 1;
+    }
+    .main-wrapper { padding-top: 60px; }
+    .btn-gold { width: 100%; padding: 15px 20px; font-size: 0.9rem; }
+}
