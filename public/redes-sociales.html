@@ -5,11 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOCIAL NEXUS | ROBOTIAX</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto+Mono:wght@400;700&family=Inter:wght@900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <style>
         :root {
             --neon-social: #ff00ff; /* Magenta Cyber */
             --neon-blue: #00f2ff;
             --bg-dark: #050505;
+        }
+
+        /* MODAL DE PAGO PAYPAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.visible {
+            display: flex !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: #000;
+            border: 2px solid var(--neon-social);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+        }
+        
+        /* PANEL DE ACTIVACIÓN EDITORIAL */
+        #editor-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100000;
+            overflow-y: auto;
+            padding: 50px 20px;
+            box-sizing: border-box;
+        }
+        #editor-panel.active {
+            display: block !important;
+        }
+        .edit-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .edit-group label {
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            color: var(--neon-social);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .edit-group input {
+            width: 100%;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            font-family: 'Roboto Mono';
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .edit-group input:focus {
+            border-color: var(--neon-social);
+            outline: none;
         }
 
         body {
@@ -177,6 +255,30 @@
         .tiktok-content p { color: #ffffff; opacity: 1 !important; }
         .nexus-intro { padding: 40px 0; }
         .nexus-intro h3 { font-family: 'Orbitron'; color: #00f2ff; margin-bottom: 15px; }
+    .btn-floating-back {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffffff;
+            border: 1px solid #ffffff;
+            padding: 12px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .btn-floating-back:hover {
+            background: #ffffff;
+            color: #000000;
+            transform: scale(1.05);
+        }
     </style>
 
     <section class="hero-social">
@@ -227,38 +329,110 @@
     </section>
 
     <section class="package-grid">
-        <!-- PAQUETE 1 -->
-        <div class="card-nexus">
-            <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-social)">ID: RS-BASIC</div>
-            <h3>PÁGINA COMERCIAL FB/IG</h3>
-            <p>Configuración de perfiles, bio optimizada y 5 diseños de alto impacto.</p>
-            <div class="price"><span>$1,200</span> $599 MXN</div>
-            <button class="btn-glitch" style="font-size:0.7rem; width:100%">ADQUIRIR UNIDAD</button>
-        </div>
+            <!-- PAQUETE 1 -->
+            <div class="card-nexus">
+                <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-social)">ID: RS-BASIC</div>
+                <h3>PÁGINA COMERCIAL FB/IG</h3>
+                <p>Configuración de perfiles, bio optimizada y 5 diseños de alto impacto.</p>
+                <div class="price"><span>$1,200</span> $599 MXN</div>
+                <button class="btn-glitch" style="font-size:0.7rem; width:100%" onclick="window.app.ui.requestPurchase('rs-basic', 'Página Comercial FB/IG', 599)">ADQUIRIR UNIDAD</button>
+            </div>
 
-        <!-- PAQUETE 2 -->
-        <div class="card-nexus" style="border-color: var(--neon-blue);">
-            <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-blue)">ID: RS-PRO</div>
-            <h3 style="color:var(--neon-blue)">CAMPAÑA CRECIMIENTO</h3>
-            <p>15 Posts, 5 Reels, Gestión de Ads y segmentación de público real.</p>
-            <div class="price"><span>$3,500</span> $1,749 MXN</div>
-            <button class="btn-glitch" style="font-size:0.7rem; width:100%">DESPLEGAR CAMPAÑA</button>
-        </div>
+            <!-- PAQUETE 2 -->
+            <div class="card-nexus" style="border-color: var(--neon-blue);">
+                <div style="position:absolute; top:10px; right:10px; font-size:0.6rem; color:var(--neon-blue)">ID: RS-PRO</div>
+                <h3 style="color:var(--neon-blue)">CAMPAÑA CRECIMIENTO</h3>
+                <p>15 Posts, 5 Reels, Gestión de Ads y segmentación de público real.</p>
+                <div class="price"><span>$3,500</span> $1,749 MXN</div>
+                <button class="btn-glitch" style="font-size:0.7rem; width:100%" onclick="window.app.ui.requestPurchase('rs-pro', 'Campaña Crecimiento', 1749)">DESPLEGAR CAMPAÑA</button>
+            </div>
 
-        <!-- PAQUETE 3 -->
-        <div class="card-nexus">
-            <h3>DOMINACIÓN TOTAL</h3>
-            <p>Contenido diario, Community Manager IA, Fotografía y Video profesional.</p>
-            <div class="price"><span>$8,000</span> $3,999 MXN</div>
-            <button class="btn-glitch" style="font-size:0.7rem; width:100%">CONTROL TOTAL</button>
-        </div>
-    </section>
+            <!-- PAQUETE 3 -->
+            <div class="card-nexus">
+                <h3>DOMINACIÓN TOTAL</h3>
+                <p>Contenido diario, Community Manager IA, Fotografía y Video profesional.</p>
+                <div class="price"><span>$8,000</span> $3,999 MXN</div>
+                <button class="btn-glitch" style="font-size:0.7rem; width:100%" onclick="window.app.ui.requestPurchase('rs-elite', 'Dominación Total Redes', 3999)">CONTROL TOTAL</button>
+            </div>
+        </section>
 
     <section class="ecommerce-teaser">
         <h2 style="font-family: 'Orbitron'; font-size: 2.5rem;">¿LISTO PARA VENDER EN SERIO?</h2>
         <p>Tu arsenal social necesita un destino. Próximamente: E-COMMERCE DE ÉLITE.</p>
         <a href="desarrollo-web.html" class="btn-glitch">REGRESAR AL ARSENAL</a>
     </section>
+
+<!-- Botón de Escape Flotante Fijo en la Esquina Izquierda (Para evitar colisión con el Scroll-To-Top) -->
+    <a href="index.html#protocolo-presencia" class="btn-floating-back">❮ VOLVER AL INICIO</a>
+
+<!-- ============================================= -->
+    <!-- ==           MODAL DE PAGO PAYPAL          == -->
+    <!-- ============================================= -->
+    <div id="payment-modal-overlay" class="modal-overlay">
+        <div class="modal-content" style="border-color: #ff00ff;">
+            <h2 style="font-family: 'Orbitron', sans-serif; color: #ff00ff; margin-bottom: 10px; font-size: 1.2rem;">ORDEN DE ACTIVACIÓN</h2>
+            <p style="font-family: 'Rajdhani', sans-serif; color: #fff; margin-bottom: 20px;">
+                <span id="modal-template-name">Redes Sociales</span> | $<span id="modal-template-price">0.00</span> MXN
+            </p>
+
+            <div id="modal-paypal-container" style="width: 100%;">
+                <!-- Aquí PayPal inyectará sus botones o se inyectarán por payments.js -->
+            </div>
+
+            <button onclick="window.app.payments.closeModal()" style="background:transparent; border:none; color:#ffffff; font-family:'Rajdhani'; cursor:pointer; margin-top:25px; font-size:0.7rem; text-transform:uppercase; letter-spacing:2px; opacity:1;">❮ CANCELAR Y VOLVER</button>
+        </div>
+    </div>
+
+    <!-- PANEL DE ACTIVACIÓN (Post-Pago) -->
+    <div id="editor-panel">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h2 style="color:#ff00ff; font-family:'Orbitron'; font-size: 1.8rem; text-align:center; margin-bottom:20px;">DATOS DE ACTIVACIÓN</h2>
+            <p id="display-product-name" style="text-align: center; font-weight: 800; font-size: 1.2rem; color: #fff; margin-bottom: 5px;"></p>
+            <p id="display-product-price" style="text-align: center; color: #666; margin-bottom: 30px; font-family: 'Orbitron';"></p>
+            
+            <div class="edit-group"><label>RAZÓN SOCIAL / NOMBRE</label><input type="text" id="edit-name" placeholder="Ej: Negocio Social S.A."></div>
+            <div class="edit-group"><label>WHATSAPP</label><input type="tel" id="edit-phone" placeholder="Ej: 5512345678"></div>
+            <div class="edit-group"><label>DOMICILIO FISCAL</label><input type="text" id="edit-address-fiscal" placeholder="Calle, Num, Col, CP, Ciudad"></div>
+            <div class="edit-group"><label>CORREO DE ENVÍO</label><input type="email" id="edit-email" placeholder="tu-email@dominio.com"></div>
+
+            <button onclick="window.app.editor.submitOrder()" style="width:100%; padding:20px; background:#ff00ff; color:#000; font-family:'Orbitron'; font-weight:900; border:none; cursor:pointer; margin-top:25px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                GENERAR ORDEN DE PEDIDO
+            </button>
+            <button onclick="window.app.editor.close()" style="background:transparent; border:none; color:#ff003c; font-family:'Rajdhani'; cursor:pointer; display:block; margin:20px auto 0; font-size:0.8rem; text-transform:uppercase; letter-spacing:2px;">✖ ABORTAR ACTIVACIÓN</button>
+        </div>
+    </div>
+
+    <!-- VENTANA DE ÉXITO -->
+    <div id="success-notif" class="modal-overlay">
+       <div class="modal-content" style="border: 2px solid #ff00ff; background: #000; padding: 40px;">
+            <div style="width: 60px; height: 60px; background: #ff00ff; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.5rem;">✓</div>
+            <h3 style="font-family: 'Orbitron'; color: #fff;">ORDEN REGISTRADA</h3>
+            <p style="color: #fff; margin: 15px 0; font-family: 'Rajdhani';">Tu protocolo de redes sociales ha sido activado en el sistema central.</p>
+            <p style="color: #ff00ff; font-family: 'Rajdhani'; font-size: 0.95rem; margin-bottom: 25px;">📩 Las instrucciones para elegir tu protocolo de activación (Cortesía, Autogestión o Avanzada) han sido enviadas a tu correo. Revisa tu carpeta de SPAM.</p>
+            <button onclick="localStorage.removeItem('pending_purchase_id'); window.location.href = window.location.origin + window.location.pathname;" style="margin-top:30px; background:#ff00ff; color:#fff; border:none; padding:15px; width: 100%; cursor:pointer; font-family:'Orbitron'; font-weight:900;">ENTENDIDO</button>
+        </div>
+    </div>
+    <!-- SCRIPTS DE COMPORTAMIENTO DE PAGO REDES SOCIALES -->
+    <script src="/js/catalog.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6&currency=MXN"></script>
+    <script src="/js/payments.js"></script>
+    <script src="/js/editor.js"></script>
+
+    <script>
+        // Configuración y sobreescritura de comportamiento de compra para Redes Sociales
+        window.app = window.app || {};
+        window.app.ui = {
+            requestPurchase: function(productId, productName, price) {
+                console.log("Iniciando flujo de compra Redes Sociales:", productId, price);
+                
+                const priceEl = document.getElementById('modal-template-price');
+                if (priceEl) priceEl.textContent = price;
+
+                // Llamar al motor de pago original pasándole las variables de Redes Sociales
+                window.app.payments.openModal(productId, productName, price, 'MXN');
+            }
+        };
+    </script>
 
 </body>
 </html>

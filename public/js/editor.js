@@ -109,6 +109,24 @@ window.app.editor = {
     },
 
     /**
+     * Cierra y limpia de forma segura el panel del editor liberando el viewport por completo.
+     */
+    close: function() {
+        const panel = document.getElementById('editor-panel');
+        if (panel) {
+            panel.classList.remove('active');
+            panel.style.removeProperty('display');
+            panel.style.removeProperty('visibility');
+            panel.style.removeProperty('opacity');
+            panel.style.setProperty('display', 'none', 'important');
+        }
+        document.body.classList.remove('editor-open');
+        if (window.app.payments && window.app.payments.closeModal) {
+            window.app.payments.closeModal();
+        }
+    },
+
+    /**
      * Función de seguridad para obtener valores de inputs sin romper el script.
      */
     val: function(id) {
@@ -206,6 +224,7 @@ window.app.editor = {
                 const notif = document.getElementById('success-notif');
                 if (notif) {
                     console.log("✅ [EDITOR]: Orden completada. Mostrando éxito.");
+                    notif.classList.add('visible');
                     notif.style.setProperty('display', 'flex', 'important');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     

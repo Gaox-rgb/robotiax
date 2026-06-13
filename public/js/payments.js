@@ -89,12 +89,16 @@ window.app.payments = {
                 const panel = document.getElementById('editor-panel');
                 if (panel) {
                     console.log("🔥 [SISTEMA]: Pago detectado. Forzando Panel de Activación para:", pendingId);
-                    panel.style.setProperty('display', 'block', 'important');
+                    panel.classList.add('active'); // Activación nativa por clases para permitir cierre
                     panel.style.zIndex = "200000";
                     
-                    // Asegurar que el overlay de pago se cierre si quedó abierto
+                    // Asegurar que el overlay de pago se cierre si quedó abierto con la especificidad correcta
                     const overlay = document.getElementById('payment-modal-overlay');
-                    if (overlay) overlay.style.setProperty('display', 'none', 'important');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                        overlay.style.display = 'none';
+                        overlay.style.setProperty('display', 'none', 'important');
+                    }
                 }
 
                 // 2. Persistencia de compra

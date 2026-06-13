@@ -73,10 +73,14 @@ window.app.ui = {
     },
 
     closeEditor: function() {
-        const panel = document.getElementById('editor-panel');
-        if (panel) {
-            document.body.classList.remove('editor-open'); // Libera el fondo
-            panel.classList.remove('active');
+        if (window.app.editor && window.app.editor.close) {
+            window.app.editor.close();
+        } else {
+            const panel = document.getElementById('editor-panel');
+            if (panel) {
+                document.body.classList.remove('editor-open');
+                panel.classList.remove('active');
+            }
         }
     },
 

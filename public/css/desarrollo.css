@@ -1001,12 +1001,14 @@ body.editor-open {
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    pointer-events: none;
     transition: none !important; /* PROHIBIDO ANIMAR */
     backdrop-filter: none !important; /* A veces el blur retrasa el renderizado */
 }
 
 .modal-overlay.visible {
     display: flex !important;
+    pointer-events: auto;
 }
 
 .modal-content {

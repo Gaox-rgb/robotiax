@@ -72,7 +72,7 @@ const paypalSecret = defineString('PAYPAL_SECRET');
 const getPaypalClient = () => {
     const clientId = paypalClientId.value();
     const clientSecret = paypalSecret.value();
-    const env = new paypal.core.LiveEnvironment(clientId, clientSecret);
+    const env = new paypal.core.SandboxEnvironment(clientId, clientSecret);
     return new paypal.core.PayPalHttpClient(env);
 };
 
@@ -172,10 +172,22 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
         const isLocal = req.headers.host && req.headers.host.includes('localhost');
         const finalReturnUrl = returnUrl || (isLocal ? 'http://localhost:5000/desarrollo-web.html' : `${BASE_URL}/desarrollo-web.html`);
 
-        // 2. Obtención de datos del producto
-        const productDoc = await getDb().collection('products').doc(productId).get();
-        if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
-        const productData = productDoc.data();
+        // 2. Obtención de datos del producto (Soporte dinámico y fallback para E-commerce y Redes Sociales)
+        const ecommerceProducts = {
+            'nexus-drop': { name: 'Nexus Drop', price: 1999.00, currency: 'MXN' },
+            'storefront-pro': { name: 'Storefront Pro', price: 3499.00, currency: 'MXN' },
+            'omnicanal-elite': { name: 'Omnicanal Elite', price: 7499.00, currency: 'MXN' },
+            'rs-basic': { name: 'Página Comercial FB/IG', price: 599.00, currency: 'MXN' },
+            'rs-pro': { name: 'Campaña Crecimiento', price: 1749.00, currency: 'MXN' },
+            'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' }
+        };
+
+        let productData = ecommerceProducts[productId];
+        if (!productData) {
+            const productDoc = await getDb().collection('products').doc(productId).get();
+            if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
+            productData = productDoc.data();
+        }
 
         // 3. Configuración de la Solución de Pago (Fuerza Tarjeta si es necesario)
         const landingSelection = (fundingType === 'card') ? 'BILLING' : 'LOGIN';
@@ -360,13 +372,25 @@ exports.submitFinalOrder = onRequest({
     const clientEmail = details.email || details.correo; 
 
     try {
-        const productSnap = await getDb().collection('products').doc(template).get();
-        const pData = productSnap.exists ? productSnap.data() : { name: template, price: "99", currency: "MXN" };
+        const ecommerceProducts = {
+            'nexus-drop': { name: 'Nexus Drop', price: 1999.00, currency: 'MXN' },
+            'storefront-pro': { name: 'Storefront Pro', price: 3499.00, currency: 'MXN' },
+            'omnicanal-elite': { name: 'Omnicanal Elite', price: 7499.00, currency: 'MXN' },
+            'rs-basic': { name: 'Página Comercial FB/IG', price: 599.00, currency: 'MXN' },
+            'rs-pro': { name: 'Campaña Crecimiento', price: 1749.00, currency: 'MXN' },
+            'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' }
+        };
+
+        let pData = ecommerceProducts[template];
+        if (!pData) {
+            const productSnap = await getDb().collection('products').doc(template).get();
+            pData = productSnap.exists ? productSnap.data() : { name: template, price: "99", currency: "MXN" };
+        }
 
         const now = new Date();
         const folio = `ORD-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        const isWebProduct = !template.startsWith('ia-') && !template.startsWith('sec-');
+        const isWebProduct = !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
         let vertexInstructions = "";
 
         // SOLO ACTIVAR IA SI NO ES WEB
@@ -416,9 +440,9 @@ exports.submitFinalOrder = onRequest({
                     <p><strong>PAGO:</strong> $${pData.price} ${pData.currency}</p>
                 </div>
                 <p><strong>¿Qué sigue ahora?</strong> Su proyecto ha ingresado a nuestra <strong>fase de implementación técnica de precisión</strong>.</p>
-                <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6;">
-                    Recibirá su acceso y confirmación en su correo en un plazo no mayor a <strong>24 horas</strong>.
-                </p>
+               <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6;">
+                Recibirá su acceso y confirmación en su correo en un plazo de <strong>24 a 72 horas hábiles</strong>.
+            </p>
                 <p style="font-size: 13px; color: #555;">Hosting Premium y Dominio .info incluidos gratis por 30 días.</p>
 
                 <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
@@ -455,7 +479,7 @@ exports.submitFinalOrder = onRequest({
                         <p style="font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Agente 100% operativo y listo para producción inmediata.</p>
                     </div>
 
-                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo máximo de 24 horas.</p>
+                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo de 24 a 72 horas hábiles.</p>
                 </div>
 
                 <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
