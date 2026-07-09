@@ -16,46 +16,57 @@ const OBFUSCATOR_OPTIONS = {
     identifierNamesGenerator: 'hexadecimal',
     log: false,
     numbersToExpressions: true,
-    renameGlobals: false,
+    renameGlobals: false, // Obligatorio para preservar compatibilidad con window.app
     selfDefending: false,
     simplify: true,
     splitStrings: true,
     stringArray: true,
     stringArrayCallsTransform: true,
-    stringArrayEncoding: ['base64'],
+    stringArrayEncoding: ['base64'], // Cifra endpoints y variables de texto a Base64
     stringArrayIndexShift: true,
     stringArrayRotate: true,
     stringArrayShuffle: true,
     stringArrayThreshold: 0.8,
     transformObjectKeys: false,
-    unicodeEscapeSequence: true
+    unicodeEscapeSequence: true // Convierte strings a secuencias unicode indescifrables (\x61\x62)
 };
 
-function deleteFolderRecursive(directoryPath) {
+function safeDeleteFile(filePath) {
+    try {
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+    } catch (err) {
+        // Silenciar fallos en archivos individuales bloqueados por el emulador
+    }
+}
+
+function deleteFolderRecursive(directoryPath, removeSelf = false) {
     try {
         if (fs.existsSync(directoryPath)) {
-            const files = fs.readdirSync(directoryPath);
-            files.forEach((file) => {
+            fs.readdirSync(directoryPath).forEach((file) => {
                 const curPath = path.join(directoryPath, file);
                 try {
                     const stat = fs.lstatSync(curPath);
                     if (stat.isDirectory()) {
-                        deleteFolderRecursive(curPath);
+                        deleteFolderRecursive(curPath, true);
                     } else {
-                        fs.unlinkSync(curPath);
+                        safeDeleteFile(curPath);
                     }
                 } catch (err) {
-                    // Silenciar bloqueos de archivos en uso por Windows/Chrome
+                    // Resiliencia ante lectura fallida
                 }
             });
-            try {
-                fs.rmdirSync(directoryPath);
-            } catch (err) {
-                // Silenciar bloqueo de carpetas
+            if (removeSelf && directoryPath !== DIST_DIR) {
+                try {
+                    fs.rmdirSync(directoryPath);
+                } catch (err) {
+                    // Silenciar bloqueo de borrado de directorios intermedios
+                }
             }
         }
     } catch (globalErr) {
-        // Silenciar cualquier error general de E/S
+        // Ignorar fallas globales de lstat en directorios bloqueados
     }
 }
 
@@ -68,27 +79,38 @@ function ensureDirectoryExistence(filePath) {
     try {
         fs.mkdirSync(dirname);
     } catch (e) {
-        // Silenciar conflictos de creación
+        // Evitar colisiones si ya fue creado por un hilo paralelo
     }
 }
 
-// Helpers de escritura e intercambio de archivos seguros
+function cleanDirectoryContents(directoryPath) {
+    deleteFolderRecursive(directoryPath, false);
+}
+
 function safeWriteFile(distPath, content) {
     try {
+        ensureDirectoryExistence(distPath);
+        if (fs.existsSync(distPath)) {
+            try { fs.unlinkSync(distPath); } catch (e) {}
+        }
         fs.writeFileSync(distPath, content, 'utf8');
         return true;
     } catch (err) {
-        console.warn(`[AVISO DE BLOQUEO] Windows impidió reescribir: ${path.basename(distPath)}. Se conserva la versión activa.`);
+        console.warn(`[AVISO] Archivo bloqueado por Windows (no se pudo reescribir): ${path.basename(distPath)}. Se conserva la versión previa.`);
         return false;
     }
 }
 
 function safeCopyFile(srcPath, distPath) {
     try {
+        ensureDirectoryExistence(distPath);
+        if (fs.existsSync(distPath)) {
+            try { fs.unlinkSync(distPath); } catch (e) {}
+        }
         fs.copyFileSync(srcPath, distPath);
         return true;
     } catch (err) {
-        console.warn(`[AVISO DE BLOQUEO] Windows impidió copiar: ${path.basename(distPath)}. Se conserva la versión activa.`);
+        console.warn(`[AVISO] Archivo bloqueado por Windows (no se pudo copiar): ${path.basename(distPath)}. Se conserva la versión previa.`);
         return false;
     }
 }
@@ -103,20 +125,15 @@ async function processFile(srcPath, distPath) {
             safeWriteFile(distPath, result.getObfuscatedCode());
             console.log(`[JS] Compilado y ofuscado: ${path.relative(SRC_DIR, srcPath)}`);
         } catch (err) {
-            console.error(`[JS] Fallo al ofuscar ${path.basename(srcPath)}:`, err);
+            console.error(`[JS] Error al ofuscar ${srcPath}:`, err);
             safeCopyFile(srcPath, distPath);
         }
     } 
     else if (ext === '.css') {
-        try {
-            const content = fs.readFileSync(srcPath, 'utf8');
-            const minified = new CleanCSS({}).minify(content);
-            safeWriteFile(distPath, minified.styles);
-            console.log(`[CSS] Minificado: ${path.relative(SRC_DIR, srcPath)}`);
-        } catch (err) {
-            console.error(`[CSS] Fallo al minificar ${path.basename(srcPath)}:`, err);
-            safeCopyFile(srcPath, distPath);
-        }
+        const content = fs.readFileSync(srcPath, 'utf8');
+        const minified = new CleanCSS({}).minify(content);
+        safeWriteFile(distPath, minified.styles);
+        console.log(`[CSS] Minificado: ${path.relative(SRC_DIR, srcPath)}`);
     } 
     else if (ext === '.html') {
         const content = fs.readFileSync(srcPath, 'utf8');
@@ -131,8 +148,21 @@ async function processFile(srcPath, distPath) {
             safeWriteFile(distPath, minified);
             console.log(`[HTML] Minificado: ${path.relative(SRC_DIR, srcPath)}`);
         } catch (err) {
-            console.error(`[HTML] Fallo al minificar ${path.basename(srcPath)}:`, err);
-            safeCopyFile(srcPath, distPath);
+            console.warn(`[AVISO] Fallo en minificación avanzada de HTML para ${path.basename(srcPath)} (posible error de sintaxis JS). Reintentando sin minificar JS...`);
+            try {
+                const fallbackMinified = await HtmlMinifier.minify(content, {
+                    collapseWhitespace: true,
+                    removeComments: true,
+                    minifyCSS: true,
+                    minifyJS: false,
+                    ignoreCustomComments: [/^\s*#/]
+                });
+                safeWriteFile(distPath, fallbackMinified);
+                console.log(`[HTML] Minificado (Fallback sin ofuscar JS interno): ${path.relative(SRC_DIR, srcPath)}`);
+            } catch (fallbackErr) {
+                console.error(`[HTML] Error absoluto al procesar HTML ${srcPath}:`, fallbackErr);
+                safeCopyFile(srcPath, distPath);
+            }
         }
     } 
     else if (ext === '.json') {
@@ -142,7 +172,7 @@ async function processFile(srcPath, distPath) {
             safeWriteFile(distPath, minified);
             console.log(`[JSON] Comprimido: ${path.relative(SRC_DIR, srcPath)}`);
         } catch (err) {
-            console.error(`[JSON] Fallo al parsear ${path.basename(srcPath)}:`, err);
+            console.error(`[JSON] Error al parsear ${srcPath}:`, err);
             safeCopyFile(srcPath, distPath);
         }
     } 
@@ -160,7 +190,7 @@ async function buildRecursive(dir) {
         
         const stat = fs.statSync(srcPath);
         if (stat.isDirectory()) {
-            await buildRecursive(srcPath); // FIXED: Espera obligatoriamente la resolución de subcarpetas
+            await buildRecursive(srcPath); // ¡CORREGIDO! Espera obligatoriamente a procesar las subcarpetas js/ y css/
         } else {
             ensureDirectoryExistence(distPath);
             await processFile(srcPath, distPath);
@@ -170,18 +200,22 @@ async function buildRecursive(dir) {
 
 async function run() {
     console.log('>>> [BUILD] Iniciando compilación de Robotiax...');
-    console.log('>>> [BUILD] Limpiando directorio de distribución actual...');
+    console.log('>>> [BUILD] Ejecutando limpieza segura de distribución...');
     
-    // Intento de borrado silencioso
-    deleteFolderRecursive(DIST_DIR);
+    // Ejecutar limpieza no bloqueante de archivos antiguos
+    try {
+        cleanDirectoryContents(DIST_DIR);
+    } catch (e) {
+        // Silenciar fallos de borrado inicial en directorios activos
+    }
     
-    // Crear el directorio final si no existe
+    // Asegurar la existencia de la carpeta de salida
     try {
         if (!fs.existsSync(DIST_DIR)) {
             fs.mkdirSync(DIST_DIR);
         }
     } catch (err) {
-        // Silenciar conflictos
+        // Directorio existente o bloqueado temporalmente
     }
     
     if (!fs.existsSync(SRC_DIR)) {

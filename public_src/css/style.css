@@ -223,5 +223,12 @@ strong { color: var(--color-primary-cyan); font-weight: 800; }
 }
 .btn-gold:hover { box-shadow: 0 10px 40px rgba(212, 175, 55, 0.6); }
 
+.btn-maku {
+    border-color: #39ff14;
+    background: linear-gradient(90deg, #39ff14, #00ff80, #39ff14);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+}
+.btn-maku:hover { box-shadow: 0 10px 40px rgba(57, 255, 20, 0.6); }
+
 /* --- Payment Modal --- */
 /* MODAL REDUNDANTE ELIMINADO - CENTRALIZADO EN DESARROLLO.CSS */

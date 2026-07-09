@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const getRandomColor = () => scrambleColors[Math.floor(Math.random() * scrambleColors.length)];
 
     async function runTextScramble(element) {
-        const targetText = 'ROBOTIAX';
+        const targetText = 'ROBOTIAX®';
         const targetLetters = targetText.split('');
         
         while(true) { // BUCLE INFINITO

@@ -184,9 +184,20 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
 
         let productData = ecommerceProducts[productId];
         if (!productData) {
-            const productDoc = await getDb().collection('products').doc(productId).get();
-            if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
-            productData = productDoc.data();
+            // Reconocimiento dinámico para cualquier combinación del Configurador TOP 10
+            if (productId && productId.startsWith('cfg-')) {
+                const isAgent = productId.endsWith('-agente') || productId.endsWith('-agent');
+                const giroName = productId.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').toUpperCase();
+                productData = {
+                    name: isAgent ? `Agente de ${giroName} IA - Setup` : `Bot de ${giroName} - Setup`,
+                    price: isAgent ? 2999.00 : 1499.00,
+                    currency: 'MXN'
+                };
+            } else {
+                const productDoc = await getDb().collection('products').doc(productId).get();
+                if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
+                productData = productDoc.data();
+            }
         }
 
         // 3. Configuración de la Solución de Pago (Fuerza Tarjeta si es necesario)
@@ -373,13 +384,36 @@ exports.submitFinalOrder = onRequest({
 
     try {
         const ecommerceProducts = {
-            'nexus-drop': { name: 'Nexus Drop', price: 1999.00, currency: 'MXN' },
+
+'nexus-drop': { name: 'Nexus Drop', price: 1999.00, currency: 'MXN' },
             'storefront-pro': { name: 'Storefront Pro', price: 3499.00, currency: 'MXN' },
             'omnicanal-elite': { name: 'Omnicanal Elite', price: 7499.00, currency: 'MXN' },
             'rs-basic': { name: 'Página Comercial FB/IG', price: 599.00, currency: 'MXN' },
             'rs-pro': { name: 'Campaña Crecimiento', price: 1749.00, currency: 'MXN' },
             'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' }
         };
+
+        const configuratorKeys = [
+            'salud', 'legal', 'contable', 'gym', 'boutique', 'ferreteria', 
+            'gourmet', 'abarrotes', 'cafeteria', 'floreria', 'talleres', 
+            'eventos', 'idiomas', 'fumigacion', 'limpieza', 'viajes', 
+            'prospeccion', 'webs', 'rh', 'instagram', 'facebook', 'youtube', 
+            'twitter', 'ciber'
+        ];
+        
+        configuratorKeys.forEach(giro => {
+            const prefix = `cfg-${giro}`;
+            ecommerceProducts[`${prefix}-bot`] = { 
+                name: `Bot de ${giro.toUpperCase()} - Setup`, 
+                price: 1499.00, 
+                currency: 'MXN' 
+            };
+            ecommerceProducts[`${prefix}-agente`] = { 
+                name: `Agente de ${giro.toUpperCase()} IA - Setup`, 
+                price: 2999.00, 
+                currency: 'MXN' 
+            };
+        });
 
         let pData = ecommerceProducts[template];
         if (!pData) {
@@ -390,17 +424,15 @@ exports.submitFinalOrder = onRequest({
         const now = new Date();
         const folio = `ORD-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        const isWebProduct = !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
+        const isConfigurator = template.startsWith('cfg-');
+        const isWebProduct = !isConfigurator && !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
         let vertexInstructions = "";
-
-        // SOLO ACTIVAR IA SI NO ES WEB
-        let customerRequirements = "";
 
         if (!isWebProduct) {
             try {
                 const promptMaquila = `
                 ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
-                Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio}.
+                Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio || 'No proporcionado'}.
 
                 ESTE REPORTE DEBE SER EXHAUSTIVO Y SECCIONADO:
                 1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT): Instrucciones maestras y personalidad de la unidad.
@@ -416,12 +448,12 @@ exports.submitFinalOrder = onRequest({
                 vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno.";
             } catch (e) { 
                 console.error("Error Vertex:", e);
-                vertexInstructions = "Error en generación técnica."; 
+                vertexInstructions = "Error en generación de reporte Vertex."; 
             }
         }
 
-        // REGISTRO EN BASE DE DATOS
-        const orderRef = await getDb().collection('orders_to_fulfill').add({
+        // REGISTRO SEGURO EN BASE DE DATOS
+        await getDb().collection('orders_to_fulfill').add({
             orderNumber: folio,
             productName: pData.name,
             isWeb: isWebProduct,
@@ -429,123 +461,147 @@ exports.submitFinalOrder = onRequest({
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // EMAIL DIFERENCIADO SEGÚN PRODUCTO (CLIENTE)
-        const clientReceiptHtml = isWebProduct ? `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                <h2 style="color: #2ecc71; text-align: center;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
-                <p>Hola <strong>${details.negocio}</strong>, hemos recibido tus datos correctamente.</p>
-                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
-                    <p><strong>FOLIO:</strong> ${folio}</p>
-                    <p><strong>PRODUCTO:</strong> ${pData.name}</p>
-                    <p><strong>PAGO:</strong> $${pData.price} ${pData.currency}</p>
-                </div>
-                <p><strong>¿Qué sigue ahora?</strong> Su proyecto ha ingresado a nuestra <strong>fase de implementación técnica de precisión</strong>.</p>
-               <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6;">
-                Recibirá su acceso y confirmación en su correo en un plazo de <strong>24 a 72 horas hábiles</strong>.
-            </p>
-                <p style="font-size: 13px; color: #555;">Hosting Premium y Dominio .info incluidos gratis por 30 días.</p>
+        // FUNCIÓN AUXILIAR PARA EVITAR REPORTES DIFUSOS Y VACÍOS
+        const buildFieldRow = (label, val) => {
+            if (!val || val === "No proporcionado" || val === "No proporcionada" || val === "") return "";
+            return `<tr>
+                <td style="padding: 10px; border-bottom: 1px solid #222; color: #888; font-weight: bold; text-transform: uppercase; font-size: 11px; width: 35%;">${label}:</td>
+                <td style="padding: 10px; border-bottom: 1px solid #222; color: #fff; font-size: 14px;">${val}</td>
+            </tr>`;
+        };
 
-                <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                    <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
-                </div>
-                <p style="font-size: 11px; color: #999; margin-top: 30px;">Robotiax Engine - Despliegue Automatizado</p>
-            </div>
-        ` : `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                <h2 style="color: #ff3333; text-align: center;">🚀 PROTOCOLO DE ACTIVACIÓN INICIADO</h2>
-                <p>Hola <strong>${details.negocio}</strong>, hemos recibido tus parámetros de configuración.</p>
-                <div style="background: #fdf2f2; padding: 20px; border-radius: 8px; border: 1px solid #fee2e2; margin: 20px 0;">
-                    <p><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
-                    <p><strong>AGENTE IA:</strong> ${pData.name}</p>
-                    <p><strong>INVERSIÓN:</strong> $${pData.price} ${pData.currency}</p>
-                </div>
+        // 4. EMAIL PARA TI (ADMIN) - ABSOLUTAMENTE PRECISO E INFORMATIVO
+        const adminMailHtml = `
+            <div style="font-family: 'Courier New', monospace; background: #000; color: #00f2ff; padding: 40px; border: 4px solid #ff003c;">
+                <h1 style="color: #ff003c; text-align: center; border-bottom: 2px solid #ff003c; padding-bottom: 15px; margin-top: 0; font-size: 24px; text-transform: uppercase;">🚨 NUEVA ORDEN RECIBIDA 🚨</h1>
                 
-                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #334155;">
-                    <h3 style="color: #ff3333; margin-top: 0; font-family: 'Orbitron', sans-serif;">🛡️ ESTATUS DE ACTIVACIÓN: SELECCIÓN DE PROTOCOLO</h3>
-                    <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">Para proceder con la liberación de su unidad, es imperativo que responda a este correo seleccionando una de las siguientes tres vías de implementación:</p>
-                    
-                    <div style="margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
-                        <p><strong>1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</strong></p>
-                        <p style="font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su agente.</p>
-                    </div>
-
-                    <div style="margin-top: 15px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
-                        <p><strong>2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</strong></p>
-                        <p style="font-size: 13px; color: #94a3b8;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
-                    </div>
-
-                    <div style="margin-top: 15px;">
-                        <p><strong style="color: #38bdf8;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</strong></p>
-                        <p style="font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Agente 100% operativo y listo para producción inmediata.</p>
-                    </div>
-
-                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo de 24 a 72 horas hábiles.</p>
+                <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
+                    <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">📦 DETALLES DEL PRODUCTO</h3>
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+                        <tr>
+                            <td style="padding: 8px; color: #666; font-size: 12px; width: 35%;">FOLIO:</td>
+                            <td style="padding: 8px; font-weight: bold; color: #ff003c;">${folio}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; color: #666; font-size: 12px;">ID PLANTILLA:</td>
+                            <td style="padding: 8px; color: #00f2ff; font-weight: bold;">${template}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; color: #666; font-size: 12px;">PRODUCTO:</td>
+                            <td style="padding: 8px; font-weight: bold;">${pData.name}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; color: #666; font-size: 12px;">IMPORTE:</td>
+                            <td style="padding: 8px; color: #2ecc71; font-weight: bold;">$${pData.price} ${pData.currency}</td>
+                        </tr>
+                    </table>
                 </div>
 
-                <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                    <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
+                <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
+                    <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">👤 DATOS DEL CLIENTE</h3>
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+                        ${buildFieldRow("Razón Social / Negocio", details.negocio)}
+                        ${buildFieldRow("WhatsApp", details.telefono || details.phone)}
+                        ${buildFieldRow("Email de Respaldo", clientEmail)}
+                        ${buildFieldRow("Domicilio / Dirección", details.direccion || details.direccion_fiscal || details.address)}
+                        ${buildFieldRow("Eslogan / Tagline", details.tagline)}
+                        ${buildFieldRow("Headline / Encabezado", details.headline)}
+                        ${buildFieldRow("Servicios Solicitados", details.servicios)}
+                        ${buildFieldRow("Horarios Operativos", details.horarios || details.hours)}
+                        ${buildFieldRow("Costo Consulta / Fee", details.fee)}
+                    </table>
                 </div>
-                <p style="font-size: 11px; color: #999; margin-top: 30px;">Robotiax Engine - Despliegue Automatizado</p>
+
+                ${(!isWebProduct && vertexInstructions) ? `
+                <div style="background: #000; border: 2px dashed #ff003c; padding: 25px; margin-bottom: 25px;">
+                    <h3 style="color: #ff003c; margin-top: 0; text-transform: uppercase; font-size: 13px;">📡 REPORTE TÉCNICO DE INTELIGENCIA VERTEX:</h3>
+                    <div style="color: #ffffff; font-size: 13px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;">${vertexInstructions}</div>
+                </div>` : ''}
             </div>
         `;
 
-        // 4. EMAIL PARA TI (ADMIN) - PRIORIDAD TOTAL A LA INSTRUCCIÓN IA
-        const adminMailHtml = isWebProduct ? `
-            <div style="font-family: sans-serif; background: #0a0a0a; color: white; padding: 30px; border: 2px solid #2ecc71;">
-                <h2 style="color: #2ecc71;">🌐 NUEVA IMPLEMENTACIÓN WEB: ${details.negocio}</h2>
-                <div style="background: #111; padding: 20px; border: 1px solid #222;">
-                    <p><strong>Folio:</strong> ${folio} | <strong>ID:</strong> ${template}</p>
-                    <hr style="border:0; border-top:1px solid #333;">
-                    <p><strong>WhatsApp:</strong> ${details.telefono}</p>
-                    <p><strong>Email:</strong> ${details.email}</p>
-                    <p><strong>Eslogan:</strong> ${details.tagline}</p>
-                    <p><strong>Headline:</strong> ${details.headline}</p>
-                    <p><strong>Servicios:</strong> ${details.servicios}</p>
-                    <p><strong>Dirección:</strong> ${details.direccion}</p>
-                    <p><strong>Horarios:</strong> ${details.horarios}</p>
-                    <p><strong>Costo/Fee:</strong> ${details.fee}</p>
+        // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD
+        const clientReceiptHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
+                <h2 style="color: #2ecc71; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
+                <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos recibido tus datos de configuración correctamente.</p>
+                
+                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
+                    <p style="margin: 5px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
+                    <p style="margin: 5px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
+                    <p style="margin: 5px 0;"><strong>INVERSIÓN:</strong> $${pData.price} ${pData.currency}</p>
                 </div>
-            </div>` : `
-            <div style="font-family: 'Courier New', monospace; background: #000; color: #00f2ff; padding: 40px; border: 4px solid #ff003c;">
-                <h1 style="color: #ff003c; text-align: center; border-bottom: 2px solid #ff003c; padding-bottom: 10px;">🚨 PROTOCOLO DE ACTIVACIÓN ESTRUCTURAL 🚨</h1>
-                <div style="background: #000; padding: 30px; border: 2px dashed #ff003c; margin: 20px 0;">
-                    <h2 style="color: #ff003c; font-family: 'Courier New', monospace; text-transform: uppercase;">📡 REPORTE TÉCNICO INTEGRAL DE INTELIGENCIA:</h2>
-                    <div style="color: #ffffff; font-size: 15px; line-height: 1.7; white-space: pre-wrap; font-family: 'Courier New', monospace;">${vertexInstructions}</div>
-                </div>          
+                
+                ${isWebProduct ? `
+                <p><strong>¿Qué sigue ahora?</strong> Su proyecto ha ingresado a nuestra <strong>fase de implementación técnica de precisión</strong>.</p>
+                <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6; margin: 20px 0;">
+                    Recibirá su acceso y confirmación en su correo en un plazo de <strong>24 a 72 horas hábiles</strong>.
+                </p>
+                <p style="font-size: 13px; color: #555;">Hosting Premium y Dominio .info incluidos gratis por 30 días.</p>
+                ` : `
+                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #334155;">
+                    <h3 style="color: #38bdf8; margin-top: 0; font-family: sans-serif;">🛡️ ESTATUS DE ACTIVACIÓN: SELECCIÓN DE PROTOCOLO</h3>
+                    <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">Para proceder con la liberación de su unidad, es imperativo que responda a este correo seleccionando una de las siguientes tres vías de implementación:</p>
+                    
+                    <div style="margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff;"><strong>1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</strong></p>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su agente.</p>
+                    </div>
 
-                <div style="background: #0a0a0a; padding: 20px; border: 1px solid #333;">
-                    <h3 style="color: #666; font-size: 12px; margin-top: 0;">DATOS DE IDENTIFICACIÓN DEL CLIENTE:</h3>
-                    <p style="font-size: 13px; color: #999; margin: 5px 0;"><strong>CLIENTE:</strong> ${details.negocio}</p>
-                    <p style="font-size: 13px; color: #999; margin: 5px 0;"><strong>PRODUCTO:</strong> ${pData.name}</p>
-                    <p style="font-size: 13px; color: #999; margin: 5px 0;"><strong>FOLIO:</strong> ${folio}</p>
-                    <p style="font-size: 13px; color: #999; margin: 5px 0;"><strong>CONTACTO:</strong> ${details.telefono} | ${details.email}</p>
+                    <div style="margin-top: 15px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff;"><strong>2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</strong></p>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
+                    </div>
+
+                    <div style="margin-top: 15px;">
+                        <p style="margin: 0; color: #38bdf8;"><strong>3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</strong></p>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Agente 100% operativo y listo para producción inmediata.</p>
+                    </div>
+
+                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold; margin-bottom: 0;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo de 24 a 72 horas hábiles.</p>
                 </div>
+                `}
+
+                <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                    <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
+                </div>
+                <p style="font-size: 11px; color: #999; margin-top: 30px; text-align: center;">Robotiax Engine - Despliegue Automatizado</p>
             </div>
         `;
 
         const mailer = getTransporter();
 
+        // CONTROL RESILIENTE E INDEPENDIENTE DE ENVÍO DE CORREOS
         try {
             await mailer.sendMail({
                 from: '"ROBOTIAX CENTRAL" <geniosdeltalento@gmail.com>',
                 to: 'geniosdeltalento@gmail.com',
                 replyTo: clientEmail,
-                subject: `⚡ ACTIVACIÓN: ${details.negocio} (${folio})`,
+                subject: `⚡ ACTIVACIÓN: ${details.negocio || 'SIN NOMBRE'} (${folio})`,
                 html: adminMailHtml
             });
+            console.log("✅ Correo al administrador enviado correctamente.");
+        } catch (errAdmin) {
+            console.error("❌ ERROR AL ENVIAR CORREO AL ADMINISTRADOR:", errAdmin.message);
+        }
 
-            await mailer.sendMail({
-                from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
-                to: clientEmail,
-                subject: `✅ Orden Confirmada: ${folio}`,
-                html: clientReceiptHtml
-            });
-        } catch (err) {
-            console.error("Error envío correos:", err.message);
+        if (clientEmail) {
+            try {
+                await mailer.sendMail({
+                    from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                    to: clientEmail,
+                    subject: `✅ Orden Confirmada: ${folio}`,
+                    html: clientReceiptHtml
+                });
+                console.log(`✅ Correo al cliente enviado correctamente a: ${clientEmail}`);
+            } catch (errClient) {
+                console.error(`❌ ERROR AL ENVIAR CORREO AL CLIENTE (${clientEmail}):`, errClient.message);
+            }
+        } else {
+            console.warn("⚠️ No se detectó dirección de correo del cliente. Omisión de envío.");
         }
 
         return res.status(200).json({ status: 'ok', folio: folio });
-
     } catch (error) {
         console.error("ERROR CRÍTICO:", error);
         return res.status(500).json({ status: 'error', message: error.message });

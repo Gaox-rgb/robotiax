@@ -100,5 +100,67 @@ window.app.catalog = {
         { id: 'sec-cloud-shield', name: 'Protector Cloud', price: 349.00, currency: 'USD', category: 'MEDIANA', icon: '☁️', reqId: 'SEC_B', desc: 'Blindaje de infraestructura en servidores remotos y nubes híbridas.' },
         { id: 'sec-iam', name: 'Identidad Unificada (IAM)', price: 229.00, currency: 'USD', category: 'MEDIANA', icon: '🆔', reqId: 'SEC_B', desc: 'Gestión centralizada de roles y permisos según cargo y horario.' },
         { id: 'sec-resiliencia', name: 'Reporte de Resiliencia', price: 149.00, currency: 'USD', category: 'MEDIANA', icon: '📈', reqId: 'SEC_B', desc: 'Certificación de cumplimiento y estado de blindaje para inversores.' }
+        
     ]
+};
+
+window.app.catalog.configurator = {
+    // SALUD
+    "cfg-salud-bot": { id: "cfg-salud-bot", name: "Bot de Agenda Médica", price: 1499, currency: "MXN", desc: "Filtro de síntomas y agenda automatizada de pacientes. Conecta a Google Sheets y envía la ubicación de la clínica." },
+    "cfg-salud-agente": { id: "cfg-salud-agente", name: "Agente de Agenda e IA Médica", price: 2999, currency: "MXN", desc: "Asesor médico virtual. Explica tratamientos, resuelve dudas pre-consulta y asigna horarios conversando en lenguaje natural." },
+    // LEGAL
+    "cfg-legal-bot": { id: "cfg-legal-bot", name: "Bot de Recepción Jurídica", price: 1499, currency: "MXN", desc: "Clasifica casos por materia (Familiar, Civil, Laboral), recopila datos e identificaciones obligatorias del cliente y agenda cita." },
+    "cfg-legal-agente": { id: "cfg-legal-agente", name: "Agente de Pre-Consulta Legal IA", price: 2999, currency: "MXN", desc: "Pasante legal con IA. Lee leyes mexicanas, pre-califica la viabilidad de demandas y detecta cláusulas de riesgo en contratos." },
+    // CONTABILIDAD
+    "cfg-contable-bot": { id: "cfg-contable-bot", name: "Bot de Archivo Contable", price: 1499, currency: "MXN", desc: "Receptor fiscal. Recibe PDFs y XMLs de tus clientes en WhatsApp y los organiza automáticamente en Google Drive." },
+    "cfg-contable-agente": { id: "cfg-contable-agente", name: "Agente Consultor SAT IA", price: 2999, currency: "MXN", desc: "Consultor SAT con IA 24/7. Responde dudas de deducibilidad, extrae datos de Constancias CSF y calcula estimados de IVA/ISR." },
+    // GIMNASIOS
+    "cfg-gym-bot": { id: "cfg-gym-bot", name: "Bot de Accesos para Gimnasio", price: 1499, currency: "MXN", desc: "Generador de pases de cortesía ('Primer día gratis'), muestra horarios de clases grupales y tarifas por botones fijos." },
+    "cfg-gym-agente": { id: "cfg-gym-agente", name: "Agente Vendedor de Membresías", price: 2999, currency: "MXN", desc: "Vendedor de membresías 24/7. Resuelve objeciones de costo de forma empática y aconseja sobre rutinas o nutrición." },
+    
+    // DIVISIONES ESPECÍFICAS DE COMERCIOS (6 Sub-tipos de negocio físico)
+    "cfg-boutique-bot": { id: "cfg-boutique-bot", name: "Bot de Apartados de Ropa y Calzado", price: 1499, currency: "MXN", desc: "Bot de Apartados para Boutiques. El cliente reserva prendas o calzado en su talla por 24 horas y recibe un código para pagar en caja." },
+    "cfg-boutique-agente": { id: "cfg-boutique-agente", name: "Agente Personal Shopper IA", price: 2999, currency: "MXN", desc: "Asesor de estilo con IA. Recomienda outfits, tallas y combinaciones de moda en lenguaje natural según la ocasión del cliente." },
+    "cfg-ferreteria-bot": { id: "cfg-ferreteria-bot", name: "Bot Consultor de Existencias", price: 1499, currency: "MXN", desc: "Bot de inventario para Ferreterías. El cliente escribe lo que busca y el bot revisa en Google Sheets precios y existencias al instante." },
+    "cfg-ferreteria-agente": { id: "cfg-ferreteria-agente", name: "Agente Asesor Técnico de Ferretería", price: 2999, currency: "MXN", desc: "Asesor de reparaciones con IA. El usuario describe su problema doméstico y la IA le dice exactamente qué herramientas y refacciones comprar." },
+    "cfg-gourmet-bot": { id: "cfg-gourmet-bot", name: "Bot de Pedidos de Alimentos", price: 1499, currency: "MXN", desc: "Bot de toma de pedidos para Fruterías y Carnicerías. Permite seleccionar categorías de alimentos frescos por botones y agenda entrega." },
+    "cfg-gourmet-agente": { id: "cfg-gourmet-agente", name: "Agente Recomendador de Recetas", price: 2999, currency: "MXN", desc: "Chef virtual de ventas. Sugiere recetas deliciosas basadas en lo que el cliente quiere cocinar y le cotiza el paquete de insumos completo." },
+    "cfg-abarrotes-bot": { id: "cfg-abarrotes-bot", name: "Bot Pide y Recoge Express", price: 1499, currency: "MXN", desc: "Bot de despensa Express. Los vecinos seleccionan productos básicos por menús interactivos para pasar a recoger sin hacer filas." },
+    "cfg-abarrotes-agente": { id: "cfg-abarrotes-agente", name: "Agente Procesador de Pedidos Libres", price: 2999, currency: "MXN", desc: "Tomador de pedidos desordenados. Interpreta audios o textos informales de despensa, calcula totales con envío y manda lista a empaque." },
+    "cfg-cafeteria-bot": { id: "cfg-cafeteria-bot", name: "Bot Monedero y Cupones Digitales", price: 1499, currency: "MXN", desc: "Tarjeta de lealtad virtual para Cafeterías. Registra visitas de clientes físicos mediante QR y otorga cupones de descuento automáticos." },
+    "cfg-cafeteria-agente": { id: "cfg-cafeteria-agente", name: "Agente Recomendador de Bebidas IA", price: 2999, currency: "MXN", desc: "Barista digital con IA. Recomienda especialidades, maridajes de postres y resuelve dudas sobre alérgenos o ingredientes en la carta." },
+    "cfg-floreria-bot": { id: "cfg-floreria-bot", name: "Bot Cotizador de Envíos Locales", price: 1499, currency: "MXN", desc: "Bot logístico para Florerías y Pastelerías. Calcula el costo del envío de forma automática según la colonia o sector seleccionado." },
+    "cfg-floreria-agente": { id: "cfg-floreria-agente", name: "Agente Diseñador de Regalos IA", price: 2999, currency: "MXN", desc: "Asesor de detalles con IA. Sugiere arreglos florales o pasteles personalizados según la relación y la festividad que celebra el cliente." },
+
+    // DIVISIONES ADICIONALES (Los 6 nichos de servicios locales)
+    "cfg-talleres-bot": { id: "cfg-talleres-bot", name: "Bot de Estatus de Reparación", price: 1499, currency: "MXN", desc: "Asistente de taller mecánico. El cliente ingresa su placa o folio y el bot responde su estatus (ej: 'Fase de pintura') desde un Excel." },
+    "cfg-talleres-agente": { id: "cfg-talleres-agente", name: "Agente Asesor Mecánico IA", price: 2999, currency: "MXN", desc: "Consultor automotriz con IA. Explica de forma sencilla testigos del tablero, cotiza refacciones y agenda ingresos a rampa." },
+    "cfg-eventos-bot": { id: "cfg-eventos-bot", name: "Bot de Paquetes de Salones", price: 1499, currency: "MXN", desc: "Asistente de eventos fijos. Muestra galerías del salón, precios base por persona y agenda citas para conocer el lugar físico." },
+    "cfg-eventos-agente": { id: "cfg-eventos-agente", name: "Agente Organizador de Banquetes", price: 2999, currency: "MXN", desc: "Organizador de eventos con IA. Realiza cotizaciones dinámicas personalizadas combinando platillos, horas, mesas y servicios." },
+    "cfg-idiomas-bot": { id: "cfg-idiomas-bot", name: "Bot de Admisiones y Horarios", price: 1499, currency: "MXN", desc: "Filtro de admisiones de escuelas. Envía calendarios de inicio de cursos, requisitos de inscripción, colegiaturas y ubicación." },
+    "cfg-idiomas-agente": { id: "cfg-idiomas-agente", name: "Agente de Nivelación e Idiomas IA", price: 2999, currency: "MXN", desc: "Tutor evaluador con IA. Aplica un test rápido de nivelación al estudiante en el chat y le sugiere el grupo de inglés o música ideal." },
+    "cfg-fumigacion-bot": { id: "cfg-fumigacion-bot", name: "Bot de Paquetes de Fumigación", price: 1499, currency: "MXN", desc: "Cotizador por botones de control de plagas. Ofrece tarifas fijas basadas estrictamente en las dimensiones del inmueble." },
+    "cfg-fumigacion-agente": { id: "cfg-fumigacion-agente", name: "Agente Asesor en Plagas e Higiene", price: 2999, currency: "MXN", desc: "Identificador de plagas con IA. Entrevista al cliente, ofrece recomendaciones de seguridad previas y agenda el servicio." },
+    "cfg-limpieza-bot": { id: "cfg-limpieza-bot", name: "Bot de Cotización de Lavado", price: 1499, currency: "MXN", desc: "Cotizador de lavado de salas y alfombras. Calcula el precio exacto basado en la selección de piezas mediante botones fijos." },
+    "cfg-limpieza-agente": { id: "cfg-limpieza-agente", name: "Agente Analista de Manchas IA", price: 2999, currency: "MXN", desc: "Evaluador de manchas con IA. El usuario manda foto del tapizado, la IA detecta la gravedad del daño, cotiza el químico y agenda." },
+    "cfg-viajes-bot": { id: "cfg-viajes-bot", name: "Bot de Itinerarios de Excursiones", price: 1499, currency: "MXN", desc: "Asistente de viajes programados. Envía PDFs completos de itinerarios locales, precios grupales y políticas de equipaje fijas." },
+    "cfg-viajes-agente": { id: "cfg-viajes-agente", name: "Agente Guía de Viajes IA", price: 2999, currency: "MXN", desc: "Guía turístico virtual. Resuelve dudas de clima en tiempo real, políticas de aerolínea y agenda tours según gustos del usuario." },
+
+    // PROSPECCIÓN, WEBS Y CORPORATIVOS
+    "cfg-prospeccion-bot": { id: "cfg-prospeccion-bot", name: "Bot Extractor de Google Maps", price: 1499, currency: "MXN", desc: "Extractor masivo de Google Maps (Scraper). Consigue datos de 100 negocios locales y les envía una plantilla masiva." },
+    "cfg-prospeccion-agente": { id: "cfg-prospeccion-agente", name: "Agente Prospectador Outbound", price: 2999, currency: "MXN", desc: "Cazador comercial autónomo. Rastreará sitios web de prospectos, redacta correos hiper-personalizados y concreta llamadas." },
+    "cfg-webs-bot": { id: "cfg-webs-bot", name: "Bot Creador de Webs Estáticas", price: 1499, currency: "MXN", desc: "Generador de landing pages por formulario. Llena datos y el sistema los inyecta en una plantilla pre-diseñada al instante." },
+    "cfg-webs-agente": { id: "cfg-webs-agente", name: "Agente Redactor y Diseñador Web", price: 2999, currency: "MXN", desc: "Diseñador web con IA. Entrevista al cliente para entender su negocio, escribe textos persuasivos y genera imágenes únicas." },
+    "cfg-rh-bot": { id: "cfg-rh-bot", name: "Bot Administrativo de RH", price: 1499, currency: "MXN", desc: "Quiosco interno para empleados. Permite a tu personal pedir vacaciones, descargar recibos de nómina y subir justificantes." },
+    "cfg-rh-agente": { id: "cfg-rh-agente", name: "Agente Reclutador de Personal", price: 2999, currency: "MXN", desc: "Reclutador autónomo. Pre-entrevista candidatos por WhatsApp, califica su perfil de puesto y te entrega un reporte analítico." },
+    "cfg-instagram-bot": { id: "cfg-instagram-bot", name: "Bot Auto-Respuesta Instagram", price: 1499, currency: "MXN", desc: "Auto-respondedor de Mensajes Directos (DMs) basado en palabras clave fijas y desvío seguro a chat de WhatsApp." },
+    "cfg-instagram-agente": { id: "cfg-instagram-agente", name: "Agente Creador para Instagram", price: 2999, currency: "MXN", desc: "Creador autónomo de contenido. Idea publicaciones, redacta descripciones con hashtags, genera imágenes con IA y las publica." },
+    "cfg-facebook-bot": { id: "cfg-facebook-bot", name: "Bot Auto-Comentador de Posts", price: 1499, currency: "MXN", desc: "El bot del 'INFO'. Responde comentarios de fotos al instante con un texto predeterminado y envía link a Messenger." },
+    "cfg-facebook-agente": { id: "cfg-facebook-agente", name: "Agente Social Seller Facebook", price: 2999, currency: "MXN", desc: "Social Seller IA. Modera comentarios con respuestas humanas contextuales individuales y vende directo dentro de Messenger." },
+    "cfg-youtube-bot": { id: "cfg-youtube-bot", name: "Bot Administrador de YouTube", price: 1499, currency: "MXN", desc: "Programador de carga masiva de videos desde Google Drive, limpieza de spam en comentarios y actualización de links." },
+    "cfg-youtube-agente": { id: "cfg-youtube-agente", name: "Agente de Canales Automatizados", price: 2999, currency: "MXN", desc: "Creador de canales automatizados (Sin Rostro). Genera guiones, locución realista y renderiza videos verticales Shorts." },
+    "cfg-twitter-bot": { id: "cfg-twitter-bot", name: "Bot Programador para X", price: 1499, currency: "MXN", desc: "Programador estático de tweets, retweets automáticos cruzados y respuestas basadas en palabras clave rígidas." },
+    "cfg-twitter-agente": { id: "cfg-twitter-agente", name: "Agente Growth Hacker para X", price: 2999, currency: "MXN", desc: "Growth Hacker autónomo. Monitorea tendencias de nicho, redacta hilos virales e interactúa en cuentas grandes para monetizar." },
+    "cfg-ciber-bot": { id: "cfg-ciber-bot", name: "Bot Escáner de Vulnerabilidad", price: 1499, currency: "MXN", desc: "Escáner silencioso de dominios. Revisa de forma automatizada si el sitio de tu prospecto carece de cifrado SSL o protección." },
+    "cfg-ciber-agente": { id: "cfg-ciber-agente", name: "Agente Consultor en Ciber-Riesgo", price: 2999, currency: "MXN", desc: "Consultor de riesgos digitales. Traduce fallas técnicas en multas de la LFPDPPP de México y redacta correos de alerta." }
 };
