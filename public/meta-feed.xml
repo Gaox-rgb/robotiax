@@ -1,0 +1,584 @@
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>Catálogo Corporativo Robotiax</title>
+    <link>https://robotiax.mx</link>
+    <description>Infraestructura de Automatización y Agentes Cognitivos</description>
+    
+    <!-- 1. SALUD -->
+    <item>
+      <g:id>cfg-salud-bot</g:id>
+      <g:title>Bot de Salud - Setup</g:title>
+      <g:description>Filtro de síntomas y agenda automatizada de pacientes para el sector de la salud. Conexión directa a WhatsApp y Google Sheets.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-salud-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-salud-agente</g:id>
+      <g:title>Agente de Salud IA - Setup</g:title>
+      <g:description>Asistente de agendamiento y asesoría médica con IA avanzada. Resuelve dudas pre-consulta en lenguaje natural.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-salud-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 2. LEGAL -->
+    <item>
+      <g:id>cfg-legal-bot</g:id>
+      <g:title>Bot de Legal - Setup</g:title>
+      <g:description>Clasificación de casos jurídicos y recopilación estructurada de datos del cliente por WhatsApp.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-legal-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-legal-agente</g:id>
+      <g:title>Agente de Legal IA - Setup</g:title>
+      <g:description>Pasante legal con IA avanzada. Lee leyes, pre-califica viabilidad de demandas y detecta cláusulas de riesgo.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-legal-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 3. CONTABLE -->
+    <item>
+      <g:id>cfg-contable-bot</g:id>
+      <g:title>Bot de Contable - Setup</g:title>
+      <g:description>Receptor de archivos fiscales en WhatsApp y organización automatizada en Google Drive.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-contable-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-contable-agente</g:id>
+      <g:title>Agente de Contable IA - Setup</g:title>
+      <g:description>Consultor fiscal SAT con IA. Responde deducibilidad y calcula estimados de impuestos.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-contable-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 4. GIMNASIOS -->
+    <item>
+      <g:id>cfg-gym-bot</g:id>
+      <g:title>Bot de Gym - Setup</g:title>
+      <g:description>Asistente de pases de cortesía y envío de tarifas del gimnasio por botones interactivos.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-gym-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-gym-agente</g:id>
+      <g:title>Agente de Gym IA - Setup</g:title>
+      <g:description>Vendedor de membresías con IA. Resuelve objeciones y asiste en rutinas y nutrición.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-gym-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 5. BOUTIQUES -->
+    <item>
+      <g:id>cfg-boutique-bot</g:id>
+      <g:title>Bot de Boutique - Setup</g:title>
+      <g:description>Bot de apartados de prendas y calzado con generación de código de caja.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-boutique-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-boutique-agente</g:id>
+      <g:title>Agente de Boutique IA - Setup</g:title>
+      <g:description>Asesor de estilo personal con IA. Sugiere outfits y tallas de forma personalizada.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-boutique-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 6. FERRETERÍA -->
+    <item>
+      <g:id>cfg-ferreteria-bot</g:id>
+      <g:title>Bot de Ferretería - Setup</g:title>
+      <g:description>Consultor de inventario y existencias ferreteras con conexión a Excel.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-ferreteria-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-ferreteria-agente</g:id>
+      <g:title>Agente de Ferretería IA - Setup</g:title>
+      <g:description>Asesor técnico de reparaciones domésticas con IA. Recomienda herramientas exactas.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-ferreteria-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 7. GOURMET -->
+    <item>
+      <g:id>cfg-gourmet-bot</g:id>
+      <g:title>Bot de Gourmet - Setup</g:title>
+      <g:description>Recepción y estructuración de pedidos de alimentos frescos y cortes selectos.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-gourmet-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-gourmet-agente</g:id>
+      <g:title>Agente de Gourmet IA - Setup</g:title>
+      <g:description>Chef virtual con IA. Sugiere recetas exclusivas y cotiza los insumos necesarios.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-gourmet-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 8. ABARROTES -->
+    <item>
+      <g:id>cfg-abarrotes-bot</g:id>
+      <g:title>Bot de Abarrotes - Setup</g:title>
+      <g:description>Sistema de pedido exprés de despensa local mediante menús de botones.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-abarrotes-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-abarrotes-agente</g:id>
+      <g:title>Agente de Abarrotes IA - Setup</g:title>
+      <g:description>Procesador inteligente de pedidos por audio o lista informal de WhatsApp.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-abarrotes-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 9. CAFETERÍA -->
+    <item>
+      <g:id>cfg-cafeteria-bot</g:id>
+      <g:title>Bot de Cafetería - Setup</g:title>
+      <g:description>Monedero digital de lealtad y cuponera en WhatsApp mediante escaneo QR.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-cafeteria-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-cafeteria-agente</g:id>
+      <g:title>Agente de Cafetería IA - Setup</g:title>
+      <g:description>Barista virtual con IA. Recomienda especialidades y asiste en alérgenos de la carta.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-cafeteria-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 10. FLORERÍA -->
+    <item>
+      <g:id>cfg-floreria-bot</g:id>
+      <g:title>Bot de Florería - Setup</g:title>
+      <g:description>Cotizador automático de envíos de regalos a domicilio según zona o colonia.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-floreria-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-floreria-agente</g:id>
+      <g:title>Agente de Florería IA - Setup</g:title>
+      <g:description>Diseñador de arreglos florales y pastelería fina con IA según ocasión.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-floreria-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 11. TALLERES -->
+    <item>
+      <g:id>cfg-talleres-bot</g:id>
+      <g:title>Bot de Talleres - Setup</g:title>
+      <g:description>Consultor del estatus de reparación automotriz por número de placa en WhatsApp.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-talleres-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-talleres-agente</g:id>
+      <g:title>Agente de Talleres IA - Setup</g:title>
+      <g:description>Asesor de diagnóstico mecánico con IA. Explica fallas y agenda mantenimientos.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-talleres-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 12. EVENTOS -->
+    <item>
+      <g:id>cfg-eventos-bot</g:id>
+      <g:title>Bot de Eventos - Setup</g:title>
+      <g:description>Asistente de cotización base por persona y envío de galerías de salones.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-eventos-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-eventos-agente</g:id>
+      <g:title>Agente de Eventos IA - Setup</g:title>
+      <g:description>Organizador de banquetes con IA. Cotizaciones dinámicas de servicios adicionales.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-eventos-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 13. IDIOMAS -->
+    <item>
+      <g:id>cfg-idiomas-bot</g:id>
+      <g:title>Bot de Idiomas - Setup</g:title>
+      <g:description>Admisiones e inscripción a cursos. Envío de costos y calendarios escolares.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-idiomas-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-idiomas-agente</g:id>
+      <g:title>Agente de Idiomas IA - Setup</g:title>
+      <g:description>Evaluador académico con IA. Aplica test de nivelación al vuelo en el chat.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-idiomas-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 14. FUMIGACIÓN -->
+    <item>
+      <g:id>cfg-fumigacion-bot</g:id>
+      <g:title>Bot de Fumigación - Setup</g:title>
+      <g:description>Cotizador por botones según dimensiones del inmueble para control de plagas.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-fumigacion-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-fumigacion-agente</g:id>
+      <g:title>Agente de Fumigación IA - Setup</g:title>
+      <g:description>Asesor experto en plagas e higiene con IA. Genera alertas de seguridad previa.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-fumigacion-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 15. LIMPIEZA -->
+    <item>
+      <g:id>cfg-limpieza-bot</g:id>
+      <g:title>Bot de Limpieza - Setup</g:title>
+      <g:description>Cotizador de lavado de salas y alfombras según número de piezas seleccionadas.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-limpieza-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-limpieza-agente</g:id>
+      <g:title>Agente de Limpieza IA - Setup</g:title>
+      <g:description>Analista de manchas por imagen con IA. Cotiza el químico óptimo de remoción.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-limpieza-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 16. VIAJES -->
+    <item>
+      <g:id>cfg-viajes-bot</g:id>
+      <g:title>Bot de Viajes - Setup</g:title>
+      <g:description>Envío automático de itinerarios PDF y políticas de equipaje en excursiones.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-viajes-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-viajes-agente</g:id>
+      <g:title>Agente de Viajes IA - Setup</g:title>
+      <g:description>Asistente de viaje y guía turístico con IA. Resuelve políticas de aerolínea.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-viajes-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 17. PROSPECCIÓN -->
+    <item>
+      <g:id>cfg-prospeccion-bot</g:id>
+      <g:title>Bot de Prospección - Setup</g:title>
+      <g:description>Scraper automatizado de Google Maps para extracción masiva de leads locales.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-prospeccion-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-prospeccion-agente</g:id>
+      <g:title>Agente de Prospección IA - Setup</g:title>
+      <g:description>Cazador de clientes B2B autónomo con IA. Redacta correos hiper-personalizados.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-prospeccion-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 18. WEBS -->
+    <item>
+      <g:id>cfg-webs-bot</g:id>
+      <g:title>Bot de Webs - Setup</g:title>
+      <g:description>Generador instantáneo de páginas web sencillas mediante llenado de formulario.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-webs-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-webs-agente</g:id>
+      <g:title>Agente de Webs IA - Setup</g:title>
+      <g:description>Arquitecto de desarrollo web y copywriter de ventas con IA integrada.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-webs-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 19. RECURSOS HUMANOS -->
+    <item>
+      <g:id>cfg-rh-bot</g:id>
+      <g:title>Bot de Recursos Humanos - Setup</g:title>
+      <g:description>Quiosco para empleados. Descarga de recibos de nómina y envío de vacaciones.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-rh-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-rh-agente</g:id>
+      <g:title>Agente de Recursos Humanos IA - Setup</g:title>
+      <g:description>Entrevistador y calificador autónomo de vacantes laborales por WhatsApp con IA.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-rh-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 20. INSTAGRAM -->
+    <item>
+      <g:id>cfg-instagram-bot</g:id>
+      <g:title>Bot de Instagram - Setup</g:title>
+      <g:description>Auto-respondedor de DMs y palabras clave rígidas con desvío a WhatsApp.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-instagram-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-instagram-agente</g:id>
+      <g:title>Agente de Instagram IA - Setup</g:title>
+      <g:description>Creador y planificador autónomo de posts y copys persuasivos con IA para IG.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-instagram-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 21. FACEBOOK -->
+    <item>
+      <g:id>cfg-facebook-bot</g:id>
+      <g:title>Bot de Facebook - Setup</g:title>
+      <g:description>Comentador automático instantáneo de publicaciones comerciales con links.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-facebook-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-facebook-agente</g:id>
+      <g:title>Agente de Facebook IA - Setup</g:title>
+      <g:description>Social Seller con IA. Modera y cierra ventas en caliente dentro de Messenger.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-facebook-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 22. YOUTUBE -->
+    <item>
+      <g:id>cfg-youtube-bot</g:id>
+      <g:title>Bot de YouTube - Setup</g:title>
+      <g:description>Programador automático de cargas y moderador inteligente de spam en videos.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-youtube-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-youtube-agente</g:id>
+      <g:title>Agente de YouTube IA - Setup</g:title>
+      <g:description>Creador de canales automatizados (Faceless). Genera locución y guion con IA.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-youtube-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 23. TWITTER -->
+    <item>
+      <g:id>cfg-twitter-bot</g:id>
+      <g:title>Bot de Twitter - Setup</g:title>
+      <g:description>Programador estructurado de hilos y retweets automáticos de cuentas aliadas.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-twitter-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-twitter-agente</g:id>
+      <g:title>Agente de Twitter IA - Setup</g:title>
+      <g:description>Growth Hacker con IA para X. Redacta hilos de tendencia y asiste en viralidad.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-twitter-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+
+    <!-- 24. CIBERSEGURIDAD -->
+    <item>
+      <g:id>cfg-ciber-bot</g:id>
+      <g:title>Bot de Ciberseguridad - Setup</g:title>
+      <g:description>Escáner diario automático de certificados y vulnerabilidad de tu dominio web.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-ciber-bot</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>1499.00 MXN</g:price>
+    </item>
+    <item>
+      <g:id>cfg-ciber-agente</g:id>
+      <g:title>Agente de Ciberseguridad IA - Setup</g:title>
+      <g:description>Asesor de cumplimiento de datos (LFPDPPP) y consultor de mitigación con IA.</g:description>
+      <g:link>https://robotiax.mx/producto.html?id=cfg-ciber-agente</g:link>
+      <g:image_link>https://robotiax.mx/assets/favicon.png</g:image_link>
+      <g:brand>ROBOTIAX</g:brand>
+      <g:condition>new</g:condition>
+      <g:availability>in stock</g:availability>
+      <g:price>2999.00 MXN</g:price>
+    </item>
+  </channel>
+</rss>

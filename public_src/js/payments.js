@@ -9,7 +9,7 @@ window.app.payments = {
         capture: 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app'
     },
 
-    executePurchase: function(productId, fundingType) {
+    executePurchase: function(productId, fundingType, price, currency) {
         const targetId = document.getElementById('modal-paypal-container') ? 'modal-paypal-container' : 'paypal-actual-button';
         const btnBox = document.getElementById(targetId);
         
@@ -24,6 +24,8 @@ window.app.payments = {
             body: JSON.stringify({ 
                 productId: productId,
                 fundingType: fundingType,
+                price: price,
+                currency: currency,
                 returnUrl: window.location.origin + window.location.pathname 
             })
         })
@@ -53,11 +55,11 @@ window.app.payments = {
 
             btnBox.innerHTML = `
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'paypal')" 
+                    <button onclick="window.app.payments.executePurchase('${productId}', 'paypal', ${price}, '${currency}')" 
                         style="background: #FFD700; color: #000; border: none; padding: 18px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 2px; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);">
                         PAGAR CON CUENTA PAYPAL
                     </button>
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'card')" 
+                    <button onclick="window.app.payments.executePurchase('${productId}', 'card', ${price}, '${currency}')" 
                         style="background: transparent; color: #00f2ff; border: 2px solid #00f2ff; padding: 16px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 2px; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0, 234, 255, 0.1);">
                         TARJETA DE CRÉDITO / DÉBITO
                     </button>

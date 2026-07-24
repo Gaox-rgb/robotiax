@@ -9,6 +9,34 @@
     --color-border: rgba(0, 255, 255, 0.1); 
 }
 
+/* --- BARRA DE NAVEGACIÓN SUPERIOR (HUD NAV) --- */
+.hud-nav {
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+    background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--color-border); z-index: 999;
+}
+.hud-nav-container {
+    max-width: 1000px; margin: 0 auto; height: 100%; display: flex;
+    justify-content: space-between; align-items: center; padding: 0 1.5rem;
+}
+.hud-logo { font-family: 'Roboto Mono', monospace; font-size: 0.8rem; color: #fff; letter-spacing: 2px; font-weight: 700; }
+.hud-links a {
+    font-family: 'Roboto Mono', monospace; font-size: 0.75rem; text-decoration: none;
+    color: var(--color-primary-cyan); font-weight: 700; border: 1px solid var(--color-primary-cyan);
+    padding: 6px 12px; border-radius: 4px; transition: 0.3s;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+.hud-links a:hover {
+    background: var(--color-primary-cyan); color: #000;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+/* Compensación de espacio superior en body */
+body {
+    padding-top: 60px;
+}
+
 /* --- TRANSICIONES Y EFECTOS --- */
 .trans-matrix {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;

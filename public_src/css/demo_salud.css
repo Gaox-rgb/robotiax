@@ -1,0 +1,262 @@
+/* public_src/css/demo_salud.css */
+
+/* --- CONFIGURACIONES GENERALES --- */
+/* Mapeo de Variables CSS para Cambios Dinámicos de Color con Saneamiento de CRT */
+:root {
+    --bg-page: #abc8e2;
+    --bg-container: #e6f0fa;
+    --color-text: #0a1128;
+    --color-text-secondary: #334155;
+    --border-container: rgba(15, 23, 42, 0.08);
+    --bg-subcard: #f7fbfe;
+    --crt-bg: #09141f;
+    --crt-text: #38bdf8;
+    --crt-border: rgba(56, 189, 248, 0.2);
+}
+
+body {
+    background-color: var(--bg-page) !important;
+    transition: background-color 0.4s ease !important;
+}
+
+/* Aplicación de las Variables a las Tarjetas */
+#clinic-hero-card,
+#clinic-metadata-strip,
+#servicios > div > div,
+#qr-promo-section,
+.entertainment-console,
+aside > section {
+    background-color: var(--bg-container) !important;
+    border: 1px solid var(--border-container) !important;
+    color: var(--color-text) !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease !important;
+}
+
+/* Tarjetas Internas o Split Cards */
+#clinic-identity-split,
+.entertainment-subcard {
+    background-color: var(--bg-subcard) !important;
+    border: 1px solid var(--border-container) !important;
+    color: var(--color-text) !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease !important;
+}
+
+.crt-screen {
+    background-color: var(--crt-bg) !important;
+    border: 1px solid var(--crt-border) !important;
+    transition: background-color 0.4s ease, border-color 0.4s ease !important;
+}
+
+.crt-screen p {
+    color: #38bdf8 !important;
+    color: var(--crt-text) !important;
+    transition: color 0.4s ease !important;
+}
+
+.lens-blur-active {
+    filter: blur(4px);
+    transition: filter 0.25s ease;
+}
+
+/* Adaptación de Textos a las Variables */
+#clinic-hero-card h1,
+#clinic-metadata-strip span,
+#servicios h3,
+#qr-promo-section h3,
+aside h4 {
+    color: var(--color-text) !important;
+}
+
+#clinic-hero-card p,
+#qr-promo-section p,
+aside p {
+    color: var(--color-text-secondary) !important;
+}
+
+/* Cinematic Cross-fade Slideshow animations */
+
+/* --- ANIMACIONES DE VISUALIZADOR CINEMATOGRÁFICO (CROSS-FADE DE IMÁGENES MÉDICAS) --- */
+.animate-fade-slide-1 {
+    animation: fadeSlide1 15s infinite ease-in-out;
+    background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80');
+}
+.animate-fade-slide-2 {
+    animation: fadeSlide2 15s infinite ease-in-out;
+    background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80');
+}
+.animate-fade-slide-3 {
+    animation: fadeSlide3 15s infinite ease-in-out;
+    background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80');
+}
+
+@keyframes fadeSlide1 {
+    0%, 100% { opacity: 1; }
+    33% { opacity: 0; }
+    66% { opacity: 0; }
+}
+@keyframes fadeSlide2 {
+    0%, 100% { opacity: 0; }
+    33% { opacity: 1; }
+    66% { opacity: 0; }
+}
+@keyframes fadeSlide3 {
+    0%, 100% { opacity: 0; }
+    33% { opacity: 0; }
+    66% { opacity: 1; }
+}
+
+/* --- AJUSTES EXTRA DE MAQUETA CLÍNICA DESKTOP (SIDEBAR) --- */
+@media (min-width: 1024px) {
+    aside {
+        position: sticky;
+        top: 90px;
+    }
+}
+
+/* Evitar que se desborde el Monitor de Telemetría */
+.lg\:col-span-5 {
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.05);
+}
+
+/* Animación de Toasts */
+.simulator-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #ffffff;
+    border: 1.5px solid #2563eb;
+    padding: 12px 20px;
+    border-radius: 12px;
+    color: #1e293b;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    z-index: 999999;
+    animation: toastSlideUp 0.3s forwards;
+}
+
+@keyframes toastSlideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- PASARELA NATIVA --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 250000 !important;
+    pointer-events: none;
+}
+.modal-overlay.visible {
+    display: flex !important;
+    pointer-events: auto;
+}
+.modal-content {
+    background: #0b1329 !important; /* Fondo azul oscuro profundo premium */
+    border: 1px solid rgba(59, 130, 246, 0.3) !important;
+    color: #ffffff !important;
+    padding: 40px 30px !important;
+    width: 90% !important;
+    max-width: 420px !important;
+    text-align: center;
+    position: relative;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6) !important;
+    font-family: 'Poppins', sans-serif;
+}
+
+.modal-content h2 {
+    color: #3b82f6 !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+}
+
+.modal-content p,
+.modal-content span {
+    color: #94a3b8 !important; /* Gris suave de alto contraste y legibilidad */
+}
+
+.cancel-modal-btn {
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important;
+    font-family: 'Poppins', sans-serif !important;
+    cursor: pointer;
+    margin-top: 24px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: color 0.2s ease;
+}
+
+.cancel-modal-btn:hover {
+    color: #ffffff !important;
+}
+
+#editor-panel {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 95vw !important;
+    max-width: 760px !important;
+    height: 85vh !important;
+    z-index: 220000 !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(37, 99, 235, 0.15) !important;
+    display: none;
+    overflow-y: auto !important;
+    padding: 40px !important;
+    border-radius: 24px !important;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
+}
+#editor-panel.active {
+    display: block !important;
+}
+
+/* Barra de WhatsApp personalizada para que se vea nativa de escritorio */
+#whatsapp-chat-history::-webkit-scrollbar {
+    width: 5px;
+}
+#whatsapp-chat-history::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+/* Animación de los puntos suspensivos del bot "escribiendo..." */
+.typing-dots::after {
+    content: ' .';
+    animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% {
+        color: rgba(0,0,0,0);
+        text-shadow:
+            .25em 0 0 rgba(0,0,0,0),
+            .5em 0 0 rgba(0,0,0,0);
+    }
+    40% {
+        color: #075e54;
+        text-shadow:
+            .25em 0 0 rgba(0,0,0,0),
+            .5em 0 0 rgba(0,0,0,0);
+    }
+    60% {
+        text-shadow:
+            .25em 0 0 #075e54,
+            .5em 0 0 rgba(0,0,0,0);
+    }
+    80%, 100% {
+        text-shadow:
+            .25em 0 0 #075e54,
+            .5em 0 0 #075e54;
+    }
+}

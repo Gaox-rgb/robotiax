@@ -232,7 +232,7 @@ window.app.editor = {
                     if(okBtn) {
                         okBtn.onclick = () => {
                             localStorage.removeItem('pending_purchase_id');
-                            location.reload();
+                            window.location.href = 'index.html'; // REDIRECCIÓN DIRECTA A LA LANDING PRINCIPAL
                         };
                     }
                 }

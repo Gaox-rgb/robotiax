@@ -8,6 +8,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const paypal = require("@paypal/checkout-server-sdk");
 const BASE_URL = 'https://robotiax.mx'; // O la URL de tu entorno actual
 const nodemailer = require('nodemailer');
+const https = require("https");
 
 if (!admin.apps.length) {
     admin.initializeApp();
@@ -64,9 +65,9 @@ const getTransporter = () => {
     return transporter;
 };
 
-// Definimos los parámetros de PayPal
-const paypalClientId = defineString('PAYPAL_CLIENT_ID');
-const paypalSecret = defineString('PAYPAL_SECRET');
+// Definimos los parámetros de PayPal con valores fallback para desarrollo local
+const paypalClientId = defineString('PAYPAL_CLIENT_ID', { default: 'SANDBOX_CLIENT_ID_FALLBACK' });
+const paypalSecret = defineString('PAYPAL_SECRET', { default: 'SANDBOX_SECRET_FALLBACK' });
 
 // --- Configuración del Entorno PayPal ---
 const getPaypalClient = () => {
@@ -187,11 +188,21 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
             // Reconocimiento dinámico para cualquier combinación del Configurador TOP 10
             if (productId && productId.startsWith('cfg-')) {
                 const isAgent = productId.endsWith('-agente') || productId.endsWith('-agent');
-                const giroName = productId.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').toUpperCase();
+                const isPromo = productId.endsWith('-promo');
+                const giroName = productId.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').replace('-promo', '').toUpperCase();
+                
+                // Si termina en -promo, forzamos el precio de lanzamiento de $200.00 MXN
                 productData = {
-                    name: isAgent ? `Agente de ${giroName} IA - Setup` : `Bot de ${giroName} - Setup`,
-                    price: isAgent ? 2999.00 : 1499.00,
+                    name: isPromo ? `Bot de ${giroName} - Promo Lanzamiento` : (isAgent ? `Agente de ${giroName} IA - Setup` : `Bot de ${giroName} - Setup`),
+                    price: isPromo ? 200.00 : (isAgent ? 2999.00 : 1499.00),
                     currency: 'MXN'
+                };
+            } else if (req.body.price && req.body.currency) {
+                // Sincronización resiliente con el catálogo de cliente para evitar errores 404
+                productData = {
+                    name: productId.toUpperCase().replace(/-/g, ' '),
+                    price: parseFloat(req.body.price),
+                    currency: req.body.currency.toUpperCase()
                 };
             } else {
                 const productDoc = await getDb().collection('products').doc(productId).get();
@@ -408,6 +419,11 @@ exports.submitFinalOrder = onRequest({
                 price: 1499.00, 
                 currency: 'MXN' 
             };
+            ecommerceProducts[`${prefix}-bot-promo`] = { 
+                name: `Bot de ${giro.toUpperCase()} - Promo Lanzamiento`, 
+                price: 200.00, 
+                currency: 'MXN' 
+            };
             ecommerceProducts[`${prefix}-agente`] = { 
                 name: `Agente de ${giro.toUpperCase()} IA - Setup`, 
                 price: 2999.00, 
@@ -451,15 +467,6 @@ exports.submitFinalOrder = onRequest({
                 vertexInstructions = "Error en generación de reporte Vertex."; 
             }
         }
-
-        // REGISTRO SEGURO EN BASE DE DATOS
-        await getDb().collection('orders_to_fulfill').add({
-            orderNumber: folio,
-            productName: pData.name,
-            isWeb: isWebProduct,
-            ...details,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
-        });
 
         // FUNCIÓN AUXILIAR PARA EVITAR REPORTES DIFUSOS Y VACÍOS
         const buildFieldRow = (label, val) => {
@@ -520,6 +527,78 @@ exports.submitFinalOrder = onRequest({
             </div>
         `;
 
+        // Generación dinámica de credenciales de acceso para Makumoto
+        const convenioCode = `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
+        const tempPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        // REGISTRO SEGURO EN BASE DE DATOS CON CREDENCIALES INCLUIDAS
+        await getDb().collection('orders_to_fulfill').add({
+            orderNumber: folio,
+            productName: pData.name,
+            isWeb: isWebProduct,
+            convenioCode: convenioCode,
+            provisionalPassword: tempPassword,
+            ...details,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        const isPromoBot = template.endsWith('-promo');
+
+        // --- SINCRONIZACIÓN ATÓMICA CON EL CORE DE MAKUMOTO (NATIVO HTTPS ANTI-CRASH) ---
+        try {
+            console.log(`📡 [SYNC]: Sincronizando convenio ${convenioCode} con Makumoto Core vía HTTPS nativo...`);
+            const syncPayload = JSON.stringify({
+                data: {
+                    convenioCode: convenioCode,
+                    companyName: details.negocio || "Tribu Afiliada",
+                    activePlan: template,
+                    status: "active",
+                    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    userLimit: 100
+                }
+            });
+
+            // Promesa síncrona nativa de Node.js compatible con todas las versiones (Anti-ReferenceError)
+            const syncPromise = new Promise((resolve) => {
+                const reqSync = https.request("https://us-central1-makumoto-app-2026.cloudfunctions.net/syncAffiliateLicense", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer MK_SECURE_SYNC_TOKEN_2026",
+                        "Content-Length": Buffer.byteLength(syncPayload)
+                    }
+                }, (resSync) => {
+                    let responseData = "";
+                    resSync.on("data", (chunk) => { responseData += chunk; });
+                    resSync.on("end", () => {
+                        if (resSync.statusCode === 200) {
+                            console.log("✅ [SYNC_SUCCESS]: Licencia sincronizada en Makumoto Core.", responseData);
+                        } else {
+                            console.warn(`⚠️ [SYNC_WARN]: Makumoto Core rechazó la sincronización (${resSync.statusCode}): ${responseData}`);
+                        }
+                        resolve();
+                    });
+                });
+
+                reqSync.on("error", (errSync) => {
+                    console.error("❌ [SYNC_ERROR]: Fallo de conexión al sincronizar con Makumoto:", errSync.message);
+                    resolve();
+                });
+
+                reqSync.write(syncPayload);
+                reqSync.end();
+            });
+
+            // Forzar timeout de seguridad de 5 segundos para evitar cuelgues del hilo de ejecución
+            await Promise.race([
+                syncPromise,
+                new Promise((resolve) => setTimeout(resolve, 5000))
+            ]);
+
+        } catch (syncError) {
+            console.error("❌ [SYNC_ERROR_FATAL]: Fallo en secuencia de sincronización nativa:", syncError.message);
+        }
+
         // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD
         const clientReceiptHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
@@ -531,6 +610,24 @@ exports.submitFinalOrder = onRequest({
                     <p style="margin: 5px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
                     <p style="margin: 5px 0;"><strong>INVERSIÓN:</strong> $${pData.price} ${pData.currency}</p>
                 </div>
+
+                ${isPromoBot ? `
+                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155;">
+                    <h3 style="color: #38bdf8; margin-top: 0; font-family: sans-serif; font-size: 14px; text-transform: uppercase;">🎮 ACCESO AL CLUB DE FIDELIDAD MAKUMOTO</h3>
+                    <p style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">Hemos pre-configurado tu espacio de marca en nuestra red social de bienestar para que tus pacientes comiencen a jugar de inmediato:</p>
+                    <table style="width: 100%; font-size: 13px; color: #fff;">
+                        <tr>
+                            <td style="padding: 5px 0; color: #94a3b8; width: 40%;">NÚMERO DE CONVENIO:</td>
+                            <td style="padding: 5px 0; font-weight: bold; color: #38bdf8;">${convenioCode}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 0; color: #94a3b8;">CONTRASEÑA TEMPORAL:</td>
+                            <td style="padding: 5px 0; font-weight: bold; color: #38bdf8;">${tempPassword}</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 11px; color: #e2e8f0; margin-top: 15px; border-top: 1px solid #334155; padding-top: 10px;">* Comparte este número de convenio con tus pacientes para que puedan sintonizar las trivias de tu negocio desde la app.</p>
+                </div>
+                ` : ''}
                 
                 ${isWebProduct ? `
                 <p><strong>¿Qué sigue ahora?</strong> Su proyecto ha ingresado a nuestra <strong>fase de implementación técnica de precisión</strong>.</p>
@@ -545,7 +642,7 @@ exports.submitFinalOrder = onRequest({
                     
                     <div style="margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
                         <p style="margin: 0; color: #fff;"><strong>1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</strong></p>
-                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su agente.</p>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
                     </div>
 
                     <div style="margin-top: 15px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
@@ -555,7 +652,7 @@ exports.submitFinalOrder = onRequest({
 
                     <div style="margin-top: 15px;">
                         <p style="margin: 0; color: #38bdf8;"><strong>3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</strong></p>
-                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Agente 100% operativo y listo para producción inmediata.</p>
+                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
                     </div>
 
                     <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold; margin-bottom: 0;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo de 24 a 72 horas hábiles.</p>
@@ -633,3 +730,4 @@ exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, m
         res.status(500).send(error.message);
     }
 });
+
