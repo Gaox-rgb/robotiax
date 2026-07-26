@@ -9,6 +9,103 @@ window.app.demo = {
     currentTriviaQuestion: 0,
     coachStep: 0,
 
+    // Motor Hidratador Universal: Morphing dinámico basado en ?id=... (Salud, Gym, etc.)
+    hydrateUniversalEngine: function() {
+        const params = new URLSearchParams(window.location.search);
+        let id = params.get('id');
+        
+        // Fallback robusto a "salud" si el parámetro no se encuentra o es inválido en catalog.js
+        if (!id || !window.app.catalog || !window.app.catalog.demoTemplates || !window.app.catalog.demoTemplates[id]) {
+            id = "salud";
+        }
+
+        const template = window.app.catalog.demoTemplates[id];
+        console.log(`🌐 [UNIVERSAL ENGINE]: Hidratando plantilla dinámica para el giro: "${id.toUpperCase()}"`);
+
+        // 1. Hidratación de Colores (Propiedades CSS Custom en Raíz)
+        const root = document.documentElement;
+        if (template.colors) {
+            root.style.setProperty('--bg-page', template.colors.page);
+            root.style.setProperty('--bg-container', template.colors.container);
+            root.style.setProperty('--bg-subcard', template.colors.subcard);
+            root.style.setProperty('--color-text', template.colors.text);
+            root.style.setProperty('--color-text-secondary', template.colors.text_sec);
+            root.style.setProperty('--border-container', template.colors.border);
+            root.style.setProperty('--crt-bg', template.colors.crt_bg);
+            root.style.setProperty('--crt-text', template.colors.crt_text);
+            root.style.setProperty('--crt-border', template.colors.crt_border);
+        }
+
+        // 2. Hidratación de Identidad / Branding del Hero Card y Título de la Pestaña
+    const brand = template.branding;
+    if (brand) {
+        const titleEl = document.getElementById('clinic-title');
+        const badgeEl = document.getElementById('clinic-badge');
+        
+        // Actualización dinámica del título de la pestaña del navegador
+        if (brand.tab_title) {
+            document.title = brand.tab_title;
+        }
+            const specialtyEl = document.getElementById('clinic-specialty');
+            const sloganEl = document.getElementById('clinic-slogan');
+            const descEl = document.getElementById('clinic-desc');
+            const val1El = document.getElementById('meta-val-1');
+            const val2El = document.getElementById('meta-val-2');
+            const val3El = document.getElementById('meta-val-3');
+            const val4El = document.getElementById('meta-val-4');
+            const reserveBtn = document.querySelector('#clinic-hero-card button[onclick*="toggleWhatsAppWidget"]');
+
+            if (titleEl) titleEl.textContent = brand.title;
+            if (badgeEl) badgeEl.textContent = brand.badge;
+            if (specialtyEl) specialtyEl.textContent = brand.specialty;
+            if (sloganEl) sloganEl.textContent = `"${brand.slogan}"`;
+            if (descEl) descEl.textContent = brand.desc;
+            if (val1El) val1El.textContent = brand.val_1;
+            if (val2El) val2El.textContent = brand.val_2;
+            if (val3El) val3El.textContent = brand.val_3;
+            if (val4El) val4El.textContent = brand.val_4;
+            if (reserveBtn) reserveBtn.textContent = brand.button_text;
+        }
+
+        // 3. Hidratación de Especialidades / Servicios
+        if (template.services && template.services.length >= 2) {
+            const t1 = document.getElementById('service-title-1');
+            const d1 = document.getElementById('service-desc-1');
+            const t2 = document.getElementById('service-title-2');
+            const d2 = document.getElementById('service-desc-2');
+
+            if (t1) t1.textContent = template.services[0].title;
+            if (d1) d1.textContent = template.services[0].desc;
+            if (t2) t2.textContent = template.services[1].title;
+            if (d2) d2.textContent = template.services[1].desc;
+        }
+
+        // 4. Hidratación de Fotos de Carrusel Cinematográfico
+        if (template.images) {
+            this.cinematicPhotos = template.images;
+        }
+
+        // 5. Hidratación de la Trivia CRT de Sala de Espera
+        if (template.trivia) {
+            this.mainTriviaPool = template.trivia;
+            this.mainTriviaIndex = 0; // Reinicio de contador para evitar desbordes
+        }
+
+        // 6. Hidratación de Up-Sells de Barra Lateral
+        const upsells = template.upsells;
+        if (upsells) {
+            const trackerTitle = document.getElementById('tracker-locked-title');
+            const trackerDesc = document.querySelector('#upsell-tracker-section p');
+            const shopTitle = document.getElementById('shop-locked-title');
+            const shopDesc = document.querySelector('#upsell-shop-section p');
+
+            if (trackerTitle) trackerTitle.textContent = upsells.tracker_title;
+            if (trackerDesc) trackerDesc.textContent = upsells.tracker_desc;
+            if (shopTitle) shopTitle.textContent = upsells.shop_title;
+            if (shopDesc) shopDesc.textContent = upsells.shop_desc;
+        }
+    },
+
     // IMÁGENES ANIMADAS Y QUIRKY PARA LA DEMO INTERACTIVA (16:9)
     // Controlador de Combinaciones de Paleta de Colores en Caliente
     setTheme: function(themeName) {
@@ -149,13 +246,13 @@ window.app.demo = {
     },
 
     renderMainTriviaButtons: function(currentData) {
-        const btnContainer = document.getElementById('btn-container-main');
-        if (!btnContainer) return;
-        btnContainer.innerHTML = `
-            <button onclick="window.app.demo.checkMainTriviaAnswer('a')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 py-1.5 px-3 rounded-xl text-[9px] font-bold text-slate-200 transition-all uppercase">A: ${currentData.a}</button>
-            <button onclick="window.app.demo.checkMainTriviaAnswer('b')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 py-1.5 px-3 rounded-xl text-[9px] font-bold text-slate-200 transition-all uppercase">B: ${currentData.b}</button>
-        `;
-    },
+    const btnContainer = document.getElementById('btn-container-main');
+    if (!btnContainer) return;
+    btnContainer.innerHTML = `
+        <button onclick="window.app.demo.checkMainTriviaAnswer('a')" class="w-full bg-[#0a1224] hover:bg-slate-900 border border-slate-800 hover:border-sky-500/50 py-2 px-3 rounded-xl text-[9px] font-extrabold text-slate-200 hover:text-sky-400 transition-all uppercase tracking-wider shadow-sm">A: ${currentData.a}</button>
+        <button onclick="window.app.demo.checkMainTriviaAnswer('b')" class="w-full bg-[#0a1224] hover:bg-slate-900 border border-slate-800 hover:border-sky-500/50 py-2 px-3 rounded-xl text-[9px] font-extrabold text-slate-200 hover:text-sky-400 transition-all uppercase tracking-wider shadow-sm">B: ${currentData.b}</button>
+    `;
+},
 
     checkMainTriviaAnswer: function(chosen) {
         const currentData = this.mainTriviaPool[this.mainTriviaIndex];
@@ -249,34 +346,65 @@ window.app.demo = {
         }, 250);
     },
 
-    // COOPERA CON MULTI-TENANT PARA SUBDOMINIOS DE IKAI.INFO
-    initMultiTenant: async function() {
-        const hostname = window.location.hostname;
+    // COOPERA CON MULTI-TENANT PARA SUBDOMINIOS DE IKAI.INFO (CONSULTA REST SIN SDK)
+initMultiTenant: async function() {
+    const hostname = window.location.hostname;
+    
+    if (hostname.endsWith('ikai.info') && hostname !== 'ikai.info') {
+        const parts = hostname.split('.');
+        const clientSlug = parts[0].toLowerCase().trim();
+        console.log(`📡 [MULTI-TENANT]: Sincronizando subdominio '${clientSlug}'...`);
         
-        if (hostname.endsWith('ikai.info') && hostname !== 'ikai.info') {
-            const parts = hostname.split('.');
-            const clientSlug = parts[0].toLowerCase().trim();
-            console.log(`📡 [MULTI-TENANT]: Sincronizando subdominio '${clientSlug}'...`);
-            
-            const coach = document.getElementById('interactive-coach-bar');
-            if (coach) coach.style.setProperty('display', 'none', 'important');
+        const coach = document.getElementById('interactive-coach-bar');
+        if (coach) coach.style.setProperty('display', 'none', 'important');
 
-            try {
-                const querySnapshot = await db.collection('orders_to_fulfill')
-                    .where('negocio_slug', '==', clientSlug)
-                    .limit(1).get();
-
-                if (!querySnapshot.empty) {
-                    const clientData = querySnapshot.docs[0].data();
-                    this.applyClientBranding(clientData);
+        try {
+            // Consulta nativa a la API REST de Firestore (Zero-Latency / Sin SDK de Firebase)
+            const url = `https://firestore.googleapis.com/v1/projects/robotiax/databases/(default)/documents:runQuery`;
+            const queryBody = {
+                structuredQuery: {
+                    from: [{ collectionId: 'orders_to_fulfill' }],
+                    where: {
+                        fieldFilter: {
+                            field: { fieldPath: 'negocio_slug' },
+                            op: 'EQUAL',
+                            value: { stringValue: clientSlug }
+                        }
+                    },
+                    limit: 1
                 }
-            } catch (error) {
-                console.error("❌ Error en expediente de Firestore:", error.message);
-            }
-        }
-    },
+            };
 
-    applyClientBranding: function(data) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(queryBody)
+            });
+
+            const resData = await res.json();
+
+            if (resData && resData[0] && resData[0].document) {
+                const fields = resData[0].document.fields;
+                
+                const clientData = {
+                    negocio: fields.negocio?.stringValue || "",
+                    tagline: fields.tagline?.stringValue || fields.slogan?.stringValue || "",
+                    headline: fields.headline?.stringValue || "",
+                    direccion: fields.direccion?.stringValue || "",
+                    horarios: fields.horarios?.stringValue || "",
+                    telefono: fields.telefono?.stringValue || "",
+                    fee: fields.fee?.stringValue || ""
+                };
+
+                this.applyClientBranding(clientData);
+            }
+        } catch (error) {
+            console.error("❌ Error de comunicación con la base de datos REST:", error.message);
+        }
+    }
+},
+
+applyClientBranding: function(data) {
         const titleEl = document.getElementById('clinic-title');
         const descEl = document.getElementById('clinic-desc');
         const addressEl = document.getElementById('meta-val-1');
@@ -614,25 +742,297 @@ openWhatsAppDirectly: function() {
         this._showToast("¡MISIÓN COMPLETADA! +100 XP");
     },
 
-    // GESTIÓN DE UP-SELLS DULCIFICADOS (MÓDULOS OPCIONALES)
+    // Variables de estado interno para simulaciones de Up-Sells
+    mockTrackerHydration: 2.2,
+    mockCartCount: 0,
+    mockCampaignBudget: 2000,
+
+    // GESTIÓN DE UP-SELLS DULCIFICADOS (MÓDULOS OPCIONALES CON DATOS SIMULADOS)
     triggerUpsell: function(moduleName) {
-        const modNameEl = document.getElementById('upsell-module-name');
         const modal = document.getElementById('upsell-modal-overlay');
-        
-        if (modNameEl) modNameEl.textContent = moduleName;
-        if (modal) modal.style.setProperty('display', 'flex', 'important');
+        if (!modal) return;
+        modal.style.setProperty('display', 'flex', 'important');
+
+        if (moduleName.includes('Bio-Tracker')) {
+            this.renderBioTrackerDemo();
+        } else if (moduleName.includes('E-Shop')) {
+            this.renderEShopDemo();
+        } else if (moduleName.includes('Campaña')) {
+            this.renderCampaignDemo();
+        }
     },
 
-    closeUpsellModal: function() {
-        const modal = document.getElementById('upsell-modal-overlay');
-        if (modal) modal.style.setProperty('display', 'none', 'important');
+   closeUpsellModal: function() {
+    const modal = document.getElementById('upsell-modal-overlay');
+    if (modal) modal.style.setProperty('display', 'none', 'important');
+},
+
+submitUpsellRequest: function(moduleText) {
+    this.closeUpsellModal();
+    alert(`🚀 SOLICITUD REGISTRADA CON ÉXITO\nHemos guardado tu petición de integración técnica para el módulo: "${moduleText}".\nUn ingeniero de soporte de Robotiax te enviará la cotización y accesos finales a tu buzón.`);
+},
+
+// Enrutador de Up-sells expandido con soporte para expediente clínico digital
+triggerUpsell: function(moduleName) {
+    const modal = document.getElementById('upsell-modal-overlay');
+    if (!modal) return;
+    modal.style.setProperty('display', 'flex', 'important');
+
+    if (moduleName.includes('Bio-Tracker')) {
+        this.renderBioTrackerDemo();
+    } else if (moduleName.includes('E-Shop')) {
+        this.renderEShopDemo();
+    } else if (moduleName.includes('Campaña')) {
+        this.renderCampaignDemo();
+    } else if (moduleName.includes('Expediente')) {
+        this.renderExpedienteDemo();
+    }
+},
+
+// Renderizador interactivo: Expediente Clínico Digital
+renderExpedienteDemo: function() {
+    const body = document.getElementById('upsell-dynamic-body');
+    if (!body) return;
+    body.innerHTML = `
+        <div class="text-left space-y-4">
+            <span class="text-[9px] font-['Orbitron'] text-blue-600 tracking-widest font-bold block">[ INTEGRACIÓN DE PORTAL CLÍNICO PREMIUM ]</span>
+            <h3 class="text-base font-black text-slate-900">📂 Expediente Sofia Alatorre (ID: #SOF-289)</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Este es el panel que visualiza el paciente. Permite consultar recetas, diagnósticos y citas sin saturar tu línea telefónica:</p>
+            
+            <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl space-y-4 text-[11px] text-slate-700 max-h-[260px] overflow-y-auto">
+                <!-- Ficha General -->
+                <div class="flex items-center justify-between border-b border-slate-200/50 pb-2">
+                    <span class="font-bold text-slate-800">Ficha General</span>
+                    <span class="text-slate-400">Sofia Alatorre, 28 años | Sangre: O+</span>
+                </div>
+
+                <!-- Diagnósticos -->
+                <div class="space-y-1">
+                    <span class="font-bold text-slate-800 block">🩺 Diagnósticos Activos</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <span class="bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-bold px-2 py-0.5 rounded-full">Déficit de Vitamina D3</span>
+                        <span class="bg-blue-50 text-blue-700 border border-blue-200 text-[9px] font-bold px-2 py-0.5 rounded-full">Estrés metabólico leve</span>
+                    </div>
+                </div>
+
+                <!-- Prescripciones -->
+                <div class="space-y-1.5 border-t border-slate-200/50 pt-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-800 block">💊 Receta Médica Emitida</span>
+                        <button onclick="window.app.demo.downloadMockPrescription()" class="text-blue-600 hover:text-blue-800 font-bold text-[9px] flex items-center gap-1"><i class="fa-solid fa-download"></i> Descargar PDF</button>
+                    </div>
+                    <div class="bg-white border border-slate-150 p-2.5 rounded-xl space-y-1 shadow-sm font-mono text-[10px]" id="expediente-recetas-box">
+                        <div>• Vitamina D3 5000 UI - 1 cap c/24 hrs (30 días).</div>
+                        <div>• Bisglicinato de Magnesio 400 mg - 1 cap por las noches (60 días).</div>
+                    </div>
+                </div>
+
+                <!-- Historial de Citas -->
+                <div class="space-y-1.5 border-t border-slate-200/50 pt-2">
+                    <span class="font-bold text-slate-800 block">📅 Próximas Citas</span>
+                    <div class="space-y-1 text-[10px]">
+                        <div class="flex justify-between bg-emerald-50 text-emerald-800 p-2 rounded-lg border border-emerald-200/50">
+                            <span>🩺 Consulta de Control (Presencial)</span>
+                            <span class="font-bold">Mañana - 11:00 AM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                <button onclick="window.app.demo.addNewMockPrescription()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                    ➕ Simular Recetar Suplemento Adicional
+                </button>
+                <button onclick="window.app.demo.submitUpsellRequest('Expediente Clínico Digital')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
+                    Solicitar Activación Real
+                </button>
+            </div>
+        </div>
+    `;
+},
+
+downloadMockPrescription: function() {
+    alert("📄 [EXPEDIENTE DIGITAL]\nGenerando receta médica digital oficial con Sello de Certificación QR y Firma Electrónica Criptográfica...\n¡Descarga de receta_sofia_alatorre_VIT_D3.pdf completada!");
+},
+
+addNewMockPrescription: function() {
+    const box = document.getElementById('expediente-recetas-box');
+    if (!box) return;
+    if (box.innerHTML.includes('Ashwagandha')) {
+        this._showToast("ESTA RECOMENDACIÓN YA HA SIDO AGREGADA");
+        return;
+    }
+    box.innerHTML += `<div>• Ashwagandha KSM-66 600 mg - 1 cap c/comida principal (30 días).</div>`;
+    this._showToast("💊 SUPLEMENTO AGREGADO AL EXPEDIENTE DE SOFIA");
+},
+
+    // Renderizador interactivo: Bio-Tracker de Hábitos
+    renderBioTrackerDemo: function() {
+        const body = document.getElementById('upsell-dynamic-body');
+        if (!body) return;
+        const pct = Math.min(Math.round((this.mockTrackerHydration / 2.5) * 100), 100);
+        body.innerHTML = `
+            <div class="text-left space-y-4">
+                <span class="text-[9px] font-['Orbitron'] text-blue-600 tracking-widest font-bold block">[ TELEMETRÍA DE EXPEDIENTE: PORTAL DE HÁBITOS ]</span>
+                <h3 class="text-base font-black text-slate-900">📊 Ficha de Hábitos: Juan Pérez (Paciente)</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Esta es la visualización clínica que tendrás de cada paciente. Puedes experimentar registrando más hidratación simulada en caliente:</p>
+                
+                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl space-y-3.5">
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="font-bold text-slate-700">💧 Hidratación Diaria</span>
+                            <span class="text-blue-600 font-bold">${this.mockTrackerHydration.toFixed(1)} L / 2.5 L (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="bg-blue-500 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-[10px] pt-1">
+                        <div class="p-3 bg-white border border-slate-100 rounded-xl">
+                            <span class="text-slate-400 block uppercase font-bold text-[8px] mb-0.5">🚶 PASOS RECORRIDOS</span>
+                            <span class="font-bold text-slate-800 text-xs">8,400 pasos (84%)</span>
+                        </div>
+                        <div class="p-3 bg-white border border-slate-100 rounded-xl">
+                            <span class="text-slate-400 block uppercase font-bold text-[8px] mb-0.5">😴 HORAS SUEÑO</span>
+                            <span class="font-bold text-slate-800 text-xs">7.5 hrs (93%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                    <button onclick="window.app.demo.addMockHydration()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                        ➕ Simular Registro de Hidratación (+300 ml)
+                    </button>
+                    <button onclick="window.app.demo.submitUpsellRequest('Bio-Tracker de Hábitos')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
+                        Solicitar Activación Real
+                    </button>
+                </div>
+            </div>
+        `;
     },
 
-    submitUpsellRequest: function() {
-        const modNameEl = document.getElementById('upsell-module-name');
-        const mod = modNameEl ? modNameEl.textContent : "Módulo Especializado";
-        this.closeUpsellModal();
-        alert(`🚀 SOLICITUD ENVIADA CON ÉXITO.\nHemos registrado tu interés de integración de cortesía para el módulo: ${mod}.\nUn Ingeniero de Robotiax se pondrá en contacto contigo en tu correo.`);
+    addMockHydration: function() {
+        this.mockTrackerHydration = Math.min(this.mockTrackerHydration + 0.3, 3.0);
+        this.renderBioTrackerDemo();
+        this._showToast("💧 REGISTRO DE AGUA EXÍTOSO (+300ml)");
+    },
+
+    // Renderizador interactivo: E-Shop Médica
+    renderEShopDemo: function() {
+        const body = document.getElementById('upsell-dynamic-body');
+        if (!body) return;
+        body.innerHTML = `
+            <div class="text-left space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-[9px] font-['Orbitron'] text-emerald-600 tracking-widest font-bold block">[ TIENDA EN LINEA DE PRECISIÓN ]</span>
+                    <span class="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">🛒 Carrito: ${this.mockCartCount} items</span>
+                </div>
+                <h3 class="text-base font-black text-slate-900">🛒 E-Shop: Suplementación & Productos Clínicos</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Tus pacientes compran tus recomendaciones médicas directamente desde tu web en tu propia pasarela bancaria segura:</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-800 text-xs block">Omega-3 Premium (90 Cápsulas)</span>
+                            <span class="text-[10px] text-slate-400">Cardioprotección y antinflamatorio</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="text-xs font-black text-emerald-600">$350 MXN</span>
+                            <button onclick="window.app.demo.addToMockCart()" class="bg-emerald-600 text-white font-bold text-[9px] px-3 py-1 rounded-lg hover:bg-emerald-700 transition-all uppercase">Añadir</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200/60 p-3 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-800 text-xs block">Cepillo Clínico Sonic Pro</span>
+                            <span class="text-[10px] text-slate-400">Higiene dental avanzada</span>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="text-xs font-black text-emerald-600">$420 MXN</span>
+                            <button onclick="window.app.demo.addToMockCart()" class="bg-emerald-600 text-white font-bold text-[9px] px-3 py-1 rounded-lg hover:bg-emerald-700 transition-all uppercase">Añadir</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                    <button onclick="window.app.demo.checkoutMockCart()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                        💳 Simular Compra de Carrito
+                    </button>
+                    <button onclick="window.app.demo.submitUpsellRequest('E-Shop de Especialidad')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
+                        Solicitar Activación Real
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
+    addToMockCart: function() {
+        this.mockCartCount++;
+        this.renderEShopDemo();
+        this._showToast("🛒 PRODUCTO AÑADIDO AL CARRITO");
+    },
+
+    checkoutMockCart: function() {
+        if (this.mockCartCount === 0) {
+            alert("Por favor, añade al menos un producto al carrito para simular el pago.");
+            return;
+        }
+        alert(`💳 [PASARELA DE PAGO SIMULADA ROBOTIAX]\nProcesando cobro cifrado con comisiones del 0%...\n¡Transacción simulada por ${this.mockCartCount} productos exitosa!`);
+        this.mockCartCount = 0;
+        this.renderEShopDemo();
+    },
+
+    // Renderizador interactivo: Campaña de Anuncios Ads
+    renderCampaignDemo: function() {
+        const body = document.getElementById('upsell-dynamic-body');
+        if (!body) return;
+        const clicks = Math.round((this.mockCampaignBudget / 2000) * 1280);
+        const conversions = Math.round(clicks * 0.065); // 6.5% de conversión a cita
+        const estimatedIncome = conversions * 800; // Consulta a $800 MXN
+        const roi = Math.round(((estimatedIncome - this.mockCampaignBudget) / this.mockCampaignBudget) * 100);
+
+        body.innerHTML = `
+            <div class="text-left space-y-4">
+                <span class="text-[9px] font-['Orbitron'] text-rose-500 tracking-widest font-bold block">[ TELEMETRÍA DE EMBUDO DE TRÁFICO ADS ]</span>
+                <h3 class="text-base font-black text-slate-900">🎯 Campaña Ads Conectada a tu WhatsApp Bot</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">Monitorea el costo y retorno de tus campañas de adquisición de pacientes:</p>
+                
+                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl space-y-3.5 text-xs text-slate-700">
+                    <div class="flex justify-between border-b border-slate-200/50 pb-2">
+                        <span class="text-slate-500 font-medium">Inversión Mensual Ads:</span>
+                        <span class="font-extrabold text-slate-900">$${this.mockCampaignBudget.toLocaleString()} MXN</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="p-3 bg-white border border-slate-100 rounded-xl">
+                            <span class="text-slate-400 block text-[8px] font-bold uppercase mb-0.5">CLICS AL WHATSAPP</span>
+                            <span class="font-black text-slate-800 text-xs">${clicks.toLocaleString()}</span>
+                        </div>
+                        <div class="p-3 bg-white border border-slate-100 rounded-xl">
+                            <span class="text-slate-400 block text-[8px] font-bold uppercase mb-0.5">PACIENTES AGENDADOS</span>
+                            <span class="font-black text-emerald-600 text-xs">${conversions.toLocaleString()} consultas</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between border-t border-slate-200/50 pt-2 font-bold text-[11px]">
+                        <span class="text-slate-500">Retorno Neto Estimado (ROI):</span>
+                        <span class="text-emerald-600 font-black">+${roi}% (+$${estimatedIncome.toLocaleString()} MXN)</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+                    <button onclick="window.app.demo.adjustCampaignBudget()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                        ⚡ ${this.mockCampaignBudget === 2000 ? 'Simular Duplicar Presupuesto ($4,000 MXN)' : 'Restablecer Presupuesto ($2,000 MXN)'}
+                    </button>
+                    <button onclick="window.app.demo.submitUpsellRequest('Plan Ads de Pacientes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
+                        Solicitar Plan Ads Real
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
+    adjustCampaignBudget: function() {
+        this.mockCampaignBudget = this.mockCampaignBudget === 2000 ? 4000 : 2000;
+        this.renderCampaignDemo();
+        this._showToast(`⚡ PRESUPUESTO ACTUALIZADO ($${this.mockCampaignBudget} MXN)`);
     },
 
     // GESTIÓN DEL MODAL DE CIERRE COMERCIAL
@@ -644,6 +1044,52 @@ openWhatsAppDirectly: function() {
     closeCloserModal: function() {
         const closer = document.getElementById('closer-modal-overlay');
         if (closer) closer.style.setProperty('display', 'none', 'important');
+    },
+
+    // Temporizador cíclico automático para gatillar la propuesta de compra comercial
+    startCloserAutoTrigger: function() {
+        setInterval(() => {
+            const closer = document.getElementById('closer-modal-overlay');
+            const introModal = document.getElementById('whatsapp-simulation-intro-modal');
+            const paymentModal = document.getElementById('payment-modal-overlay');
+            const successNotif = document.getElementById('success-notif');
+            const makuPanel = document.getElementById('makumoto-interactive-panel');
+
+            const isAnyModalActive = 
+                (closer && closer.style.display === 'flex') ||
+                (introModal && introModal.style.display === 'flex') ||
+                (paymentModal && paymentModal.style.display === 'flex') ||
+                (successNotif && successNotif.style.display === 'flex') ||
+                (makuPanel && !makuPanel.classList.contains('hidden'));
+
+            if (!isAnyModalActive) {
+                this.openCloserModal();
+                this._showToast("💡 SIMULACIÓN COMPLETA: ¿Listo para activar tu suite?");
+            }
+        }, 60000); // 60,000 milisegundos = 1 minuto
+    },
+
+    // Temporizador cíclico automático para gatillar la propuesta de compra comercial
+    startCloserAutoTrigger: function() {
+        setInterval(() => {
+            const closer = document.getElementById('closer-modal-overlay');
+            const introModal = document.getElementById('whatsapp-simulation-intro-modal');
+            const paymentModal = document.getElementById('payment-modal-overlay');
+            const successNotif = document.getElementById('success-notif');
+            const makuPanel = document.getElementById('makumoto-interactive-panel');
+
+            const isAnyModalActive = 
+                (closer && closer.style.display === 'flex') ||
+                (introModal && introModal.style.display === 'flex') ||
+                (paymentModal && paymentModal.style.display === 'flex') ||
+                (successNotif && successNotif.style.display === 'flex') ||
+                (makuPanel && !makuPanel.classList.contains('hidden'));
+
+            if (!isAnyModalActive) {
+                this.openCloserModal();
+                this._showToast("💡 SIMULACIÓN COMPLETA: ¿Listo para activar tu suite?");
+            }
+        }, 60000); // 60,000 milisegundos = 1 minuto
     },
 
     // DISPARADOR TRANSACCIONAL DE ROBOTIAX
@@ -759,7 +1205,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hostname.endsWith('ikai.info') && hostname !== 'ikai.info') {
         window.app.demo.initMultiTenant();
     }
-// Inicializar el monitor de la trivia secuencial de la sala de espera
+// Ejecutar hidratación dinámica basada en subdominio o parámetro URL (?id=gym, ?id=salud)
+    if (window.app.demo && typeof window.app.demo.hydrateUniversalEngine === 'function') {
+        window.app.demo.hydrateUniversalEngine();
+    }
+    // Inicializar el monitor de la trivia secuencial de la sala de espera
     if (window.app.demo && typeof window.app.demo.loadMainTriviaQuestion === 'function') {
         window.app.demo.loadMainTriviaQuestion(false);
     }

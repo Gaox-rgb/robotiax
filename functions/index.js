@@ -212,6 +212,10 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
         }
 
         // 3. Configuración de la Solución de Pago (Fuerza Tarjeta si es necesario)
+        // CÁLCULO DE IVA DEL 16% GENERALIZADO PARA TODAS LAS VENTAS
+        const basePrice = parseFloat(productData.price);
+        const priceWithIva = (basePrice * 1.16).toFixed(2);
+
         const landingSelection = (fundingType === 'card') ? 'BILLING' : 'LOGIN';
         const solutionSelection = (fundingType === 'card') ? 'SOLE' : 'MARK';
 
@@ -220,10 +224,10 @@ exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
         request.requestBody({
             intent: 'CAPTURE',
             purchase_units: [{
-                description: `ROBOTIAX PROTOCOL: ${productData.name}`,
+                description: `ROBOTIAX PROTOCOL: ${productData.name} (Incluye 16% IVA)`,
                 amount: {
                     currency_code: productData.currency,
-                    value: productData.price.toString()
+                    value: priceWithIva
                 }
             }],
             application_context: {
@@ -444,7 +448,10 @@ exports.submitFinalOrder = onRequest({
         const isWebProduct = !isConfigurator && !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
         let vertexInstructions = "";
 
-        if (!isWebProduct) {
+        // Solo ejecutar Vertex AI para Agentes de Inteligencia Artificial (ia-) o de Ciberseguridad (sec-)
+        const shouldRunVertex = template.startsWith('ia-') || template.startsWith('sec-');
+
+        if (shouldRunVertex) {
             try {
                 const promptMaquila = `
                 ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
@@ -531,20 +538,69 @@ exports.submitFinalOrder = onRequest({
         const convenioCode = `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
         const tempPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-        // REGISTRO SEGURO EN BASE DE DATOS CON CREDENCIALES INCLUIDAS
-        await getDb().collection('orders_to_fulfill').add({
-            orderNumber: folio,
-            productName: pData.name,
-            isWeb: isWebProduct,
-            convenioCode: convenioCode,
-            provisionalPassword: tempPassword,
-            ...details,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
-        });
+        // Generación de slug apto para subdominio (ej: "Ojos Terribles" -> "ojos-terribles")
+    const negocioSlug = (details.negocio || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "");
 
-        const isPromoBot = template.endsWith('-promo');
+    // REGISTRO SEGURO EN BASE DE DATOS CON CREDENCIALES E IDENTIFICADOR SLUG
+    await getDb().collection('orders_to_fulfill').add({
+        orderNumber: folio,
+        productName: pData.name,
+        isWeb: isWebProduct,
+        convenioCode: convenioCode,
+        provisionalPassword: tempPassword,
+        negocio_slug: negocioSlug,
+        ...details,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
 
-        // --- SINCRONIZACIÓN ATÓMICA CON EL CORE DE MAKUMOTO (NATIVO HTTPS ANTI-CRASH) ---
+      // -------------------------------------------------------------------------
+    // APROVISIONAMIENTO AUTOMÁTICO DE INSTANCIA DE WHATSAPP (GATEWAY SAAS)
+    // -------------------------------------------------------------------------
+    if (isConfigurator) {
+        try {
+            console.log(`📡 [GATEWAY]: Solicitando creación automática de instancia de WhatsApp para: ${negocioSlug}...`);
+            
+            const gatewayUrl = 'https://bot.ikai.info/instance/create';
+            const gatewayToken = 'RBX-GATEWAY-MASTER-SECRET-2025'; // Token maestro de seguridad de tu servidor IONOS
+            
+            // Petición asíncrona no bloqueante (no retrasa la respuesta de éxito al cliente)
+            fetch(gatewayUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': gatewayToken
+                },
+                body: JSON.stringify({
+                    instanceName: negocioSlug,
+                    token: tempPassword, // Usamos la clave temporal como token de control de la instancia del médico
+                    qrcode: true
+                })
+            })
+            .then(async (gatewayRes) => {
+                if (gatewayRes.ok) {
+                    console.log(`✅ [GATEWAY_SUCCESS]: Instancia de WhatsApp "${negocioSlug}" aprovisionada en el servidor.`);
+                } else {
+                    const errTxt = await gatewayRes.text();
+                    console.warn(`⚠️ [GATEWAY_WARN]: El Gateway de WhatsApp rechazó la creación de la instancia: ${errTxt}`);
+                }
+            })
+            .catch((err) => {
+                console.error("❌ [GATEWAY_ERROR]: No se pudo conectar al servidor de WhatsApp en IONOS:", err.message);
+            });
+
+        } catch (gatewayError) {
+            console.error("❌ [GATEWAY_ERROR_FATAL]: Fallo crítico en el bloque de aprovisionamiento de WhatsApp:", gatewayError.message);
+        }
+    }
+
+    const isPromoBot = template.endsWith('-promo');
+
+    // --- SINCRONIZACIÓN ATÓMICA CON EL CORE DE MAKUMOTO (NATIVO HTTPS ANTI-CRASH) ---
         try {
             console.log(`📡 [SYNC]: Sincronizando convenio ${convenioCode} con Makumoto Core vía HTTPS nativo...`);
             const syncPayload = JSON.stringify({
@@ -599,65 +655,75 @@ exports.submitFinalOrder = onRequest({
             console.error("❌ [SYNC_ERROR_FATAL]: Fallo en secuencia de sincronización nativa:", syncError.message);
         }
 
+        // Cálculos precisos desglosados de cobro fiscal (Base + IVA)
+        const basePriceNum = parseFloat(pData.price);
+        const ivaNum = parseFloat((basePriceNum * 0.16).toFixed(2));
+        const totalNum = parseFloat((basePriceNum * 1.16).toFixed(2));
+
         // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD
         const clientReceiptHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                <h2 style="color: #2ecc71; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
+                <h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
                 <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos recibido tus datos de configuración correctamente.</p>
                 
-                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;">
-                    <p style="margin: 5px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
-                    <p style="margin: 5px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
-                    <p style="margin: 5px 0;"><strong>INVERSIÓN:</strong> $${pData.price} ${pData.currency}</p>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #333;">
+                    <p style="margin: 4px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
+                    <p style="margin: 4px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
+                    <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12px 0;">
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>PRECIO BASE:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></p>
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>IVA TRASLADADO (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></p>
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between; font-size: 15px; color: #16a34a; font-weight: bold; padding-top: 5px; border-top: 1px dashed #e2e8f0;"><span>TOTAL CON IVA:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></p>
                 </div>
 
-                ${isPromoBot ? `
-                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155;">
-                    <h3 style="color: #38bdf8; margin-top: 0; font-family: sans-serif; font-size: 14px; text-transform: uppercase;">🎮 ACCESO AL CLUB DE FIDELIDAD MAKUMOTO</h3>
-                    <p style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">Hemos pre-configurado tu espacio de marca en nuestra red social de bienestar para que tus pacientes comiencen a jugar de inmediato:</p>
-                    <table style="width: 100%; font-size: 13px; color: #fff;">
-                        <tr>
-                            <td style="padding: 5px 0; color: #94a3b8; width: 40%;">NÚMERO DE CONVENIO:</td>
-                            <td style="padding: 5px 0; font-weight: bold; color: #38bdf8;">${convenioCode}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px 0; color: #94a3b8;">CONTRASEÑA TEMPORAL:</td>
-                            <td style="padding: 5px 0; font-weight: bold; color: #38bdf8;">${tempPassword}</td>
-                        </tr>
-                    </table>
-                    <p style="font-size: 11px; color: #e2e8f0; margin-top: 15px; border-top: 1px solid #334155; padding-top: 10px;">* Comparte este número de convenio con tus pacientes para que puedan sintonizar las trivias de tu negocio desde la app.</p>
+                <!-- REQUERIMIENTO DE PERSONALIZACIÓN VISUAL (FOTOS) -->
+
+                <!-- SECCIÓN UNIFICADA DE LIBERACIÓN TÉCNICA (FOTOS + PROTOCOLO) -->
+                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155; text-align: left;">
+                    <h3 style="color: #38bdf8; margin-top: 0; font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                        🛡️ PROTOCOLO DE LIBERACIÓN TÉCNICA (ACCIÓN REQUERIDA)
+                    </h3>
+                    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">
+                        Para proceder con la maquetación final de tu sitio web y la liberación de tu bot, <strong>es imperativo que respondas a este correo electrónico proporcionando la siguiente información en un solo mensaje:</strong>
+                    </p>
+
+                    <!-- Bloque 1: Fotos -->
+                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">📷 PARTE 1: TUS TRES FOTOGRAFÍAS OPCIONALES</p>
+                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Envíanos las siguientes imágenes para ilustrar tu nuevo sitio web:</p>
+                        <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-left: 20px; margin-top: 5px; margin-bottom: 8px; padding-left: 0;">
+                            <li>Foto física de tu consultorio o clínica.</li>
+                            <li>Foto profesional de tu perfil.</li>
+                            <li>Foto tuya interactuando en consulta con un paciente.</li>
+                        </ul>
+                        <p style="font-size: 11px; color: #64748b; font-style: italic; margin: 0; line-height: 1.3;">* Nota: En caso de no contar con alguna de estas fotos, omitiremos la imagen respectiva en tu sitio; si no mandas ninguna, simplemente no colocaremos imágenes, manteniendo un diseño limpio y minimalista.</p>
+                    </div>
+
+                    <!-- Bloque 2: Protocolo -->
+                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">🤖 PARTE 2: SELECCIÓN DE PROTOCOLO DE IMPLEMENTACIÓN (BOT)</p>
+                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Selecciona cuál de las siguientes tres vías deseas para la configuración y entrenamiento de tu asistente de WhatsApp:</p>
+                        
+                        <div style="margin-top: 10px; margin-bottom: 10px;">
+                            <span style="color: #fff; font-size: 11px; font-weight: bold;">1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <span style="color: #fff; font-size: 11px; font-weight: bold;">2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
+                        </div>
+                        
+                        <div>
+                            <span style="color: #38bdf8; font-size: 11px; font-weight: bold;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 3: Nota de Cierre unificada -->
+                    <div style="margin-top: 15px; font-size: 12px; color: #ff4d4d; font-weight: bold; line-height: 1.5;">
+                        ⚠️ NOTA DE LIBERACIÓN TÉCNICA: En cuanto recibamos estas tres fotografías (o la confirmación de omitirlas) junto con tu elección de protocolo en respuesta a este correo electrónico, procederemos de inmediato con la activación de tu Página Web, la puesta en marcha de tu Bot de WhatsApp de agendamiento automático y te enviaremos los datos de acceso oficiales y el manual operativo para tu Centro de Entretenimiento de sala de espera en un plazo estimado de 24 a 72 horas hábiles.
+                    </div>
                 </div>
-                ` : ''}
-                
-                ${isWebProduct ? `
-                <p><strong>¿Qué sigue ahora?</strong> Su proyecto ha ingresado a nuestra <strong>fase de implementación técnica de precisión</strong>.</p>
-                <p style="background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6; margin: 20px 0;">
-                    Recibirá su acceso y confirmación en su correo en un plazo de <strong>24 a 72 horas hábiles</strong>.
-                </p>
-                <p style="font-size: 13px; color: #555;">Hosting Premium y Dominio .info incluidos gratis por 30 días.</p>
-                ` : `
-                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 8px; margin: 25px 0; border: 1px solid #334155;">
-                    <h3 style="color: #38bdf8; margin-top: 0; font-family: sans-serif;">🛡️ ESTATUS DE ACTIVACIÓN: SELECCIÓN DE PROTOCOLO</h3>
-                    <p style="font-size: 14px; color: #cbd5e1; line-height: 1.6;">Para proceder con la liberación de su unidad, es imperativo que responda a este correo seleccionando una de las siguientes tres vías de implementación:</p>
-                    
-                    <div style="margin-top: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
-                        <p style="margin: 0; color: #fff;"><strong>1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</strong></p>
-                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Como beneficio de bienvenida, nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
-                    </div>
-
-                    <div style="margin-top: 15px; border-bottom: 1px solid #334155; padding-bottom: 15px;">
-                        <p style="margin: 0; color: #fff;"><strong>2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</strong></p>
-                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
-                    </div>
-
-                    <div style="margin-top: 15px;">
-                        <p style="margin: 0; color: #38bdf8;"><strong>3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</strong></p>
-                        <p style="margin: 5px 0 0; font-size: 13px; color: #94a3b8;">Protocolo integral: nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
-                    </div>
-
-                    <p style="margin-top: 20px; font-size: 13px; color: #ff3333; font-weight: bold; margin-bottom: 0;">⚠️ Una vez responda con su elección, recibirá su Link de Acceso y Manual Operativo en un plazo de 24 a 72 horas hábiles.</p>
-                </div>
-                `}
 
                 <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
                     <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.

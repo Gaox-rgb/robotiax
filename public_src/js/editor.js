@@ -170,11 +170,13 @@ window.app.editor = {
             return;
         }
 
-        // CAPTURA TOTAL DE CAMPOS PARA DESARROLLO WEB
+        // CAPTURA TOTAL DE CAMPOS PARA DESARROLLO WEB CON PARÁMETROS CORREGIDOS
         const details = {
             negocio: document.getElementById('edit-name')?.value || "",
-            tagline: document.getElementById('edit-tagline')?.value || "",
+            tagline: document.getElementById('edit-slogan')?.value || document.getElementById('edit-tagline')?.value || "",
+            slogan: document.getElementById('edit-slogan')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
+            especialidades: document.getElementById('edit-services')?.value || this.currentProductName,
             servicios: document.getElementById('edit-services')?.value || this.currentProductName,
             cta: document.getElementById('edit-cta')?.value || "Activación Directa",
             fee: document.getElementById('edit-fee')?.value || "Pagado",
@@ -198,8 +200,47 @@ window.app.editor = {
         const btn = document.querySelector('#editor-panel button[onclick*="submitOrder"]');
         if(btn) {
             btn.disabled = true;
-            btn.textContent = "REGISTRANDO PEDIDO...";
+            btn.style.fontSize = "9px";
+            btn.textContent = "REGISTRANDO PEDIDO... NO CIERRES NI CAMBIES DE PÁGINA EN LO QUE SE GESTIONA TU ORDEN DE PEDIDO";
         }
+
+        // CONTROLADOR DE TRANSICIÓN OPTIMISTA (Evita que el cliente espere por latencia de red)
+        let orderProcessed = false;
+        const completeOrderSuccessfully = () => {
+            if (orderProcessed) return;
+            orderProcessed = true;
+            
+            // Guardar en makumoto_owned para sincronizar la galería local
+            const purchased = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+            if (!purchased.includes(this.currentTemplateId)) {
+                purchased.push(this.currentTemplateId);
+                localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
+            }
+            
+            // Ocultar formulario y desplegar ventana de éxito
+            document.getElementById('editor-panel').style.setProperty('display', 'none', 'important');
+            const notif = document.getElementById('success-notif');
+            if (notif) {
+                console.log("✅ [EDITOR]: Orden procesada de forma optimista. Transicionando.");
+                notif.classList.add('visible');
+                notif.style.setProperty('display', 'flex', 'important');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
+                if(okBtn) {
+                    okBtn.onclick = () => {
+                        localStorage.removeItem('pending_purchase_id');
+                        window.location.href = 'index.html';
+                    };
+                }
+            }
+        };
+
+        // Disparador de contingencia: Si a los 2.5s el backend no responde, asume éxito para el usuario
+        const optimisticTimeout = setTimeout(() => {
+            console.log("⚡ [EDITOR]: Latencia de red detectada. Activando transición optimista.");
+            completeOrderSuccessfully();
+        }, 2500);
 
         try {
             const response = await fetch('https://submitfinalorder-bh64qprvqa-uc.a.run.app', {
@@ -212,38 +253,30 @@ window.app.editor = {
             });
 
             if (response.ok) {
-                // SINCRONIZACIÓN CON GALERÍA: Guardar en makumoto_owned
-                const purchased = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-                if (!purchased.includes(this.currentTemplateId)) {
-                    purchased.push(this.currentTemplateId);
-                    localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
-                }
-                
-                // Ocultar formulario y mostrar ventana de éxito final
-                document.getElementById('editor-panel').style.setProperty('display', 'none', 'important');
-                const notif = document.getElementById('success-notif');
-                if (notif) {
-                    console.log("✅ [EDITOR]: Orden completada. Mostrando éxito.");
-                    notif.classList.add('visible');
-                    notif.style.setProperty('display', 'flex', 'important');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    
-                    const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
-                    if(okBtn) {
-                        okBtn.onclick = () => {
-                            localStorage.removeItem('pending_purchase_id');
-                            window.location.href = 'index.html'; // REDIRECCIÓN DIRECTA A LA LANDING PRINCIPAL
-                        };
+                clearTimeout(optimisticTimeout);
+                completeOrderSuccessfully();
+            } else {
+                if (!orderProcessed) {
+                    clearTimeout(optimisticTimeout);
+                    this.notify("ERROR AL REGISTRAR ORDEN EN EL SERVIDOR.", "error");
+                    if(btn) {
+                        btn.disabled = false;
+                        btn.style.fontSize = "";
+                        btn.textContent = "REINTENTAR ACTIVACIÓN";
                     }
                 }
             }
 
         } catch (e) {
-            console.error("Fallo de red o timeout:", e);
-            this.notify("ERROR DE CONEXIÓN. REINTENTANDO...", "error");
-            if(btn) {
-                btn.disabled = false;
-                btn.textContent = "REINTENTAR ACTIVACIÓN";
+            console.error("Fallo de red en segundo plano:", e);
+            if (!orderProcessed) {
+                clearTimeout(optimisticTimeout);
+                this.notify("ERROR DE CONEXIÓN. REINTENTANDO...", "error");
+                if(btn) {
+                    btn.disabled = false;
+                    btn.style.fontSize = "";
+                    btn.textContent = "REINTENTAR ACTIVACIÓN";
+                }
             }
         }
     },
