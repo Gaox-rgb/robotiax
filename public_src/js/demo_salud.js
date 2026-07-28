@@ -14,6 +14,11 @@ window.app.demo = {
         const params = new URLSearchParams(window.location.search);
         let id = params.get('id');
         
+        // Si el servidor ya inyectó el ID de nicho del cliente de forma segura, úsalo de inmediato
+        if (window.app && window.app.clientData && window.app.clientData.nicheId) {
+            id = window.app.clientData.nicheId;
+        }
+
         // Fallback robusto a "salud" si el parámetro no se encuentra o es inválido en catalog.js
         if (!id || !window.app.catalog || !window.app.catalog.demoTemplates || !window.app.catalog.demoTemplates[id]) {
             id = "salud";
@@ -37,34 +42,51 @@ window.app.demo = {
         }
 
         // 2. Hidratación de Identidad / Branding del Hero Card y Título de la Pestaña
-    const brand = template.branding;
+    const brand = { ...template.branding };
+    if (window.app && window.app.clientData) {
+        if (window.app.clientData.negocio) brand.title = window.app.clientData.negocio;
+        if (window.app.clientData.tagline) brand.slogan = window.app.clientData.tagline;
+        if (window.app.clientData.headline) brand.desc = window.app.clientData.headline;
+        if (window.app.clientData.direccion) brand.val_1 = window.app.clientData.direccion;
+        if (window.app.clientData.horarios) brand.val_2 = window.app.clientData.horarios;
+        if (window.app.clientData.telefono) brand.val_3 = window.app.clientData.telefono;
+        if (window.app.clientData.fee) brand.val_4 = window.app.clientData.fee;
+    }
+    if (window.app && window.app.clientData) {
+        if (window.app.clientData.badge) brand.badge = window.app.clientData.badge;
+        if (window.app.clientData.specialty) brand.specialty = window.app.clientData.specialty;
+    }
     if (brand) {
         const titleEl = document.getElementById('clinic-title');
         const badgeEl = document.getElementById('clinic-badge');
         
-        // Actualización dinámica del título de la pestaña del navegador
         if (brand.tab_title) {
             document.title = brand.tab_title;
         }
-            const specialtyEl = document.getElementById('clinic-specialty');
-            const sloganEl = document.getElementById('clinic-slogan');
-            const descEl = document.getElementById('clinic-desc');
-            const val1El = document.getElementById('meta-val-1');
-            const val2El = document.getElementById('meta-val-2');
-            const val3El = document.getElementById('meta-val-3');
-            const val4El = document.getElementById('meta-val-4');
-            const reserveBtn = document.querySelector('#clinic-hero-card button[onclick*="toggleWhatsAppWidget"]');
+        const specialtyEl = document.getElementById('clinic-specialty');
+        const sloganEl = document.getElementById('clinic-slogan');
+        const descEl = document.getElementById('clinic-desc');
+        const val1El = document.getElementById('meta-val-1');
+        const val2El = document.getElementById('meta-val-2');
+        const val3El = document.getElementById('meta-val-3');
+        const val4El = document.getElementById('meta-val-4');
+        const reserveBtn = document.querySelector('#clinic-hero-card button[onclick*="toggleWhatsAppWidget"]');
 
-            if (titleEl) titleEl.textContent = brand.title;
-            if (badgeEl) badgeEl.textContent = brand.badge;
-            if (specialtyEl) specialtyEl.textContent = brand.specialty;
-            if (sloganEl) sloganEl.textContent = `"${brand.slogan}"`;
-            if (descEl) descEl.textContent = brand.desc;
-            if (val1El) val1El.textContent = brand.val_1;
-            if (val2El) val2El.textContent = brand.val_2;
-            if (val3El) val3El.textContent = brand.val_3;
-            if (val4El) val4El.textContent = brand.val_4;
-            if (reserveBtn) reserveBtn.textContent = brand.button_text;
+        if (titleEl) titleEl.textContent = brand.title;
+        if (badgeEl) badgeEl.textContent = brand.badge;
+        if (specialtyEl) specialtyEl.textContent = brand.specialty;
+        if (sloganEl) sloganEl.textContent = `"${brand.slogan}"`;
+        if (descEl) descEl.textContent = brand.desc;
+        if (val1El) val1El.textContent = brand.val_1;
+        if (val2El) val2El.textContent = brand.val_2;
+        if (val3El) val3El.textContent = brand.val_3;
+        if (val4El) val4El.textContent = brand.val_4;
+        if (reserveBtn) reserveBtn.textContent = brand.button_text;
+    }
+        // Ocultar únicamente el botón de compra comercial y mantener los 4 selectores de color en el header
+        if (window.app && window.app.clientData) {
+            const buyBtn = document.querySelector('.flashing-buy-btn');
+            if (buyBtn) buyBtn.style.setProperty('display', 'none', 'important');
         }
 
         // 3. Hidratación de Especialidades / Servicios
@@ -99,10 +121,15 @@ window.app.demo = {
             const shopTitle = document.getElementById('shop-locked-title');
             const shopDesc = document.querySelector('#upsell-shop-section p');
 
+            const recordTitle = document.querySelector('#upsell-record-section h4');
+            const recordDesc = document.querySelector('#upsell-record-section p');
+
             if (trackerTitle) trackerTitle.textContent = upsells.tracker_title;
             if (trackerDesc) trackerDesc.textContent = upsells.tracker_desc;
             if (shopTitle) shopTitle.textContent = upsells.shop_title;
             if (shopDesc) shopDesc.textContent = upsells.shop_desc;
+            if (recordTitle && upsells.record_title) recordTitle.textContent = upsells.record_title;
+            if (recordDesc && upsells.record_desc) recordDesc.textContent = upsells.record_desc;
         }
     },
 
@@ -173,6 +200,14 @@ window.app.demo = {
 
     // Inicialización con automatización secuencial cada 3 segundos (3000ms)
     initCinematicViewer: function() {
+        const baseAssetUrl = window.location.hostname.includes('localhost') ? '' : 'https://robotiax.mx/';
+        
+        // Resuelve las rutas relativas de fotos a absolutas en subdominios
+        this.cinematicPhotos = this.cinematicPhotos.map(p => ({
+            ...p,
+            url: p.url.startsWith('http') ? p.url : baseAssetUrl + p.url
+        }));
+
         this.changeCinematicPhoto(0, true);
         
         if (this.slideshowInterval) {
@@ -358,9 +393,16 @@ initMultiTenant: async function() {
         const coach = document.getElementById('interactive-coach-bar');
         if (coach) coach.style.setProperty('display', 'none', 'important');
 
-        try {
-            // Consulta nativa a la API REST de Firestore (Zero-Latency / Sin SDK de Firebase)
-            const url = `https://firestore.googleapis.com/v1/projects/robotiax/databases/(default)/documents:runQuery`;
+        // Si el servidor ya nos inyectó los datos del cliente, úsalos y evita la consulta de red bloqueada
+            if (window.app && window.app.clientData) {
+                console.log(`✅ [MULTI-TENANT]: Datos dinámicos del cliente inyectados por servidor.`);
+                this.applyClientBranding(window.app.clientData);
+                return;
+            }
+
+            try {
+                // Consulta nativa a la API REST de Firestore (Zero-Latency / Sin SDK de Firebase)
+                const url = `https://firestore.googleapis.com/v1/projects/robotiax/databases/(default)/documents:runQuery`;
             const queryBody = {
                 structuredQuery: {
                     from: [{ collectionId: 'orders_to_fulfill' }],
@@ -412,19 +454,30 @@ applyClientBranding: function(data) {
         const phoneEl = document.getElementById('meta-val-3');
         const feeEl = document.getElementById('meta-val-4');
 
+        const badgeEl = document.getElementById('clinic-badge');
+        const specialtyEl = document.getElementById('clinic-specialty');
+
         if (titleEl && data.negocio) titleEl.innerHTML = `${data.negocio} <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500 italic font-light">${data.tagline || 'Evolución'}</span>`;
     if (descEl && data.headline) descEl.textContent = data.headline;
     if (addressEl && data.direccion) addressEl.textContent = data.direccion;
     if (hoursEl && data.horarios) hoursEl.textContent = data.horarios;
     if (phoneEl && data.telefono) phoneEl.textContent = data.telefono;
     if (feeEl && data.fee) feeEl.textContent = data.fee;
+    if (badgeEl && data.badge) badgeEl.textContent = data.badge;
+    if (specialtyEl && data.specialty) specialtyEl.textContent = data.specialty;
 
-    // Vinculación dinámica del botón de reservas de cabecera con el teléfono del inquilino
+    // Actualización dinámica del título de la pestaña del navegador para el inquilino activo
+    if (data.negocio) {
+        document.title = `${data.negocio} | Portal Digital`;
+    }
+
+    // Vinculación dinámica del botón de reservas de cabecera para disparar el modal de instrucciones
     const headerWaBtn = document.getElementById('header-whatsapp-btn');
-    if (headerWaBtn && data.telefono) {
-        const cleanPhone = data.telefono.replace(/\D/g, '');
-        const textMsg = encodeURIComponent(`Hola ${data.negocio || 'Doctor'}. Me interesa agendar una consulta médica.`);
-        headerWaBtn.setAttribute('onclick', `window.open('https://wa.me/${cleanPhone}?text=${textMsg}', '_blank')`);
+    if (headerWaBtn) {
+        headerWaBtn.onclick = (e) => {
+            e.preventDefault();
+            window.app.demo.toggleWhatsAppWidget();
+        };
     }
 },
 
@@ -527,34 +580,77 @@ applyClientBranding: function(data) {
         });
     },
 
+    // Desvío y modal instructivo real para vinculación del Bot en producción
+    showRealWhatsAppConfig: function() {
+        const introModal = document.getElementById('whatsapp-simulation-intro-modal');
+        if (!introModal) return;
+
+        const data = window.app.clientData || {};
+        const cleanPhone = data.telefono ? data.telefono.replace(/\D/g, '') : '';
+        const waUrl = `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20un%20servicio.`;
+
+        introModal.innerHTML = `
+            <div class="bg-white border border-slate-200 p-6 sm:p-8 max-w-md w-full text-center rounded-3xl relative shadow-2xl font-['Poppins']">
+                <button onclick="window.app.demo.closeWhatsAppIntro()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+                <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center text-[#25d366] text-xl mx-auto mb-4">
+                    <i class="fa-brands fa-whatsapp"></i>
+                </div>
+                <span class="text-[9px] font-['Orbitron'] text-emerald-600 tracking-widest font-bold mb-1.5 block">VINCULACIÓN DEL ASISTENTE</span>
+                <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">Vincular Asistente de WhatsApp</h3>
+                <p class="text-xs text-slate-500 leading-relaxed mb-4 text-left">
+                    Tu bot de agendamiento automatizado está aprovisionado en tu VPS privado. Sigue estos pasos para activarlo en tu teléfono:
+                </p>
+                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl text-left text-[11px] text-slate-600 space-y-2 mb-6">
+                    <div><strong>1.</strong> Ve a la consola de control: <a href="https://bot.ikai.info" target="_blank" class="text-blue-600 font-bold underline">bot.ikai.info</a>.</div>
+                    <div><strong>2.</strong> Inicia sesión con el token enviado a tu correo de confirmación.</div>
+                    <div><strong>3.</strong> Escanea el código QR desde Dispositivos Vinculados en tu app de WhatsApp.</div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button onclick="window.open('${waUrl}', '_blank')" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-['Orbitron'] font-black text-xs py-3.5 rounded-xl transition-all shadow-md shadow-[#25d366]/10 uppercase tracking-wider">
+                        💬 CHATEAR CON TU BOT ACTIVO
+                    </button>
+                    <button onclick="window.open('https://bot.ikai.info', '_blank')" class="text-xs text-blue-600 font-bold hover:text-blue-800 hover:underline">
+                        Ir a Consola de Vinculación (bot.ikai.info)
+                    </button>
+                </div>
+            </div>
+        `;
+        introModal.style.setProperty('display', 'flex', 'important');
+    },
+
     // CONTROL DEL CHAT FLOTANTE DE WHATSAPP (SISTEMA DE INTERACCIÓN REAL)
-toggleWhatsAppWidget: function() {
-    const widget = document.getElementById('whatsapp-chat-widget');
-    const introModal = document.getElementById('whatsapp-simulation-intro-modal');
-    if (!widget) return;
+    toggleWhatsAppWidget: function() {
+        const widget = document.getElementById('whatsapp-chat-widget');
+        const introModal = document.getElementById('whatsapp-simulation-intro-modal');
+        if (!widget) return;
 
-    if (!widget.classList.contains('hidden')) {
-        widget.classList.add('hidden');
-    } else {
-        if (introModal) {
-            introModal.style.setProperty('display', 'flex', 'important');
-        } else {
-            this.openWhatsAppDirectly();
+        if (window.app && window.app.clientData) {
+            this.showRealWhatsAppConfig();
+            return;
         }
-    }
-},
 
-closeWhatsAppIntro: function() {
-    const introModal = document.getElementById('whatsapp-simulation-intro-modal');
-    if (introModal) {
-        introModal.style.setProperty('display', 'none', 'important');
-    }
-},
+        if (!widget.classList.contains('hidden')) {
+            widget.classList.add('hidden');
+        } else {
+            if (introModal) {
+                introModal.style.setProperty('display', 'flex', 'important');
+            } else {
+                this.openWhatsAppDirectly();
+            }
+        }
+    },
 
-confirmStartWhatsAppSimulation: function() {
-    this.closeWhatsAppIntro();
-    this.openWhatsAppDirectly();
-},
+    closeWhatsAppIntro: function() {
+        const introModal = document.getElementById('whatsapp-simulation-intro-modal');
+        if (introModal) {
+            introModal.style.setProperty('display', 'none', 'important');
+        }
+    },
+
+    confirmStartWhatsAppSimulation: function() {
+        this.closeWhatsAppIntro();
+        this.openWhatsAppDirectly();
+    },
 
 openWhatsAppDirectly: function() {
     const widget = document.getElementById('whatsapp-chat-widget');
@@ -1048,6 +1144,7 @@ addNewMockPrescription: function() {
 
     // Temporizador cíclico automático para gatillar la propuesta de compra comercial
     startCloserAutoTrigger: function() {
+        if (window.app && window.app.clientData) return; // Bloquear temporizador de venta en sitios activos de clientes
         setInterval(() => {
             const closer = document.getElementById('closer-modal-overlay');
             const introModal = document.getElementById('whatsapp-simulation-intro-modal');
@@ -1201,9 +1298,13 @@ addNewMockPrescription: function() {
 
 // Autoejecución al cargar
 document.addEventListener('DOMContentLoaded', () => {
-    const hostname = window.location.hostname;
-    if (hostname.endsWith('ikai.info') && hostname !== 'ikai.info') {
+    if (window.app && window.app.clientData) {
         window.app.demo.initMultiTenant();
+    } else {
+        const hostname = window.location.hostname;
+        if (hostname.endsWith('ikai.info') && hostname !== 'ikai.info') {
+            window.app.demo.initMultiTenant();
+        }
     }
 // Ejecutar hidratación dinámica basada en subdominio o parámetro URL (?id=gym, ?id=salud)
     if (window.app.demo && typeof window.app.demo.hydrateUniversalEngine === 'function') {

@@ -5,7 +5,6 @@ const path = require("path");
 const handlebars = require("handlebars");
 const { defineString } = require('firebase-functions/params');
 const { onRequest } = require("firebase-functions/v2/https");
-const paypal = require("@paypal/checkout-server-sdk");
 const BASE_URL = 'https://robotiax.mx'; // O la URL de tu entorno actual
 const nodemailer = require('nodemailer');
 const https = require("https");
@@ -29,11 +28,10 @@ const getDb = () => { if (!_db) _db = admin.firestore(); return _db; };
 let _bucket;
 const getBucket = () => { if (!_bucket) _bucket = admin.storage().bucket('robotiax.appspot.com'); return _bucket; };
 
-const { VertexAI } = require('@google-cloud/vertexai');
-
 let vertexAIInstance;
 const getVertexAI = () => {
     if (!vertexAIInstance) {
+        const { VertexAI } = require('@google-cloud/vertexai');
         vertexAIInstance = new VertexAI({ 
             project: process.env.GCLOUD_PROJECT || 'robotiax', 
             location: 'us-central1' 
@@ -71,10 +69,32 @@ const paypalSecret = defineString('PAYPAL_SECRET', { default: 'SANDBOX_SECRET_FA
 
 // --- Configuración del Entorno PayPal ---
 const getPaypalClient = () => {
+    const paypal = require("@paypal/checkout-server-sdk");
     const clientId = paypalClientId.value();
     const clientSecret = paypalSecret.value();
     const env = new paypal.core.SandboxEnvironment(clientId, clientSecret);
     return new paypal.core.PayPalHttpClient(env);
+};
+
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const r2AccountId = defineString('R2_ACCOUNT_ID', { default: 'TU_ACCOUNT_ID_DE_CLOUDFLARE' });
+const r2AccessKeyId = defineString('R2_ACCESS_KEY_ID', { default: 'TU_ACCESS_KEY_ID_DE_R2' });
+const r2SecretAccessKey = defineString('R2_SECRET_ACCESS_KEY', { default: 'TU_SECRET_ACCESS_KEY_DE_R2' });
+const r2BucketName = defineString('R2_BUCKET_NAME', { default: 'TU_NOMBRE_DE_BUCKET_R2' });
+
+let _s3;
+const getS3 = () => {
+    if (!_s3) {
+        _s3 = new S3Client({
+            region: "auto",
+            endpoint: `https://${r2AccountId.value()}.r2.cloudflarestorage.com`,
+            credentials: {
+                accessKeyId: r2AccessKeyId.value(),
+                secretAccessKey: r2SecretAccessKey.value(),
+            },
+        });
+    }
+    return _s3;
 };
 
 // La constante BASE_URL ya fue declarada previamente en la parte superior.
@@ -97,45 +117,155 @@ exports.generateDemo = onRequest({
     cors: true 
 }, async (req, res) => {
     try {
-            const templateName = req.query.template || 'medico-01-template.html';
+            const requestedTemplate = req.query.template || 'demo_salud.html';
+
+           // Servir el diseño nativo demo_salud.html con hidratación automática en el cliente
+                    if (requestedTemplate === 'demo_salud.html') {
+                        const templatePath = path.join(__dirname, 'templates', requestedTemplate);
+                        const templateContent = await fs.readFile(templatePath, 'utf8');
+                        
+                        let clientDataScript = "";
+                        const originalHost = req.query.originalHost || req.headers['x-original-host'];
+                        if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+                            const slug = originalHost.split('.')[0];
+                            console.log(`📡 [SECURE_BACKEND]: Extrayendo datos del cliente para: ${slug}`);
+                            
+                            const querySnap = await getDb().collection('orders_to_fulfill')
+                                .where('negocio_slug', '==', slug)
+                                .limit(1)
+                                .get();
+
+                            if (!querySnap.empty) {
+                                const dynamicData = querySnap.docs[0].data();
+                                const plan = dynamicData.activePlan || dynamicData.template || "salud";
+                                const nicheId = plan.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').replace('-promo', '').toLowerCase();
+                                
+                                const source = dynamicData.details || dynamicData;
+                                const clientData = {
+                                    negocio: source.negocio || source.business_name || dynamicData.negocio || "",
+                                    tagline: source.tagline || source.slogan || dynamicData.tagline || "",
+                                    headline: source.headline || source.title || dynamicData.headline || "",
+                                    direccion: source.direccion || source.direccion_fiscal || source.address || dynamicData.direccion || "",
+                                    horarios: source.horarios || source.hours || dynamicData.horarios || "",
+                                    telefono: source.telefono || source.phone || dynamicData.telefono || "",
+                                    fee: source.fee || source.costo || dynamicData.fee || "",
+                                    badge: source.badge || dynamicData.badge || "Especialista Certificado",
+                                    specialty: source.specialty || dynamicData.specialty || "Giro de Especialidades",
+                                    nicheId: nicheId
+                                };
+                                clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
+                            }
+                        }
+
+                        const cacheBuster = Date.now();
+                        const finalHtmlWithFix = templateContent
+                            .replace('css/demo_salud.css', `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
+                            .replace('js/demo_salud.js', `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
+                            .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+                            .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
+                            .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
+                            .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                            .replace('</head>', clientDataScript + '</head>');
+
+                        if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+                            const slug = originalHost.split('.')[0];
+                            try {
+                                console.log(`📡 [AUTO_MIGRATE]: Migrando y compilando sitio estático para R2: ${slug}.html`);
+                                const putCommand = new PutObjectCommand({
+                                    Bucket: r2BucketName.value(),
+                                    Key: `sitios/${slug}.html`,
+                                    Body: finalHtmlWithFix,
+                                    ContentType: "text/html; charset=utf-8"
+                                });
+                                await getS3().send(putCommand);
+                            } catch (r2Err) {
+                                console.error("❌ Error en auto-migración de R2:", r2Err.message);
+                            }
+                        }
+                            
+                        res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                        res.set('Vary', 'X-Original-Host');
+                        return res.set('Content-Type', 'text/html').status(200).send(finalHtmlWithFix);
+                    }
+            let templateName = req.query.template || 'medico-01-template.html';
+            let dynamicData = {};
+            let isSaaS = false;
+
+            const originalHost = req.query.originalHost || req.headers['x-original-host'];
+                if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+                    const slug = originalHost.split('.')[0];
+                    console.log(`📡 [SECURE_BACKEND]: Extrayendo datos del cliente para: ${slug}`);
+                
+                const querySnap = await getDb().collection('orders_to_fulfill')
+                    .where('negocio_slug', '==', slug)
+                    .limit(1)
+                    .get();
+
+                if (!querySnap.empty) {
+                    dynamicData = querySnap.docs[0].data();
+                    // Mapeo automático de plantillas de catálogo
+                    if (dynamicData.activePlan || dynamicData.template) {
+                        const plan = dynamicData.activePlan || dynamicData.template;
+                        if (plan === 'medico-01' || plan.startsWith('cfg-')) {
+                            templateName = 'medico-01-template.html';
+                        }
+                    }
+                    isSaaS = true;
+                }
+            }
             
             const templatePath = path.join(__dirname, 'templates', templateName);
             const baseName = templateName.replace('-template.html', '');
             const dataName = `demo_${baseName}.json`;
             const dataPath = path.join(__dirname, 'demo-data', dataName);
 
-            // Leemos los archivos de forma optimizada
             const [templateContent, dataContent, tailwindCss, fontAwesomeCss] = await Promise.all([
                 fs.readFile(templatePath, 'utf8'),
-                fs.readFile(dataPath, 'utf8').catch(() => '{}'), // Si falla, devuelve un JSON vacío
+                fs.readFile(dataPath, 'utf8').catch(() => '{}'),
                 loadAsset('assets/css/tailwind.css'),
                 loadAsset('assets/css/fontawesome.css')
             ]);
 
             const demoData = JSON.parse(dataContent);
 
-            // "Parcheo" de datos (asegurando que las propiedades existen)
+            // Mapeo de Razón Social y Tagline
             demoData.branding = { ...demoData.branding, 
-                business_name: req.query.name || demoData.branding?.business_name,
-                tagline: req.query.tagline || demoData.branding?.tagline
-            };
-            demoData.hero_section = { ...demoData.hero_section,
-                headline: req.query.headline || demoData.hero_section?.headline,
-                primary_cta_text: req.query.cta || demoData.hero_section?.primary_cta_text
+                business_name: isSaaS ? (dynamicData.negocio || "Nombre de Negocio") : (req.query.name || demoData.branding?.business_name),
+                tagline: isSaaS ? (dynamicData.tagline || "") : (req.query.tagline || demoData.branding?.tagline)
             };
 
-            // Mapeo de Servicios (asumiendo formato de texto o lista en plantilla)
-            if (req.query.services) {
+            demoData.hero_section = { ...demoData.hero_section,
+                headline: isSaaS ? (dynamicData.headline || "Tu Salud en Manos de Profesionales") : (req.query.headline || demoData.hero_section?.headline),
+                primary_cta_text: isSaaS ? "Reservar Cita" : (req.query.cta || demoData.hero_section?.primary_cta_text)
+            };
+
+            // Transpila el texto plano de servicios de la BD a un array estructurado de tarjetas de servicio
+            if (isSaaS && dynamicData.servicios) {
+                const list = dynamicData.servicios.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+                if (list.length > 0) {
+                    demoData.services_section = {
+                        title: "Nuestros Servicios",
+                        subtitle: "Especialidades Médicas",
+                        description: "Ofrecemos atención de la más alta calidad con profesionales experimentados.",
+                        items: list.map((srv, idx) => ({
+                            title: srv,
+                            description: "Servicio clínico especializado disponible para agendamiento inmediato.",
+                            icon: idx % 2 === 0 ? "fa-user-md" : "fa-stethoscope"
+                        }))
+                    };
+                }
+            } else if (req.query.services) {
                 demoData.services_section = { ...demoData.services_section,
                     description: req.query.services 
                 };
             }
+
             demoData.contact_section = { ...demoData.contact_section,
-                phone: req.query.phone || demoData.contact_section?.phone,
-                email: req.query.email || demoData.contact_section?.email,
-                address: req.query.address || demoData.contact_section?.address,
-                business_hours: req.query.hours || demoData.contact_section?.business_hours,
-                consultation_fee: req.query.fee || demoData.contact_section?.consultation_fee
+                phone: isSaaS ? (dynamicData.telefono || "") : (req.query.phone || demoData.contact_section?.phone),
+                email: isSaaS ? (dynamicData.email || "") : (req.query.email || demoData.contact_section?.email),
+                address: isSaaS ? (dynamicData.direccion || "") : (req.query.address || demoData.contact_section?.address),
+                business_hours: isSaaS ? (dynamicData.horarios || "") : (req.query.hours || demoData.contact_section?.business_hours),
+                consultation_fee: isSaaS ? (dynamicData.fee || "") : (req.query.fee || demoData.contact_section?.consultation_fee)
             };
 
             if (req.query.imageUrl) {
@@ -145,10 +275,22 @@ exports.generateDemo = onRequest({
             demoData.styles = { tailwind: tailwindCss, fontawesome: fontAwesomeCss };
             
             const template = handlebars.compile(templateContent);
-            const finalHtml = template(demoData);
+            let finalHtml = template(demoData);
 
-            const cssInject = `<style>footer, footer p, footer a, footer div {color: #e2e8f0 !important;} footer a:hover {color: #ffffff !important;}</style>`;
-            const finalHtmlWithFix = finalHtml.replace('</head>', cssInject + '</head>');
+            const cssInject = `
+                <script src="https://cdn.tailwindcss.com"></script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                <style>
+                    footer, footer p, footer a, footer div {color: #e2e8f0 !important;} 
+                    footer a:hover {color: #ffffff !important;}
+                </style>
+            `;
+            
+            // Regex agnóstica de comillas para capturar y reescribir de forma infalible las rutas de assets
+            let finalHtmlWithFix = finalHtml
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                .replace('</head>', cssInject + '</head>');
             
             res.set('Content-Type', 'text/html').status(200).send(finalHtmlWithFix);
 
@@ -451,101 +593,160 @@ exports.submitFinalOrder = onRequest({
         // Solo ejecutar Vertex AI para Agentes de Inteligencia Artificial (ia-) o de Ciberseguridad (sec-)
         const shouldRunVertex = template.startsWith('ia-') || template.startsWith('sec-');
 
-        if (shouldRunVertex) {
-            try {
-                const promptMaquila = `
-                ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
-                Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio || 'No proporcionado'}.
+        // Generación dinámica de credenciales de acceso para Makumoto (Declaradas antes de ser leídas)
+const convenioCode = `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
+const tempPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-                ESTE REPORTE DEBE SER EXHAUSTIVO Y SECCIONADO:
-                1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT): Instrucciones maestras y personalidad de la unidad.
-                2. ⚙️ PARÁMETROS TÉCNICOS: Temperatura, TopP y estilo de respuesta.
-                3. 📋 DOCUMENTACIÓN BÁSICA REQUERIDA: Qué pedirle al cliente HOY mismo para arrancar.
-                4. ⚡ PROTOCOLO DE IMPLEMENTACIÓN BÁSICA (< 5 MIN): Pasos exactos para que el Admin deje operativa la unidad en 5 minutos con la info básica.
-                5. 💎 PROTOCOLO DE INSTALACIÓN AVANZADA ($50 USD): Ingeniería de prompts profunda y carga masiva de conocimiento.
-                6. ⏳ CRONOGRAMA AVANZADO (24H): Lapsos de tiempo (Análisis, Ingesta, Calibración, Test de Estrés y Entrega) y qué se ejecuta en cada fase.
-                No omitas nada. Prioriza la operatividad inmediata del Admin.`;
+// Generación de slug apto para subdominio (Declarado antes de ser leído)
+const negocioSlug = (details.negocio || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 
-                const aiResult = await getVertexAI().getGenerativeModel({ model: modelAI }).generateContent(promptMaquila);
-                const aiResponse = await aiResult.response;
-                vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno.";
-            } catch (e) { 
-                console.error("Error Vertex:", e);
-                vertexInstructions = "Error en generación de reporte Vertex."; 
+// APROVISIONAMIENTO AUTOMÁTICO DE SUBDOMINIO EN FIREBASE HOSTING
+try {
+    console.log(`📡 [HOSTING]: Solicitando aprovisionamiento automático para: ${negocioSlug}.ikai.info...`);
+    const credential = admin.credential.applicationDefault();
+    const accessTokenObj = await credential.getAccessToken();
+    const token = accessTokenObj.accessToken;
+    
+    const payload = JSON.stringify({});
+    const subDomain = `${negocioSlug}.ikai.info`;
+    
+    await new Promise((resolve) => {
+        const reqHost = https.request({
+            hostname: 'firebasehosting.googleapis.com',
+            port: 443,
+            path: `/v1beta1/projects/robotiax/sites/robotiax/customDomains?customDomainId=${encodeURIComponent(subDomain)}`,
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(payload),
+                'X-Goog-User-Project': 'robotiax'
             }
-        }
+        }, (resHost) => {
+            let resData = "";
+            resHost.on("data", (chunk) => resData += chunk);
+            resHost.on("end", () => {
+                if (resHost.statusCode === 200 || resHost.statusCode === 201) {
+                    console.log(`✅ [HOSTING_SUCCESS]: Subdominio ${subDomain} registrado de forma desatendida.`);
+                } else {
+                    console.warn(`⚠️ [HOSTING_WARN]: Código ${resHost.statusCode} al registrar subdominio en Google:`, resData);
+                }
+                resolve();
+            });
+        });
+        reqHost.on("error", (err) => {
+            console.error("❌ [HOSTING_ERROR]: Error de conexión de red con la API de Hosting:", err.message);
+            resolve(); // Continuamos para evitar romper el flujo principal de la venta
+        });
+        reqHost.write(payload);
+        reqHost.end();
+    });
+} catch (errHosting) {
+    console.error("❌ [HOSTING_FATAL]: Error en la secuencia de aprovisionamiento de subdominio:", errHosting.message);
+}
 
-        // FUNCIÓN AUXILIAR PARA EVITAR REPORTES DIFUSOS Y VACÍOS
-        const buildFieldRow = (label, val) => {
-            if (!val || val === "No proporcionado" || val === "No proporcionada" || val === "") return "";
-            return `<tr>
-                <td style="padding: 10px; border-bottom: 1px solid #222; color: #888; font-weight: bold; text-transform: uppercase; font-size: 11px; width: 35%;">${label}:</td>
-                <td style="padding: 10px; border-bottom: 1px solid #222; color: #fff; font-size: 14px;">${val}</td>
-            </tr>`;
-        };
+if (shouldRunVertex) {
+    try {
+        const promptMaquila = `
+        ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
+        Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio || 'No proporcionado'}.
 
-        // 4. EMAIL PARA TI (ADMIN) - ABSOLUTAMENTE PRECISO E INFORMATIVO
-        const adminMailHtml = `
-            <div style="font-family: 'Courier New', monospace; background: #000; color: #00f2ff; padding: 40px; border: 4px solid #ff003c;">
-                <h1 style="color: #ff003c; text-align: center; border-bottom: 2px solid #ff003c; padding-bottom: 15px; margin-top: 0; font-size: 24px; text-transform: uppercase;">🚨 NUEVA ORDEN RECIBIDA 🚨</h1>
-                
-                <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
-                    <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">📦 DETALLES DEL PRODUCTO</h3>
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
-                        <tr>
-                            <td style="padding: 8px; color: #666; font-size: 12px; width: 35%;">FOLIO:</td>
-                            <td style="padding: 8px; font-weight: bold; color: #ff003c;">${folio}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px; color: #666; font-size: 12px;">ID PLANTILLA:</td>
-                            <td style="padding: 8px; color: #00f2ff; font-weight: bold;">${template}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px; color: #666; font-size: 12px;">PRODUCTO:</td>
-                            <td style="padding: 8px; font-weight: bold;">${pData.name}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px; color: #666; font-size: 12px;">IMPORTE:</td>
-                            <td style="padding: 8px; color: #2ecc71; font-weight: bold;">$${pData.price} ${pData.currency}</td>
-                        </tr>
-                    </table>
-                </div>
+        ESTE REPORTE DEBE SER EXHAUSTIVO Y SECCIONADO:
+        1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT): Instrucciones maestras y personalidad de la unidad.
+        2. ⚙️ PARÁMETROS TÉCNICOS: Temperatura, TopP y estilo de respuesta.
+        3. 📋 DOCUMENTACIÓN BÁSICA REQUERIDA: Qué pedirle al cliente HOY mismo para arrancar.
+        4. ⚡ PROTOCOLO DE IMPLEMENTACIÓN BÁSICA (< 5 MIN): Pasos exactos para que el Admin deje operativa la unidad en 5 minutos con la info básica.
+        5. 💎 PROTOCOLO DE INSTALACIÓN AVANZADA ($50 USD): Ingeniería de prompts profunda y carga masiva de conocimiento.
+        6. ⏳ CRONOGRAMA AVANZADO (24H): Lapsos de tiempo (Análisis, Ingesta, Calibración, Test de Estrés y Entrega) y qué se ejecuta en cada fase.
+        No omitas nada. Prioriza la operatividad inmediata del Admin.`;
 
-                <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
-                    <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">👤 DATOS DEL CLIENTE</h3>
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
-                        ${buildFieldRow("Razón Social / Negocio", details.negocio)}
-                        ${buildFieldRow("WhatsApp", details.telefono || details.phone)}
-                        ${buildFieldRow("Email de Respaldo", clientEmail)}
-                        ${buildFieldRow("Domicilio / Dirección", details.direccion || details.direccion_fiscal || details.address)}
-                        ${buildFieldRow("Eslogan / Tagline", details.tagline)}
-                        ${buildFieldRow("Headline / Encabezado", details.headline)}
-                        ${buildFieldRow("Servicios Solicitados", details.servicios)}
-                        ${buildFieldRow("Horarios Operativos", details.horarios || details.hours)}
-                        ${buildFieldRow("Costo Consulta / Fee", details.fee)}
-                    </table>
-                </div>
+        const aiResult = await getVertexAI().getGenerativeModel({ model: modelAI }).generateContent(promptMaquila);
+        const aiResponse = await aiResult.response;
+        vertexInstructions = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno.";
+    } catch (e) { 
+        console.error("Error Vertex:", e);
+        vertexInstructions = "Error en generación de reporte Vertex."; 
+    }
+}
 
-                ${(!isWebProduct && vertexInstructions) ? `
-                <div style="background: #000; border: 2px dashed #ff003c; padding: 25px; margin-bottom: 25px;">
-                    <h3 style="color: #ff003c; margin-top: 0; text-transform: uppercase; font-size: 13px;">📡 REPORTE TÉCNICO DE INTELIGENCIA VERTEX:</h3>
-                    <div style="color: #ffffff; font-size: 13px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;">${vertexInstructions}</div>
-                </div>` : ''}
-            </div>
-        `;
+// FUNCIÓN AUXILIAR PARA EVITAR REPORTES DIFUSOS Y VACÍOS
+const buildFieldRow = (label, val) => {
+    if (!val || val === "No proporcionado" || val === "No proporcionada" || val === "") return "";
+    return `<tr>
+        <td style="padding: 10px; border-bottom: 1px solid #222; color: #888; font-weight: bold; text-transform: uppercase; font-size: 11px; width: 35%;">${label}:</td>
+        <td style="padding: 10px; border-bottom: 1px solid #222; color: #fff; font-size: 14px;">${val}</td>
+    </tr>`;
+};
 
-        // Generación dinámica de credenciales de acceso para Makumoto
-        const convenioCode = `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
-        const tempPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
+// 4. EMAIL PARA TI (ADMIN) - ABSOLUTAMENTE PRECISO E INFORMATIVO
+const adminMailHtml = `
+    <div style="font-family: 'Courier New', monospace; background: #000; color: #00f2ff; padding: 40px; border: 4px solid #ff003c;">
+        <h1 style="color: #ff003c; text-align: center; border-bottom: 2px solid #ff003c; padding-bottom: 15px; margin-top: 0; font-size: 24px; text-transform: uppercase;">🚨 NUEVA ORDEN RECIBIDA 🚨</h1>
+        
+        <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
+            <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">📦 DETALLES DEL PRODUCTO</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px; width: 35%;">FOLIO:</td>
+                    <td style="padding: 8px; font-weight: bold; color: #ff003c;">${folio}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px;">ID PLANTILLA:</td>
+                    <td style="padding: 8px; color: #00f2ff; font-weight: bold;">${template}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px;">PRODUCTO:</td>
+                    <td style="padding: 8px; font-weight: bold;">${pData.name}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px;">IMPORTE:</td>
+                    <td style="padding: 8px; color: #2ecc71; font-weight: bold;">$${pData.price} ${pData.currency}</td>
+                </tr>
+            </table>
+        </div>
 
-        // Generación de slug apto para subdominio (ej: "Ojos Terribles" -> "ojos-terribles")
-    const negocioSlug = (details.negocio || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "");
+        <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
+            <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">🌐 ACCESOS Y ENLACES DIRECTOS</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px; width: 35%;">ENLACE WEB ACTIVO:</td>
+                    <td style="padding: 8px;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #00f2ff; font-weight: bold; text-decoration: none;">https://${negocioSlug}.ikai.info</a></td>
+                </tr>
+                ${isConfigurator ? `
+                <tr>
+                    <td style="padding: 8px; color: #666; font-size: 12px;">BOT DE WHATSAPP (VPS):</td>
+                    <td style="padding: 8px;"><a href="https://bot.ikai.info" target="_blank" style="color: #2ecc71; font-weight: bold; text-decoration: none;">Instancia: ${negocioSlug} (Token: ${tempPassword})</a></td>
+                </tr>` : ''}
+            </table>
+        </div>
 
+        <div style="background: #050505; border: 1px solid #333; padding: 25px; margin-bottom: 25px;">
+            <h3 style="color: #00f2ff; margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px; text-transform: uppercase; font-size: 13px;">👤 DATOS DEL CLIENTE</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; color: #fff;">
+                ${buildFieldRow("Razón Social / Negocio", details.negocio)}
+                ${buildFieldRow("WhatsApp", details.telefono || details.phone)}
+                ${buildFieldRow("Email de Respaldo", clientEmail)}
+                ${buildFieldRow("Domicilio / Dirección", details.direccion || details.direccion_fiscal || details.address)}
+                ${buildFieldRow("Eslogan / Tagline", details.tagline)}
+                ${buildFieldRow("Headline / Encabezado", details.headline)}
+                ${buildFieldRow("Servicios Solicitados", details.servicios)}
+                ${buildFieldRow("Horarios Operativos", details.horarios || details.hours)}
+                ${buildFieldRow("Costo Consulta / Fee", details.fee)}
+            </table>
+        </div>
+
+        ${(!isWebProduct && vertexInstructions) ? `
+        <div style="background: #000; border: 2px dashed #ff003c; padding: 25px; margin-bottom: 25px;">
+            <h3 style="color: #ff003c; margin-top: 0; text-transform: uppercase; font-size: 13px;">📡 REPORTE TÉCNICO DE INTELIGENCIA VERTEX:</h3>
+            <div style="color: #ffffff; font-size: 13px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;">${vertexInstructions}</div>
+        </div>` : ''}
+    </div>
+`;
     // REGISTRO SEGURO EN BASE DE DATOS CON CREDENCIALES E IDENTIFICADOR SLUG
     await getDb().collection('orders_to_fulfill').add({
         orderNumber: folio,
@@ -557,6 +758,43 @@ exports.submitFinalOrder = onRequest({
         ...details,
         timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
+
+      try {
+        console.log(`📡 [R2_STATIC_COMPILE]: Compilando plantilla HTML para: ${negocioSlug}...`);
+        const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
+        let htmlContent = await fs.readFile(templatePath, 'utf8');
+
+        const cacheBuster = Date.now();
+        htmlContent = htmlContent
+            .replace(/Dr\. Alejandro Morales/g, details.negocio || 'Dr. Alejandro Morales')
+            .replace(/ESPECIALISTA CERTIFICADO/g, details.badge || 'ESPECIALISTA CERTIFICADO')
+            .replace(/Nutrición Estética & Neurología Preventiva/g, details.specialty || 'Especialidades Médicas')
+            .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
+            .replace(/"Tu bienestar es nuestra ciencia"/g, `"${details.tagline || 'Tu bienestar es nuestra ciencia'}"`)
+            .replace(/Torre Médica, Cons\. 402/g, details.direccion || 'Dirección de la clínica')
+            .replace(/Lun - Vie 9am a 6pm/g, details.horarios || 'Lun - Vie 9am a 6pm')
+            .replace(/\+52 55 1234 5678/g, details.telefono || '+52 55 1234 5678')
+            .replace(/\$800 MXN/g, details.fee || '$800 MXN')
+            .replace(/Agenda tu consulta médica al instante\. Elige tu especialidad, selecciona tu horario directamente por WhatsApp y disfruta de una atención médica de alta precisión sin filas ni demoras\./g, details.headline || 'Agenda tu consulta médica al instante.')
+            .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
+            .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
+            .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+            .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
+            .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
+            .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+
+        const putCommand = new PutObjectCommand({
+            Bucket: r2BucketName.value(),
+            Key: `sitios/${negocioSlug}.html`,
+            Body: htmlContent,
+            ContentType: "text/html; charset=utf-8"
+        });
+
+        await getS3().send(putCommand);
+        console.log(`✅ [R2_STATIC_SUCCESS]: Archivo estático cargado exitosamente en sitios/${negocioSlug}.html`);
+    } catch (errStatic) {
+        console.error("❌ [R2_STATIC_ERROR]: Error compilando u hospedando sitio estático:", errStatic.message);
+    }
 
       // -------------------------------------------------------------------------
     // APROVISIONAMIENTO AUTOMÁTICO DE INSTANCIA DE WHATSAPP (GATEWAY SAAS)
@@ -660,75 +898,84 @@ exports.submitFinalOrder = onRequest({
         const ivaNum = parseFloat((basePriceNum * 0.16).toFixed(2));
         const totalNum = parseFloat((basePriceNum * 1.16).toFixed(2));
 
-        // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD
+        // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD (UNIVERSAL SAAS)
         const clientReceiptHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                <h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
-                <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos recibido tus datos de configuración correctamente.</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; padding: 40px; color: #1e293b; border-radius: 20px; background: #ffffff;">
+                <h2 style="color: #10b981; text-align: center; text-transform: uppercase; margin-bottom: 25px; font-family: sans-serif; font-weight: 800;">¡SISTEMA DIGITAL ACTIVADO! 🚀</h2>
+                <p style="font-size: 14px; line-height: 1.6; color: #334155;">Hola <strong>${details.negocio || 'Socio Comercial'}</strong>, ¡felicidades por dar el paso hacia la digitalización! Hemos recibido tus datos y tu suite comercial ya ha sido construida con éxito en nuestros servidores de alta velocidad. 🎉</p>
                 
-                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #333;">
-                    <p style="margin: 4px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
-                    <p style="margin: 4px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
-                    <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12px 0;">
-                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>PRECIO BASE:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></p>
-                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>IVA TRASLADADO (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></p>
-                    <p style="margin: 4px 0; display: flex; justify-content: space-between; font-size: 15px; color: #16a34a; font-weight: bold; padding-top: 5px; border-top: 1px dashed #e2e8f0;"><span>TOTAL CON IVA:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></p>
-                </div>
-
-                <!-- REQUERIMIENTO DE PERSONALIZACIÓN VISUAL (FOTOS) -->
-
-                <!-- SECCIÓN UNIFICADA DE LIBERACIÓN TÉCNICA (FOTOS + PROTOCOLO) -->
-                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155; text-align: left;">
-                    <h3 style="color: #38bdf8; margin-top: 0; font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 10px;">
-                        🛡️ PROTOCOLO DE LIBERACIÓN TÉCNICA (ACCIÓN REQUERIDA)
-                    </h3>
-                    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">
-                        Para proceder con la maquetación final de tu sitio web y la liberación de tu bot, <strong>es imperativo que respondas a este correo electrónico proporcionando la siguiente información en un solo mensaje:</strong>
+                <!-- SECCIÓN 1: SITIO WEB EN LÍNEA -->
+                <div style="background: #f0fdf4; padding: 22px; border-radius: 16px; border: 1px solid #bbf7d0; margin: 25px 0; text-align: left;">
+                    <p style="margin: 0; font-weight: bold; font-size: 13px; color: #16a34a; letter-spacing: 1px; font-family: sans-serif;">🌐 TU SITIO WEB DE MARCA BLANCA YA ESTÁ EN LÍNEA:</p>
+                    <p style="margin: 8px 0 0;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #15803d; font-weight: 800; text-decoration: none; font-size: 18px; font-family: monospace;">https://${negocioSlug}.ikai.info</a></p>
+                    <p style="margin-top: 8px; font-size: 11px; color: #166534; line-height: 1.4;">
+                        <strong>✓ Hosting Gratuito Incluido:</strong> Tu portal profesional está alojado de por vida sin costos adicionales de servidor ni publicidad invasiva.
                     </p>
+                </div>
 
-                    <!-- Bloque 1: Fotos -->
-                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
-                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">📷 PARTE 1: TUS TRES FOTOGRAFÍAS OPCIONALES</p>
-                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Envíanos las siguientes imágenes para ilustrar tu nuevo sitio web:</p>
-                        <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-left: 20px; margin-top: 5px; margin-bottom: 8px; padding-left: 0;">
-                            <li>Foto física de tu consultorio o clínica.</li>
-                            <li>Foto profesional de tu perfil.</li>
-                            <li>Foto tuya interactuando en consulta con un paciente.</li>
-                        </ul>
-                        <p style="font-size: 11px; color: #64748b; font-style: italic; margin: 0; line-height: 1.3;">* Nota: En caso de no contar con alguna de estas fotos, omitiremos la imagen respectiva en tu sitio; si no mandas ninguna, simplemente no colocaremos imágenes, manteniendo un diseño limpio y minimalista.</p>
-                    </div>
+                <!-- SECCIÓN 2: ASISTENTE DE WHATSAPP -->
+                <div style="background: #f8fafc; padding: 22px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 25px 0; text-align: left;">
+                    <h3 style="color: #2563eb; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 10px;">
+                        🤖 TU ASISTENTE INTELIGENTE DE WHATSAPP 24/7:
+                    </h3>
+                    <p style="font-size: 12px; color: #475569; line-height: 1.5; margin-top: 0;">
+                        Tu Bot ya cuenta con su cerebro pre-entrenado para tu negocio: saluda, responde dudas, muestra tus servicios, calcula presupuestos y agenda citas en lenguaje humano natural.
+                    </p>
+                    <p style="font-size: 11px; color: #ef4444; font-weight: bold; margin-bottom: 10px;">
+                        👉 IMPORTANTE (CÓMO ACTIVARLO):
+                    </p>
+                    <p style="font-size: 11px; color: #475569; line-height: 1.4; margin-top: 0;">
+                        Las instrucciones de vinculación y tus credenciales privadas (Instancia y Token de tu VPS) están colocadas de forma segura <strong>directamente dentro de tu propia página web</strong>. Para verlas, simplemente entra a tu sitio web y haz clic en el botón flotante de WhatsApp.
+                    </p>
+                </div>
 
-                    <!-- Bloque 2: Protocolo -->
-                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
-                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">🤖 PARTE 2: SELECCIÓN DE PROTOCOLO DE IMPLEMENTACIÓN (BOT)</p>
-                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Selecciona cuál de las siguientes tres vías deseas para la configuración y entrenamiento de tu asistente de WhatsApp:</p>
-                        
-                        <div style="margin-top: 10px; margin-bottom: 10px;">
-                            <span style="color: #fff; font-size: 11px; font-weight: bold;">1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</span>
-                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
-                        </div>
-                        
-                        <div style="margin-bottom: 10px;">
-                            <span style="color: #fff; font-size: 11px; font-weight: bold;">2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</span>
-                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
-                        </div>
-                        
-                        <div>
-                            <span style="color: #38bdf8; font-size: 11px; font-weight: bold;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</span>
-                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
-                        </div>
-                    </div>
-
-                    <!-- Bloque 3: Nota de Cierre unificada -->
-                    <div style="margin-top: 15px; font-size: 12px; color: #ff4d4d; font-weight: bold; line-height: 1.5;">
-                        ⚠️ NOTA DE LIBERACIÓN TÉCNICA: En cuanto recibamos estas tres fotografías (o la confirmación de omitirlas) junto con tu elección de protocolo en respuesta a este correo electrónico, procederemos de inmediato con la activación de tu Página Web, la puesta en marcha de tu Bot de WhatsApp de agendamiento automático y te enviaremos los datos de acceso oficiales y el manual operativo para tu Centro de Entretenimiento de sala de espera en un plazo estimado de 24 a 72 horas hábiles.
+                <!-- SECCIÓN 3: CENTRO DE ENTRETENIMIENTO -->
+                <div style="background: #faf5ff; padding: 22px; border-radius: 16px; border: 1px solid #f3e8ff; margin: 25px 0; text-align: left;">
+                    <h3 style="color: #7e22ce; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #f3e8ff; padding-bottom: 8px; margin-bottom: 10px;">
+                        🎮 CENTRO DE ENTRETENIMIENTO INTERACTIVO GRATUITO:
+                    </h3>
+                    <p style="font-size: 12px; color: #5b21b6; line-height: 1.5; margin-top: 0;">
+                        Tus visitantes se deleitarán con un portal de juegos mentales, trivias cognitivas de lealtad y videoteca en tiempo de espera física o digital.
+                    </p>
+                    <div style="font-size: 11px; color: #6b21a8; line-height: 1.4; space-y: 2px;">
+                        <div>• <strong>Fidelización con XP:</strong> El sistema recompensa automáticamente a tus clientes con puntos de experiencia (XP) cada vez que jueguen, asistan puntuales o paguen a tiempo.</div>
+                        <div>• <strong>Control de Campañas:</strong> Puedes lanzar y programar tus propias promociones dentro del panel de trivias para incentivar compras repetidas.</div>
                     </div>
                 </div>
 
-                <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                    <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
+                <!-- SECCIÓN 4: PERSONALIZACIÓN VISUAL (FOTOS OPCIONALES) -->
+                <div style="background: #fffbeb; padding: 22px; border-radius: 16px; border: 1px solid #fde68a; margin: 25px 0; text-align: left; color: #78350f;">
+                    <h3 style="color: #b45309; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #fde68a; padding-bottom: 8px; margin-bottom: 10px;">
+                        📷 PERSONALIZACIÓN VISUAL (OPCIONAL):
+                    </h3>
+                    <p style="font-size: 11px; color: #92400e; line-height: 1.5; margin-top: 0;">
+                        Si deseas personalizar la galería de imágenes de tu nuevo portal, por favor <strong>responde a este correo electrónico adjuntando tres fotografías</strong> bajo las siguientes especificaciones técnicas:
+                    </p>
+                    <ul style="font-size: 11px; color: #92400e; line-height: 1.5; padding-left: 20px; margin-top: 5px; margin-bottom: 0;">
+                        <li><strong>Formato requerido:</strong> Archivo PNG, relación de aspecto 16:9 (Horizontal).</li>
+                        <li><strong>Foto 1:</strong> Tu perfil profesional o logotipo oficial de tu marca.</li>
+                        <li><strong>Foto 2:</strong> Captura física de tus oficinas, instalaciones o local comercial.</li>
+                        <li><strong>Foto 3:</strong> Acción interactuando con clientes, pacientes o colaboradores.</li>
+                    </ul>
                 </div>
-                <p style="font-size: 11px; color: #999; margin-top: 30px; text-align: center;">Robotiax Engine - Despliegue Automatizado</p>
+
+                <!-- DESGLOSE DE PAGO FISCAL -->
+                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 25px 0; font-size: 12px; color: #334155; text-align: left;">
+                    <p style="margin: 4px 0; font-weight: bold; color: #1e293b; font-size: 13px;">📊 DETALLES DE COMPRA Y CONTROL DE FACTURACIÓN:</p>
+                    <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 8px 0;">
+                    <p style="margin: 4px 0;"><strong>FOLIO DE OPERACIÓN:</strong> ${folio}</p>
+                    <p style="margin: 4px 0;"><strong>CONVENIO DE LICENCIA:</strong> ${pData.name}</p>
+                    <div style="margin-top: 10px; font-size: 11px; space-y: 2px;">
+                        <div style="display: flex; justify-content: space-between;"><span>Precio Neto de Setup:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></div>
+                        <div style="display: flex; justify-content: space-between;"><span>IVA Trasladado (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10b981; font-weight: bold; border-top: 1px dashed #cbd5e1; padding-top: 5px; margin-top: 5px;"><span>Importe Total Procesado:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #64748b; line-height: 1.4; text-align: left;">
+                    <strong>INFORMACIÓN FISCAL:</strong> Tu factura CFDI le será enviada de forma desatendida a tu cuenta de correo registrada los días 2 o 3 del mes inmediato posterior a su compra.
+                </div>
+                <p style="font-size: 10px; color: #94a3b8; margin-top: 30px; text-align: center;">Robotiax Core Engine - Aprovisionamiento Desatendido</p>
             </div>
         `;
 

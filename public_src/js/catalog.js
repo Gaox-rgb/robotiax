@@ -248,15 +248,17 @@ window.app.catalog.demoTemplates = {
             { "url": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=1200&q=80", "caption": "Clases de acondicionamiento de alta potencia guiadas" }
         ],
         "trivia": [
-            { "q": "What macronutrient is essential for muscle fiber reconstruction?", "a": "Proteína", "b": "Carbohidratos", "correct": "a" },
-            { "q": "What type of training best stimulates myofibrillar hypertrophy?", "a": "Fuerza pesada", "b": "Cardio de resistencia", "correct": "a" },
-            { "q": "What compound prevents fatigue and keeps cells hydrated?", "a": "Agua / Electrolitos", "b": "Bebidas Energéticas", "correct": "a" }
+            { "q": "¿Qué macronutriente es esencial para la reconstrucción de las fibras musculares?", "a": "Proteína", "b": "Carbohidratos", "correct": "a" },
+            { "q": "¿Qué tipo de entrenamiento estimula mejor la hipertrofia miofibrilar?", "a": "Fuerza pesada", "b": "Cardio de resistencia", "correct": "a" },
+            { "q": "¿Qué compuesto previene la fatiga y mantiene las células hidratadas?", "a": "Agua / Electrolitos", "b": "Bebidas Energéticas", "correct": "a" }
         ],
         "upsells": {
             "tracker_title": "Mi Bio-Tracker de Fuerza",
             "tracker_desc": "Registra tus levantamientos, pesos, series y dieta diaria para que tu entrenador ajuste al máximo tu rutina de hipertrofia.",
             "shop_title": "Tienda de Suplementos Digital",
-            "shop_desc": "Adquiere proteínas en polvo, creatinas, pre-entrenos y accesorios recomendados por tus entrenadores con cobro digital."
+           "shop_desc": "Adquiere proteínas en polvo, creatinas, pre-entrenos y accesorios recomendados por tus entrenadores con cobro digital.",
+            "record_title": "Mi Expediente de Rendimiento",
+            "record_desc": "Completo portal deportivo para consultar tus rutinas asignadas, avances de composición corporal e indicaciones de tus coaches."
         }
     },
     "legal": {
@@ -302,7 +304,9 @@ window.app.catalog.demoTemplates = {
             "tracker_title": "Mi Expediente de Casos Activo",
             "tracker_desc": "Consulta el avance de tus demandas, amparos y acuerdos de juzgado en tiempo real desde tu portal sin tener que llamar al bufete.",
             "shop_title": "Bóveda de Documentos Segura",
-            "shop_desc": "Carga y almacena identificaciones, contratos y escrituras bajo cifrado militar Zero-Knowledge exclusivo para tus litigios."
+           "shop_desc": "Carga y almacena identificaciones, contratos y escrituras bajo cifrado militar Zero-Knowledge exclusivo para tus litigios.",
+            "record_title": "Mi Bóveda de Expedientes y Casos",
+            "record_desc": "Completo portal legal para consultar el avance de tus demandas, amparos, acuerdos de juzgado e indicaciones de tus abogados en tiempo real."
         }
     },
     "contable": {

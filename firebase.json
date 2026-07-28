@@ -21,6 +21,14 @@
       {
         "source": "/submitFinalOrder",
         "function": "submitFinalOrder"
+      },
+      {
+        "source": "/generateDemo",
+        "function": "generateDemo"
+      },
+      {
+        "source": "**",
+        "function": "generateDemo"
       }
     ]
   }

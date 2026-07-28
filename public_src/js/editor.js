@@ -176,6 +176,8 @@ window.app.editor = {
             tagline: document.getElementById('edit-slogan')?.value || document.getElementById('edit-tagline')?.value || "",
             slogan: document.getElementById('edit-slogan')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
+            badge: document.getElementById('edit-badge')?.value || "Especialista Certificado",
+            specialty: document.getElementById('edit-specialty')?.value || "Giro Comercial",
             especialidades: document.getElementById('edit-services')?.value || this.currentProductName,
             servicios: document.getElementById('edit-services')?.value || this.currentProductName,
             cta: document.getElementById('edit-cta')?.value || "Activación Directa",
