@@ -65,7 +65,7 @@ window.app.ui = {
         const panel = document.getElementById('editor-panel');
         if (panel) {
             console.log("🛠️ [DESARROLLO]: Abriendo editor para:", templateName);
-            document.body.classList.add('editor-open');
+       document.body.classList.add('editor-open');
             panel.style.setProperty('display', 'block', 'important');
             panel.classList.add('active'); 
             window.app.editor.init(templateId);
@@ -94,7 +94,7 @@ window.app.ui = {
         if (window.app.payments.checkAccess(templateId)) {
             this.openEditor(templateId, templateName);
         } else {
-            window.app.payments.openModal(templateId, templateName, 99, 'MXN');
+            window.app.payments.openModal(templateId, templateName, 200, 'MXN');
         }
     },
 

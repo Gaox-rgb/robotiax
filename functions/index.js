@@ -118,6 +118,7 @@ exports.generateDemo = onRequest({
 }, async (req, res) => {
     try {
             const requestedTemplate = req.query.template || 'demo_salud.html';
+            const originalHost = req.query.originalHost || req.headers['x-original-host'];
 
            // Servir el diseño nativo demo_salud.html con hidratación automática en el cliente
                     if (requestedTemplate === 'demo_salud.html') {
@@ -125,11 +126,8 @@ exports.generateDemo = onRequest({
                         const templateContent = await fs.readFile(templatePath, 'utf8');
                         
                         let clientDataScript = "";
-                        const originalHost = req.query.originalHost || req.headers['x-original-host'];
                         if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
                             const slug = originalHost.split('.')[0];
-                            console.log(`📡 [SECURE_BACKEND]: Extrayendo datos del cliente para: ${slug}`);
-                            
                             const querySnap = await getDb().collection('orders_to_fulfill')
                                 .where('negocio_slug', '==', slug)
                                 .limit(1)
@@ -137,9 +135,6 @@ exports.generateDemo = onRequest({
 
                             if (!querySnap.empty) {
                                 const dynamicData = querySnap.docs[0].data();
-                                const plan = dynamicData.activePlan || dynamicData.template || "salud";
-                                const nicheId = plan.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').replace('-promo', '').toLowerCase();
-                                
                                 const source = dynamicData.details || dynamicData;
                                 const clientData = {
                                     negocio: source.negocio || source.business_name || dynamicData.negocio || "",
@@ -149,9 +144,8 @@ exports.generateDemo = onRequest({
                                     horarios: source.horarios || source.hours || dynamicData.horarios || "",
                                     telefono: source.telefono || source.phone || dynamicData.telefono || "",
                                     fee: source.fee || source.costo || dynamicData.fee || "",
-                                    badge: source.badge || dynamicData.badge || "Especialista Certificado",
-                                    specialty: source.specialty || dynamicData.specialty || "Giro de Especialidades",
-                                    nicheId: nicheId
+                                    badge: source.badge || dynamicData.badge || "",
+                                    specialty: source.specialty || dynamicData.specialty || ""
                                 };
                                 clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
                             }
@@ -191,8 +185,8 @@ exports.generateDemo = onRequest({
             let dynamicData = {};
             let isSaaS = false;
 
-            const originalHost = req.query.originalHost || req.headers['x-original-host'];
-                if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+            if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+               
                     const slug = originalHost.split('.')[0];
                     console.log(`📡 [SECURE_BACKEND]: Extrayendo datos del cliente para: ${slug}`);
                 
@@ -761,27 +755,80 @@ const adminMailHtml = `
 
       try {
         console.log(`📡 [R2_STATIC_COMPILE]: Compilando plantilla HTML para: ${negocioSlug}...`);
-        const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
-        let htmlContent = await fs.readFile(templatePath, 'utf8');
+        // Selección de archivo físico para compilación en R2 (Evitando colisión de nombres)
+        let targetPhysicalFile = 'demo_salud.html';
+        if (isWebProduct) {
+            targetPhysicalFile = `${template}-template.html`;
+        }
+        const templatePath = path.join(__dirname, 'templates', targetPhysicalFile);
 
         const cacheBuster = Date.now();
-        htmlContent = htmlContent
-            .replace(/Dr\. Alejandro Morales/g, details.negocio || 'Dr. Alejandro Morales')
-            .replace(/ESPECIALISTA CERTIFICADO/g, details.badge || 'ESPECIALISTA CERTIFICADO')
-            .replace(/Nutrición Estética & Neurología Preventiva/g, details.specialty || 'Especialidades Médicas')
-            .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
-            .replace(/"Tu bienestar es nuestra ciencia"/g, `"${details.tagline || 'Tu bienestar es nuestra ciencia'}"`)
-            .replace(/Torre Médica, Cons\. 402/g, details.direccion || 'Dirección de la clínica')
-            .replace(/Lun - Vie 9am a 6pm/g, details.horarios || 'Lun - Vie 9am a 6pm')
-            .replace(/\+52 55 1234 5678/g, details.telefono || '+52 55 1234 5678')
-            .replace(/\$800 MXN/g, details.fee || '$800 MXN')
-            .replace(/Agenda tu consulta médica al instante\. Elige tu especialidad, selecciona tu horario directamente por WhatsApp y disfruta de una atención médica de alta precisión sin filas ni demoras\./g, details.headline || 'Agenda tu consulta médica al instante.')
-            .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
-            .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
-            .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-            .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
-            .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
-            .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+        let htmlContent = "";
+
+        if (isWebProduct) {
+            // COMPILACIÓN DINÁMICA DE PLANTILLAS DE CATÁLOGO (HANDLEBARS + JSON)
+            const baseName = template.replace('-template.html', '');
+            const dataName = `demo_${baseName}.json`;
+            const dataPath = path.join(__dirname, 'demo-data', dataName);
+
+            const [rawTemplate, dataContent] = await Promise.all([
+                fs.readFile(templatePath, 'utf8'),
+                fs.readFile(dataPath, 'utf8').catch(() => '{}')
+            ]);
+
+            const demoData = JSON.parse(dataContent);
+
+            // Mapeo absoluto de los campos personalizados del formulario al JSON del diseño
+            if (demoData.branding) {
+                demoData.branding.business_name = details.negocio || demoData.branding.business_name;
+                demoData.branding.tagline = details.tagline || demoData.branding.tagline;
+            }
+            if (demoData.hero_section) {
+                demoData.hero_section.headline = details.headline || demoData.hero_section.headline;
+                demoData.hero_section.primary_cta_text = details.cta || demoData.hero_section.primary_cta_text;
+            }
+            if (demoData.contact_section) {
+                demoData.contact_section.phone = details.telefono || demoData.contact_section.phone;
+                demoData.contact_section.email = details.email || demoData.contact_section.email;
+                demoData.contact_section.address = details.direccion || demoData.contact_section.address;
+                demoData.contact_section.business_hours = details.horarios || demoData.contact_section.business_hours;
+                demoData.contact_section.consultation_fee = details.fee || demoData.contact_section.consultation_fee;
+            }
+
+            const compiledTemplate = handlebars.compile(rawTemplate);
+            htmlContent = compiledTemplate(demoData);
+
+            // Inyectar CDN de Tailwind, FontAwesome y scripts de soporte
+            const cssInject = `
+                <script src="https://cdn.tailwindcss.com"></script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            `;
+            htmlContent = htmlContent
+                .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                .replace('</head>', cssInject + '</head>');
+
+        } else {
+            // COMPILACIÓN DE LA DEMO INTERACTIVA
+            const rawTemplate = await fs.readFile(templatePath, 'utf8');
+            htmlContent = rawTemplate
+                .replace(/Dr\. Alejandro Morales/g, details.negocio || 'Dr. Alejandro Morales')
+                .replace(/ESPECIALISTA CERTIFICADO/g, details.badge || 'ESPECIALISTA CERTIFICADO')
+                .replace(/Nutrición Estética & Neurología Preventiva/g, details.specialty || 'Especialidades Médicas')
+                .replace(/"Tu bienestar es nuestra ciencia"/g, `"${details.tagline || 'Tu bienestar es nuestra ciencia'}"`)
+                .replace(/Torre Médica, Cons\. 402/g, details.direccion || 'Dirección de la clínica')
+                .replace(/Lun - Vie 9am a 6pm/g, details.horarios || 'Lun - Vie 9am a 6pm')
+                .replace(/\+52 55 1234 5678/g, details.telefono || '+52 55 1234 5678')
+                .replace(/\$800 MXN/g, details.fee || '$800 MXN')
+                .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
+                .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
+                .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+                .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
+                .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+        }
 
         const putCommand = new PutObjectCommand({
             Bucket: r2BucketName.value(),
@@ -898,87 +945,81 @@ const adminMailHtml = `
         const ivaNum = parseFloat((basePriceNum * 0.16).toFixed(2));
         const totalNum = parseFloat((basePriceNum * 1.16).toFixed(2));
 
-        // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD (UNIVERSAL SAAS)
+        // 5. EMAIL DE CONFIRMACIÓN DEL CLIENTE (RECEPTOR) - OPTIMIZADO PARA ENTREGABILIDAD (CON SELECCIÓN DE BOT ADICIONAL)
         const clientReceiptHtml = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; padding: 40px; color: #1e293b; border-radius: 20px; background: #ffffff;">
-                <h2 style="color: #10b981; text-align: center; text-transform: uppercase; margin-bottom: 25px; font-family: sans-serif; font-weight: 800;">¡SISTEMA DIGITAL ACTIVADO! 🚀</h2>
-                <p style="font-size: 14px; line-height: 1.6; color: #334155;">Hola <strong>${details.negocio || 'Socio Comercial'}</strong>, ¡felicidades por dar el paso hacia la digitalización! Hemos recibido tus datos y tu suite comercial ya ha sido construida con éxito en nuestros servidores de alta velocidad. 🎉</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
+                <h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU PROYECTO ESTÁ EN PROCESO</h2>
+                <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos recibido tus datos de configuración correctamente.</p>
                 
-                <!-- SECCIÓN 1: SITIO WEB EN LÍNEA -->
-                <div style="background: #f0fdf4; padding: 22px; border-radius: 16px; border: 1px solid #bbf7d0; margin: 25px 0; text-align: left;">
-                    <p style="margin: 0; font-weight: bold; font-size: 13px; color: #16a34a; letter-spacing: 1px; font-family: sans-serif;">🌐 TU SITIO WEB DE MARCA BLANCA YA ESTÁ EN LÍNEA:</p>
-                    <p style="margin: 8px 0 0;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #15803d; font-weight: 800; text-decoration: none; font-size: 18px; font-family: monospace;">https://${negocioSlug}.ikai.info</a></p>
-                    <p style="margin-top: 8px; font-size: 11px; color: #166534; line-height: 1.4;">
-                        <strong>✓ Hosting Gratuito Incluido:</strong> Tu portal profesional está alojado de por vida sin costos adicionales de servidor ni publicidad invasiva.
-                    </p>
+                <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #14532d;">
+                    <p style="margin: 0; font-weight: bold; font-size: 14px; margin-bottom: 8px;">🌐 TU SITIO WEB PROFESIONAL YA ESTÁ EN LÍNEA:</p>
+                    <p style="margin: 0;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #16a34a; font-weight: bold; text-decoration: none;">https://${negocioSlug}.ikai.info</a></p>
+                    <p style="margin-top: 6px; font-size: 11px; opacity: 0.85;">* El bot de WhatsApp agendador se activará automáticamente al seguir el protocolo que se detalla más abajo.</p>
                 </div>
 
-                <!-- SECCIÓN 2: ASISTENTE DE WHATSAPP -->
-                <div style="background: #f8fafc; padding: 22px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 25px 0; text-align: left;">
-                    <h3 style="color: #2563eb; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 10px;">
-                        🤖 TU ASISTENTE INTELIGENTE DE WHATSAPP 24/7:
-                    </h3>
-                    <p style="font-size: 12px; color: #475569; line-height: 1.5; margin-top: 0;">
-                        Tu Bot ya cuenta con su cerebro pre-entrenado para tu negocio: saluda, responde dudas, muestra tus servicios, calcula presupuestos y agenda citas en lenguaje humano natural.
-                    </p>
-                    <p style="font-size: 11px; color: #ef4444; font-weight: bold; margin-bottom: 10px;">
-                        👉 IMPORTANTE (CÓMO ACTIVARLO):
-                    </p>
-                    <p style="font-size: 11px; color: #475569; line-height: 1.4; margin-top: 0;">
-                        Las instrucciones de vinculación y tus credenciales privadas (Instancia y Token de tu VPS) están colocadas de forma segura <strong>directamente dentro de tu propia página web</strong>. Para verlas, simplemente entra a tu sitio web y haz clic en el botón flotante de WhatsApp.
-                    </p>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #333;">
+                    <p style="margin: 4px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
+                    <p style="margin: 4px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
+                    <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12px 0;">
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>PRECIO BASE:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></p>
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>IVA TRASLADADO (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></p>
+                    <p style="margin: 4px 0; display: flex; justify-content: space-between; font-size: 15px; color: #16a34a; font-weight: bold; padding-top: 5px; border-top: 1px dashed #e2e8f0;"><span>TOTAL CON IVA:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></p>
                 </div>
 
-                <!-- SECCIÓN 3: CENTRO DE ENTRETENIMIENTO -->
-                <div style="background: #faf5ff; padding: 22px; border-radius: 16px; border: 1px solid #f3e8ff; margin: 25px 0; text-align: left;">
-                    <h3 style="color: #7e22ce; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #f3e8ff; padding-bottom: 8px; margin-bottom: 10px;">
-                        🎮 CENTRO DE ENTRETENIMIENTO INTERACTIVO GRATUITO:
+                <!-- SECCIÓN UNIFICADA DE LIBERACIÓN TÉCNICA (FOTOS + PROTOCOLO) -->
+                <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155; text-align: left;">
+                    <h3 style="color: #38bdf8; margin-top: 0; font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+                        🛡️ PROTOCOLO DE LIBERACIÓN TÉCNICA (ACCIÓN REQUERIDA)
                     </h3>
-                    <p style="font-size: 12px; color: #5b21b6; line-height: 1.5; margin-top: 0;">
-                        Tus visitantes se deleitarán con un portal de juegos mentales, trivias cognitivas de lealtad y videoteca en tiempo de espera física o digital.
+                    <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">
+                        Para proceder con la maquetación final de tu sitio web y la liberación de tu bot, <strong>es imperativo que respondas a este correo electrónico proporcionando la siguiente información en un solo mensaje:</strong>
                     </p>
-                    <div style="font-size: 11px; color: #6b21a8; line-height: 1.4; space-y: 2px;">
-                        <div>• <strong>Fidelización con XP:</strong> El sistema recompensa automáticamente a tus clientes con puntos de experiencia (XP) cada vez que jueguen, asistan puntuales o paguen a tiempo.</div>
-                        <div>• <strong>Control de Campañas:</strong> Puedes lanzar y programar tus propias promociones dentro del panel de trivias para incentivar compras repetidas.</div>
+
+                    <!-- Bloque 1: Fotos -->
+                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">📷 PARTE 1: TUS TRES FOTOGRAFÍAS OPCIONALES</p>
+                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Envíanos las siguientes imágenes para ilustrar tu nuevo sitio web:</p>
+                        <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-left: 20px; margin-top: 5px; margin-bottom: 8px; padding-left: 0;">
+                            <li>Foto física de tus oficinas o local comercial.</li>
+                            <li>Foto profesional de tu perfil.</li>
+                            <li>Foto tuya interactuando con clientes o colaboradores.</li>
+                        </ul>
+                        <p style="font-size: 11px; color: #64748b; font-style: italic; margin: 0; line-height: 1.3;">* Nota: En caso de no contar con alguna de estas fotos, las omitiremos en el diseño de forma limpia y minimalista.</p>
+                    </div>
+
+                    <!-- Bloque 2: Protocolo -->
+                    <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
+                        <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">🤖 PARTE 2: SELECCIÓN DE PROTOCOLO DE IMPLEMENTACIÓN (BOT)</p>
+                        <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Selecciona cuál de las siguientes tres vías deseas para la configuración y entrenamiento de tu asistente de WhatsApp:</p>
+                        
+                        <div style="margin-top: 10px; margin-bottom: 10px;">
+                            <span style="color: #fff; font-size: 11px; font-weight: bold;">1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <span style="color: #fff; font-size: 11px; font-weight: bold;">2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
+                        </div>
+                        
+                        <div>
+                            <span style="color: #38bdf8; font-size: 11px; font-weight: bold;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</span>
+                            <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 3: Nota de Cierre unificada -->
+                    <div style="margin-top: 15px; font-size: 12px; color: #ff4d4d; font-weight: bold; line-height: 1.5;">
+                        ⚠️ NOTA DE LIBERACIÓN TÉCNICA: En cuanto recibamos estas tres fotografías (o la confirmación de omitirlas) junto con tu elección de protocolo en respuesta a este correo electrónico, procederemos de inmediato con la activación de tu Página Web, la puesta en marcha de tu Bot de WhatsApp de agendamiento automático y te enviaremos los datos de acceso oficiales y el manual operativo para tu Centro de Entretenimiento de sala de espera en un plazo estimado de 24 a 72 horas hábiles.
                     </div>
                 </div>
 
-                <!-- SECCIÓN 4: PERSONALIZACIÓN VISUAL (FOTOS OPCIONALES) -->
-                <div style="background: #fffbeb; padding: 22px; border-radius: 16px; border: 1px solid #fde68a; margin: 25px 0; text-align: left; color: #78350f;">
-                    <h3 style="color: #b45309; margin-top: 0; font-size: 13px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid #fde68a; padding-bottom: 8px; margin-bottom: 10px;">
-                        📷 PERSONALIZACIÓN VISUAL (OPCIONAL):
-                    </h3>
-                    <p style="font-size: 11px; color: #92400e; line-height: 1.5; margin-top: 0;">
-                        Si deseas personalizar la galería de imágenes de tu nuevo portal, por favor <strong>responde a este correo electrónico adjuntando tres fotografías</strong> bajo las siguientes especificaciones técnicas:
-                    </p>
-                    <ul style="font-size: 11px; color: #92400e; line-height: 1.5; padding-left: 20px; margin-top: 5px; margin-bottom: 0;">
-                        <li><strong>Formato requerido:</strong> Archivo PNG, relación de aspecto 16:9 (Horizontal).</li>
-                        <li><strong>Foto 1:</strong> Tu perfil profesional o logotipo oficial de tu marca.</li>
-                        <li><strong>Foto 2:</strong> Captura física de tus oficinas, instalaciones o local comercial.</li>
-                        <li><strong>Foto 3:</strong> Acción interactuando con clientes, pacientes o colaboradores.</li>
-                    </ul>
+                <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                    <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
                 </div>
-
-                <!-- DESGLOSE DE PAGO FISCAL -->
-                <div style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 25px 0; font-size: 12px; color: #334155; text-align: left;">
-                    <p style="margin: 4px 0; font-weight: bold; color: #1e293b; font-size: 13px;">📊 DETALLES DE COMPRA Y CONTROL DE FACTURACIÓN:</p>
-                    <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 8px 0;">
-                    <p style="margin: 4px 0;"><strong>FOLIO DE OPERACIÓN:</strong> ${folio}</p>
-                    <p style="margin: 4px 0;"><strong>CONVENIO DE LICENCIA:</strong> ${pData.name}</p>
-                    <div style="margin-top: 10px; font-size: 11px; space-y: 2px;">
-                        <div style="display: flex; justify-content: space-between;"><span>Precio Neto de Setup:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></div>
-                        <div style="display: flex; justify-content: space-between;"><span>IVA Trasladado (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></div>
-                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10b981; font-weight: bold; border-top: 1px dashed #cbd5e1; padding-top: 5px; margin-top: 5px;"><span>Importe Total Procesado:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #64748b; line-height: 1.4; text-align: left;">
-                    <strong>INFORMACIÓN FISCAL:</strong> Tu factura CFDI le será enviada de forma desatendida a tu cuenta de correo registrada los días 2 o 3 del mes inmediato posterior a su compra.
-                </div>
-                <p style="font-size: 10px; color: #94a3b8; margin-top: 30px; text-align: center;">Robotiax Core Engine - Aprovisionamiento Desatendido</p>
+                <p style="font-size: 11px; color: #999; margin-top: 30px; text-align: center;">Robotiax Engine - Despliegue Automatizado</p>
             </div>
         `;
-
         const mailer = getTransporter();
 
         // CONTROL RESILIENTE E INDEPENDIENTE DE ENVÍO DE CORREOS

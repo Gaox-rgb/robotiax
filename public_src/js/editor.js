@@ -150,7 +150,9 @@ window.app.editor = {
             email: window.app.editor.val('edit-email'),
             address: window.app.editor.val('edit-address'),
             hours: window.app.editor.val('edit-hours'),
-            fee: window.app.editor.val('edit-fee'),
+          fee: window.app.editor.val('edit-fee'),
+            badge: window.app.editor.val('edit-badge'),
+            specialty: window.app.editor.val('edit-specialty'),
             imageUrl: window.app.editor.val('edit-image-url')
         });
 
