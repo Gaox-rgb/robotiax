@@ -60,50 +60,60 @@ window.app.ui = {
         if (modal) modal.classList.remove('visible');
     },
 
-    openEditor: function(templateId, templateName) {
-        this.closeModal(); 
-        const panel = document.getElementById('editor-panel');
-        if (panel) {
-            console.log("🛠️ [DESARROLLO]: Abriendo editor para:", templateName);
-       document.body.classList.add('editor-open');
-            panel.style.setProperty('display', 'block', 'important');
-            panel.classList.add('active'); 
-            window.app.editor.init(templateId);
-        }
-    },
-
-    closeEditor: function() {
-        if (window.app.editor && window.app.editor.close) {
-            window.app.editor.close();
-        } else {
-            const panel = document.getElementById('editor-panel');
-            if (panel) {
-                document.body.classList.remove('editor-open');
-                panel.classList.remove('active');
-            }
-        }
-    },
-
     requestPurchase: function(templateId, templateName) {
-        console.log("Iniciando compra de:", templateId);
+        console.log("Iniciando compra de Suite:", templateId);
         this.selectedTemplate.id = templateId;
         this.selectedTemplate.name = templateName;
 
         if (!window.app.payments) return console.error("Error: payments.js no cargado.");
 
-        if (window.app.payments.checkAccess(templateId)) {
-            this.openEditor(templateId, templateName);
-        } else {
-            window.app.payments.openModal(templateId, templateName, 200, 'MXN');
+        // Flujo transaccional directo sin formularios pesados: Abre la pasarela para cobro con IVA ($232 MXN Final)
+        window.app.payments.openModal(templateId, templateName, 200, 'MXN');
+    },
+
+    openDemoVisor: function(templateId) {
+        const overlay = document.getElementById('demo-visor-overlay');
+        const iframe = document.getElementById('demo-visor-iframe');
+        if (!overlay || !iframe) return;
+
+        // Resolvedor Dinámico de Entorno para evitar fallos de emulador de puerto
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const functionsBase = isLocal 
+            ? 'http://127.0.0.1:5001/robotiax/us-central1/generateDemo' 
+            : 'https://generatedemo-bh64qprvqa-uc.a.run.app';
+
+        // Corrección de enrutamiento: Apunta siempre al molde maestro de simulación demo_salud.html y le pasa el ID del giro de catálogo
+        const finalUrl = `${functionsBase}?template=demo_salud.html&id=${templateId}&originalHost=${window.location.host}`;
+        
+        console.log("📡 [VISOR]: Resolviendo carga dinámica en:", finalUrl);
+        iframe.src = finalUrl;
+        overlay.style.setProperty('display', 'flex', 'important');
+        overlay.classList.add('visible');
+    },
+
+    closeDemoVisor: function() {
+        const overlay = document.getElementById('demo-visor-overlay');
+        const iframe = document.getElementById('demo-visor-iframe');
+        if (overlay && iframe) {
+            overlay.classList.remove('visible');
+            overlay.style.setProperty('display', 'none', 'important');
+            iframe.src = "";
         }
     },
 
-    closeEditor: function() {
-        const panel = document.getElementById('editor-panel');
-        if (panel) {
-            panel.classList.remove('active');
-            const target = document.getElementById('tablas');
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
+    resizeDemoVisor: function(viewMode) {
+        const container = document.getElementById('demo-visor-container');
+        if (!container) return;
+
+        if (viewMode === 'desktop') {
+            container.style.width = '100%';
+            container.style.height = '100%';
+        } else if (viewMode === 'tablet') {
+            container.style.width = '768px';
+            container.style.height = '95%';
+        } else if (viewMode === 'mobile') {
+            container.style.width = '375px';
+            container.style.height = '90%';
         }
     },
 
@@ -140,3 +150,6 @@ window.app.previewChanges = () => window.app.editor.preview();
 window.app.openFullPreview = () => window.app.editor.openFullPreview();
 window.app.handleImageUpload = (e) => window.app.editor.handleUpload(e);
 window.app.ui.requestPurchase = window.app.ui.requestPurchase.bind(window.app.ui);
+window.app.ui.openDemoVisor = window.app.ui.openDemoVisor.bind(window.app.ui);
+window.app.ui.closeDemoVisor = window.app.ui.closeDemoVisor.bind(window.app.ui);
+window.app.ui.resizeDemoVisor = window.app.ui.resizeDemoVisor.bind(window.app.ui);
