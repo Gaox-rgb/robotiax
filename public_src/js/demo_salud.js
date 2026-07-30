@@ -348,7 +348,11 @@ window.app.demo = {
     },
 
     triggerAffiliateDemo: function() {
-        alert("👥 ORBE DE AFILIADOS INCRUSTADO:\nInyectando el Orbe de Redes de Afiliados de Makumoto a través de un Iframe seguro en la página.\nTu paciente invita contactos y genera comisiones de consulta sin salir del sitio web.");
+        // MEJORA 3: Enlace automatizado de convenio con el Orbe de Redes de Makumoto
+        const code = window.app.clientData?.convenioCode || "MAK-AURA-8594";
+        const targetUrl = `https://makumoto.app/?convenio=${code}`;
+        console.log(`📡 [ORBE_SYNC]: Redirigiendo a Makumoto con el convenio: ${code}`);
+        window.open(targetUrl, '_blank');
     },
 
     triggerVideoDemo: function() {
@@ -1195,9 +1199,15 @@ addNewMockPrescription: function() {
         window.app = window.app || {};
         window.app.vault = 'RBX-PRT-99-MXN-SECURE-2025';
 
+        // Captura dinámica del ID y plan de la suite activa
+        const params = new URLSearchParams(window.location.search);
+        const activeId = params.get('id') || 'salud';
+        const productId = `cfg-${activeId}-bot-promo`;
+        const productName = `Suite de ${activeId.toUpperCase()} - Promo Lanzamiento`;
+
         const proceed = () => {
             if (window.app.payments && window.app.payments.openModal) {
-                window.app.payments.openModal('cfg-salud-bot-promo', 'Bot de Salud - Promo Lanzamiento', 200, 'MXN');
+                window.app.payments.openModal(productId, productName, 200, 'MXN');
             } else {
                 this._showToast("CONECTANDO DIRECTAMENTE CON PAYPAL...");
 
@@ -1208,7 +1218,7 @@ addNewMockPrescription: function() {
                         'X-Robotiax-Token': 'RBX-PRT-99-MXN-SECURE-2025'
                     },
                     body: JSON.stringify({
-                        productId: 'cfg-salud-bot-promo',
+                        productId: productId,
                         fundingType: 'paypal',
                         price: 200,
                         currency: 'MXN',
@@ -1218,7 +1228,7 @@ addNewMockPrescription: function() {
                 .then(res => res.json())
                 .then(data => {
                     if (data.approveUrl) {
-                        localStorage.setItem('pending_purchase_id', 'cfg-salud-bot-promo');
+                        localStorage.setItem('pending_purchase_id', productId);
                         window.location.href = data.approveUrl;
                     } else {
                         throw new Error("ID de orden ausente.");
@@ -1264,7 +1274,9 @@ addNewMockPrescription: function() {
         container.innerHTML = '';
         actions.forEach(act => {
             const btn = document.createElement('button');
-            btn.className = "w-full bg-[#128c7e] text-white font-bold py-2 rounded-lg text-center hover:scale-[1.01] transition-all text-[10px]";
+            // Adaptación de estilos para que el botón herede los colores de la terminal CRT de la Suite
+            btn.className = "w-full font-bold py-2 rounded-lg text-center hover:scale-[1.01] transition-all text-[10px]";
+            btn.style = "background: var(--crt-text, #128c7e); color: var(--crt-bg, #ffffff); border: 1px dashed var(--crt-border); cursor: pointer;";
             btn.textContent = act.text;
             btn.onclick = () => act.action();
             container.appendChild(btn);

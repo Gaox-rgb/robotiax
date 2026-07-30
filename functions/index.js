@@ -47,16 +47,21 @@ let transporter;
 const getTransporter = () => {
     if (!transporter) {
         console.log("🛠️ Inicializando nuevo transporte Nodemailer...");
+        
+        // Carga de credenciales parametrizada con valores default de resguardo anti-caídas
+        const smtpUser = defineString('SMTP_USER', { default: 'geniosdeltalento@gmail.com' });
+        const smtpPass = defineString('SMTP_PASS', { default: 'bcnmvqwyvfkhxpxd' });
+
         transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, // true para puerto 465
+            secure: true, 
             auth: {
-                user: 'geniosdeltalento@gmail.com',
-                pass: 'bcnmvqwyvfkhxpxd' // Verifica que este código siga activo en Google
+                user: smtpUser.value(),
+                pass: smtpPass.value()
             },
             tls: {
-                rejectUnauthorized: false // Evita bloqueos por certificados locales
+                rejectUnauthorized: false
             }
         });
     }
@@ -111,6 +116,23 @@ async function loadAsset(filePath) {
     }
 }
 
+// HELPER DE CONTINGENCIA: Registra fallas con proveedores externos (IONOS / Makumoto) sin tirar el proceso de compra
+async function logFailedProvision(folio, targetService, payload, errorMessage) {
+    try {
+        await getDb().collection('failed_provisions').add({
+            orderNumber: folio,
+            targetService: targetService,
+            payload: payload,
+            errorMessage: errorMessage || "Timeout o error de red sin descripción",
+            status: 'pending_retry',
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
+        });
+        console.log(`⚠️ [CONTINGENCY LOGURED]: Nodo fallido registrado en Firestore para: ${targetService}`);
+    } catch (dbErr) {
+        console.error("🚨 [CRITICAL DB ERROR]: No se pudo escribir log de contingencia en Firestore:", dbErr.message);
+    }
+}
+
 exports.generateDemo = onRequest({ 
     memory: "1GiB", 
     timeoutSeconds: 120, 
@@ -145,7 +167,8 @@ exports.generateDemo = onRequest({
                                     telefono: source.telefono || source.phone || dynamicData.telefono || "",
                                     fee: source.fee || source.costo || dynamicData.fee || "",
                                     badge: source.badge || dynamicData.badge || "",
-                                    specialty: source.specialty || dynamicData.specialty || ""
+                                    specialty: source.specialty || dynamicData.specialty || "",
+                                    convenioCode: dynamicData.convenioCode || "" // MEJORA 2: Inyectar código de convenio de sincronización
                                 };
                                 clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
                             }
@@ -852,6 +875,7 @@ const adminMailHtml = `
     // -------------------------------------------------------------------------
     // SOLICITUD DE INSTANCIA ACUÑADA EXCLUSIVAMENTE PARA CONFIGURACIONES DYNAMIC-BOT (SE CONDICIONA PARA EVITAR CARGAS EXTRAS EN $99)
     if (isConfigurator && !isWebProduct) {
+        const payloadGateway = { instanceName: negocioSlug, token: tempPassword, qrcode: true };
         try {
             console.log(`📡 [GATEWAY]: Solicitando creación automática de instancia de WhatsApp para: ${negocioSlug}...`);
             
@@ -864,26 +888,26 @@ const adminMailHtml = `
                     'Content-Type': 'application/json',
                     'apikey': gatewayToken
                 },
-                body: JSON.stringify({
-                    instanceName: negocioSlug,
-                    token: tempPassword, 
-                    qrcode: true
-                })
+                body: JSON.stringify(payloadGateway)
             })
             .then(async (gatewayRes) => {
                 if (gatewayRes.ok) {
                     console.log(`✅ [GATEWAY_SUCCESS]: Instancia de WhatsApp "${negocioSlug}" aprovisionada.`);
                 } else {
                     const errTxt = await gatewayRes.text();
-                    console.warn(`⚠️ [GATEWAY_WARN]: El Gateway de WhatsApp rechazó la creación de la instancia: ${errTxt}`);
+                    console.warn(`⚠️ [GATEWAY_WARN]: El Gateway de WhatsApp rechazó la creación: ${errTxt}`);
+                    // Registro preventivo de error controlado
+                    await logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `API rechazó creación: ${errTxt}`);
                 }
             })
-            .catch((err) => {
-                console.error("❌ [GATEWAY_ERROR]: No se pudo conectar al servidor de WhatsApp en IONOS:", err.message);
+            .catch(async (err) => {
+                console.error("❌ [GATEWAY_ERROR]: Fallo de red con IONOS:", err.message);
+                await logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `Fallo de conexión física: ${err.message}`);
             });
 
         } catch (gatewayError) {
-            console.error("❌ [GATEWAY_ERROR_FATAL]: Fallo en bloque de aprovisionamiento de WhatsApp:", gatewayError.message);
+            console.error("❌ [GATEWAY_ERROR_FATAL]: Error fatal en llamada a Gateway:", gatewayError.message);
+            logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `Excepción en hilo: ${gatewayError.message}`);
         }
     }
 
@@ -915,18 +939,21 @@ const adminMailHtml = `
                 }, (resSync) => {
                     let responseData = "";
                     resSync.on("data", (chunk) => { responseData += chunk; });
-                    resSync.on("end", () => {
+                    resSync.on("end", async () => {
                         if (resSync.statusCode === 200) {
                             console.log("✅ [SYNC_SUCCESS]: Licencia sincronizada en Makumoto Core.", responseData);
                         } else {
                             console.warn(`⚠️ [SYNC_WARN]: Makumoto Core rechazó la sincronización (${resSync.statusCode}): ${responseData}`);
+                            // Registro de contingencia ante rechazo de API
+                            await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Core rechazó sincronización (${resSync.statusCode}): ${responseData}`);
                         }
                         resolve();
                     });
                 });
 
-                reqSync.on("error", (errSync) => {
-                    console.error("❌ [SYNC_ERROR]: Fallo de conexión al sincronizar con Makumoto:", errSync.message);
+                reqSync.on("error", async (errSync) => {
+                    console.error("❌ [SYNC_ERROR]: Fallo de conexión física al sincronizar con Makumoto:", errSync.message);
+                    await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Fallo de conexión física TCP: ${errSync.message}`);
                     resolve();
                 });
 
@@ -937,11 +964,18 @@ const adminMailHtml = `
             // Forzar timeout de seguridad de 5 segundos para evitar cuelgues del hilo de ejecución
             await Promise.race([
                 syncPromise,
-                new Promise((resolve) => setTimeout(resolve, 5000))
+                new Promise(async (resolve) => {
+                    setTimeout(async () => {
+                        console.warn("⚠️ [SYNC_TIMEOUT]: Se excedió el límite de 5 segundos al sincronizar con Makumoto.");
+                        await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, "Exceso de tiempo límite de red (Timeout > 5s)");
+                        resolve();
+                    }, 5000);
+                })
             ]);
 
         } catch (syncError) {
             console.error("❌ [SYNC_ERROR_FATAL]: Fallo en secuencia de sincronización nativa:", syncError.message);
+            logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Excepción fatal en hilo de ejecución: ${syncError.message}`);
         }
 
         // Cálculos precisos desglosados de cobro fiscal (Base + IVA)

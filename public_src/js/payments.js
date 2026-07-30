@@ -3,10 +3,18 @@
  * Versión Certificada - Lógica de Pasarela
  */
 window.app = window.app || {};
+// Resolvedor de Red Táctico: Si detecta localhost se redirecciona al emulador en el puerto 5001
+const resolveBackendUrl = (functionName, cloudRunUrl) => {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return isLocal 
+        ? `http://127.0.0.1:5001/robotiax/us-central1/${functionName}` 
+        : cloudRunUrl;
+};
+
 window.app.payments = {
     endpoints: {
-        create: 'https://createpaypalorder-bh64qprvqa-uc.a.run.app',
-        capture: 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app'
+        create: resolveBackendUrl('createPaypalOrder', 'https://createpaypalorder-bh64qprvqa-uc.a.run.app'),
+        capture: resolveBackendUrl('capturePaypalOrder', 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app')
     },
 
     executePurchase: function(productId, fundingType, price, currency) {

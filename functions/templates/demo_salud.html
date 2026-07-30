@@ -23,13 +23,19 @@
         function triggerRobotiaxPayment() {
             console.log("🔥 [TRANSACCIÓN]: Secuencia de cobro iniciada...");
             
+            // Resolvedor dinámico del producto activo basado en los parámetros de navegación de la Suite
+            const params = new URLSearchParams(window.location.search);
+            const activeId = params.get('id') || 'salud';
+            const productId = `cfg-${activeId}-bot-promo`;
+            const productName = `Suite de ${activeId.toUpperCase()} - Promo Lanzamiento`;
+
             if (window.app.demo && typeof window.app.demo.triggerPaymentFlow === 'function') {
                 window.app.demo.triggerPaymentFlow();
                 return;
             }
 
             if (window.app.payments && window.app.payments.openModal) {
-                window.app.payments.openModal('cfg-salud-bot-promo', 'Bot de Salud - Promo Lanzamiento', 200, 'MXN');
+                window.app.payments.openModal(productId, productName, 200, 'MXN');
                 return;
             }
 
@@ -41,7 +47,7 @@
                     'X-Robotiax-Token': 'RBX-PRT-99-MXN-SECURE-2025'
                 },
                 body: JSON.stringify({
-                    productId: 'cfg-salud-bot-promo',
+                    productId: productId,
                     fundingType: 'paypal',
                     price: 200,
                     currency: 'MXN',
@@ -51,7 +57,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.approveUrl) {
-                    localStorage.setItem('pending_purchase_id', 'cfg-salud-bot-promo');
+                    localStorage.setItem('pending_purchase_id', productId);
                     window.location.href = data.approveUrl;
                 } else {
                     alert("Error en la orden de PayPal.");
@@ -353,19 +359,19 @@
 
     </div>
 
-    <!-- ASISTENTE DE ENFOQUE POR DISECCIÓN (HUD DEL TUTORIAL) -->
-    <div id="interactive-coach-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-blue-600 text-white p-4 max-w-lg w-[95%] rounded-2xl shadow-xl z-[150000] hidden flex-col gap-3 transition-all duration-300">
-        <div class="flex justify-between items-start border-b border-white/20 pb-2">
-            <span class="text-[9px] font-['Orbitron'] text-blue-100 tracking-widest font-bold bg-white/10 px-2 py-0.5 rounded-full" id="coach-step-tag">PASO 1 / 4</span>
-            <button onclick="window.app.demo.skipCoaching()" class="text-blue-200 hover:text-white text-[9px] font-['Orbitron']">[ CERRAR ]</button>
+    <!-- ASISTENTE DE ENFOQUE POR DISECCIÓN (HUD DEL TUTORIAL VINCULADO AL COLOR DEL EMULADOR CRT) -->
+    <div id="interactive-coach-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 text-white p-4 max-w-lg w-[95%] rounded-2xl shadow-xl z-[150000] hidden flex-col gap-3 transition-all duration-300" style="background: var(--crt-bg, #2563eb); border: 1px solid var(--crt-border);">
+        <div class="flex justify-between items-start border-b border-white/10 pb-2">
+            <span class="text-[9px] font-['Orbitron'] tracking-widest font-bold bg-white/10 px-2 py-0.5 rounded-full" id="coach-step-tag" style="color: var(--crt-text);">PASO 1 / 4</span>
+            <button onclick="window.app.demo.skipCoaching()" class="text-[9px] font-['Orbitron']" style="color: var(--crt-text); opacity: 0.8; background: none; border: none; cursor: pointer;">[ CERRAR ]</button>
         </div>
         <div>
             <h4 class="font-bold font-['Orbitron'] text-white text-xs sm:text-sm mb-1" id="coach-step-title">Foco de Explicación</h4>
-            <p class="text-[11px] sm:text-xs text-blue-50 leading-relaxed" id="coach-step-desc">Inicializando...</p>
+            <p class="text-[11px] sm:text-xs text-slate-200 leading-relaxed" id="coach-step-desc">Inicializando...</p>
         </div>
         <div class="flex justify-between items-center pt-2 border-t border-white/10">
             <div class="flex gap-1" id="coach-progress-dots"></div>
-            <button onclick="window.app.demo.nextCoachStep()" class="bg-white text-blue-600 font-['Orbitron'] font-black text-[10px] px-4 py-2 rounded-lg hover:bg-blue-50 active:scale-[0.98] transition-all" id="btn-coach-next">
+            <button onclick="window.app.demo.nextCoachStep()" class="font-['Orbitron'] font-black text-[10px] px-4 py-2 rounded-lg active:scale-[0.98] transition-all" id="btn-coach-next" style="background: var(--crt-text, #ffffff); color: var(--crt-bg, #2563eb);">
                 SIGUIENTE PASO
             </button>
         </div>
@@ -415,13 +421,13 @@
 
     <div id="whatsapp-chat-widget" class="fixed bottom-24 right-6 w-[340px] max-w-[90vw] h-[480px] bg-[#efeae2] border border-slate-200 rounded-2xl shadow-xl flex flex-col hidden overflow-hidden z-[100000] transition-all duration-300">
         <!-- Header del Chat -->
-        <div class="bg-[#075e54] p-4 flex items-center gap-3 shrink-0">
-            <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700">AM</div>
+        <div class="p-4 flex items-center gap-3 shrink-0" style="background: var(--crt-bg, #075e54); border-bottom: 1px solid var(--crt-border);">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold" style="background: var(--crt-text, #34d399); color: var(--crt-bg, #075e54);">AM</div>
             <div>
-                <h4 class="text-xs font-bold text-white leading-none">Asistente Aura-Clinic</h4>
-                <span class="text-[9px] text-emerald-300 animate-pulse">En línea y escribiendo...</span>
+                <h4 class="text-xs font-bold text-white leading-none">Asistente Virtual</h4>
+                <span class="text-[9px] animate-pulse" style="color: var(--crt-text, #34d399);">En línea y escribiendo...</span>
             </div>
-            <button onclick="window.app.demo.toggleWhatsAppWidget()" class="ml-auto text-white text-lg opacity-80 hover:opacity-100">&times;</button>
+            <button onclick="window.app.demo.toggleWhatsAppWidget()" class="ml-auto text-white text-lg opacity-80 hover:opacity-100" style="background: none; border: none;">&times;</button>
         </div>
         <!-- Historial de Mensajes -->
         <div id="whatsapp-chat-history" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col text-[11px] font-['Poppins']">
