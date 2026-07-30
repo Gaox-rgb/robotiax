@@ -16,6 +16,48 @@
     <link rel="stylesheet" href="css/demo_salud.css">
 
     <!-- BLINDAJE DE SEGURIDAD NATIVO -->
+    <style>
+        /* Tipografías de Encabezados Limpias */
+        .clean-section-header {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        /* Rediseño del Monitor CRT a Pastel Clínico */
+        .crt-screen-pastel {
+            position: relative;
+            background: radial-gradient(circle at center, #f0fdf4 0%, #e0f2fe 100%) !important; /* Degradado suave verde a azul pastel */
+            border: 2.5px solid #cbd5e1 !important;
+            box-shadow: inset 0 0 12px rgba(15, 23, 42, 0.05), 0 6px 18px rgba(15, 23, 42, 0.03) !important;
+            overflow: hidden;
+            transition: all 0.4s ease !important;
+        }
+
+        /* Efecto de barrido de frecuencia ultra suave */
+        .crt-screen-pastel::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(15, 23, 42, 0.03) 50%);
+            z-index: 5;
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: crt-scan-line 6s linear infinite;
+        }
+
+        @keyframes crt-scan-line {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        /* Color de Texto en Monitor */
+        .crt-screen-pastel p {
+            color: #1e293b !important; /* Tono negro suave de alta lectura */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
     <script>
         window.app = window.app || {};
         window.app.demo = window.app.demo || {};
@@ -23,7 +65,6 @@
         function triggerRobotiaxPayment() {
             console.log("🔥 [TRANSACCIÓN]: Secuencia de cobro iniciada...");
             
-            // Resolvedor dinámico del producto activo basado en los parámetros de navegación de la Suite
             const params = new URLSearchParams(window.location.search);
             const activeId = params.get('id') || 'salud';
             const productId = `cfg-${activeId}-bot-promo`;
@@ -70,7 +111,9 @@
         }
     </script>
 </head>
-<!-- HEADER ROBOTIAX (Fijo en la parte superior - Concepto 8 Saneado en Hilera Única) -->
+<body class="bg-slate-50 transition-colors duration-300">
+
+    <!-- HEADER ROBOTIAX (Fijo en la parte superior - Concepto 8 Saneado en Hilera Única) -->
     <div id="simulation-header" class="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 z-50 px-3 py-2 flex flex-row flex-nowrap items-center justify-between gap-2 shadow-sm">
         <!-- Bloque 1: Logo 1:1 usando favicon.png -->
         <div class="flex items-center gap-1.5 shrink-0 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-xl">
@@ -86,23 +129,22 @@
             <button onclick="window.app.demo.setTheme('purple')" class="w-3 h-3 rounded-full bg-[#a855f7] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Morado Real"></button>
         </div>
         
-        <!-- Botón de Compra Intermitente Comercial (Diseño Mini-Slim sin Negrita) -->
-    <button onclick="window.app.demo.openCloserModal()" class="flashing-buy-btn bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium text-[7px] sm:text-[8px] py-1 px-2.5 rounded-lg transition-all shrink-0 uppercase tracking-wider shadow-sm shadow-orange-500/25 flex items-center gap-1">
-        <i class="fa-solid fa-rocket text-[8px]"></i> <span>COMPRAR WEB + BOT</span>
-    </button>
+        <!-- Botón de Compra Intermitente Comercial -->
+        <button onclick="window.app.demo.openCloserModal()" class="flashing-buy-btn bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium text-[7px] sm:text-[8px] py-1 px-2.5 rounded-lg transition-all shrink-0 uppercase tracking-wider shadow-sm shadow-orange-500/25 flex items-center gap-1">
+            <i class="fa-solid fa-rocket text-[8px]"></i> <span>COMPRAR WEB + BOT</span>
+        </button>
 
-    <!-- Bloque 3: Botón de Reserva Verde WhatsApp (Diseño Mini-Slim sin Negrita) -->
-    <button id="header-whatsapp-btn" onclick="window.app.demo.toggleWhatsAppWidget()" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-medium text-[7px] sm:text-[8px] py-1 px-2.5 rounded-lg transition-all shrink-0 flex items-center gap-1 shadow-sm uppercase tracking-wide">
-        <i class="fa-brands fa-whatsapp text-[10px]"></i> <span>RESERVAR</span>
-    </button>
-</div>
+        <!-- Bloque 3: Botón de Reserva Verde WhatsApp -->
+        <button id="header-whatsapp-btn" onclick="window.app.demo.toggleWhatsAppWidget()" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-medium text-[7px] sm:text-[8px] py-1 px-2.5 rounded-lg transition-all shrink-0 flex items-center gap-1 shadow-sm uppercase tracking-wide">
+            <i class="fa-brands fa-whatsapp text-[10px]"></i> <span>RESERVAR</span>
+        </button>
+    </div>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="max-w-7xl mx-auto px-4 md:px-8 pt-24 pb-28 space-y-8">
         
-        <!-- 1. HERO SECCIÓN ASIMÉTRICA DESLUMBRANTE (7/5) -->
+        <!-- 1. HERO SECCIÓN ASIMÉTRICA DESLUMBRANTE -->
         <section id="clinic-hero-card" class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-sm transition-all duration-300">
-            <!-- Visualizador Cinematográfico: Capas de Transición Suave en Fondo -->
             <div class="absolute inset-0 z-0 opacity-10 pointer-events-none">
                 <div class="absolute inset-0 bg-cover bg-center animate-fade-slide-1"></div>
                 <div class="absolute inset-0 bg-cover bg-center animate-fade-slide-2"></div>
@@ -111,13 +153,11 @@
             <div class="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent z-10 pointer-events-none"></div>
             
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full relative z-20">
-                <!-- Columna Izquierda: Información Clínica (Segundo en móvil, primero en escritorio) -->
                 <div class="lg:col-span-7 space-y-6 order-2 lg:order-1">
                     <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold tracking-widest font-['Orbitron'] border border-blue-100" id="suite-status-badge">
                         🟢 SUITE DIGITAL ACTIVA
                     </span>
                     
-                    <!-- Tarjeta Split de Identidad Oficial (Los 6 datos parametrizados) -->
                     <div id="clinic-identity-split" class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50">
                         <div class="md:col-span-7 space-y-1.5 flex flex-col justify-center">
                             <h1 class="text-2xl font-black text-slate-900 tracking-tight leading-none" id="clinic-title">Dr. Alejandro Morales</h1>
@@ -146,108 +186,128 @@
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Visualizador Cinematográfico Automático (Primero en móvil, segundo en escritorio) -->
                 <div class="lg:col-span-5 order-1 lg:order-2">
                     <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 shadow-md bg-white p-2">
-                            <!-- Imagen Activa de Visualización (Formato 16:9 Cinematográfico) -->
-                            <div class="aspect-video w-full overflow-hidden rounded-xl relative bg-slate-900 group">
-                                <img id="cinematic-main-photo" src="assets/frenzy_1.webp" alt="Visualización Médica" class="w-full h-full object-cover transition-all duration-500 transition-blur">
-                                </div>
-                            <!-- Leyenda colocada abajo de la imagen con espaciado y letra pequeña -->
-                            <div class="px-2 pt-2 pb-1 text-center">
-                                <p id="cinematic-caption-text" class="font-normal text-[11px] tracking-wide font-['Poppins']">
-                                    Cargando visualizador médico...
-                                </p>
-                            </div>
+                        <div class="aspect-video w-full overflow-hidden rounded-xl relative bg-slate-900 group">
+                            <img id="cinematic-main-photo" src="assets/frenzy_1.webp" alt="Visualización Médica" class="w-full h-full object-cover transition-all duration-500">
+                        </div>
+                        <div class="px-2 pt-2 pb-1 text-center">
+                            <p id="cinematic-caption-text" class="font-normal text-[11px] tracking-wide font-['Poppins']">
+                                Cargando visualizador...
+                            </p>
                         </div>
                     </div>
+                </div>
             </div>
         </section>
 
-        <!-- 3. MAIN GRID LAYOUT: COLUMNA DE CONTENIDO (8) vs SIDEBAR DE UP-SELLS (4) -->
-        <div class="grid lg:grid-cols-12 gap-8 items-start">
+        <!-- 3. MAIN GRID LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- COLUMNA PRINCIPAL (Ocupa 8 columnas en Desktop) -->
             <main class="lg:col-span-8 space-y-8">
 
-         <!-- CENTRO DE ENTRETENIMIENTO AUTOMATIZADO (MODELO 1 INTEGRADO) -->
-                <section id="entertainment-center-console" class="entertainment-console p-6 sm:p-8 rounded-3xl shadow-md space-y-6">
-                <div class="text-center space-y-1 pb-2 border-b border-blue-500/10">
-                    <h2 class="text-xs sm:text-sm font-black font-['Orbitron'] text-blue-600 tracking-widest uppercase">
-                        ✦ CENTRO DE ENTRETENIMIENTO INTERACTIVO ✦
-                    </h2>
-                    <p class="text-[8px] sm:text-[9px] font-mono text-slate-400 uppercase tracking-widest">
-                        SALA DE ESPERA & GAMIFICACIÓN DE CLIENTES
-                    </p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        
-                        <!-- Pilar 1: Consola de Sala de Espera Activa -->
-                        <div class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px]">
-                            <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-blue-600">
-                                <span>ENTRETENIMIENTO DE SALA DE ESPERA</span>
-                                <span id="score-counter-main" class="font-bold">0/3 RETOS</span>
-                            </div>
-                            <!-- Pantalla CRT Adaptable -->
-                            <div class="crt-screen flex-1 rounded-xl p-4 my-3 flex flex-col justify-between items-center">
-                                <span class="text-[6px] text-slate-500 font-mono">SYS: ACTIVE_TYPEWRITER</span>
-                                <div class="py-2 text-center w-full flex items-center justify-center min-h-[90px]">
-                                    <p id="type-text-main" class="pixel-text text-[11px] sm:text-[13px] leading-relaxed font-bold"></p>
-                                </div>
-                                <div class="flex flex-col gap-2 w-full" id="btn-container-main">
-                                    <!-- Botones auto-inyectados por JS -->
-                                </div>
-                            </div>
-                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ MANDO VIRTUAL ACTIVO ]</span>
-                        </div>
-
-                        <!-- Pilar 2: Comunidad (Orbe de Afiliados de Red) -->
-                        <div class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px]">
-                            <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-emerald-600">
-                                <span>ORBE DE AFILIADOS INCRUSTADO</span>
-                                <span class="font-bold">LIVE_FRAME</span>
-                            </div>
-                            <div class="flex-1 bg-slate-950/20 rounded-xl my-3 border border-slate-200/50 overflow-hidden relative flex flex-col">
-                                <div class="bg-slate-200/40 px-3 py-1.5 flex items-center justify-between border-b border-slate-200/80 text-[8px] text-slate-500 font-mono">
-                                    <span>makumoto-affiliate-v3.html</span>
-                                    <span class="text-emerald-500 animate-pulse">● LIVE</span>
-                                </div>
-                                <div class="flex-1 p-3 flex flex-col justify-between text-center space-y-2">
-                                    <p class="text-[10px] text-slate-500 leading-normal">Monitorea tu red de salud y comisiones en tiempo real sin salir de la página del doctor.</p>
-                                    <div class="bg-white/90 border border-slate-200 p-2.5 rounded-lg text-left text-[8px] font-mono space-y-1 shadow-sm">
-                                        <div class="text-blue-600"># AFILIADOS ACTIVOS: 14 Pacientes</div>
-                                        <div class="text-emerald-600"># TOTAL COMISIONES: $2,400 MXN</div>
-                                        <div class="text-slate-400">> Sincronizando con Robotiax...</div>
-                                    </div>
-                                    <button onclick="window.app.demo.triggerAffiliateDemo()" class="w-full bg-[#25d366] hover:bg-[#20ba56] text-white font-black text-[9px] py-2.5 rounded-xl transition-all shadow-sm">
-                                        💬 ENTRAR AL ORBE DE RED
-                                    </button>
-                                </div>
-                            </div>
-                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ CONEXIÓN EN CALIENTE ]</span>
-                        </div>
-
-                        <!-- Pilar 3: Diviértete (Videos QR Preventivos) -->
-                        <div class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px]">
-                            <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-rose-500">
-                                <span>VIDEOTECA PREVENTIVA</span>
-                                <span class="font-bold">QR_SCANNER</span>
-                            </div>
-                            <div class="flex-1 bg-white/40 rounded-xl my-3 border border-slate-200/50 p-4 flex flex-col items-center justify-between text-center shadow-inner">
-                                <p class="text-[9px] text-slate-500 leading-normal">Escanea o pulsa este código para sintonizar las cápsulas de salud de Makumoto.</p>
-                                <div onclick="window.app.demo.triggerVideoDemo()" class="p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:scale-105 transition-transform shadow-sm">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://makumoto.com/videos-salud" alt="QR" class="w-20 h-24">
-                                </div>
-                                <button onclick="window.app.demo.triggerVideoDemo()" class="w-full bg-blue-600 text-white font-black text-[9px] py-2.5 rounded-xl">
-                                    📺 REPRODUCIR STREAM
-                                </button>
-                            </div>
-                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ COOPERA CON MAKUMOTO ]</span>
-                        </div>
-
+                <!-- Pilar 1: Consola de Sala de Espera Activa (Dos Columnas Simétricas en Desktop, 1:1 Aspect) -->
+                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4">
+                    <div class="flex flex-row items-center justify-between text-[10px] text-blue-600 tracking-wider w-full pb-2 border-b border-slate-100 clean-section-header">
+                        <span class="font-bold text-left block sm:inline">✦ PILAR 1: RETOS EN SALA DE ESPERA (CONSOLA CRT) ✦</span>
+                        <span id="score-counter-main" class="font-bold bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full shrink-0">0/3 RETOS</span>
                     </div>
-                </section>       
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <!-- Columna Izquierda: Copy descriptivo -->
+                        <div class="md:col-span-7 space-y-3 text-left">
+                            <h3 class="text-slate-800 font-extrabold text-xs sm:text-sm">Gamificación del Tiempo Percibido</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">
+                                Manten a tus clientes totalmente entretenidos y <strong>reduce la percepción de espera física hasta en un 80%</strong>. Retos dinámicos interactivos que estimulan la mente de tus usuarios y premian su paciencia con valiosos puntos de lealtad (XP) canjeables.
+                            </p>
+                        </div>
+                        
+                        <!-- Columna Derecha: Monitor CRT Compacto (Formato 1:1 con estilo Pastel Clínico de baja fatiga visual) -->
+                        <div class="md:col-span-5 w-full flex justify-center">
+                            <div class="crt-screen-pastel rounded-2xl p-4 flex flex-col justify-between items-center h-[200px] aspect-square w-full max-w-[200px]">
+                                <span class="text-[6px] text-slate-500 font-mono tracking-widest uppercase">TELEMETRÍA: ACTIVE_TRIVIA</span>
+                                <div class="py-2 text-center w-full flex items-center justify-center min-h-[70px]">
+                                    <p id="type-text-main" class="text-[10px] sm:text-[11px] leading-relaxed font-bold font-['Poppins'] text-center"></p>
+                                </div>
+                                <div class="flex flex-col gap-1.5 w-full" id="btn-container-main"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pilar 2: Orbe Profesional Integrado (Grilla de Dos Columnas con Efectos Dinámicos) -->
+                <section onclick="window.app.demo.triggerAffiliateDemo()" class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4 cursor-pointer relative overflow-hidden group transition-all duration-300 hover:border-emerald-400/50">
+                    <div class="flex flex-row items-center justify-between text-[10px] text-emerald-600 tracking-wider w-full pb-2 border-b border-slate-100 clean-section-header">
+                        <span class="font-bold text-left block sm:inline">✦ PILAR 2: ORBE DE BIENESTAR Y LEALTAD ✦</span>
+                        <span class="text-emerald-500 bg-emerald-50 px-2.5 py-0.5 rounded-full shrink-0 animate-pulse">● LIVE SINTONÍA</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <!-- Columna Izquierda: Copy persuasivo -->
+                        <div class="md:col-span-7 space-y-3 text-left">
+                            <h3 class="text-slate-800 font-extrabold text-xs sm:text-sm">Tu Red de Beneficios Exclusivos</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">
+                                <strong>El epicentro de tu comunidad de pacientes.</strong> Un feed social cerrado de marca blanca donde tus clientes interactúan, completan misiones de salud asignadas por ti, compiten en el ranking y monitorean sus beneficios de forma inmediata.
+                            </p>
+                            <div class="pt-1">
+                                <span class="inline-flex items-center gap-1.5 text-[9px] font-['Poppins'] text-emerald-600 font-black border border-emerald-200/60 bg-emerald-50 px-3 py-1.5 rounded-full">
+                                    <i class="fa-solid fa-users"></i> EXPLORAR RECOMENDACIONES EN VIVO
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha: Celular Vertical Real 9:15 -->
+                        <div class="md:col-span-5 w-full flex justify-center">
+                            <div class="relative w-full max-w-[210px] aspect-[9/15] rounded-[28px] border-[5px] border-slate-800 bg-black overflow-hidden shadow-lg transition-all duration-500 group-hover:scale-[1.03] group-hover:shadow-emerald-500/20 group-hover:border-emerald-500">
+                                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/5 to-transparent h-full w-full pointer-events-none z-10 animate-pulse"></div>
+                                <div class="absolute inset-0 bg-black/45 group-hover:bg-black/10 transition-all duration-300 z-10 flex flex-col items-center justify-center p-3">
+                                    <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-400 text-xs shadow-lg shadow-emerald-500/30 transform group-hover:scale-110 transition-all duration-300 mb-1.5">
+                                        <i class="fa-solid fa-users"></i>
+                                    </div>
+                                    <span class="text-white text-[8px] font-['Poppins'] font-black bg-emerald-600/90 px-2.5 py-0.5 rounded-full tracking-wider uppercase">INGRESAR</span>
+                                </div>
+                                <img src="assets/Captura_orbitEMPRESA_makumoto.JPG" alt="Orbe Profesional" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pilar 3: Videoteca de Sintonía Fisiológica (Grilla de Dos Columnas con Efectos Dinámicos) -->
+                <section onclick="window.app.demo.triggerVideoDemo()" class="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4 cursor-pointer relative overflow-hidden group transition-all duration-300 hover:border-rose-400/50">
+                    <div class="flex flex-row items-center justify-between text-[10px] text-rose-500 tracking-wider w-full pb-2 border-b border-slate-100 clean-section-header">
+                        <span class="font-bold text-left block sm:inline">✦ PILAR 3: VIDEOTECA DE ALTO IMPACTO (TV) ✦</span>
+                        <span class="text-rose-500 bg-rose-50 px-2.5 py-0.5 rounded-full shrink-0 animate-pulse">● STREAMING</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <!-- Columna Izquierda: Copy persuasivo -->
+                        <div class="md:col-span-7 space-y-3 text-left">
+                            <h3 class="text-slate-800 font-extrabold text-xs sm:text-sm">Televisión Digital Interactiva</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed">
+                                <strong>La revolución del video corto en tu sucursal.</strong> Tu propia estación de televisión digital adaptada. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad.
+                            </p>
+                            <div class="pt-1">
+                                <span class="inline-flex items-center gap-1.5 text-[9px] font-['Poppins'] text-rose-600 font-black border border-rose-200/60 bg-rose-50 px-3 py-1.5 rounded-full">
+                                    <i class="fa-solid fa-play"></i> REPRODUCIR CONTENIDOS TV
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha: Celular Vertical Real 9:15 -->
+                        <div class="md:col-span-5 w-full flex justify-center">
+                            <div class="relative w-full max-w-[210px] aspect-[9/15] rounded-[28px] border-[5px] border-slate-800 bg-black overflow-hidden shadow-lg transition-all duration-500 group-hover:scale-[1.03] group-hover:shadow-rose-500/20 group-hover:border-rose-500">
+                                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-rose-500/5 to-transparent h-full w-full pointer-events-none z-10 animate-pulse"></div>
+                                <div class="absolute inset-0 bg-black/45 group-hover:bg-black/10 transition-all duration-300 z-10 flex flex-col items-center justify-center p-3">
+                                    <div class="w-9 h-9 rounded-full bg-rose-600/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-xs shadow-lg shadow-rose-500/30 transform group-hover:scale-110 transition-all duration-300 mb-1.5">
+                                        <i class="fa-solid fa-play"></i>
+                                    </div>
+                                    <span class="text-white text-[8px] font-['Poppins'] font-black bg-rose-600/90 px-2.5 py-0.5 rounded-full tracking-wider uppercase">REPRODUCIR</span>
+                                </div>
+                                <img src="assets/Captura_videos_makumoto.JPG" alt="TV Sintonía" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </section>    
                 
                 <!-- Especialidades -->
                 <section id="servicios" class="space-y-4">
@@ -274,9 +334,8 @@
 
             </main>
 
-            <!-- SIDEBAR DE UP-SELLS (Ocupa 4 columnas en Desktop - Widgets Densos e Impecables) -->
+            <!-- SIDEBAR DE UP-SELLS -->
             <aside class="lg:col-span-4 space-y-6">
-                
                 <h3 class="text-[10px] font-bold font-['Orbitron'] text-slate-400 tracking-wider uppercase border-b border-slate-200 pb-2">
                     Módulos Adicionales (Up-Sells)
                 </h3>
@@ -352,14 +411,11 @@
                         PROBAR SIMULACIÓN
                     </button>
                 </section>
-
             </aside>
-
         </div>
-
     </div>
 
-    <!-- ASISTENTE DE ENFOQUE POR DISECCIÓN (HUD DEL TUTORIAL VINCULADO AL COLOR DEL EMULADOR CRT) -->
+    <!-- ASISTENTE DE ENFOQUE POR DISECCIÓN -->
     <div id="interactive-coach-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 text-white p-4 max-w-lg w-[95%] rounded-2xl shadow-xl z-[150000] hidden flex-col gap-3 transition-all duration-300" style="background: var(--crt-bg, #2563eb); border: 1px solid var(--crt-border);">
         <div class="flex justify-between items-start border-b border-white/10 pb-2">
             <span class="text-[9px] font-['Orbitron'] tracking-widest font-bold bg-white/10 px-2 py-0.5 rounded-full" id="coach-step-tag" style="color: var(--crt-text);">PASO 1 / 4</span>
@@ -377,23 +433,43 @@
         </div>
     </div>
 
-    <!-- MODAL DE DETECCIÓN DE UP-SELL DULCIFICADO CON SIMULADOR DINÁMICO -->
+    <!-- MODAL DE DETECCIÓN DE UP-SELL -->
     <div id="upsell-modal-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[250000] hidden justify-center items-center p-4">
         <div id="upsell-modal-content" class="bg-white border border-slate-200 p-6 sm:p-8 max-w-lg w-full rounded-3xl relative shadow-2xl font-['Poppins']">
-            <!-- Botón de Cierre -->
             <button onclick="window.app.demo.closeUpsellModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl font-bold z-50">&times;</button>
-            
-            <!-- Área de Inyección Dinámica de Datos Simulados -->
-            <div id="upsell-dynamic-body">
-                <!-- Inyectado por Javascript -->
-            </div>
+            <div id="upsell-dynamic-body"></div>
         </div>
     </div>
 
     <!-- CAPA GLOBALES PARA LA DISECCIÓN/ENFOQUE DEL TUTORIAL -->
     <div id="tutorial-backdrop-overlay" class="fixed inset-0 bg-black/70 z-[140000] hidden pointer-events-none transition-opacity duration-300"></div>
 
-    <!-- WIDGET FLOTANTE DE WHATSAPP REAL (EL ASISTENTE OPERATIVO) -->
+    <!-- MODAL DE DESAFÍO SUPREMO DE PIPOKO (ENLACE A MAKUMOTO ARCADE) -->
+    <div id="success-popup-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[250000] hidden justify-center items-center p-4">
+        <div class="bg-[#0b0c16] border-2 border-rose-500/30 p-6 sm:p-8 max-w-sm w-full text-center rounded-3xl relative shadow-2xl shadow-rose-500/10 font-['Poppins']">
+            <!-- Botón de Cierre -->
+            <button onclick="window.app.demo.closeSuccessPopup()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            
+            <div class="w-16 h-14 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center text-rose-500 text-3xl mx-auto mb-4 animate-bounce">
+                👾
+            </div>
+            
+            <span class="text-[9px] font-['Orbitron'] text-rose-500 tracking-widest font-bold mb-1.5 block">DESAFÍO COMPLETADO</span>
+            <h3 class="text-base sm:text-lg font-black text-white mb-2 font-['Orbitron']">¿Listo para el verdadero reto?</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                Has superado con éxito las preguntas básicas de calentamiento de la sala de espera. ¿De verdad crees que tienes lo necesario para enfrentar las trivias críticas del coliseo de Makumoto? Demuestra tu nivel y multiplica tus XP en batallas reales.
+            </p>
+            
+            <div class="flex flex-col gap-3">
+                <button onclick="window.app.demo.triggerPipokoRedirection()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 text-white font-['Inter'] font-black text-[10px] tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all uppercase shadow-md shadow-rose-500/10">
+                    🔥 ENTRAR AL COLISEO DE TRIVIA
+                </button>
+                <button onclick="window.app.demo.closeSuccessPopup()" class="text-xs text-slate-500 hover:text-slate-300 hover:underline">Permanecer aquí</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDGET FLOTANTE DE WHATSAPP -->
     <button onclick="window.app.demo.toggleWhatsAppWidget()" class="fixed bottom-6 right-6 w-14 h-14 bg-[#25d366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all z-[100000]" id="btn-wa-floating">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </button>
@@ -430,15 +506,11 @@
             <button onclick="window.app.demo.toggleWhatsAppWidget()" class="ml-auto text-white text-lg opacity-80 hover:opacity-100" style="background: none; border: none;">&times;</button>
         </div>
         <!-- Historial de Mensajes -->
-        <div id="whatsapp-chat-history" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col text-[11px] font-['Poppins']">
-            <!-- Los mensajes se inyectan dinámicamente -->
-        </div>
+        <div id="whatsapp-chat-history" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col text-[11px] font-['Poppins']"></div>
         <!-- Botones de Acción de Respuesta -->
         <div class="p-3 bg-[#f0f2f5] border-t border-[#e9edef] flex flex-col gap-2 shrink-0">
             <div class="text-[8px] text-slate-500 font-['Orbitron'] tracking-wider mb-1">ACCIONES DISPONIBLES EN EL BOT:</div>
-            <div class="flex flex-col gap-1.5" id="chat-button-container">
-                <!-- Botones inyectados por JS -->
-            </div>
+            <div class="flex flex-col gap-1.5" id="chat-button-container"></div>
         </div>
     </div>
 
@@ -460,9 +532,7 @@
                 <div class="text-2xl font-black text-blue-600 mt-3" id="maku-xp-counter">0 XP</div>
             </div>
 
-            <div id="makumoto-game-area" class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <!-- Misión o Trivia Inyectada -->
-            </div>
+            <div id="makumoto-game-area" class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm"></div>
 
             <!-- Listado de Misiones Médicas -->
             <div class="space-y-3">
@@ -483,7 +553,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE CIERRE DE VENTA (PROPUESTA COMERCIAL - REDISEÑO COMPACTO Y VIRAL) -->
+    <!-- MODAL DE CIERRE DE VENTA -->
     <div id="closer-modal-overlay" class="fixed inset-0 bg-slate-950/98 backdrop-blur-md z-[210000] hidden justify-center items-center p-3">
         <div class="closer-card-compact">
             <div class="pt-2 space-y-3">
@@ -530,19 +600,17 @@
         </div>
     </div>
 
-                <!-- El bloque duplicado y colgante ha sido removido exitosamente para evitar renderizados basura -->
-
-    <!-- MODAL DE PAGO PAYPAL (NATIVO DE ROBOTIAX) -->
-            <div id="payment-modal-overlay" class="modal-overlay">
-                <div class="modal-content p-6 sm:p-10">
-                    <h2 class="mb-2 text-base sm:text-lg">ORDEN DE ACTIVACIÓN</h2>
-                    <p class="mb-6 text-xs">
-                        <span id="modal-template-name">Asistente</span> | $200 MXN
-                    </p>
-                    <div id="modal-paypal-container" class="w-full"></div>
-                    <button onclick="window.app.payments.closeModal()" class="cancel-modal-btn">❮ CANCELAR Y VOLVER</button>
-                </div>
-            </div>
+    <!-- MODAL DE PAGO PAYPAL -->
+    <div id="payment-modal-overlay" class="modal-overlay">
+        <div class="modal-content p-6 sm:p-10">
+            <h2 class="mb-2 text-base sm:text-lg">ORDEN DE ACTIVACIÓN</h2>
+            <p class="mb-6 text-xs">
+                <span id="modal-template-name">Asistente</span> | $200 MXN
+            </p>
+            <div id="modal-paypal-container" class="w-full"></div>
+            <button onclick="window.app.payments.closeModal()" class="cancel-modal-btn">❮ CANCELAR Y VOLVER</button>
+        </div>
+    </div>
 
     <!-- PANEL DE ACTIVACIÓN EDITORIAL (POST-PAGO) -->
     <div id="editor-panel">
@@ -613,7 +681,7 @@
 
     <!-- VENTANA DE ÉXITO FINAL -->
     <div id="success-notif" class="modal-overlay">
-      <div class="modal-content" style="border: 1px solid #10b981;">
+        <div class="modal-content" style="border: 1px solid #10b981;">
             <div style="width: 50px; height: 50px; background: #10b981; color: #fff; border-radius: 50%; display: flex; items-center: center; justify-content: center; margin: 0 auto 20px; font-size: 1.5rem; align-items: center;">✓</div>
             <h3 style="font-family: 'Orbitron'; color: #10b981; font-size: 1.2rem; margin-bottom:10px;">ORDEN REGISTRADA</h3>
             <p style="color: #9ca3af; font-family: 'Poppins'; line-height: 1.5; font-size:11px;">Tu protocolo de automatización digital ha sido guardado de manera exitosa en nuestro servidor central.</p>

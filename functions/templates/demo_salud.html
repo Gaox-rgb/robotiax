@@ -16,6 +16,48 @@
     <link rel="stylesheet" href="css/demo_salud.css">
 
     <!-- BLINDAJE DE SEGURIDAD NATIVO -->
+    <style>
+        /* Tipografías de Encabezados Limpias */
+        .clean-section-header {
+            font-family: 'Poppins', sans-serif !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+        }
+
+        /* Rediseño del Monitor CRT a Pastel Clínico */
+        .crt-screen-pastel {
+            position: relative;
+            background: radial-gradient(circle at center, #f0fdf4 0%, #e0f2fe 100%) !important; /* Degradado suave verde a azul pastel */
+            border: 2.5px solid #cbd5e1 !important;
+            box-shadow: inset 0 0 12px rgba(15, 23, 42, 0.05), 0 6px 18px rgba(15, 23, 42, 0.03) !important;
+            overflow: hidden;
+            transition: all 0.4s ease !important;
+        }
+
+        /* Efecto de barrido de frecuencia ultra suave */
+        .crt-screen-pastel::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0) 50%, rgba(15, 23, 42, 0.03) 50%);
+            z-index: 5;
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: crt-scan-line 6s linear infinite;
+        }
+
+        @keyframes crt-scan-line {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        /* Color de Texto en Monitor */
+        .crt-screen-pastel p {
+            color: #1e293b !important; /* Tono negro suave de alta lectura */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
     <script>
         window.app = window.app || {};
         window.app.demo = window.app.demo || {};
@@ -202,48 +244,43 @@
                             <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ MANDO VIRTUAL ACTIVO ]</span>
                         </div>
 
-                        <!-- Pilar 2: Comunidad (Orbe de Afiliados de Red) -->
-                        <div class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px]">
+                        <!-- Pilar 2: Comunidad (Dashboard de Anuncios Activos - Click Extractor) -->
+                        <div onclick="window.app.demo.triggerAffiliateDemo()" class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px] cursor-pointer">
                             <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-emerald-600">
-                                <span>ORBE DE AFILIADOS INCRUSTADO</span>
-                                <span class="font-bold">LIVE_FRAME</span>
+                                <span>TABLÓN DE COMUNIDAD SINCÓNIZADO</span>
+                                <span class="text-emerald-500 animate-pulse">● LIVE</span>
                             </div>
-                            <div class="flex-1 bg-slate-950/20 rounded-xl my-3 border border-slate-200/50 overflow-hidden relative flex flex-col">
-                                <div class="bg-slate-200/40 px-3 py-1.5 flex items-center justify-between border-b border-slate-200/80 text-[8px] text-slate-500 font-mono">
-                                    <span>makumoto-affiliate-v3.html</span>
-                                    <span class="text-emerald-500 animate-pulse">● LIVE</span>
+                            <div class="flex-1 bg-slate-950/20 rounded-xl my-3 border border-slate-200/40 p-3 flex flex-col justify-between text-left relative overflow-hidden">
+                                <div class="space-y-2">
+                                    <span class="text-[8px] font-['Orbitron'] text-blue-500 tracking-wider">[ COMUNICADO DE DIRECCIÓN ]</span>
+                                    <p class="text-[10px] text-slate-800 font-bold leading-normal">"Damos la bienvenida a los nuevos afiliados integrados tras la convención. Su sintonía ya está activa."</p>
+                                    <span class="text-[7px] text-slate-400 block">— @founder_halex_08</span>
                                 </div>
-                                <div class="flex-1 p-3 flex flex-col justify-between text-center space-y-2">
-                                    <p class="text-[10px] text-slate-500 leading-normal">Monitorea tu red de salud y comisiones en tiempo real sin salir de la página del doctor.</p>
-                                    <div class="bg-white/90 border border-slate-200 p-2.5 rounded-lg text-left text-[8px] font-mono space-y-1 shadow-sm">
-                                        <div class="text-blue-600"># AFILIADOS ACTIVOS: 14 Pacientes</div>
-                                        <div class="text-emerald-600"># TOTAL COMISIONES: $2,400 MXN</div>
-                                        <div class="text-slate-400">> Sincronizando con Robotiax...</div>
-                                    </div>
-                                    <button onclick="window.app.demo.triggerAffiliateDemo()" class="w-full bg-[#25d366] hover:bg-[#20ba56] text-white font-black text-[9px] py-2.5 rounded-xl transition-all shadow-sm">
-                                        💬 ENTRAR AL ORBE DE RED
-                                    </button>
+                                <div class="bg-white/85 border border-slate-200/80 p-2 rounded-xl text-[8px] font-mono space-y-1 shadow-sm">
+                                    <div style="color: #ff0055;">🧬 ORBE ACTIVO: PROFESIONAL</div>
+                                    <div class="text-emerald-600">Sincronizado: MAK-AURA-8594</div>
                                 </div>
-                            </div>
-                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ CONEXIÓN EN CALIENTE ]</span>
-                        </div>
-
-                        <!-- Pilar 3: Diviértete (Videos QR Preventivos) -->
-                        <div class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px]">
-                            <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-rose-500">
-                                <span>VIDEOTECA PREVENTIVA</span>
-                                <span class="font-bold">QR_SCANNER</span>
-                            </div>
-                            <div class="flex-1 bg-white/40 rounded-xl my-3 border border-slate-200/50 p-4 flex flex-col items-center justify-between text-center shadow-inner">
-                                <p class="text-[9px] text-slate-500 leading-normal">Escanea o pulsa este código para sintonizar las cápsulas de salud de Makumoto.</p>
-                                <div onclick="window.app.demo.triggerVideoDemo()" class="p-2 bg-white rounded-xl border border-slate-200 cursor-pointer hover:scale-105 transition-transform shadow-sm">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://makumoto.com/videos-salud" alt="QR" class="w-20 h-24">
-                                </div>
-                                <button onclick="window.app.demo.triggerVideoDemo()" class="w-full bg-blue-600 text-white font-black text-[9px] py-2.5 rounded-xl">
-                                    📺 REPRODUCIR STREAM
+                                <button class="w-full bg-blue-600 text-white font-black text-[9px] py-2 rounded-xl">
+                                    💬 INTERACTUAR EN EL PANEL
                                 </button>
                             </div>
-                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ COOPERA CON MAKUMOTO ]</span>
+                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ PULSAR PARA ABRIR EN EL CORE ]</span>
+                        </div>
+
+                        <!-- Pilar 3: Diviértete (Televisión en Vivo - Click Extractor) -->
+                        <div onclick="window.app.demo.triggerVideoDemo()" class="entertainment-subcard rounded-2xl p-4 flex flex-col justify-between h-[360px] cursor-pointer">
+                            <div class="flex justify-between items-center text-[8px] font-['Orbitron'] text-rose-500">
+                                <span>REPRODUCTOR EN SINTONÍA</span>
+                                <span class="text-rose-500 animate-pulse">● STREAMING</span>
+                            </div>
+                            <div class="flex-1 rounded-xl my-3 border border-slate-200/40 overflow-hidden relative bg-black">
+                                <!-- Video en Vivo en bucle para sala de espera -->
+                                <video src="https://pub-c422b62e515d4e4fbee12e4a525f7593.r2.dev/ellos/lyra.mp4" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; opacity:0.85;"></video>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-3">
+                                    <p class="text-[9px] text-white font-medium leading-snug drop-shadow-md">Estabilizando señal inmersiva de Makumoto TV...</p>
+                                </div>
+                            </div>
+                            <span class="text-[7px] font-mono text-slate-400 text-center uppercase tracking-widest">[ PULSAR PARA VER A PANTALLA COMPLETA ]</span>
                         </div>
 
                     </div>
