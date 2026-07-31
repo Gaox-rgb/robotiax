@@ -8,22 +8,170 @@ window.app.demo = {
     userXp: 0,
     currentTriviaQuestion: 0,
     coachStep: 0,
+    
+    // Configuración del Loop Arcade "Va y Ven"
+    notifLoopInterval: null,
+    currentNicheId: 'salud',
+    activeActState: 1, // 1 = Acto I (Standby/Blur/Red), 2 = Acto II (Aclarado/ENTRAR)
+    notifIndex: 0,
+
+    // Diccionario de los 22 Loops Humorísticos de Marca Blanca
+    humorPool: {
+        "salud": [
+            { "title": "🚨 ALERTA DE DIETA", "desc": "El paciente Juan intentó saltarse la dieta con 3 tacos de pastor. El Bot lo detectó y le restó 50 XP. 🌮" },
+            { "title": "🩺 RECETA DEL DOCTOR", "desc": "El Dr. Morales te recetó dormir 8 horas... o ver memes de gatitos en silencio. Tu decisión. 🛌" },
+            { "title": "📉 RADAR DE CORTISOL", "desc": "Advertencia: Tu nivel de estrés bajará un 99% si pulsas esta pantalla ahora mismo. Promesa de bot. 📊" },
+            { "title": "🏆 DESAFÍO DE SALA", "desc": "Un paciente en la sala de espera acaba de romper el récord de trivia. No te dejes ganar. 🎮" },
+            { "title": "💧 HIDRATACIÓN PRO", "desc": "¡Felicidades! Ganaste +100 XP solo por recordar tomar un vaso de agua. Pulsa para cobrarlos. 🎟️" }
+        ],
+        "gym": [
+            { "title": "🏋️ ALERTA DE RACK", "desc": "El socio Carlos lleva 20 minutos en el celular y solo 1 serie de bíceps. Enviando bot motivador. 📱" },
+            { "title": "🥤 PRE-ENTRENO CHECK", "desc": "Tu entrenador te recuerda que el agua de Jamaica no cuenta como pre-entreno. Toma agua real. 💧" },
+            { "title": "🔥 MÁXIMA POTENCIA", "desc": "Gana +150 XP levantando esa barra olímpica con técnica perfecta. ¡No la avientes! 🏋️" },
+            { "title": "🥑 RADAR DE DIETA", "desc": "Tu bot detectó que cenaste pizza el domingo. Requiere 10 minutos extras de escaladora. 🍕" }
+        ],
+        "legal": [
+            { "title": "⚖️ LETRAS CHIQUITAS", "desc": "Tu contrato tiene 90% de probabilidad de tener cláusulas abusivas que ni tú entiendes. Usa el lector IA. 🔍" },
+            { "title": "📂 ALERTA DE EXPEDIENTE", "desc": "El pasante de derecho acaba de ganar un amparo contra el aburrimiento en la sala de espera. 📜" },
+            { "title": "💔 RADAR DE DIVORCIOS", "desc": "Alerta: Tu bot de recepción detectó una pregunta de divorcio express. Asignando abogado en 3s. ⚖️" },
+            { "title": "📝 CONVENIO EXPRESS", "desc": "Generando convenio de confidencialidad automático para tu nueva idea millonaria. Pulsa para ver. 💡" }
+        ],
+        "contable": [
+            { "title": "📊 ALERTA DEL SAT", "desc": "Detectamos una factura de tacos registrada como 'material de oficina'. Te estamos vigilando. 🌮" },
+            { "title": "💵 SALDO A FAVOR", "desc": "Tu bot de cálculo fiscal acaba de encontrar una deducción sorpresa. ¡Cobra tu saldo antes que expire! 💸" },
+            { "title": "📑 CONSTANCIA CSF", "desc": "Cliente envió CSF borrosa tomada en la mesa de un restaurante. Extrayendo RFC con IA. 🔍" },
+            { "title": "🧾 ARCHIVO TOTAL", "desc": "Se han clasificado 142 facturas de WhatsApp directo a Drive. Tus contadores están de fiesta. 🎉" }
+        ],
+        "boutique": [
+            { "title": "👗 PROBADOR VIRTUAL", "desc": "La cliente Sofía se probó el vestido rojo. La IA calculó que le queda increíble. ¡Reserva el tuyo! 💃" },
+            { "title": "🛍️ APARTADO EXPRESS", "desc": "Alerta: Solo queda 1 vestido negro en talla M. Apartado por 24 horas para entrega rápida. ⏳" },
+            { "title": "👠 OUTFIT COMPLETO", "desc": "Tu asistente sugirió combinar las zapatillas de plataforma con la bolsa negra. +50 puntos de estilo. 👜" },
+            { "title": "📦 ENVÍO DE MARCA", "desc": "Tu paquete de temporada va en ruta. Prepárate para lucir espectacular en la pasarela. ✨" }
+        ],
+        "ferreteria": [
+            { "title": "🔧 ¿DÓNDE QUEDÓ?", "desc": "Alerta: Volviste a perder el martillo. El bot te aconseja comprar uno inalámbrico con localizador. 🔨" },
+            { "title": "🩹 CINTA CANELA PRO", "desc": "Científicamente comprobado que el 90% de las fugas de tu casa se solucionan con cinta de seguridad. 💧" },
+            { "title": "💡 APAGADOR INTELIGENTE", "desc": "El bot te calculó que instalar apagadores de cobre te ahorrará un 15% de luz. Existencias listas. ⚡" },
+            { "title": "📐 MEDIDAS EXACTAS", "desc": "El cliente pidió 'un tornillo de este tamaño' mostrando una foto borrosa. Interpretando medida con IA. 🔍" }
+        ],
+        "gourmet": [
+            { "title": "🍷 SOMMELIER CONFUNDIDO", "desc": "Intentaste maridar tacos de suadero con vino espumoso. Tu bot gourmet te sugiere cambiar a tinto. 🍇" },
+            { "title": "🍰 POSTRE DE REGALO", "desc": "Sintonizaste la trivia del restaurante con éxito. Reclama tu rebanada de pastel gratis en caja. 🍰" },
+            { "title": "🍳 CHEF VIRTUAL", "desc": "El bot acaba de diseñar un menú de 3 tiempos para tu cena romántica de aniversario. Pulsa para ver. ✨" },
+            { "title": "🍽️ RESERVA DE GALA", "desc": "Tu mesa privada para 4 personas con mixología de autor está confirmada. Sin filas de espera. 🥂" }
+        ],
+        "abarrotes": [
+            { "title": "🏪 CLICKS EXPRESS", "desc": "Vecino mandó lista de súper por audio: 'Traeme cereal del tigre y un refresco frío'. Empacando... 🛒" },
+            { "title": "🥔 FRUTAS DE HOY", "desc": "Alerta de frescura: Acaba de llegar el cargamento de aguacates perfectos. No te los vayas a perder. 🥑" },
+            { "title": "🍫 PASILLO IMPULSIVO", "desc": "Tu bot detectó que agregaste papas. Te sugiere chocolates para equilibrar los antojos. 🍫" },
+            { "title": " vecina chismosa", "desc": "Alerta: Doña Tere está comprando provisiones para la junta vecinal. Prepárate para el chisme. 🗣️" }
+        ],
+        "cafeteria": [
+            { "title": "☕ CAFEÍNA AL 99%", "desc": "Tu nivel de energía está bajo. El espresso doble ya está en la barra esperando tu llegada. 🔋" },
+            { "title": "❤️ CORAZÓN EN TAZA", "desc": "El barista intentó hacer un cisne de arte latte, pero le salió un tlacuache. Disfrútalo igual. 🦡" },
+            { "title": "🥐 CROISSANT VOLADOR", "desc": "Acaban de salir los panecillos de chocolate calientes del horno. Pide el tuyo antes que vuelen. 🥐" },
+            { "title": "🧪 MÉTODOS MISTERIOSOS", "desc": "La Chemex de especialidad está goteando. Tu taza de café de altura está casi lista para sintonizar. 🧪" }
+        ],
+        "floreria": [
+            { "title": "🌹 RECONCILIACIÓN PRO", "desc": "Alerta: El bot detectó que te olvidaste del aniversario. Enviando ramo de rosas de emergencia. 🚨" },
+            { "title": "🌵 CACTUS GUERRERO", "desc": "Este cactus de escritorio sobrevive sin agua y con tus quejas diarias. Adopta un compañero verde. 🌵" },
+            { "title": "🌷 TULIPANES ESPÍAS", "desc": "Diseñando bouquet moderno para enviar de forma anónima con dedicatoria oculta. Pulsa para ver. 🌷" },
+            { "title": "🌸 BUCHÓN CONFIRMADO", "desc": "Confirmando arreglo de 100 girasoles gigantes para entrega express. Tu sorpresa está en camino. 🌻" }
+        ],
+        "talleres": [
+            { "title": "🚗 CHECK ENGINE", "desc": "Ese testigo encendido en tu tablero no es una luz navideña. Agenda diagnóstico con escáner. 🚨" },
+            { "title": "🔊 RUIDITO EXTRAÑO", "desc": "El cliente dice que su motor hace 'piki-piki-clac'. El bot mecánico está traduciendo el ruido. ⚙️" },
+            { "title": "🍳 ACEITE AL PUNTO", "desc": "Tu coche necesita cambio de aceite sintético. No esperes a que tu motor parezca sartén de cocina. 🍳" },
+            { "title": "🛑 BALATAS CHILLONAS", "desc": "Si tus frenos suenan como flauta desafinada, es momento de cambiarlos. Balatas listas en rampa. 🛑" }
+        ],
+        "eventos": [
+            { "title": "💃 PAYASO DE RODEO", "desc": "Alerta: Tu tía ya se apoderó de la pista de baile. Coordinando catering de hidratación urgente. 🥂" },
+            { "title": "🎂 DESBORDE DE PASTEL", "desc": "El pastel de bodas de 4 pisos está firme. El bot de montaje reporta zona segura sin colapsos. 🎂" },
+            { "title": "🍬 MESA DE DULCES", "desc": "Alerta de rapiña: Los invitados ya vaciaron la mesa de postres antes de la cena. Reposición en marcha. 🍬" },
+            { "title": "🚗 VALET DE CONFIANZA", "desc": "Tu coche está resguardado en el estacionamiento privado con seguro activo. Disfruta la fiesta. 🎉" }
+        ],
+        "idiomas": [
+            { "title": "🇬🇧 VERBO TO BE", "desc": "Llevas 10 años estudiándolo y sigues dudando si eres o estás. El bot te reta a la lección express. 🧠" },
+            { "title": "🦉 DUOLINGO ENOJADO", "desc": "Alerta: El búho verde está en la puerta de tu casa esperando que hagas tu racha diaria de inglés. 🦉" },
+            { "title": "🗣️ ACENTO BRITÁNICO", "desc": "Tu bot de nivelación te sugiere pronunciar 'Water' como profesional de la corona. +50 puntos de clase. 👑" },
+            { "title": "📱 TRADUCTOR EXPULSADO", "desc": "Es hora de dejar de usar el traductor de Google. Tu tutor de conversación IA te asignó grupo hoy. 🇬🇧" }
+        ],
+        "fumigacion": [
+            { "title": "🪳 CUCARACHA VOLADORA", "desc": "Alerta de pánico: Se detectó un insecto con alas en la sala. Activando termonebulizador. 🚨" },
+            { "title": "🐜 HORMIGAS DULCES", "desc": "Tu bot detectó una mudanza masiva de insectos hacia el bote de azúcar de la cocina. Desvío activo. 🐜" },
+            { "title": "🛡️ CERTIFICADO LISTO", "desc": "Tu constancia oficial para salubridad COFEPRIS ha sido emitida. Negocio 100% blindado. ✔️" },
+            { "title": "🐭 INSPECCIÓN DIGITAL", "desc": "Trampas de seguridad colocadas en perímetro de bodega sin novedades. Zona libre de roedores. 🛡️" }
+        ],
+        "limpieza": [
+            { "title": "🍛 MANCHA DE MOLE", "desc": "Tu sala sufrió un accidente gastronómico. Nuestro sistema de inyección-succión lo borrará. 🧼" },
+            { "title": "🕷️ ÁCAROS MUDÁNDOSE", "desc": "Los microorganismos de tu colchón están empacando maletas. Vapor de alta temperatura en camino. 🌬️" },
+            { "title": "🛋️ SALA REGENERADA", "desc": "Tu sillón favorito pasó de 'gris misterio' a su color original. +100 puntos de higiene en casa. ✨" },
+            { "title": "🧺 PROTECCIÓN DE TEFLÓN", "desc": "Capa protectora repelente de líquidos activa para tus sillones contra accidentes de niños. 🛡️" }
+        ],
+        "viajes": [
+            { "title": "🧳 MALETA PESADA", "desc": "Llevas 15 cambios de ropa para un viaje de 3 días. El bot te aconseja sacar 2 pares de zapatos. ✈️" },
+            { "title": "🛂 PASAPORTE AL CORREO", "desc": "Alerta: Tu pasaporte vence en 3 meses. Asistente agendando cita de renovación express en cancillería. 🛂" },
+            { "title": "🏖️ PLAYA DE ENSUEÑO", "desc": "Confirmando reservación todo incluido con camastro frente al mar de aguas turquesas. Sin filas. 🌊" },
+            { "title": "🥥 SOUVENIR SEGURO", "desc": "Compraste un imán de refrigerador de $200 pesos. Tu bot te sugiere mejores opciones locales. 🗺️" }
+        ],
+        "prospeccion": [
+            { "title": "🎯 LEADS CONGELADOS", "desc": "Tienes 500 contactos de Maps guardados en Excel que no te compran nada. Activando bot de reactivación. 📞" },
+            { "title": "📨 SCRAPER ACTIVO", "desc": "Consiguiendo 100 teléfonos de constructoras de tu zona en segundo plano. Campaña lista. 📦" },
+            { "title": "🧹 FILTRO DE SPAM", "desc": "Eliminando correos inexistentes de tu base de datos para asegurar un 98% de entregas exitosas. 📨" },
+            { "title": "📈 VENTAS EN PILOTO", "desc": "Tus mensajes comerciales automatizados están cayendo en las bandejas correctas. Prepárate. 💸" }
+        ],
+        "webs": [
+            { "title": "🖥️ SERVIDOR ACTIVO", "desc": "Tu landing de $99 MXN está respondiendo en 0.2 segundos. Tus clientes cargan la web al instante. ⚡" },
+            { "title": "☕ MÁS CAFEÍNA", "desc": "Tu programador de cabecera acaba de rellenar su taza. El código de tu página vuela libre de errores. 💻" },
+            { "title": "🎨 DISEÑO IMPECABLE", "desc": "Adaptando layouts y CSS responsivo de forma automática para la carga perfecta en móviles. 📱" },
+            { "title": "🔒 SSL CANDADO VERDE", "desc": "Certificado de seguridad instalado en tu dominio. Tus clientes compran bajo protección criptográfica. 🔐" }
+        ],
+        "rh": [
+            { "title": "📝 CURRÍCULUM LOCO", "desc": "Candidato asegura dominar 8 idiomas y tener 3 licenciaturas a sus 18 años. El bot inició pre-entrevista. 🔍" },
+            { "title": "📊 PSICOMETRÍA ACTIVA", "desc": "Candidato completó examen Cleaver. Los resultados de honestidad y empuje están listos en tu portal. 📊" },
+            { "title": "👷 VACANTE CRÍTICA", "desc": "Se han pre-calificado 5 candidatos idóneos para tu puesto de supervisor. Agenda entrevistas. 👷" },
+            { "title": "👔 ONBOARDING PRO", "desc": "Manual de inducción y bienvenida enviado de forma automática al WhatsApp de tu nuevo empleado. ✔️" }
+        ],
+        "instagram": [
+            { "title": "🎬 REEL VIRALIZADO", "desc": "Tu video con gancho psicológico alcanzó las 10,000 reproducciones en tiempo récord. Revisa el feed. 📈" },
+            { "title": "🕶️ SHADOWBAN EVITADO", "desc": "Tu bot de contenidos detectó hashtags prohibidos y los eliminó para proteger tu alcance orgánico. 🛡️" },
+            { "title": "💬 DM AUTO-RESPUESTA", "desc": "Cliente escribió 'PRECIO' en un Reel. Tu bot le envió el catálogo completo por mensaje privado en 0.5s. 💬" },
+            { "title": "🐶 FILTRO DE PERRITO", "desc": "Tu creador de contenidos IA te aconseja no abusar del filtro de orejas en las historias corporativas. 🐶" }
+        ],
+        "facebook": [
+            { "title": "💬 EL FAMOSO 'INFO'", "desc": "Cliente comentó tu post de ventas preguntando 'precio'. Bot respondiendo directo en Messenger en 1s. 💬" },
+            { "title": "👵 MENSAJE DE TÍA", "desc": "Tu tía Tere comentó tu foto de campaña diciendo 'Qué guapo mi sobrino, saludos'. Bot respondiendo con emoji. ❤️" },
+            { "title": "📣 META ADS SHIELD", "desc": "Campaña de adquisición optimizada con un costo por lead de $2 pesos. Tráfico fluyendo al bot. 📣" },
+            { "title": "👥 GRUPO VECINAL", "desc": "Alerta: Tu post comercial fue compartido en 'Vecinos Unidos'. Prepárate para solicitudes masivas. 👥" }
+        ],
+        "youtube": [
+            { "title": "🎭 MINIATURA CLICKBAIT", "desc": "Tu bot de diseño generó una miniatura con cara de sorpresa y fondo neón. El CTR subió un 12%. 📈" },
+            { "title": "🎬 SHORT SIN FIN", "desc": "Tu video vertical tiene una retención del 95%. El algoritmo de YouTube lo recomendó masivamente. 🎬" },
+            { "title": "🏅 PLACA DE ORO", "desc": "Tus canales automatizados de nicho sin rostro reportaron ingresos pasivos de Google AdSense hoy. 💸" },
+            { "title": "🧹 LIMPIEZA DE SPAM", "desc": "Eliminando comentarios de bots con enlaces extraños en tus videos musicales para mantener tu canal limpio. 🧹" }
+        ],
+        "ciber": [
+            { "title": "👾 HACKERS EN STANDBY", "desc": "Se detectó intento de escaneo de puertos desde Moscú. Firewall neón bloqueando IP de inmediato. 🛡️" },
+            { "title": "🧾 PHISHING RECHAZADO", "desc": "Tu bot detectó que te enviaron una factura falsa de la luz. Correo marcado y destruido con éxito. 🧼" },
+            { "title": "🔐 CONTRASEÑA DEBIL", "desc": "Detectamos que usas 'password123' en tu panel de control. El bot te asignó una clave militar. 🔐" },
+            { "title": "🛡️ WEB SCAN COMPLETO", "desc": "Cero inyecciones de código malicioso encontradas en tu base de datos. Servidor en estado inmune. 🧱" }
+        ]
+    },
 
     // Motor Hidratador Universal: Morphing dinámico basado en ?id=... (Salud, Gym, etc.)
     hydrateUniversalEngine: function() {
         const params = new URLSearchParams(window.location.search);
         let id = params.get('id');
         
-        // Si el servidor ya inyectó el ID de nicho del cliente de forma segura, úsalo de inmediato
         if (window.app && window.app.clientData && window.app.clientData.nicheId) {
             id = window.app.clientData.nicheId;
         }
 
-        // Fallback robusto a "salud" si el parámetro no se encuentra o es inválido en catalog.js
         if (!id || !window.app.catalog || !window.app.catalog.demoTemplates || !window.app.catalog.demoTemplates[id]) {
             id = "salud";
         }
 
+        this.currentNicheId = id;
         const template = window.app.catalog.demoTemplates[id];
         console.log(`🌐 [UNIVERSAL ENGINE]: Hidratando plantilla dinámica para el giro: "${id.toUpperCase()}"`);
 
@@ -83,7 +231,7 @@ window.app.demo = {
             if (val4El) val4El.textContent = brand.val_4;
             if (reserveBtn) reserveBtn.textContent = brand.button_text;
         }
-        // Ocultar únicamente el botón de compra comercial y mantener los 4 selectores de color en el header
+
         if (window.app && window.app.clientData) {
             const buyBtn = document.querySelector('.flashing-buy-btn');
             if (buyBtn) buyBtn.style.setProperty('display', 'none', 'important');
@@ -102,18 +250,15 @@ window.app.demo = {
             if (d2) d2.textContent = template.services[1].desc;
         }
 
-        // 4. Hidratación de Fotos de Carrusel Cinematográfico
         if (template.images) {
             this.cinematicPhotos = template.images;
         }
 
-        // 5. Hidratación de la Trivia CRT de Sala de Espera
         if (template.trivia) {
             this.mainTriviaPool = template.trivia;
-            this.mainTriviaIndex = 0; // Reinicio de contador para evitar desbordes
+            this.mainTriviaIndex = 0; 
         }
 
-        // 6. Hidratación de Up-Sells de Barra Lateral
         const upsells = template.upsells;
         if (upsells) {
             const trackerTitle = document.getElementById('tracker-locked-title');
@@ -131,10 +276,157 @@ window.app.demo = {
             if (recordTitle && upsells.record_title) recordTitle.textContent = upsells.record_title;
             if (recordDesc && upsells.record_desc) recordDesc.textContent = upsells.record_desc;
         }
+
+        // Relanzar el Bucle de Atracción con el nuevo nicho configurado
+        this.startAttractModeLoop();
     },
 
-    // IMÁGENES ANIMADAS Y QUIRKY PARA LA DEMO INTERACTIVA (16:9)
-    // Controlador de Combinaciones de Paleta de Colores en Caliente
+    // CONTROLADOR DE ATRACT MODE (LOOP "VA Y VEN" EN 2 ACTOS)
+    startAttractModeLoop: function() {
+        if (this.notifLoopInterval) {
+            clearInterval(this.notifLoopInterval);
+        }
+
+        this.activeActState = 1; // Inicia en Acto I (Standby / Blur / Rojo)
+        this.notifIndex = 0;
+        this.setPhoneVisualState(1); // Setear estado visual inicial
+
+        const runCycleStep = () => {
+            if (this.activeActState === 1) {
+                // ACTO I: Mostrar notificaciones simpáticas de forma sucesiva
+                const pool = this.humorPool[this.currentNicheId] || this.humorPool['salud'];
+                const notifData = pool[this.notifIndex % pool.length];
+
+                this.showPhonePushNotification(notifData.title, notifData.desc);
+                this.notifIndex++;
+
+                // Si ya pasamos por 4 notificaciones, hacemos la transición al Acto II
+                if (this.notifIndex >= 4) {
+                    this.notifIndex = 0;
+                    this.activeActState = 2; // Pasar a Acto II
+                }
+            } else {
+                // ACTO II: Despejar y aclarar la pantalla con llamado ENTRAR
+                this.hidePhonePushNotification();
+                this.setPhoneVisualState(2); // Quitar Blur y Rojo, mostrar letrero de Entrada
+
+                // Esperar 5 segundos en Acto II y luego regresar suavemente a Acto I
+                setTimeout(() => {
+                    if (this.activeActState === 2) {
+                        this.setPhoneVisualState(1); // Regresa a Blur y Rojo
+                        this.activeActState = 1; // Regresa al Acto I
+                    }
+                }, 5000);
+            }
+        };
+
+        // Correr inmediatamente el primer paso
+        runCycleStep();
+        // Ciclar el motor cada 3.5 segundos para refrescar alertas o cambiar de Acto
+        this.notifLoopInterval = setInterval(runCycleStep, 3500);
+    },
+
+    setPhoneVisualState: function(act) {
+        const img1 = document.getElementById('phone-img-1');
+        const img2 = document.getElementById('phone-img-2');
+        const red1 = document.getElementById('phone-red-overlay-1');
+        const red2 = document.getElementById('phone-red-overlay-2');
+        const enter1 = document.getElementById('phone-entrar-1');
+        const enter2 = document.getElementById('phone-entrar-2');
+
+        if (act === 1) {
+            // Acto I: Rojo + Blur
+            if (img1) { img1.className = 'phone-screen-img state-standby'; }
+            if (img2) { img2.className = 'phone-screen-img state-standby'; }
+            if (red1) { red1.className = 'phone-red-overlay'; }
+            if (red2) { red2.className = 'phone-red-overlay'; }
+            if (enter1) { enter1.className = 'phone-entrar-overlay'; }
+            if (enter2) { enter2.className = 'phone-entrar-overlay'; }
+        } else {
+            // Acto II: Aclarado total + Letrero Pulsante
+            if (img1) { img1.className = 'phone-screen-img state-active'; }
+            if (img2) { img2.className = 'phone-screen-img state-active'; }
+            if (red1) { red1.className = 'phone-red-overlay state-active'; }
+            if (red2) { red2.className = 'phone-red-overlay state-active'; }
+            if (enter1) { enter1.className = 'phone-entrar-overlay show-cta'; }
+            if (enter2) { enter2.className = 'phone-entrar-overlay show-cta'; }
+        }
+    },
+
+    showPhonePushNotification: function(title, desc) {
+        const box1 = document.getElementById('phone-notif-box-1');
+        const box2 = document.getElementById('phone-notif-box-2');
+        const title1 = document.getElementById('notif-title-1');
+        const title2 = document.getElementById('notif-title-2');
+        const desc1 = document.getElementById('notif-desc-1');
+        const desc2 = document.getElementById('notif-desc-2');
+
+        if (title1) title1.textContent = title;
+        if (title2) title2.textContent = title;
+        if (desc1) desc1.textContent = desc;
+        if (desc2) desc2.textContent = desc;
+
+        // Mapeo de Alternancia Sencilla: Arriba -> Abajo -> Arriba -> Abajo (Sin posición central)
+        const step = (this.notifIndex - 1) % 2;
+        let posStyles = {};
+        
+        if (step === 0) {
+            // Posición Arriba (Paso par)
+            posStyles = { top: '16px', bottom: 'auto', left: '50%', startTransform: 'translate(-50%, -20px)' };
+        } else {
+            // Posición Abajo (Paso impar)
+            posStyles = { top: 'auto', bottom: '16px', left: '50%', startTransform: 'translate(-50%, 20px)' };
+        }
+
+        // Aplicar estilos de posicionamiento base antes de mostrar
+        [box1, box2].forEach(box => {
+            if (!box) return;
+            box.style.top = posStyles.top;
+            box.style.bottom = posStyles.bottom;
+            box.style.left = posStyles.left;
+            box.style.transform = posStyles.startTransform;
+            box.style.opacity = '0';
+        });
+
+        // Forzar reflujo de renderizado en caliente
+        void (box1 ? box1.offsetHeight : 0);
+
+        // Entrada con transición suave
+        [box1, box2].forEach(box => {
+            if (!box) return;
+            box.style.setProperty('opacity', '1', 'important');
+            box.style.setProperty('transform', 'translate(-50%, 0)', 'important');
+        });
+
+        // Agendar ocultación progresiva hacia la dirección correspondiente
+        setTimeout(() => { this.hidePhonePushNotification(step); }, 3000);
+    },
+
+    hidePhonePushNotification: function(step = 0) {
+        const box1 = document.getElementById('phone-notif-box-1');
+        const box2 = document.getElementById('phone-notif-box-2');
+
+        // Determinar sentido del deslizamiento de salida
+        const exitTransform = (step === 0) ? 'translate(-50%, -20px)' : 'translate(-50%, 20px)';
+
+        [box1, box2].forEach(box => {
+            if (!box) return;
+            box.style.setProperty('opacity', '0', 'important');
+            box.style.setProperty('transform', exitTransform, 'important');
+        });
+    },
+
+    // REDIRECCIÓN SEGURA E INMUNE DE COLISEO (Abre pestañas nuevas limpias de forma asíncrona)
+    triggerAffiliateDemo: function() {
+        console.log("🚀 [ORBE_EXTRACTION]: Redirigiendo al Orbe de Sintonía Profesional...");
+        window.open('https://makumoto.com/?view=home&sintonia=profesional', '_blank');
+    },
+
+    triggerVideoDemo: function() {
+        console.log("🚀 [TV_EXTRACTION]: Redirigiendo a Makumoto TV Stream...");
+        window.open('https://makumoto.com/?view=tv', '_blank');
+    },
+
     setTheme: function(themeName) {
         const root = document.documentElement;
         if (themeName === 'blue') {
@@ -181,28 +473,17 @@ window.app.demo = {
     },
 
     cinematicPhotos: [
-        {
-            url: "assets/frenzy_1.webp",
-            caption: "Conoce nuestras instalaciones"
-        },
-        {
-            url: "assets/frenzy_2.webp",
-            caption: "Los pacientes satisfechos son nuestra prioridad"
-        },
-        {
-            url: "assets/frenzy_3.webp",
-            caption: "Un profesional no teme a la tecnología: la usa"
-        }
+        { url: "assets/frenzy_1.webp", caption: "Conoce nuestras instalaciones" },
+        { url: "assets/frenzy_2.webp", caption: "Los pacientes satisfechos son nuestra prioridad" },
+        { url: "assets/frenzy_3.webp", caption: "Un profesional no teme a la tecnología: la usa" }
     ],
 
     currentIndex: 0,
     slideshowInterval: null,
 
-    // Inicialización con automatización secuencial cada 3 segundos (3000ms)
     initCinematicViewer: function() {
         const baseAssetUrl = window.location.hostname.includes('localhost') ? '' : 'https://robotiax.mx/';
         
-        // Resuelve las rutas relativas de fotos a absolutas en subdominios
         this.cinematicPhotos = this.cinematicPhotos.map(p => ({
             ...p,
             url: p.url.startsWith('http') ? p.url : baseAssetUrl + p.url
@@ -220,7 +501,6 @@ window.app.demo = {
         }, 3000);
     },
 
-    // Pool de Preguntas de la Consola de la Sala de Espera de Aura-Clinic
     mainTriviaPool: [
         { q: "¿Cada cuánto tiempo se aconseja agendar una consulta clínica de control preventivo?", a: "6 meses", b: "5 años", correct: 'a' },
         { q: "¿Qué hábito reduce de forma más rápida el cortisol y el estrés en el sistema nervioso?", a: "Dormir 8 horas", b: "Tomar café", correct: 'a' },
@@ -228,10 +508,8 @@ window.app.demo = {
     ],
 
     mainTriviaIndex: 0,
-
     typewriterTimeout: null,
 
-    // Motor Máquina de Escribir (Typewriter) Saneado con Limpieza de Desborde
     typeWriter: function(element, text, callback, speed = 25) {
         if (this.typewriterTimeout) {
             clearTimeout(this.typewriterTimeout);
@@ -250,7 +528,6 @@ window.app.demo = {
         type();
     },
 
-    // Carga de la Pregunta Activa en el Monitor CRT Principal
     loadMainTriviaQuestion: function(immediate = false) {
         const textEl = document.getElementById('type-text-main');
         const btnContainer = document.getElementById('btn-container-main');
@@ -258,7 +535,6 @@ window.app.demo = {
 
         if (!textEl || !btnContainer || !scoreEl) return;
 
-        // Garantizar que exista el pool de preguntas hidratado
         if (!this.mainTriviaPool || this.mainTriviaPool.length === 0) {
             this.mainTriviaPool = [
                 { q: "¿Cada cuánto tiempo se aconseja agendar una consulta clínica de control preventivo?", a: "6 meses", b: "5 años", correct: 'a' },
@@ -292,7 +568,6 @@ window.app.demo = {
         const btnContainer = document.getElementById('btn-container-main');
         if (!btnContainer) return;
         
-        // Botones minimalistas limpios con fondo blanco, bordes finos de color gris claro y efecto hover de color verde/azul pastel suave
         btnContainer.innerHTML = `
             <button onclick="window.app.demo.checkMainTriviaAnswer('a')" class="w-full bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300/80 py-2 px-3 rounded-xl text-[10px] font-bold text-slate-700 hover:text-emerald-700 transition-all duration-300 uppercase tracking-wide shadow-sm hover:scale-[1.01] active:scale-[0.99] font-['Poppins']">
                 A: ${currentData.a}
@@ -309,25 +584,22 @@ window.app.demo = {
         const btnContainer = document.getElementById('btn-container-main');
 
         if (chosen === currentData.correct) {
-            this.mainTriviaIndex++; // Se incrementa para apuntar a la siguiente pregunta
+            this.mainTriviaIndex++; 
             
-            // Si se acaba de responder correctamente el tercer reto (Index ahora es 3)
             if (this.mainTriviaIndex >= 3) {
                 textEl.innerHTML = "¡EXCELENTE! RETOS COMPLETADOS ✓";
                 btnContainer.innerHTML = "";
                 
-                // Actualizar marcador de retos antes de abrir la modal
                 const scoreEl = document.getElementById('score-counter-main');
                 if (scoreEl) scoreEl.textContent = "3/3 RETOS";
 
                 setTimeout(() => {
                     this.openSuccessPopup();
-                    this.loadMainTriviaQuestion(true); // Carga estado final limpio
+                    this.loadMainTriviaQuestion(true); 
                 }, 1500);
                 return;
             }
 
-            // Transición intermedia suave para preguntas 1 y 2
             textEl.innerHTML = "¡CORRECTO! +50 XP";
             btnContainer.innerHTML = "";
             setTimeout(() => {
@@ -347,7 +619,6 @@ window.app.demo = {
         if (overlay) {
             overlay.style.setProperty('display', 'flex', 'important');
         } else {
-            // Redirección directa de seguridad hacia el Arcade real en caso de ausencia
             window.open('https://makumoto.com/?view=arcade', '_blank');
         }
     },
@@ -358,7 +629,12 @@ window.app.demo = {
             overlay.style.setProperty('display', 'none', 'important');
         }
     },
+
     triggerPipokoRedirection: function() {
+        const overlay = document.getElementById('success-popup-overlay');
+        if (overlay) overlay.style.setProperty('display', 'none', 'important');
+        this.closeSuccessPopup();
+
         const params = new URLSearchParams(window.location.search);
         let id = params.get('id');
         if (window.app && window.app.clientData && window.app.clientData.nicheId) {
@@ -368,7 +644,6 @@ window.app.demo = {
         
         const cleanId = id.toLowerCase().trim();
 
-        // Mapeo unificado para redirigir a la categoría exacta del Arcade de Makumoto
         const linkMap = {
             "boutique": "https://makumoto.com/?view=arcade&trivia=boutique",
             "cafeteria": "https://makumoto.com/?view=arcade&trivia=cafeteria",
@@ -395,62 +670,9 @@ window.app.demo = {
         };
 
         const targetLink = linkMap[cleanId] || "https://makumoto.com/?view=arcade";
-        console.log(`🚀 [PIPOKO REDIRECT]: Redirigiendo a la categoría de trivia '${cleanId}' via: ${targetLink}`);
         window.open(targetLink, '_blank');
     },
 
-    triggerPipokoRedirection: function() {
-        const params = new URLSearchParams(window.location.search);
-        let id = params.get('id');
-        if (window.app && window.app.clientData && window.app.clientData.nicheId) {
-            id = window.app.clientData.nicheId;
-        }
-        if (!id || !id.trim()) id = "salud";
-        
-        const cleanId = id.toLowerCase().trim();
-
-        // Mapeo unificado para redirigir a la categoría exacta del Arcade de Makumoto
-        const linkMap = {
-            "boutique": "https://makumoto.com/?view=arcade&trivia=boutique",
-            "cafeteria": "https://makumoto.com/?view=arcade&trivia=cafeteria",
-            "ciber": "https://makumoto.com/?view=arcade&trivia=ciber",
-            "contable": "https://makumoto.com/?view=arcade&trivia=contable",
-            "eventos": "https://makumoto.com/?view=arcade&trivia=eventos",
-            "facebook": "https://makumoto.com/?view=arcade&trivia=facebook",
-            "ferreteria": "https://makumoto.com/?view=arcade&trivia=ferreteria",
-            "floreria": "https://makumoto.com/?view=arcade&trivia=floreria",
-            "fumigacion": "https://makumoto.com/?view=arcade&trivia=fumigacion",
-            "gourmet": "https://makumoto.com/?view=arcade&trivia=gourmet",
-            "gym": "https://makumoto.com/?view=arcade&trivia=gym",
-            "idiomas": "https://makumoto.com/?view=arcade&trivia=idiomas",
-            "instagram": "https://makumoto.com/?view=arcade&trivia=instagram",
-            "legal": "https://makumoto.com/?view=arcade&trivia=legal",
-            "prospeccion": "https://makumoto.com/?view=arcade&trivia=prospeccion",
-            "youtube": "https://makumoto.com/?view=arcade&trivia=youtube",
-            "abarrotes": "https://makumoto.com/?view=arcade&trivia=abarrotes",
-            "limpieza": "https://makumoto.com/?view=arcade&trivia=limpieza",
-            "webs": "https://makumoto.com/?view=arcade&trivia=webs",
-            "rh": "https://makumoto.com/?view=arcade&trivia=rh",
-            "talleres": "https://makumoto.com/?view=arcade&trivia=talleres",
-            "salud": "https://makumoto.com/?view=arcade&trivia=salud"
-        };
-
-        const targetLink = linkMap[cleanId] || "https://makumoto.com/?view=arcade";
-        console.log(`🚀 [PIPOKO REDIRECT]: Redirigiendo a la categoría de trivia '${cleanId}' via: ${targetLink}`);
-        window.open(targetLink, '_blank');
-    },
-
-    triggerAffiliateDemo: function() {
-        console.log("📡 [ORBE_EXTRACTION]: Extrayendo usuario al Orbe Profesional.");
-        window.open('https://makumoto.com/?view=home&sintonia=profesional', '_top');
-    },
-
-    triggerVideoDemo: function() {
-        console.log("📡 [TV_EXTRACTION]: Extrayendo usuario a Makumoto TV.");
-        window.open('https://makumoto.com/?view=tv', '_top');
-    },
-
-    // Lógica del visualizador con Autofoco dinámico integrado
     changeCinematicPhoto: function(index, immediate = false) {
         const mainPhoto = document.getElementById('cinematic-main-photo');
         const caption = document.getElementById('cinematic-caption-text');
@@ -463,7 +685,6 @@ window.app.demo = {
             return;
         }
 
-        // Desenfoque de lente de cámara (Autofoco dinámico)
         mainPhoto.classList.add('lens-blur-active');
 
         setTimeout(() => {
@@ -476,7 +697,6 @@ window.app.demo = {
         }, 250);
     },
 
-    // COOPERA CON MULTI-TENANT PARA SUBDOMINIOS DE IKAI.INFO (CONSULTA REST SIN SDK)
     initMultiTenant: async function() {
         const hostname = window.location.hostname;
         
@@ -489,7 +709,6 @@ window.app.demo = {
             if (coach) coach.style.setProperty('display', 'none', 'important');
 
             if (window.app && window.app.clientData) {
-                console.log(`✅ [MULTI-TENANT]: Datos dinámicos del cliente inyectados por servidor.`);
                 this.applyClientBranding(window.app.clientData);
                 return;
             }
@@ -546,7 +765,6 @@ window.app.demo = {
         const hoursEl = document.getElementById('meta-val-2');
         const phoneEl = document.getElementById('meta-val-3');
         const feeEl = document.getElementById('meta-val-4');
-
         const badgeEl = document.getElementById('clinic-badge');
         const specialtyEl = document.getElementById('clinic-specialty');
 
@@ -572,28 +790,11 @@ window.app.demo = {
         }
     },
 
-    // PASOS DEL TUTORIAL DE DISECCIÓN Y ENFOQUE GLOBAL
     coachStepsData: [
-        {
-            title: "Pilar 1: Tus Datos Clínicos",
-            desc: "Tus pacientes verán tu información oficial unificada en un solo lugar: consultorios físicos, horarios activos, costo de consulta y número directo de WhatsApp sincronizados.",
-            targetId: "clinic-metadata-strip"
-        },
-        {
-            title: "Pilar 2: Captura en Piloto Automático",
-            desc: "Pruébalo ahora mismo pulsando el **botón de WhatsApp flotante abajo a la derecha**. Tu bot agendará citas directamente sin requerir personal de secretaría.",
-            targetId: "btn-wa-floating"
-        },
-        {
-            title: "Pilar 3: Fidelización QR de Sala de Espera",
-            desc: "El paciente escanea este código desde la sala de espera física para jugar trivias, disminuyendo un 80% su ansiedad y ganando puntos de lealtad en tu consultorio.",
-            targetId: "qr-promo-section"
-        },
-        {
-            title: "Pilar 4: Módulos de Conversión Premium",
-            desc: "E-Shop, Bio-Tracker y Campañas de Anuncios están integrados de forma orgánica. Puedes activarlos o escalarlos respondiendo a nuestro correo de bienvenida en cualquier momento.",
-            targetId: "upsell-tracker-section"
-        }
+        { title: "Pilar 1: Tus Datos Clínicos", desc: "Tus pacientes verán tu información oficial unificada en un solo lugar: consultorios físicos, horarios activos, costo de consulta y número directo de WhatsApp sincronizados.", targetId: "clinic-metadata-strip" },
+        { title: "Pilar 2: Captura en Piloto Automático", desc: "Pruébalo ahora mismo pulsando el **botón de WhatsApp flotante abajo a la derecha**. Tu bot agendará citas directamente sin requerir personal de secretaría.", targetId: "btn-wa-floating" },
+        { title: "Pilar 3: Fidelización QR de Sala de Espera", desc: "El paciente escanea este código desde la sala de espera física para jugar trivias, disminuyendo un 80% su ansiedad y ganando puntos de lealtad en tu consultorio.", targetId: "qr-promo-section" },
+        { title: "Pilar 4: Módulos de Conversión Premium", desc: "E-Shop, Bio-Tracker y Campañas de Anuncios están integrados de forma orgánica. Puedes activarlos o escalarlos respondiendo a nuestro correo de bienvenida en cualquier momento.", targetId: "upsell-tracker-section" }
     ],
 
     startGuidedTour: function() {
@@ -670,7 +871,6 @@ window.app.demo = {
         });
     },
 
-    // Desvío y modal instructivo real para vinculación del Bot en producción
     showRealWhatsAppConfig: function() {
         const introModal = document.getElementById('whatsapp-simulation-intro-modal');
         if (!introModal) return;
@@ -685,7 +885,7 @@ window.app.demo = {
                 <div class="w-12 h-12 bg-emerald-50 border border-emerald-100 rounded-full flex items-center justify-center text-[#25d366] text-xl mx-auto mb-4">
                     <i class="fa-brands fa-whatsapp"></i>
                 </div>
-                <span class="text-[9px] font-['Orbitron'] text-emerald-600 tracking-widest font-bold mb-1.5 block">VINCULACIÓN DEL ASISTENTE</span>
+                <span class="text-[9px] font-['Inter'] text-emerald-600 tracking-widest font-bold mb-1.5 block">VINCULACIÓN DEL ASISTENTE</span>
                 <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2">Vincular Asistente de WhatsApp</h3>
                 <p class="text-xs text-slate-500 leading-relaxed mb-4 text-left">
                     Tu bot de agendamiento automatizado está aprovisionado en tu VPS privado. Sigue estos pasos para activarlo en tu teléfono:
@@ -696,7 +896,7 @@ window.app.demo = {
                     <div><strong>3.</strong> Escanea el código QR desde Dispositivos Vinculados en tu app de WhatsApp.</div>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <button onclick="window.open('${waUrl}', '_blank')" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-['Orbitron'] font-black text-xs py-3.5 rounded-xl transition-all shadow-md shadow-[#25d366]/10 uppercase tracking-wider">
+                    <button onclick="window.open('${waUrl}', '_blank')" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-['Inter'] font-black text-xs py-3.5 rounded-xl transition-all shadow-md shadow-[#25d366]/10 uppercase tracking-wider">
                         💬 CHATEAR CON TU BOT ACTIVO
                     </button>
                     <button onclick="window.open('https://bot.ikai.info', '_blank')" class="text-xs text-blue-600 font-bold hover:text-blue-800 hover:underline">
@@ -708,7 +908,6 @@ window.app.demo = {
         introModal.style.setProperty('display', 'flex', 'important');
     },
 
-    // CONTROL DEL CHAT FLOTANTE DE WHATSAPP (SISTEMA DE INTERACCIÓN REAL)
     toggleWhatsAppWidget: function() {
         const widget = document.getElementById('whatsapp-chat-widget');
         const introModal = document.getElementById('whatsapp-simulation-intro-modal');
@@ -825,7 +1024,6 @@ window.app.demo = {
         }, 1000);
     },
 
-    // SECCIÓN DE JUEGOS TRIVIA QR (SALA DE ESPERA DE MAKUMOTO)
     startMakumotoFlow: function() {
         const makuPanel = document.getElementById('makumoto-interactive-panel');
         if (makuPanel) {
@@ -866,7 +1064,7 @@ window.app.demo = {
         if (index >= this.triviaPool.length) {
             qArea.innerHTML = `
                 <div class="text-center space-y-3">
-                    <span class="text-[10px] font-['Orbitron'] text-emerald-600 tracking-widest font-bold block">[ DESAFÍO COMPLETADO ]</span>
+                    <span class="text-[10px] font-['Inter'] text-emerald-600 tracking-widest font-bold block">[ DESAFÍO COMPLETADO ]</span>
                     <h3 class="font-extrabold text-slate-900 text-sm">¡Excelente desempeño preventivo!</h3>
                     <p class="text-xs text-slate-500">Has acumulado puntos para tu expediente médico. Abriendo propuesta de servicio...</p>
                 </div>
@@ -882,7 +1080,7 @@ window.app.demo = {
         const data = this.triviaPool[index];
         qArea.innerHTML = `
             <div class="space-y-4">
-                <span class="text-[10px] font-['Orbitron'] text-blue-600 tracking-widest font-bold block">RETO DE PREVENCIÓN ACTIVO</span>
+                <span class="text-[10px] font-['Inter'] text-blue-600 tracking-widest font-bold block">RETO DE PREVENCIÓN ACTIVO</span>
                 <p class="text-xs font-bold text-slate-800 leading-snug" id="trivia-question-title">${data.q}</p>
                 <div class="space-y-2" id="trivia-options-wrapper"></div>
             </div>
@@ -910,12 +1108,27 @@ window.app.demo = {
         }
     },
 
-    // Variables de estado interno para simulaciones de Up-Sells
+    completeWaterMission: function() {
+        const fillBar = document.getElementById('mission-water-bar');
+        const btn = document.getElementById('btn-water-mission');
+        const xpCounter = document.getElementById('maku-xp-counter');
+        
+        if (fillBar) fillBar.style.width = '100%';
+        if (btn) {
+            btn.textContent = "COMPLETADO ✓";
+            btn.disabled = true;
+            btn.style.background = "#10b981";
+        }
+
+        this.userXp += 100;
+        if (xpCounter) xpCounter.textContent = `${this.userXp} XP`;
+        this._showToast("¡MISIÓN COMPLETADA! +100 XP");
+    },
+
     mockTrackerHydration: 2.2,
     mockCartCount: 0,
     mockCampaignBudget: 2000,
 
-    // GESTIÓN DE UP-SELLS DULCIFICADOS
     triggerUpsell: function(moduleName) {
         const modal = document.getElementById('upsell-modal-overlay');
         if (!modal) return;
@@ -957,14 +1170,13 @@ window.app.demo = {
         this._showToast("💊 SUPLEMENTO AGREGADO AL EXPEDIENTE DE SOFIA");
     },
 
-    // Renderizador interactivo: Bio-Tracker de Hábitos
     renderBioTrackerDemo: function() {
         const body = document.getElementById('upsell-dynamic-body');
         if (!body) return;
         const pct = Math.min(Math.round((this.mockTrackerHydration / 2.5) * 100), 100);
         body.innerHTML = `
             <div class="text-left space-y-4">
-                <span class="text-[9px] font-['Orbitron'] text-blue-600 tracking-widest font-bold block">[ TELEMETRÍA DE EXPEDIENTE: PORTAL DE HÁBITOS ]</span>
+                <span class="text-[9px] font-['Inter'] text-blue-600 tracking-widest font-bold block">[ TELEMETRÍA DE EXPEDIENTE: PORTAL DE HÁBITOS ]</span>
                 <h3 class="text-base font-black text-slate-900">📊 Ficha de Hábitos: Juan Pérez (Paciente)</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">Esta es la visualización clínica que tendrás de cada paciente. Puedes experimentar registrando más hidratación simulada en caliente:</p>
                 
@@ -991,7 +1203,7 @@ window.app.demo = {
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-                    <button onclick="window.app.demo.addMockHydration()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                    <button onclick="window.app.demo.addMockHydration()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Inter'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
                         ➕ Simular Registro de Hidratación (+300 ml)
                     </button>
                     <button onclick="window.app.demo.submitUpsellRequest('Bio-Tracker de Hábitos')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
@@ -1008,14 +1220,13 @@ window.app.demo = {
         this._showToast("💧 REGISTRO DE AGUA EXÍTOSO (+300ml)");
     },
 
-    // Renderizador interactivo: E-Shop Médica
     renderEShopDemo: function() {
         const body = document.getElementById('upsell-dynamic-body');
         if (!body) return;
         body.innerHTML = `
             <div class="text-left space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-[9px] font-['Orbitron'] text-emerald-600 tracking-widest font-bold block">[ TIENDA EN LINEA DE PRECISIÓN ]</span>
+                    <span class="text-[9px] font-['Inter'] text-emerald-600 tracking-widest font-bold block">[ TIENDA EN LINEA DE PRECISIÓN ]</span>
                     <span class="text-[9px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-bold">🛒 Carrito: ${this.mockCartCount} items</span>
                 </div>
                 <h3 class="text-base font-black text-slate-900">🛒 E-Shop: Suplementación & Productos Clínicos</h3>
@@ -1045,7 +1256,7 @@ window.app.demo = {
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-                    <button onclick="window.app.demo.checkoutMockCart()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                    <button onclick="window.app.demo.checkoutMockCart()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-['Inter'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
                         💳 Simular Compra de Carrito
                     </button>
                     <button onclick="window.app.demo.submitUpsellRequest('E-Shop de Especialidad')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
@@ -1072,18 +1283,17 @@ window.app.demo = {
         this.renderEShopDemo();
     },
 
-    // Renderizador interactivo: Campaña de Anuncios Ads
     renderCampaignDemo: function() {
         const body = document.getElementById('upsell-dynamic-body');
         if (!body) return;
         const clicks = Math.round((this.mockCampaignBudget / 2000) * 1280);
-        const conversions = Math.round(clicks * 0.065); // 6.5% de conversión a cita
-        const estimatedIncome = conversions * 800; // Consulta a $800 MXN
+        const conversions = Math.round(clicks * 0.065); 
+        const estimatedIncome = conversions * 800; 
         const roi = Math.round(((estimatedIncome - this.mockCampaignBudget) / this.mockCampaignBudget) * 100);
 
         body.innerHTML = `
             <div class="text-left space-y-4">
-                <span class="text-[9px] font-['Orbitron'] text-rose-500 tracking-widest font-bold block">[ TELEMETRÍA DE EMBUDO DE TRÁFICO ADS ]</span>
+                <span class="text-[9px] font-['Inter'] text-rose-500 tracking-widest font-bold block">[ TELEMETRÍA DE EMBUDO DE TRÁFICO ADS ]</span>
                 <h3 class="text-base font-black text-slate-900">🎯 Campaña Ads Conectada a tu WhatsApp Bot</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">Monitorea el costo y retorno de tus campañas de adquisición de pacientes:</p>
                 
@@ -1109,7 +1319,7 @@ window.app.demo = {
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-                    <button onclick="window.app.demo.adjustCampaignBudget()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                    <button onclick="window.app.demo.adjustCampaignBudget()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-['Inter'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
                         ⚡ ${this.mockCampaignBudget === 2000 ? 'Simular Duplicar Presupuesto ($4,000 MXN)' : 'Restablecer Presupuesto ($2,000 MXN)'}
                     </button>
                     <button onclick="window.app.demo.submitUpsellRequest('Plan Ads de Pacientes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
@@ -1131,7 +1341,7 @@ window.app.demo = {
         if (!body) return;
         body.innerHTML = `
             <div class="text-left space-y-4">
-                <span class="text-[9px] font-['Orbitron'] text-blue-600 tracking-widest font-bold block">[ INTEGRACIÓN DE PORTAL CLÍNICO PREMIUM ]</span>
+                <span class="text-[9px] font-['Inter'] text-blue-600 tracking-widest font-bold block">[ INTEGRACIÓN DE PORTAL CLÍNICO PREMIUM ]</span>
                 <h3 class="text-base font-black text-slate-900">📂 Expediente Sofia Alatorre (ID: #SOF-289)</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">Este es el panel que visualiza el paciente. Permite consultar recetas, diagnósticos y citas sin saturar tu línea telefónica:</p>
                 
@@ -1172,7 +1382,7 @@ window.app.demo = {
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-                    <button onclick="window.app.demo.addNewMockPrescription()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Orbitron'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
+                    <button onclick="window.app.demo.addNewMockPrescription()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-['Inter'] font-black text-[10px] py-3 rounded-xl uppercase transition-all">
                         ➕ Simular Recetar Suplemento Adicional
                     </button>
                     <button onclick="window.app.demo.submitUpsellRequest('Expediente Clínico Digital')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] px-4 rounded-xl">
@@ -1183,7 +1393,6 @@ window.app.demo = {
         `;
     },
 
-    // GESTIÓN DEL MODAL DE CIERRE COMERCIAL
     openCloserModal: function() {
         const closer = document.getElementById('closer-modal-overlay');
         if (closer) closer.style.setProperty('display', 'flex', 'important');
@@ -1194,9 +1403,8 @@ window.app.demo = {
         if (closer) closer.style.setProperty('display', 'none', 'important');
     },
 
-    // Temporizador cíclico automático para gatillar la propuesta de compra comercial
     startCloserAutoTrigger: function() {
-        if (window.app && window.app.clientData) return; // Bloquear temporizador de venta en sitios activos de clientes
+        if (window.app && window.app.clientData) return; 
         setInterval(() => {
             const closer = document.getElementById('closer-modal-overlay');
             const introModal = document.getElementById('whatsapp-simulation-intro-modal');
@@ -1215,16 +1423,14 @@ window.app.demo = {
                 this.openCloserModal();
                 this._showToast("💡 SIMULACIÓN COMPLETA: ¿Listo para activar tu suite?");
             }
-        }, 60000); // 60,000 milisegundos = 1 minuto
+        }, 60000); 
     },
 
-    // DISPARADOR TRANSACCIONAL DE ROBOTIAX
     triggerPaymentFlow: function() {
         this.closeCloserModal();
         window.app = window.app || {};
         window.app.vault = 'RBX-PRT-99-MXN-SECURE-2025';
 
-        // Captura dinámica del ID y plan de la suite activa
         const params = new URLSearchParams(window.location.search);
         const activeId = params.get('id') || 'salud';
         const productId = `cfg-${activeId}-bot-promo`;
@@ -1277,7 +1483,6 @@ window.app.demo = {
         }
     },
 
-    // AUXILIARES
     _renderHistory: function() {
         const historyEl = document.getElementById('whatsapp-chat-history');
         if (!historyEl) return;
@@ -1342,15 +1547,12 @@ document.addEventListener('DOMContentLoaded', () => {
             window.app.demo.initMultiTenant();
         }
     }
-    // 1. Ejecutar hidratación de colores, fotos y la trivia del giro correspondiente
     if (window.app.demo && typeof window.app.demo.hydrateUniversalEngine === 'function') {
         window.app.demo.hydrateUniversalEngine();
     }
-    // 2. Cargar e iniciar la primera de las tres preguntas de la trivia
     if (window.app.demo && typeof window.app.demo.loadMainTriviaQuestion === 'function') {
         window.app.demo.loadMainTriviaQuestion(false);
     }
-    // 3. Inicializar el carrusel de imágenes
     if (window.app.demo && typeof window.app.demo.initCinematicViewer === 'function') {
         window.app.demo.initCinematicViewer();
     }
