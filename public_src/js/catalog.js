@@ -243,9 +243,7 @@ window.app.catalog.demoTemplates = {
             { "title": "Clases Grupales & CrossFit", "desc": "Sesiones dinámicas de alta intensidad guiadas por coaches especializados en quema calórica." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80", "caption": "Equipamiento de fuerza olímpica de alta gama" },
-            { "url": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80", "caption": "Entrena en el ambiente ciber-punk de mayor concentración" },
-            { "url": "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=1200&q=80", "caption": "Clases de acondicionamiento de alta potencia guiadas" }
+            { "url": "assets/Captura_videos_makumoto.jpg", "caption": "Entrenamiento de alta precisión y fuerza" }
         ],
         "trivia": [
             { "q": "¿Qué macronutriente es esencial para la reconstrucción de las fibras musculares?", "a": "Proteína", "b": "Carbohidratos", "correct": "a" },

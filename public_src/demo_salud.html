@@ -156,6 +156,116 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        /* --- LIVE STREAMING ENGINE --- */
+        .live-stream-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 25;
+            pointer-events: none;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+        }
+
+        .live-badge-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .badge-live {
+            background: #ff003c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 7px;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+        }
+
+        .badge-live::before {
+            content: "";
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse-live 1s infinite;
+        }
+
+        @keyframes pulse-live {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .badge-viewers {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 7px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .social-particle {
+            position: absolute;
+            bottom: -20px;
+            right: 15px;
+            font-size: 20px;
+            opacity: 0;
+            z-index: 30;
+            animation: live-float-up 2.5s ease-out forwards;
+        }
+
+        @keyframes live-float-up {
+            0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 1; transform: translateY(-20px) translateX(-5px) scale(1.2); }
+            100% { transform: translateY(-250px) translateX(-40px) scale(1); opacity: 0; }
+        }
+
+        .animate-spin-slow {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .drop-shadow-lg {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
+    .drop-shadow-lg {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
+
+        /* FIX DE VISIBILIDAD DE IMAGEN */
+        .phone-screen-img {
+            position: relative;
+            z-index: 1;
+        }
+
+        .live-stream-overlay {
+            z-index: 10 !important;
+        }
+
+        .phone-entrar-overlay {
+            z-index: 20 !important;
+        }
     </style>
     <script>
         window.app = window.app || {};
@@ -390,36 +500,70 @@
                             <p class="text-slate-500 text-xs leading-relaxed">
                                 <strong>La revolución del video corto en tu sucursal.</strong> Tu propia estación de televisión digital adaptada. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad.
                             </p>
-                            <div class="pt-1">
-                                <span class="inline-flex items-center gap-1.5 text-[9px] font-['Poppins'] text-rose-600 font-black border border-rose-200/60 bg-rose-50 px-3 py-1.5 rounded-full">
-                                    <i class="fa-solid fa-play"></i> REPRODUCIR CONTENIDOS TV
-                                </span>
                             </div>
-                        </div>
                         
                         <!-- Columna Derecha: Celular Vertical Real 9:15 con Notificaciones Flotantes y Filtro Hover -->
                         <div class="md:col-span-5 w-full flex justify-center">
                             <div class="phone-simulator-frame relative w-full max-w-[210px] aspect-[9/15] border-slate-200" onclick="window.app.demo.triggerVideoDemo()">
                                 
-                                <!-- Máscara Roja -->
-                                <div id="phone-red-overlay-2" class="phone-red-overlay"></div>
+                                <!-- 1. LA IMAGEN (FONDO) -->
+                                <img src="assets/Captura_videos_makumoto.JPG" alt="TV Sintonía" id="phone-img-2" class="phone-screen-img state-active w-full h-full object-cover">
+                                
+                                <!-- 2. DASHBOARD (CONTROLES) - DIRECTO -->
+                                <div class="live-stream-overlay">
+                                    <div class="live-badge-container">
+                                        <div class="badge-live">En Vivo</div>
+                                        <div class="badge-viewers">
+                                            <i class="fa-solid fa-eye"></i>
+                                            <span id="live-viewer-count">128</span>
+                                        </div>
+                                    </div>
+                                    <div id="live-particles-target" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+                                <!-- BARRA LATERAL (TIKTOK STYLE) -->
+                                    <div class="absolute right-2 bottom-16 flex flex-col items-center gap-4 z-30">
+                                        <div class="relative">
+                                            <img src="assets/favicon.png" class="w-8 h-8 rounded-full border-2 border-white shadow-lg">
+                                            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-rose-500 text-white rounded-full w-3 h-3 flex items-center justify-center text-[8px] border border-white">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <i class="fa-solid fa-heart text-white text-xl drop-shadow-lg"></i>
+                                            <span class="text-white text-[8px] font-bold drop-shadow-md">12.4K</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <i class="fa-solid fa-comment-dots text-white text-xl drop-shadow-lg"></i>
+                                            <span class="text-white text-[8px] font-bold drop-shadow-md">852</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <i class="fa-solid fa-share text-white text-xl drop-shadow-lg"></i>
+                                            <span class="text-white text-[8px] font-bold drop-shadow-md">Share</span>
+                                        </div>
+                                    </div>
 
-                                <!-- Letrero de Entrada Activa -->
-                                <div id="phone-entrar-2" class="phone-entrar-overlay">
-                                    <div class="neon-action-btn">REPRODUCIR TV</div>
+                                    <!-- INFO INFERIOR (CAPTION & USER) -->
+                                    <div class="absolute left-3 bottom-4 right-12 z-30 text-left">
+                                        <div class="text-white font-bold text-[10px] mb-1 drop-shadow-md">@Robotiax_Central</div>
+                                        <div id="live-description-text" class="text-white text-[9px] leading-tight drop-shadow-lg line-clamp-2 mb-2 font-light">
+                                            Sintonía biológica activa. Optimizando el rendimiento visual en tiempo real. #AI #Wellness #Robotiax
+                                        </div>
+                                        <div class="flex items-center gap-2 text-white text-[8px] drop-shadow-md">
+                                            <i class="fa-solid fa-music animate-spin-slow"></i>
+                                            <span class="truncate font-mono">Sonido Original - Makumoto TV Studio</span>
+                                        </div>
+                                    </div>
+
+                                    <div id="live-particles-target" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
                                 </div>
 
-                                <!-- Alerta Push Simulada Activa (Pilar 3) -->
-                                <div id="phone-notif-box-2" class="absolute w-[90%] bg-white/95 backdrop-blur border border-slate-200/80 p-2.5 rounded-xl flex items-center gap-2.5 z-30 opacity-0 transition-all duration-500 pointer-events-none shadow-md">
-                                    <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-rose-500 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0 shadow-sm" id="notif-avatar-frame-2">📺</div>
-                                    <div class="text-[8px] text-left leading-tight font-['Poppins']">
-                                        <strong id="notif-title-2" class="text-slate-950 block font-black text-[9px]">Sintonía Stream</strong>
-                                        <span id="notif-desc-2" class="text-slate-600 leading-normal block">Transmisión de bienestar</span>
+                                <!-- 3. ACCIÓN (PLAY ICON ONLY) -->
+                                <div id="phone-entrar-2" class="phone-entrar-overlay show-cta">
+                                    <div class="w-14 h-14 bg-rose-600/90 rounded-full flex items-center justify-center text-white shadow-2xl animate-pulse">
+                                        <i class="fa-solid fa-play text-2xl ml-1"></i>
                                     </div>
                                 </div>
 
                                 <div class="phone-glass-glare"></div>
-                                <img src="assets/Captura_videos_makumoto.JPG" alt="TV Sintonía" id="phone-img-2" class="phone-screen-img state-standby">
                             </div>
                         </div>
                     </div>

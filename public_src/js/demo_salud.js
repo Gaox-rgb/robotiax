@@ -250,8 +250,11 @@ window.app.demo = {
             if (d2) d2.textContent = template.services[1].desc;
         }
 
-        if (template.images) {
-            this.cinematicPhotos = template.images;
+        // RE-INICIALIZACIÓN DE CARRUSEL CON IMÁGENES DEL NICHO
+        if (template.images && template.images.length > 0) {
+            this.cinematicPhotos = [...template.images];
+            this.currentIndex = 0;
+            this.initCinematicViewer(); // Reiniciamos el visor con las fotos correctas
         }
 
         if (template.trivia) {
@@ -287,9 +290,12 @@ window.app.demo = {
             clearInterval(this.notifLoopInterval);
         }
 
-        this.activeActState = 1; // Inicia en Acto I (Standby / Blur / Rojo)
+        this.activeActState = 2; // ENTRAR DIRECTO A ACTO II (ACTIVO)
         this.notifIndex = 0;
-        this.setPhoneVisualState(1); // Setear estado visual inicial
+        
+        // Forzar Pilar 3 a estar activo SIEMPRE
+        this.startLiveStreamInteractions(); 
+        this.setPhoneVisualState(2); 
 
         const runCycleStep = () => {
             if (this.activeActState === 1) {
@@ -330,90 +336,96 @@ window.app.demo = {
         const img1 = document.getElementById('phone-img-1');
         const img2 = document.getElementById('phone-img-2');
         const red1 = document.getElementById('phone-red-overlay-1');
-        const red2 = document.getElementById('phone-red-overlay-2');
         const enter1 = document.getElementById('phone-entrar-1');
         const enter2 = document.getElementById('phone-entrar-2');
 
+        // El Pilar 3 (img2 y enter2) ahora es independiente y siempre está en Acto II
+        if (img2) img2.className = 'phone-screen-img state-active';
+        if (enter2) enter2.className = 'phone-entrar-overlay show-cta';
+
         if (act === 1) {
-            // Acto I: Rojo + Blur
-            if (img1) { img1.className = 'phone-screen-img state-standby'; }
-            if (img2) { img2.className = 'phone-screen-img state-standby'; }
-            if (red1) { red1.className = 'phone-red-overlay'; }
-            if (red2) { red2.className = 'phone-red-overlay'; }
-            if (enter1) { enter1.className = 'phone-entrar-overlay'; }
-            if (enter2) { enter2.className = 'phone-entrar-overlay'; }
+            // ACTO I: Solo afecta al Pilar 2 (Standby)
+            if (img1) img1.className = 'phone-screen-img state-standby';
+            if (red1) red1.className = 'phone-red-overlay';
+            if (enter1) enter1.className = 'phone-entrar-overlay';
         } else {
-            // Acto II: Aclarado total + Letrero Pulsante
-            if (img1) { img1.className = 'phone-screen-img state-active'; }
-            if (img2) { img2.className = 'phone-screen-img state-active'; }
-            if (red1) { red1.className = 'phone-red-overlay state-active'; }
-            if (red2) { red2.className = 'phone-red-overlay state-active'; }
-            if (enter1) { enter1.className = 'phone-entrar-overlay show-cta'; }
-            if (enter2) { enter2.className = 'phone-entrar-overlay show-cta'; }
+            // ACTO II: Solo afecta al Pilar 2 (Activo)
+            if (img1) img1.className = 'phone-screen-img state-active';
+            if (red1) red1.className = 'phone-red-overlay state-active';
+            if (enter1) enter1.className = 'phone-entrar-overlay show-cta';
         }
+    },
+
+    // MOTOR DE INTERACCIÓN LIVE (PILAR 3)
+    liveStreamInterval: null,
+    startLiveStreamInteractions: function() {
+        if (this.liveStreamInterval) return;
+        
+        const emojis = ['❤️', '👏', '🔥', '🙌', '⭐', '❤️', '👏'];
+        const target = document.getElementById('live-particles-target');
+        const viewerCountEl = document.getElementById('live-viewer-count');
+
+        this.liveStreamInterval = setInterval(() => {
+            // 1. Generar Partícula Social
+            const particle = document.createElement('span');
+            particle.className = 'social-particle';
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            particle.style.right = (10 + Math.random() * 20) + 'px'; // Variación horizontal
+            if (target) {
+                target.appendChild(particle);
+                setTimeout(() => particle.remove(), 2500); // Auto-destrucción
+            }
+
+            // 2. Oscilar Espectadores
+            if (viewerCountEl) {
+                let current = parseInt(viewerCountEl.textContent);
+                current += Math.random() > 0.5 ? 1 : -1;
+                viewerCountEl.textContent = current;
+            }
+        }, 400);
+    },
+
+    stopLiveStreamInteractions: function() {
+        clearInterval(this.liveStreamInterval);
+        this.liveStreamInterval = null;
     },
 
     showPhonePushNotification: function(title, desc) {
         const box1 = document.getElementById('phone-notif-box-1');
-        const box2 = document.getElementById('phone-notif-box-2');
         const title1 = document.getElementById('notif-title-1');
-        const title2 = document.getElementById('notif-title-2');
         const desc1 = document.getElementById('notif-desc-1');
-        const desc2 = document.getElementById('notif-desc-2');
 
         if (title1) title1.textContent = title;
-        if (title2) title2.textContent = title;
         if (desc1) desc1.textContent = desc;
-        if (desc2) desc2.textContent = desc;
 
-        // Mapeo de Alternancia Sencilla: Arriba -> Abajo -> Arriba -> Abajo (Sin posición central)
         const step = (this.notifIndex - 1) % 2;
-        let posStyles = {};
-        
-        if (step === 0) {
-            // Posición Arriba (Paso par)
-            posStyles = { top: '16px', bottom: 'auto', left: '50%', startTransform: 'translate(-50%, -20px)' };
-        } else {
-            // Posición Abajo (Paso impar)
-            posStyles = { top: 'auto', bottom: '16px', left: '50%', startTransform: 'translate(-50%, 20px)' };
+        let posStyles = step === 0 
+            ? { top: '16px', bottom: 'auto', startTransform: 'translate(-50%, -20px)' }
+            : { top: 'auto', bottom: '16px', startTransform: 'translate(-50%, 20px)' };
+
+        if (box1) {
+            box1.style.top = posStyles.top;
+            box1.style.bottom = posStyles.bottom;
+            box1.style.left = '50%';
+            box1.style.transform = posStyles.startTransform;
+            box1.style.opacity = '0';
+            
+            void box1.offsetHeight;
+
+            box1.style.setProperty('opacity', '1', 'important');
+            box1.style.setProperty('transform', 'translate(-50%, 0)', 'important');
         }
 
-        // Aplicar estilos de posicionamiento base antes de mostrar
-        [box1, box2].forEach(box => {
-            if (!box) return;
-            box.style.top = posStyles.top;
-            box.style.bottom = posStyles.bottom;
-            box.style.left = posStyles.left;
-            box.style.transform = posStyles.startTransform;
-            box.style.opacity = '0';
-        });
-
-        // Forzar reflujo de renderizado en caliente
-        void (box1 ? box1.offsetHeight : 0);
-
-        // Entrada con transición suave
-        [box1, box2].forEach(box => {
-            if (!box) return;
-            box.style.setProperty('opacity', '1', 'important');
-            box.style.setProperty('transform', 'translate(-50%, 0)', 'important');
-        });
-
-        // Agendar ocultación progresiva hacia la dirección correspondiente
-        setTimeout(() => { this.hidePhonePushNotification(step); }, 3000);
+        setTimeout(() => this.hidePhonePushNotification(step), 3000);
     },
 
     hidePhonePushNotification: function(step = 0) {
         const box1 = document.getElementById('phone-notif-box-1');
-        const box2 = document.getElementById('phone-notif-box-2');
-
-        // Determinar sentido del deslizamiento de salida
         const exitTransform = (step === 0) ? 'translate(-50%, -20px)' : 'translate(-50%, 20px)';
-
-        [box1, box2].forEach(box => {
-            if (!box) return;
-            box.style.setProperty('opacity', '0', 'important');
-            box.style.setProperty('transform', exitTransform, 'important');
-        });
+        if (box1) {
+            box1.style.setProperty('opacity', '0', 'important');
+            box1.style.setProperty('transform', exitTransform, 'important');
+        }
     },
 
     // REDIRECCIÓN SEGURA E INMUNE DE COLISEO (Abre pestañas nuevas limpias de forma asíncrona)
@@ -484,21 +496,22 @@ window.app.demo = {
     initCinematicViewer: function() {
         const baseAssetUrl = window.location.hostname.includes('localhost') ? '' : 'https://robotiax.mx/';
         
+        if (this.slideshowInterval) {
+            clearInterval(this.slideshowInterval);
+            this.slideshowInterval = null;
+        }
+
         this.cinematicPhotos = this.cinematicPhotos.map(p => ({
             ...p,
             url: p.url.startsWith('http') ? p.url : baseAssetUrl + p.url
         }));
 
-        this.changeCinematicPhoto(0, true);
-        
-        if (this.slideshowInterval) {
-            clearInterval(this.slideshowInterval);
+        this.currentIndex = 0;
+        if (this.cinematicPhotos.length > 0) {
+            this.changeCinematicPhoto(0, true);
         }
         
-        this.slideshowInterval = setInterval(() => {
-            this.currentIndex = (this.currentIndex + 1) % this.cinematicPhotos.length;
-            this.changeCinematicPhoto(this.currentIndex, false);
-        }, 3000);
+        console.log("🔒 [IMAGE ENGINE]: Asset fijado: " + (this.cinematicPhotos[0]?.url || 'none'));
     },
 
     mainTriviaPool: [
@@ -687,10 +700,17 @@ window.app.demo = {
 
         mainPhoto.classList.add('lens-blur-active');
 
+        const phoneImg2 = document.getElementById('phone-img-2');
+        const liveDesc = document.getElementById('live-description-text');
+
         setTimeout(() => {
             mainPhoto.src = this.cinematicPhotos[index].url;
             caption.textContent = this.cinematicPhotos[index].caption;
             
+            // Sincronizamos la TV con la misma foto y su caption estilo TikTok
+            if (phoneImg2) phoneImg2.src = this.cinematicPhotos[index].url;
+            if (liveDesc) liveDesc.textContent = this.cinematicPhotos[index].caption + " #LiveSintonía #Robotiax";
+
             setTimeout(() => {
                 mainPhoto.classList.remove('lens-blur-active');
             }, 100);
