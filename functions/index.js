@@ -185,25 +185,37 @@ exports.generateDemo = onRequest({
 
                         let finalHtmlWithFix = templateContent;
 
+                        const localCatalogJs = await loadAsset('../public/js/catalog.js');
+                        const isLocal = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
+                        const domainBase = originalHost 
+                            ? `${req.protocol}://${originalHost}` 
+                            : (isLocal ? `${req.protocol}://${req.headers.host}` : 'https://robotiax.mx');
+
+                        if (localCatalogJs) {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('<script src="js/catalog.js"></script>', `<script>${localCatalogJs}</script>`);
+                        } else {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('js/catalog.js', `${domainBase}/js/catalog.js?v=${cacheBuster}`);
+                        }
+
                         if (localCss) {
                             finalHtmlWithFix = finalHtmlWithFix.replace('<link rel="stylesheet" href="css/demo_salud.css">', `<style>${localCss}</style>`);
                         } else {
-                            finalHtmlWithFix = finalHtmlWithFix.replace('css/demo_salud.css', `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`);
+                            finalHtmlWithFix = finalHtmlWithFix.replace('css/demo_salud.css', `${domainBase}/css/demo_salud.css?v=${cacheBuster}`);
                         }
 
                         if (localJs) {
                             finalHtmlWithFix = finalHtmlWithFix.replace('<script src="js/demo_salud.js"></script>', `<script>${localJs}</script>`);
                         } else {
-                            finalHtmlWithFix = finalHtmlWithFix.replace('js/demo_salud.js', `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`);
+                            finalHtmlWithFix = finalHtmlWithFix.replace('js/demo_salud.js', `${domainBase}/js/demo_salud.js?v=${cacheBuster}`);
                         }
 
                         finalHtmlWithFix = finalHtmlWithFix
-                            // Protocolo de Inyección de Assets Absolutos (Versión Reforzada)
-                            .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-                            .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
-                            .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
-                            .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
-                            .replace(/['"]\/?assets\/([^'"]+?)['"]/g, '"https://robotiax.mx/assets/$1"')
+                            // Protocolo de Inyección de Assets Absolutos (Versión Reforzada Adaptativa)
+                            .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, `$1="${domainBase}/assets/$2"`)
+                            .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, `$1="${domainBase}/css/$2"`)
+                            .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, `$1="${domainBase}/js/$2"`)
+                            .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, `url('${domainBase}/assets/$1')`)
+                            .replace(/['"]\/?assets\/([^'"]+?)['"]/g, `"${domainBase}/assets/$1"`)
                             .replace('</head>', clientDataScript + '</head>');
 
                         if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {

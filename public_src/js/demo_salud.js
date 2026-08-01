@@ -251,10 +251,10 @@ window.app.demo = {
         }
 
         // RE-INICIALIZACIÓN DE CARRUSEL CON IMÁGENES DEL NICHO
-        if (template.images && template.images.length > 0) {
-            this.cinematicPhotos = [...template.images];
+        if (template && template.images && template.images.length > 0) {
+            this.cinematicPhotos = template.images.map(img => ({ ...img }));
             this.currentIndex = 0;
-            this.initCinematicViewer(); // Reiniciamos el visor con las fotos correctas
+            this.initCinematicViewer();
         }
 
         if (template.trivia) {
@@ -508,12 +508,7 @@ window.app.demo = {
         }
     },
 
-    cinematicPhotos: [
-    { url: "https://robotiax.mx/assets/frenzy_1.webp", caption: "Conoce nuestras instalaciones" },
-    { url: "https://robotiax.mx/assets/frenzy_2.webp", caption: "Los pacientes satisfechos son nuestra prioridad" },
-    { url: "https://robotiax.mx/assets/frenzy_3.webp", caption: "Un profesional no teme a la tecnología: la usa" }
-],
-
+    cinematicPhotos: [],
     currentIndex: 0,
     slideshowInterval: null,
 
@@ -523,17 +518,36 @@ window.app.demo = {
             this.slideshowInterval = null;
         }
 
+        const params = new URLSearchParams(window.location.search);
+        const originalHost = params.get('originalHost');
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        let baseUrl = 'https://robotiax.mx/';
+        if (originalHost) {
+            baseUrl = `${window.location.protocol}//${originalHost}/`;
+        } else if (isLocal) {
+            baseUrl = `${window.location.protocol}//${window.location.host}/`;
+        }
+
         this.cinematicPhotos = this.cinematicPhotos.map(p => {
             let fullUrl = p.url || '';
             if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
-                fullUrl = 'https://robotiax.mx/' + fullUrl.replace(/^\/+/, '');
+                fullUrl = baseUrl + fullUrl.replace(/^\/+/, '');
             }
             return { ...p, url: fullUrl };
         });
 
         this.currentIndex = 0;
-        if (this.cinematicPhotos.length > 0) {
+        if (this.cinematicPhotos && this.cinematicPhotos.length > 0) {
             this.changeCinematicPhoto(0, true);
+        }
+
+        // ROTACIÓN AUTOMÁTICA CADA 3 SEGUNDOS
+        if (this.cinematicPhotos && this.cinematicPhotos.length > 1) {
+            this.slideshowInterval = setInterval(() => {
+                this.currentIndex = (this.currentIndex + 1) % this.cinematicPhotos.length;
+                this.changeCinematicPhoto(this.currentIndex, false);
+            }, 3000);
         }
     },
 
@@ -711,18 +725,26 @@ window.app.demo = {
 
     changeCinematicPhoto: function(index, immediate = false) {
         const mainPhoto = document.getElementById('cinematic-main-photo');
-        const caption = document.getElementById('cinematic-caption-text');
 
-        if (!mainPhoto || !caption || !this.cinematicPhotos[index]) return;
+        if (!mainPhoto || !this.cinematicPhotos[index]) return;
 
+       
         let photoUrl = this.cinematicPhotos[index].url || '';
         if (photoUrl && !photoUrl.startsWith('http://') && !photoUrl.startsWith('https://')) {
-            photoUrl = 'https://robotiax.mx/assets/' + photoUrl.replace(/^(\/?assets\/|\/)+/, '');
+            const params = new URLSearchParams(window.location.search);
+            const originalHost = params.get('originalHost');
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            let baseUrl = 'https://robotiax.mx/';
+            if (originalHost) {
+                baseUrl = `${window.location.protocol}//${originalHost}/`;
+            } else if (isLocal) {
+                baseUrl = `${window.location.protocol}//${window.location.host}/`;
+            }
+            photoUrl = baseUrl + photoUrl.replace(/^\/+/, '');
         }
 
         if (immediate) {
             mainPhoto.src = photoUrl;
-            caption.textContent = this.cinematicPhotos[index].caption;
             return;
         }
 
@@ -733,9 +755,8 @@ window.app.demo = {
 
         setTimeout(() => {
             mainPhoto.src = photoUrl;
-            caption.textContent = this.cinematicPhotos[index].caption;
             
-            if (liveDesc) liveDesc.textContent = this.cinematicPhotos[index].caption + " #LiveSintonía #Robotiax";
+            if (liveDesc) liveDesc.textContent = "Sintonía biológica activa #LiveSintonía #Robotiax";
 
             setTimeout(() => {
                 mainPhoto.classList.remove('lens-blur-active');
@@ -1598,8 +1619,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (window.app.demo && typeof window.app.demo.loadMainTriviaQuestion === 'function') {
         window.app.demo.loadMainTriviaQuestion(false);
-    }
-    if (window.app.demo && typeof window.app.demo.initCinematicViewer === 'function') {
-        window.app.demo.initCinematicViewer();
     }
 });

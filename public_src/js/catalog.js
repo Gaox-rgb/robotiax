@@ -197,9 +197,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Ansiedad y Estrés", "desc": "Terapia psicológica de precisión enfocada en re-configurar el sistema nervioso bajo alta demanda." }
         ],
         "images": [
-            { "url": "https://robotiax.mx/assets/frenzy_1.webp", "caption": "Conoce nuestras instalaciones" },
-            { "url": "https://robotiax.mx/assets/frenzy_2.webp", "caption": "Los pacientes satisfechos son nuestra prioridad" },
-            { "url": "https://robotiax.mx/assets/frenzy_3.webp", "caption": "Un profesional no teme a la tecnología: la usa" }
+            { "url": "assets/webs/salud1.webp" },
+            { "url": "assets/webs/salud2.webp" },
+            { "url": "assets/webs/salud3.webp" }
         ],
         "trivia": [
             { "q": "¿Cada cuánto tiempo se aconseja agendar una consulta clínica de control preventivo?", "a": "6 meses", "b": "5 años", "correct": "a" },
@@ -243,7 +243,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Clases Grupales & CrossFit", "desc": "Sesiones dinámicas de alta intensidad guiadas por coaches especializados en quema calórica." }
         ],
         "images": [
-            { "url": "https://robotiax.mx/assets/Captura_videos_makumoto.JPG", "caption": "Entrenamiento de alta precisión y fuerza" }
+            { "url": "assets/webs/gym1.webp" },
+            { "url": "assets/webs/gym2.webp" },
+            { "url": "assets/webs/gym3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué macronutriente es esencial para la reconstrucción de las fibras musculares?", "a": "Proteína", "b": "Carbohidratos", "correct": "a" },
@@ -289,9 +291,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Blindaje Fiscal & Corporativo", "desc": "Auditoría legal preventiva de contratos, planeación corporativa y defensa ante requerimientos." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80", "caption": "Asesoría jurídica corporativa de alta especialidad" },
-            { "url": "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80", "caption": "Defensa jurídica y representación ante tribunales" },
-            { "url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80", "caption": "Auditoría y formalización de contratos mercantiles" }
+            { "url": "assets/webs/legal1.webp" },
+            { "url": "assets/webs/legal2.webp" },
+            { "url": "assets/webs/legal3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué tipo de contrato regula las transacciones comerciales entre empresas en México?", "a": "Contrato Mercantil", "b": "Contrato Civil", "correct": "a" },
@@ -337,9 +339,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Estrategia Fiscal Preventiva", "desc": "Optimización legal de deducciones autorizadas para reducir el pago del ISR y maximizar saldos a favor." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Auditoría contable y balances de resultados" },
-            { "url": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80", "caption": "Declaraciones fiscales mensuales y anuales ante el SAT" },
-            { "url": "https://images.unsplash.com/photo-1544377193-33dcf4d68fb5?auto=format&fit=crop&w=1200&q=80", "caption": "Estrategias de planeación y optimización fiscal corporativa" }
+            { "url": "assets/webs/contador1.webp" },
+            { "url": "assets/webs/contador2.webp" },
+            { "url": "assets/webs/contador3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué régimen simplificado SAT aplica para personas físicas con ingresos menores a 3.5 millones al año?", "a": "RESICO", "b": "Actividad Empresarial", "correct": "a" },
@@ -383,9 +385,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Apartado y Reserva Exprés", "desc": "Selecciona en línea, apartamos tu talla por 24 horas y te lo pruebas de forma directa en sucursal." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80", "caption": "Explora nuestra exclusiva colección de temporada" },
-            { "url": "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1200&q=80", "caption": "Boutique física con asesoría de moda en vivo" },
-            { "url": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80", "caption": "Prendas confeccionadas con fibras sustentables premium" }
+            { "url": "assets/webs/boutique1.webp" },
+            { "url": "assets/webs/boutique2.webp" },
+            { "url": "assets/webs/boutique3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué tipo de fibra textil es totalmente de origen vegetal y altamente transpirable?", "a": "Algodón", "b": "Poliéster", "correct": "a" },
@@ -429,9 +431,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Cotización Mayorista de Cemento", "desc": "Precios especiales por tonelada para constructores con entrega directa en obra con camión." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1581781894090-2139f24666d1?auto=format&fit=crop&w=1200&q=80", "caption": "Herramientas manuales y eléctricas de grado industrial" },
-            { "url": "https://images.unsplash.com/photo-1530124566582-ab0510492f88?auto=format&fit=crop&w=1200&q=80", "caption": "Variedad en tornillería, herrajes y fijaciones" },
-            { "url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80", "caption": "Materiales eléctricos certificados para construcciones" }
+            { "url": "assets/webs/ferreteria1.webp" },
+            { "url": "assets/webs/ferreteria2.webp" },
+            { "url": "assets/webs/ferreteria3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué herramienta se usa de forma específica para apretar tuercas de cabeza hexagonal?", "a": "Llave Española o de Extensión", "b": "Martillo de Bola", "correct": "a" },
@@ -475,9 +477,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Cata de Vinos & Maridaje", "desc": "Experiencia interactiva guiada por sommelier profesional con vinos finos y quesos artesanales." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80", "caption": "Mixología de autor preparada en frío por expertos" },
-            { "url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80", "caption": "Platillos gourmet diseñados con ingredientes de estación" },
-            { "url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80", "caption": "Experiencia gastronómica íntima en salón privado" }
+            { "url": "assets/webs/gourmet1.webp" },
+            { "url": "assets/webs/gourmet2.webp" },
+            { "url": "assets/webs/gourmet3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se le llama al corte de vegetales en forma de tiras muy delgadas y finas?", "a": "Juliana", "b": "Macerado", "correct": "a" },
@@ -521,9 +523,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Suministro de Frutas y Verduras", "desc": "Selección diaria de perecederos y frutas frescas de temporada directamente de productores." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80", "caption": "Gran variedad en abarrotes y perecederos básicos" },
-            { "url": "https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1200&q=80", "caption": "Frutas y verduras frescas seleccionadas a diario" },
-            { "url": "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=1200&q=80", "caption": "Artículos de limpieza y cuidado personal de marca" }
+            { "url": "assets/webs/abastos1.webp" },
+            { "url": "assets/webs/abastos2.webp" },
+            { "url": "assets/webs/abastos3.webp" }
         ],
         "trivia": [
             { "q": "¿Cuál de estos productos se considera de la canasta básica indispensable en la mesa mexicana?", "a": "Frijol / Huevo / Tortilla", "b": "Papas Fritas de bolsa", "correct": "a" },
@@ -567,9 +569,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Repostería Fina Artesanal", "desc": "Panadería horneada a diario: croissants, cheesecakes de frutos rojos y muffins de chocolate belga." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=1200&q=80", "caption": "Extracción de espresso de alta presión con crema densa" },
-            { "url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80", "caption": "Nuestras instalaciones acogedoras de estilo industrial" },
-            { "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1200&q=80", "caption": "Granos seleccionados de cooperativas cafetaleras de altura" }
+            { "url": "assets/webs/cafeteria1.webp" },
+            { "url": "assets/webs/cafeteria2.webp" },
+            { "url": "assets/webs/cafeteria3.webp" }
         ],
         "trivia": [
             { "q": "¿De qué país de origen proviene históricamente la planta del café?", "a": "Etiopía", "b": "Francia", "correct": "a" },
@@ -613,9 +615,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Diseño Floral para Eventos", "desc": "Decoración de iglesias, salones y banquetes con arreglos de alta gama y centros de mesa personalizados." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=1200&q=80", "caption": "Rosas frescas seleccionadas a mano cada mañana" },
-            { "url": "https://images.unsplash.com/photo-1561181286-d3fea73e433a?auto=format&fit=crop&w=1200&q=80", "caption": "Diseños florales contemporáneos en jarrones de autor" },
-            { "url": "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=1200&q=80", "caption": "Bouquets listos para entrega con empaque protector" }
+            { "url": "assets/webs/floreria1.webp" },
+            { "url": "assets/webs/floreria2.webp" },
+            { "url": "assets/webs/floreria3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué truco sencillo ayuda a prolongar la frescura de un ramo de flores en agua?", "a": "Cortar los tallos en diagonal a 45 grados", "b": "Añadir sal de grano al agua", "correct": "a" },
@@ -659,9 +661,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Mantenimiento de Frenos", "desc": "Rectificación de discos, cambio de balatas cerámicas y purga del líquido de frenos con prueba de frenado." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80", "caption": "Diagnóstico por escáner de sensores OBD2 en vivo" },
-            { "url": "https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&w=1200&q=80", "caption": "Servicio de suspensiones y rectificación de balatas" },
-            { "url": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=1200&q=80", "caption": "Afinación de motor con refacciones originales" }
+            { "url": "assets/webs/taller1.webp" },
+            { "url": "assets/webs/taller2.webp" },
+            { "url": "assets/webs/taller3.webp" }
         ],
         "trivia": [
             { "q": "¿Qué significa el encendido del testigo con forma de motor (Check Engine) en el tablero?", "a": "Fallo en el tren motriz o sistema de emisiones", "b": "Falta de combustible en el tanque", "correct": "a" },
@@ -705,9 +707,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Coordinación y Wedding Planner", "desc": "Cronograma minuto a minuto, diseño del lugar, contacto de proveedores y supervisión del evento en vivo." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80", "caption": "Montajes florales y mantelería fina de catálogo" },
-            { "url": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1200&q=80", "caption": "Pista de baile monumental con iluminación robótica" },
-            { "url": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80", "caption": "Cenas de gala de tres tiempos servidas calientes" }
+            { "url": "assets/webs/eventos1.webp" },
+            { "url": "assets/webs/eventos2.webp" },
+            { "url": "assets/webs/eventos3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el documento que describe el cronograma minuto a minuto de un evento?", "a": "Minuta / Escaleta de Evento", "b": "Lista de Invitados", "correct": "a" },
@@ -751,9 +753,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Preparación para Examen TOEFL", "desc": "Simuladores semanales de examen, gramática avanzada y técnicas de escucha para certificar tu nivel." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80", "caption": "Clases grupales dinámicas con enfoque conversacional" },
-            { "url": "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80", "caption": "Tutorías personalizadas presenciales u online" },
-            { "url": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80", "caption": "Biblioteca física con audiolibros de aprendizaje" }
+            { "url": "assets/webs/idiomas1.webp" },
+            { "url": "assets/webs/idiomas2.webp" },
+            { "url": "assets/webs/idiomas3.webp" }
         ],
         "trivia": [
             { "q": "¿Cuál es la prueba oficial internacional con más demanda para acreditar tu nivel de inglés?", "a": "TOEFL / IELTS", "b": "Acreditación SAT", "correct": "a" },
@@ -797,9 +799,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Sanitización Comercial Certificada", "desc": "Desinfección de restaurantes y oficinas con entrega de certificado oficial para salubridad (COFEPRIS)." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1581781894090-2139f24666d1?auto=format&fit=crop&w=1200&q=80", "caption": "Servicios con equipos de termonebulización avanzados" },
-            { "url": "https://images.unsplash.com/photo-1581781894090-2139f24666d1?auto=format&fit=crop&w=1200&q=80", "caption": "Fumigación de jardines perimetrales contra plagas" },
-            { "url": "https://images.unsplash.com/photo-1581781894090-2139f24666d1?auto=format&fit=crop&w=1200&q=80", "caption": "Certificaciones para establecimientos de alimentos" }
+            { "url": "assets/webs/fumigacion1.webp" },
+            { "url": "assets/webs/fumigacion2.webp" },
+            { "url": "assets/webs/fumigacion3.webp" }
         ],
         "trivia": [
             { "q": "¿Cuál es la plaga residencial de mayor riesgo por propagar bacterias estomacales como Salmonella?", "a": "Cucarachas", "b": "Abejas de miel", "correct": "a" },
@@ -843,9 +845,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Desinfección de Colchones", "desc": "Eliminación de ácaros del polvo y alérgenos con vapor a alta temperatura libre de residuos químicos." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80", "caption": "Equipos de inyección-succión de última generación" },
-            { "url": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=1200&q=80", "caption": "Limpieza de colchones y desinfección a vapor activo" },
-            { "url": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80", "caption": "Eliminación de manchas de grasa en tapizados finos" }
+            { "url": "assets/webs/limpieza1.webp" },
+            { "url": "assets/webs/limpieza2.webp" },
+            { "url": "assets/webs/limpieza3.webp" }
         ],
         "trivia": [
             { "q": "¿Cuál es el principal ácaro causante de alergias nasales recurrentes en los colchones?", "a": "Ácaro del Polvo", "b": "Chinche de Cama", "correct": "a" },
@@ -889,9 +891,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Asesoría de Visas y Trámites", "desc": "Llenado de formularios oficiales, reservaciones de vuelo válidas y técnicas para tu entrevista consular." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80", "caption": "Tours por destinos exóticos y culturas milenarias" },
-            { "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80", "caption": "Playas de aguas turquesas en cruceros de lujo" },
-            { "url": "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80", "caption": "Exploración de paisajes de montaña majestuosos" }
+            { "url": "assets/webs/viajes1.webp" },
+            { "url": "assets/webs/viajes2.webp" },
+            { "url": "assets/webs/viajes3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el canal artificial que conecta el mar Mediterráneo con el mar Rojo?", "a": "Canal de Suez", "b": "Canal de Panamá", "correct": "a" },
@@ -935,9 +937,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Sistemas de Embudos Automatizados", "desc": "Estructuración de embudos de prospección en frío vía WhatsApp con guiones de venta psicológicos." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80", "caption": "Extracción y análisis de bases de datos de leads" },
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Configuración de embudos de venta directa automatizados" },
-            { "url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80", "caption": "Capacitaciones y guiones comerciales calificados" }
+            { "url": "assets/webs/prospeccion1.webp" },
+            { "url": "assets/webs/prospeccion2.webp" },
+            { "url": "assets/webs/prospeccion3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se le llama al proceso técnico de extraer bases de datos públicas de sitios web?", "a": "Scraping de Datos", "b": "Phishing de Contraseñas", "correct": "a" },
@@ -981,9 +983,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Desarrollo de Software a Medida", "desc": "Sistemas corporativos, bases de datos integradas, integraciones de APIs de pago y plataformas cerradas." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=1200&q=80", "caption": "Diseño web contemporáneo adaptado a dispositivos móviles" },
-            { "url": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80", "caption": "Desarrollo frontend limpio con estándares SEO" },
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo de tráfico e integraciones en la nube" }
+            { "url": "assets/webs/webs1.webp" },
+            { "url": "assets/webs/webs2.webp" },
+            { "url": "assets/webs/webs3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el protocolo que asegura que tu página web deba viajar de forma segura y encriptada (candado verde)?", "a": "HTTPS / SSL", "b": "FTP Clásico", "correct": "a" },
@@ -1027,9 +1029,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Auditoría de Clima Organizacional", "desc": "Evaluación del ambiente de trabajo interno, índice de rotación y planes de incentivos para colaboradores." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=1200&q=80", "caption": "Entrevistas de reclutamiento por competencias en vivo" },
-            { "url": "https://images.unsplash.com/photo-1521737711867-e3b90473bd88?auto=format&fit=crop&w=1200&q=80", "caption": "Sistemas de evaluación psicométrica de candidatos" },
-            { "url": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80", "caption": "Capacitación e inducción de personal a la empresa" }
+            { "url": "assets/webs/rh1.webp" },
+            { "url": "assets/webs/rh2.webp" },
+            { "url": "assets/webs/rh3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el proceso de integrar y capacitar de forma inicial a un nuevo empleado en la empresa?", "a": "Onboarding / Inducción", "b": "Outsourcing", "correct": "a" },
@@ -1073,9 +1075,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Estrategias de Engagement Directo", "desc": "Automatización de respuestas basadas en palabras clave fijos ('Info', 'Quiero') para desviar tráfico a ventas." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1200&q=80", "caption": "Diseño de identidad visual cohesiva en el feed" },
-            { "url": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=1200&q=80", "caption": "Producción de videos de formato vertical Reels" },
-            { "url": "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo de estadísticas e interacciones reales" }
+            { "url": "assets/webs/instagram1.webp" },
+            { "url": "assets/webs/instagram2.webp" },
+            { "url": "assets/webs/instagram3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se le llama a la métrica que mide la relación de me gustas, guardados y comentarios de tu cuenta?", "a": "Engagement Rate (Tasa de interacción)", "b": "Impresiones de alcance", "correct": "a" },
@@ -1119,9 +1121,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Diseño de Creativos de Alta Conversión", "desc": "Anuncios de video o imagen diseñados bajo metodologías de persuasión para captar clics calificados." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=1200&q=80", "caption": "Análisis de estadísticas de anuncios y ROI de campaña" },
-            { "url": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=1200&q=80", "caption": "Diseño de anuncios de video y banners persuasivos" },
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo del píxel de Meta y públicos personalizados" }
+            { "url": "assets/webs/facebook1.webp" },
+            { "url": "assets/webs/facebook2.webp" },
+            { "url": "assets/webs/facebook3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el fragmento de código que instalas en tu web para rastrear las acciones de los usuarios?", "a": "Píxel de Meta / Conversions API", "b": "Código CSS de Estilo", "correct": "a" },
@@ -1165,9 +1167,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Edición y Locución con IA", "desc": "Generación de guiones persuasivos, voces de locución realistas y edición fluida de video optimizada para retención." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=1200&q=80", "caption": "Diseño de miniaturas y retoque digital de rostros" },
-            { "url": "https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&w=1200&q=80", "caption": "Generación de guiones e historias de retención" },
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo de analíticas de retención de video" }
+            { "url": "assets/webs/youtube1.webp" },
+            { "url": "assets/webs/youtube2.webp" },
+            { "url": "assets/webs/youtube3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el indicador que mide el porcentaje de personas que hacen clic en tu video al verlo en YouTube?", "a": "CTR (Click-Through Rate)", "b": "RPM de Monetización", "correct": "a" },
@@ -1211,9 +1213,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Automatización y Calendario", "desc": "Sistemas de programación de tweets automatizados en horas pico basados en interacciones de tu nicho." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80", "caption": "Mapeo de tendencias virales e interacciones" },
-            { "url": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80", "caption": "Redacción de hilos de alto valor técnico" },
-            { "url": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo de métricas de alcance e impresiones" }
+            { "url": "assets/webs/twitter1.webp" },
+            { "url": "assets/webs/twitter2.webp" },
+            { "url": "assets/webs/twitter3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se le llama a una serie de tweets conectados escritos por un mismo usuario para contar una historia?", "a": "Hilo / Thread de X", "b": "Retweet cruzado", "correct": "a" },
@@ -1257,9 +1259,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Sistemas de Cifrado de Datos", "desc": "Configuración de encriptación Zero-Knowledge en tus bases de datos corporativas para evitar robo de información." }
         ],
         "images": [
-            { "url": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80", "caption": "Monitoreo y bloqueo de ataques cibernéticos en tiempo real" },
-            { "url": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80", "caption": "Análisis forense digital e inyección de parches" },
-            { "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80", "caption": "Configuración de cifrado militar de datos" }
+            { "url": "assets/webs/cyberseguridad1.webp" },
+            { "url": "assets/webs/cyberseguridad2.webp" },
+            { "url": "assets/webs/cyberseguridad3.webp" }
         ],
         "trivia": [
             { "q": "¿Cómo se llama el certificado digital obligatorio que encripta la comunicación entre tu navegador y la web (HTTPS)?", "a": "Certificado SSL / TLS", "b": "Protocolo FTP", "correct": "a" },
@@ -1273,6 +1275,7 @@ window.app.catalog.demoTemplates = {
             "shop_desc": "Adquiere licencias de antivirus de grado corporativo, llaves físicas de autenticación de dos factores (Yubikeys) y VPNs."
         }
     }
+
 };
 
 // Sincronización SWR: Asegura que el objeto global esté siempre instanciado y listo
