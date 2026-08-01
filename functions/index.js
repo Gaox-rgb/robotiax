@@ -5,7 +5,12 @@ const path = require("path");
 const handlebars = require("handlebars");
 const { defineString } = require('firebase-functions/params');
 const { onRequest } = require("firebase-functions/v2/https");
-const BASE_URL = 'https://robotiax.mx'; // O la URL de tu entorno actual
+const { setGlobalOptions } = require("firebase-functions/v2");
+const BASE_URL = 'https://robotiax.mx'; 
+
+// Configuración Global para v2: Obliga al emulador a reconocer la región y el mapeo
+setGlobalOptions({ region: "us-central1" });
+
 const nodemailer = require('nodemailer');
 const https = require("https");
 
@@ -175,13 +180,30 @@ exports.generateDemo = onRequest({
                         }
 
                         const cacheBuster = Date.now();
-                        const finalHtmlWithFix = templateContent
-                            .replace('css/demo_salud.css', `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
-                            .replace('js/demo_salud.js', `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
+                        const localJs = await loadAsset('../public/js/demo_salud.js');
+                        const localCss = await loadAsset('../public/css/demo_salud.css');
+
+                        let finalHtmlWithFix = templateContent;
+
+                        if (localCss) {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('<link rel="stylesheet" href="css/demo_salud.css">', `<style>${localCss}</style>`);
+                        } else {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('css/demo_salud.css', `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`);
+                        }
+
+                        if (localJs) {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('<script src="js/demo_salud.js"></script>', `<script>${localJs}</script>`);
+                        } else {
+                            finalHtmlWithFix = finalHtmlWithFix.replace('js/demo_salud.js', `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`);
+                        }
+
+                        finalHtmlWithFix = finalHtmlWithFix
+                            // Protocolo de Inyección de Assets Absolutos (Versión Reforzada)
                             .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
                             .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
                             .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
                             .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                            .replace(/['"]\/?assets\/([^'"]+?)['"]/g, '"https://robotiax.mx/assets/$1"')
                             .replace('</head>', clientDataScript + '</head>');
 
                         if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {

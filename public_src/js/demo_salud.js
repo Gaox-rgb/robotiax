@@ -177,7 +177,7 @@ window.app.demo = {
 
         // 1. Hidratación de Colores (Propiedades CSS Custom en Raíz)
         const root = document.documentElement;
-        if (template.colors) {
+        if (template && template.colors) {
             root.style.setProperty('--bg-page', template.colors.page);
             root.style.setProperty('--bg-container', template.colors.container);
             root.style.setProperty('--bg-subcard', template.colors.subcard);
@@ -428,6 +428,30 @@ window.app.demo = {
         }
     },
 
+    // RETORNO INTELIGENTE AL CATÁLOGO DE SUITES
+    returnToCatalog: function() {
+        if (window.parent && window.parent !== window && window.parent.app && window.parent.app.ui && window.parent.app.ui.closeDemoVisor) {
+            window.parent.app.ui.closeDemoVisor();
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const originalHost = params.get('originalHost');
+        const protocol = window.location.protocol || 'https:';
+
+        if (originalHost) {
+            window.location.href = `${protocol}//${originalHost}/desarrollo-web.html#tablas`;
+            return;
+        }
+
+        if (window.history.length > 1 && document.referrer && document.referrer.includes('desarrollo-web')) {
+            window.history.back();
+            return;
+        }
+
+        window.location.href = `${protocol}//${window.location.host}/desarrollo-web.html#tablas`;
+    },
+
     // REDIRECCIÓN SEGURA E INMUNE DE COLISEO (Abre pestañas nuevas limpias de forma asíncrona)
     triggerAffiliateDemo: function() {
         console.log("🚀 [ORBE_EXTRACTION]: Redirigiendo al Orbe de Sintonía Profesional...");
@@ -485,33 +509,32 @@ window.app.demo = {
     },
 
     cinematicPhotos: [
-        { url: "assets/frenzy_1.webp", caption: "Conoce nuestras instalaciones" },
-        { url: "assets/frenzy_2.webp", caption: "Los pacientes satisfechos son nuestra prioridad" },
-        { url: "assets/frenzy_3.webp", caption: "Un profesional no teme a la tecnología: la usa" }
-    ],
+    { url: "https://robotiax.mx/assets/frenzy_1.webp", caption: "Conoce nuestras instalaciones" },
+    { url: "https://robotiax.mx/assets/frenzy_2.webp", caption: "Los pacientes satisfechos son nuestra prioridad" },
+    { url: "https://robotiax.mx/assets/frenzy_3.webp", caption: "Un profesional no teme a la tecnología: la usa" }
+],
 
     currentIndex: 0,
     slideshowInterval: null,
 
     initCinematicViewer: function() {
-        const baseAssetUrl = window.location.hostname.includes('localhost') ? '' : 'https://robotiax.mx/';
-        
         if (this.slideshowInterval) {
             clearInterval(this.slideshowInterval);
             this.slideshowInterval = null;
         }
 
-        this.cinematicPhotos = this.cinematicPhotos.map(p => ({
-            ...p,
-            url: p.url.startsWith('http') ? p.url : baseAssetUrl + p.url
-        }));
+        this.cinematicPhotos = this.cinematicPhotos.map(p => {
+            let fullUrl = p.url || '';
+            if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+                fullUrl = 'https://robotiax.mx/' + fullUrl.replace(/^\/+/, '');
+            }
+            return { ...p, url: fullUrl };
+        });
 
         this.currentIndex = 0;
         if (this.cinematicPhotos.length > 0) {
             this.changeCinematicPhoto(0, true);
         }
-        
-        console.log("🔒 [IMAGE ENGINE]: Asset fijado: " + (this.cinematicPhotos[0]?.url || 'none'));
     },
 
     mainTriviaPool: [
@@ -692,8 +715,13 @@ window.app.demo = {
 
         if (!mainPhoto || !caption || !this.cinematicPhotos[index]) return;
 
+        let photoUrl = this.cinematicPhotos[index].url || '';
+        if (photoUrl && !photoUrl.startsWith('http://') && !photoUrl.startsWith('https://')) {
+            photoUrl = 'https://robotiax.mx/assets/' + photoUrl.replace(/^(\/?assets\/|\/)+/, '');
+        }
+
         if (immediate) {
-            mainPhoto.src = this.cinematicPhotos[index].url;
+            mainPhoto.src = photoUrl;
             caption.textContent = this.cinematicPhotos[index].caption;
             return;
         }
@@ -704,11 +732,9 @@ window.app.demo = {
         const liveDesc = document.getElementById('live-description-text');
 
         setTimeout(() => {
-            mainPhoto.src = this.cinematicPhotos[index].url;
+            mainPhoto.src = photoUrl;
             caption.textContent = this.cinematicPhotos[index].caption;
             
-            // Sincronizamos la TV con la misma foto y su caption estilo TikTok
-            if (phoneImg2) phoneImg2.src = this.cinematicPhotos[index].url;
             if (liveDesc) liveDesc.textContent = this.cinematicPhotos[index].caption + " #LiveSintonía #Robotiax";
 
             setTimeout(() => {

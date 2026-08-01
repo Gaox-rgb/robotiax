@@ -197,9 +197,9 @@ window.app.catalog.demoTemplates = {
             { "title": "Ansiedad y Estrés", "desc": "Terapia psicológica de precisión enfocada en re-configurar el sistema nervioso bajo alta demanda." }
         ],
         "images": [
-            { "url": "assets/frenzy_1.webp", "caption": "Conoce nuestras instalaciones" },
-            { "url": "assets/frenzy_2.webp", "caption": "Los pacientes satisfechos son nuestra prioridad" },
-            { "url": "assets/frenzy_3.webp", "caption": "Un profesional no teme a la tecnología: la usa" }
+            { "url": "https://robotiax.mx/assets/frenzy_1.webp", "caption": "Conoce nuestras instalaciones" },
+            { "url": "https://robotiax.mx/assets/frenzy_2.webp", "caption": "Los pacientes satisfechos son nuestra prioridad" },
+            { "url": "https://robotiax.mx/assets/frenzy_3.webp", "caption": "Un profesional no teme a la tecnología: la usa" }
         ],
         "trivia": [
             { "q": "¿Cada cuánto tiempo se aconseja agendar una consulta clínica de control preventivo?", "a": "6 meses", "b": "5 años", "correct": "a" },
@@ -243,7 +243,7 @@ window.app.catalog.demoTemplates = {
             { "title": "Clases Grupales & CrossFit", "desc": "Sesiones dinámicas de alta intensidad guiadas por coaches especializados en quema calórica." }
         ],
         "images": [
-            { "url": "assets/Captura_videos_makumoto.jpg", "caption": "Entrenamiento de alta precisión y fuerza" }
+            { "url": "https://robotiax.mx/assets/Captura_videos_makumoto.JPG", "caption": "Entrenamiento de alta precisión y fuerza" }
         ],
         "trivia": [
             { "q": "¿Qué macronutriente es esencial para la reconstrucción de las fibras musculares?", "a": "Proteína", "b": "Carbohidratos", "correct": "a" },

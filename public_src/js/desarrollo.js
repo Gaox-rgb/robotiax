@@ -74,18 +74,25 @@ window.app.ui = {
     openDemoVisor: function(templateId) {
         const overlay = document.getElementById('demo-visor-overlay');
         const iframe = document.getElementById('demo-visor-iframe');
-        if (!overlay || !iframe) return;
 
-        // Resolvedor Dinámico de Entorno para evitar fallos de emulador de puerto
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const functionsBase = isLocal 
-            ? 'http://127.0.0.1:5001/robotiax/us-central1/generateDemo' 
+            ? `http://localhost:5001/robotiax/us-central1/generateDemo` 
             : 'https://generatedemo-bh64qprvqa-uc.a.run.app';
 
-        // Corrección de enrutamiento: Apunta siempre al molde maestro de simulación demo_salud.html y le pasa el ID del giro de catálogo
         const finalUrl = `${functionsBase}?template=demo_salud.html&id=${templateId}&originalHost=${window.location.host}`;
         
-        console.log("📡 [VISOR]: Resolviendo carga dinámica en:", finalUrl);
+        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            console.log("📱 [VISOR MÓVIL]: Redirigiendo a la demo limpia en la misma ventana:", finalUrl);
+            window.location.href = finalUrl;
+            return;
+        }
+
+        if (!overlay || !iframe) return;
+
+        document.body.style.overflow = 'hidden';
+        console.log("📡 [VISOR IFRAME DESKTOP]: Cargando en visor modal:", finalUrl);
         iframe.src = finalUrl;
         overlay.style.setProperty('display', 'flex', 'important');
         overlay.classList.add('visible');
@@ -94,10 +101,15 @@ window.app.ui = {
     closeDemoVisor: function() {
         const overlay = document.getElementById('demo-visor-overlay');
         const iframe = document.getElementById('demo-visor-iframe');
-        if (overlay && iframe) {
+
+        document.body.style.overflow = '';
+
+        if (overlay) {
             overlay.classList.remove('visible');
             overlay.style.setProperty('display', 'none', 'important');
-            iframe.src = "";
+        }
+        if (iframe) {
+            iframe.src = "about:blank";
         }
     },
 
