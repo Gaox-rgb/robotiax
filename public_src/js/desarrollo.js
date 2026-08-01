@@ -75,12 +75,7 @@ window.app.ui = {
         const overlay = document.getElementById('demo-visor-overlay');
         const iframe = document.getElementById('demo-visor-iframe');
 
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const functionsBase = isLocal 
-            ? `http://localhost:5001/robotiax/us-central1/generateDemo` 
-            : 'https://generatedemo-bh64qprvqa-uc.a.run.app';
-
-        const finalUrl = `${functionsBase}?template=demo_salud.html&id=${templateId}&originalHost=${window.location.host}`;
+        const finalUrl = `demo_salud.html?id=${templateId}&originalHost=${window.location.host}`;
         
         const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         if (isMobile) {

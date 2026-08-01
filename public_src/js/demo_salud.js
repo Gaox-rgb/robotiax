@@ -383,11 +383,41 @@ window.app.demo = {
                 viewerCountEl.textContent = current;
             }
         }, 400);
+
+        // 3. Rotación de Frames del Pilar 3 cada 2 segundos
+        if (!this.videoStreamInterval) {
+            const videoList = [
+                'assets/Captura_videos_makumoto.jpg',
+                'assets/Captura_videos_makumoto_1.jpg',
+                'assets/Captura_videos_makumoto_2.jpg',
+                'assets/Captura_videos_makumoto_3.jpg'
+            ];
+            let vIndex = 0;
+            const params = new URLSearchParams(window.location.search);
+            const originalHost = params.get('originalHost');
+            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            let baseUrl = 'https://robotiax.mx/';
+            if (originalHost) {
+                baseUrl = `${window.location.protocol}//${originalHost}/`;
+            } else if (isLocal) {
+                baseUrl = `${window.location.protocol}//${window.location.host}/`;
+            }
+
+            this.videoStreamInterval = setInterval(() => {
+                const imgEl = document.getElementById('phone-img-2');
+                if (imgEl) {
+                    vIndex = (vIndex + 1) % videoList.length;
+                    imgEl.src = baseUrl + videoList[vIndex];
+                }
+            }, 2000);
+        }
     },
 
     stopLiveStreamInteractions: function() {
         clearInterval(this.liveStreamInterval);
+        clearInterval(this.videoStreamInterval);
         this.liveStreamInterval = null;
+        this.videoStreamInterval = null;
     },
 
     showPhonePushNotification: function(title, desc) {

@@ -350,10 +350,6 @@
 
     <!-- HEADER ROBOTIAX -->
     <div id="simulation-header" class="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 z-50 px-3 py-2 flex flex-row flex-nowrap items-center justify-between gap-2 shadow-sm">
-        <button onclick="window.app.demo.returnToCatalog()" class="bg-slate-900 hover:bg-slate-800 text-white font-['Inter'] font-black text-[8px] sm:text-[9px] py-1 px-2.5 rounded-lg transition-all shrink-0 flex items-center gap-1 shadow-sm uppercase tracking-wider border border-slate-700">
-            <i class="fa-solid fa-arrow-left text-[9px]"></i> <span>VOLVER AL CATÁLOGO</span>
-        </button>
-
         <div class="flex items-center gap-1.5 shrink-0 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-xl">
             <img src="https://robotiax.mx/assets/favicon.png" alt="Logo" class="w-5 h-5 object-contain shrink-0">
             <span class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight hidden sm:inline">Aura</span>
@@ -756,6 +752,11 @@
     <!-- WIDGET FLOTANTE DE WHATSAPP -->
     <button onclick="window.app.demo.toggleWhatsAppWidget()" class="fixed bottom-6 right-6 w-14 h-14 bg-[#25d366] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all z-[100000]" id="btn-wa-floating">
         <i class="fa-brands fa-whatsapp text-2xl"></i>
+    </button>
+
+    <!-- BOTÓN FLOTANTE INFERIOR VOLVER AL CATÁLOGO -->
+    <button onclick="window.app.demo.returnToCatalog()" class="fixed bottom-6 left-6 bg-slate-900/90 hover:bg-slate-900 text-white font-['Inter'] font-black text-[9px] sm:text-[10px] py-3 px-4 rounded-full shadow-2xl backdrop-blur-md border border-slate-700 transition-all hover:scale-105 active:scale-95 z-[100000] flex items-center gap-2 tracking-wider uppercase">
+        <i class="fa-solid fa-arrow-left text-xs"></i> <span>VOLVER AL CATÁLOGO</span>
     </button>
 
     <!-- MODAL DE INTRODUCCIÓN EXPLICATIVA DE SIMULACIÓN DE BOT -->
