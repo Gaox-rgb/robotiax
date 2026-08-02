@@ -6,22 +6,23 @@
     <title>TERMINAL DE ADQUISICIÓN | ROBOTIAX® Master List</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { 
-            --master-blue-bg: #000033; /* Azul muy oscuro */
-            --card-white: #ffffff;
-            --btn-blue: #000066;
-            --text-black: #000000;
-            --text-white: #ffffff;
-            --ia-red: #ff3333;
-            --sec-cyan: #00eaff;
+            --bg-cyber: #020617;
+            --card-glass: rgba(15, 23, 42, 0.75);
+            --cyan-ia: #00f2ff;
+            --red-sec: #ff003c;
+            --gold-accent: #ffd700;
+            --green-glow: #39ff14;
+            --border-glass: rgba(0, 242, 255, 0.2);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--master-blue-bg); 
-            color: var(--text-white); 
+            background: var(--bg-cyber); 
+            color: #ffffff; 
             font-family: 'Rajdhani', sans-serif; 
             margin: 0; 
             padding: 0; 
@@ -30,168 +31,700 @@
             overflow-x: hidden; 
         }
 
-        /* BOTÓN DE ESCAPE FIJO Y DISCRETO */
+        /* 1. TELEMETRÍA TÁCTICA SUPERIOR */
+        .telemetry-strip {
+            background: #01040f;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--cyan-ia);
+            letter-spacing: 1px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .telemetry-item { display: flex; align-items: center; gap: 6px; }
+        .live-dot { width: 8px; height: 8px; background: var(--green-glow); border-radius: 50%; box-shadow: 0 0 10px var(--green-glow); animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* BOTÓN DE ESCAPE FLOTANTE INFERIOR ROJO ROBUSTOS */
         .btn-escape {
             position: fixed;
-            top: 15px;
-            left: 15px;
+            bottom: 25px;
+            left: 20px;
             z-index: 9000;
-            background: rgba(0,0,0,0.6);
-            color: #ffffff;
-            border: 1px solid #ffffff;
-            padding: 8px 15px;
-            font-family: 'Orbitron';
-            font-size: 0.6rem;
+            background: rgba(2, 6, 23, 0.92);
+            color: var(--red-sec);
+            border: 1px solid var(--red-sec);
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
             text-decoration: none;
             text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
+        }
+        .btn-escape:hover { background: var(--red-sec); color: #ffffff; }
+
+        /* PÍLDORA COMBO DE ALTA TECNOLOGÍA SIN CHECKBOX NATIVO */
+        .combo-pill {
+            display: inline-flex;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .combo-pill:hover, .combo-pill:has(input:checked) {
+            border-color: var(--green-glow);
+            color: var(--green-glow);
+            background: rgba(57, 255, 20, 0.12);
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.3);
+        }
+
+        .master-container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 40px 20px 120px 20px; }
+
+        header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(1.4rem, 5vw, 2.8rem); letter-spacing: 3px; margin: 0; color: #ffffff; text-transform: uppercase; text-shadow: 0 0 20px rgba(0, 242, 255, 0.3); line-height: 1.2; }
+        .subtitle { color: #a78bfa; font-family: 'Rajdhani', sans-serif; margin-top: 8px; font-size: clamp(0.85rem, 3vw, 1.1rem); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* 2. FILTROS TÁCTICOS POR CATEGORÍA CON COLORES DISTINTIVOS */
+        .tactical-filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+            padding: 0 10px;
+        }
+
+        .filter-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
             letter-spacing: 1px;
-            transition: 0.3s;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border-radius: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
-        .btn-escape:hover {
-            background: #ffffff;
-            color: #000000;
+        .filter-btn[data-cat="ALL"].active, .filter-btn[data-cat="ALL"]:hover { border-color: var(--cyan-ia); color: var(--cyan-ia); background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        .filter-btn[data-cat="ADMINISTRATIVA"].active, .filter-btn[data-cat="ADMINISTRATIVA"]:hover { border-color: #a855f7; color: #a855f7; background: rgba(168, 85, 247, 0.15); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+        .filter-btn[data-cat="OPERATIVA"].active, .filter-btn[data-cat="OPERATIVA"]:hover { border-color: #3b82f6; color: #3b82f6; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .filter-btn[data-cat="MARKETING"].active, .filter-btn[data-cat="MARKETING"]:hover { border-color: #ff007f; color: #ff007f; background: rgba(255, 0, 127, 0.15); box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); }
+        .filter-btn[data-cat="PERSONAL"].active, .filter-btn[data-cat="PERSONAL"]:hover { border-color: #ffd700; color: #ffd700; background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        .filter-btn[data-cat="PYME"].active, .filter-btn[data-cat="PYME"]:hover { border-color: #39ff14; color: #39ff14; background: rgba(57, 255, 20, 0.15); box-shadow: 0 0 15px rgba(57, 255, 20, 0.4); }
+        .filter-btn[data-cat="MEDIANA"].active, .filter-btn[data-cat="MEDIANA"]:hover { border-color: #ff003c; color: #ff003c; background: rgba(255, 0, 60, 0.15); box-shadow: 0 0 15px rgba(255, 0, 60, 0.4); }
+
+        /* ESTRUCTURACIÓN RESPONSIVA MÓVIL CENTRADA SIN CORTE DE PANTALLA */
+        @media (max-width: 600px) {
+            .master-container {
+                padding: 20px 12px 120px 12px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .tactical-filters {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding: 0;
+            }
+
+            .filter-btn {
+                width: 100%;
+                font-size: 0.58rem;
+                padding: 8px 4px;
+                letter-spacing: 0.5px;
+                white-space: normal;
+                line-height: 1.2;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .filter-btn[data-cat="ALL"] {
+                grid-column: span 2;
+            }
+
+            .catalog-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                width: 100%;
+                margin: 0 auto;
+            }
+
+            .card-cyber-deck {
+                width: 100%;
+                max-width: 100%;
+                padding: 20px;
+                box-sizing: border-box;
+            }
         }
 
-        .master-container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 60px 20px; }
-
-        header { text-align: center; margin-bottom: 50px; }
-        h1 { font-family: 'Orbitron'; font-size: clamp(2rem, 8vw, 3rem); letter-spacing: 2px; margin: 0; color: #fff; text-transform: uppercase; }
-        .subtitle { color: #ffffff; font-family: 'Rajdhani'; margin-top: 10px; font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; }
-
-        .sector-title { 
-            font-family: 'Orbitron'; font-size: 1.4rem; margin: 60px 0 30px; padding: 15px; 
-            background: rgba(255,255,255,0.1); text-transform: uppercase; text-align: center; 
-            border-left: 5px solid #fff; width: 100%;
+        /* 3. GRID DE TARJETAS CYBER-DECK GLASSMORPHISM */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
         }
 
-        /* MÓDULOS EN BLANCO PURO */
-        .product-row { 
+        .card-cyber-deck {
+            background: var(--card-glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(15px);
+            border-radius: 12px;
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            width: 100%; 
-            padding: 40px; 
-            text-align: center; 
-            background: var(--card-white);
-            margin-bottom: 25px;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-cyber-deck.sec-card {
+            border-color: rgba(255, 0, 60, 0.25);
+        }
+
+        .card-cyber-deck:hover {
+            transform: translateY(-8px) scale(1.01);
+            border-color: var(--cyan-ia);
+            box-shadow: 0 0 35px rgba(0, 242, 255, 0.35);
+        }
+
+        .card-cyber-deck.sec-card:hover {
+            border-color: var(--red-sec);
+            box-shadow: 0 0 35px rgba(255, 0, 60, 0.35);
+        }
+
+        .card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: var(--cyan-ia);
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
+        }
+
+        .sec-card .card-icon {
+            color: var(--red-sec);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 60, 0.5));
+        }
+
+        .badge-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 3px;
+            letter-spacing: 1px;
+            background: rgba(0, 242, 255, 0.08);
+            border: 1px solid var(--cyan-ia);
+            color: var(--cyan-ia);
+            text-transform: uppercase;
+        }
+
+        .sec-card .badge-tag {
+            background: rgba(255, 0, 60, 0.08);
+            border-color: var(--red-sec);
+            color: var(--red-sec);
         }
 
         .p-name { 
             font-weight: 800; 
-            font-size: 1.4rem;
-            color: var(--text-black); 
+            font-size: 1.25rem;
+            color: #ffffff; 
             text-transform: uppercase; 
-            margin-bottom: 15px; 
-            font-family: 'Orbitron';
+            margin-bottom: 10px; 
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
         }
 
         .p-desc { 
-            color: var(--text-black); 
-            font-size: 1rem; 
+            color: #94a3b8; 
+            font-size: 0.95rem; 
             line-height: 1.5; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             font-weight: 500;
         }
 
-        .p-price { 
-            font-family: 'Orbitron'; 
-            font-weight: 900; 
-            font-size: 2.2rem; 
-            color: var(--text-black); 
-            margin-bottom: 25px; 
-            display: block; 
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
-        }
-        
-        .btn-buy { 
-            display: inline-block; width: 100%; padding: 18px; 
-            font-family: 'Orbitron'; font-weight: 900; font-size: 0.9rem; cursor: pointer; border: none; 
-            text-transform: uppercase; transition: 0.3s;
-            background: var(--btn-blue);
-            color: var(--text-white);
-            border-radius: 4px;
+        .p-price-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-bottom: 20px;
         }
 
-        .btn-buy:hover { 
-            background: #0000aa;
+        .p-price { 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 900; 
+            font-size: 1.8rem; 
+            color: #ffffff; 
+        }
+
+        .p-currency { font-size: 0.8rem; color: #94a3b8; font-weight: 500; margin-left: 4px; }
+
+        .p-fine-print {
+            font-size: 0.6rem;
+            color: #64748b;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* BOTÓN FLOTANTE DE CARRITO SUPERIOR */
+        .btn-cart-floating {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 9500;
+            background: rgba(2, 6, 23, 0.92);
+            color: var(--gold-accent);
+            border: 1px solid var(--gold-accent);
+            padding: 10px 18px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-cart-floating:hover { background: var(--gold-accent); color: #000000; }
+
+        .cart-badge {
+            background: var(--cyan-ia);
+            color: #000000;
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 2px 7px;
+            border-radius: 20px;
+        }
+
+        /* MODAL DE CARRITO DE COMPRAS CON DESGLOSE E IVA */
+        .cart-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(10px);
+            z-index: 25000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .cart-modal-overlay.active { display: flex; }
+
+        .cart-modal-card {
+            background: #030712;
+            border: 2px solid var(--gold-accent);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 480px;
+            width: 100%;
+            color: #ffffff;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.25);
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+        }
+
+        .cart-del-btn {
+            background: none;
+            border: none;
+            color: #ff003c;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-spec {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-spec {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+
+        .btn-spec:hover {
+            border-color: var(--cyan-ia);
+            color: var(--cyan-ia);
+            background: rgba(0, 242, 255, 0.05);
+        }
+
+        .btn-deploy { 
+            padding: 12px; 
+            font-family: 'Orbitron', sans-serif; 
+            font-weight: 900; 
+            font-size: 0.65rem; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase; 
+            transition: all 0.25s ease;
+            background: var(--cyan-ia);
+            color: #000000;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        .sec-card .btn-deploy {
+            background: var(--red-sec);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 0, 60, 0.3);
+        }
+
+        .btn-deploy:hover { 
             transform: scale(1.02);
+            background: #ffffff;
+            color: #000000;
         }
 
         .btn-owned { 
             background: #2ecc71 !important; 
-            color: #fff !important; 
+            color: #ffffff !important; 
             cursor: default !important;
+            box-shadow: none !important;
         }
 
+        /* 4. SELECCIÓN DE ESCUADRÓN / BARRA FLOTANTE DE COMBOS */
+        .squad-check-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .squad-floating-bar {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            background: rgba(2, 6, 23, 0.95);
+            border: 2px solid var(--cyan-ia);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.4);
+            border-radius: 50px;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 9500;
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .squad-floating-bar.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .squad-info { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: #ffffff; }
+        .squad-discount { color: var(--green-glow); font-weight: bold; }
+
+        .btn-squad-buy {
+            background: var(--cyan-ia);
+            color: #000000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 0.7rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-squad-buy:hover { background: #ffffff; transform: scale(1.05); }
+
+        /* 5. DRAWER LATERAL TÁCTICO (SPEC DRAWER) */
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 20000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tactical-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background: #030712;
+            border-left: 2px solid var(--cyan-ia);
+            z-index: 20001;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: -20px 0 60px rgba(0, 0, 0, 0.9);
+            overflow-y: auto;
+        }
+
+        .drawer-overlay.active .tactical-drawer {
+            transform: translateX(0);
+        }
+
+        .drawer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .drawer-close:hover { color: #ffffff; }
+
         /* MODALES */
-        .modal-overlay { display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10000; justify-content:center; align-items:center; }
+        .modal-overlay { display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:30000; justify-content:center; align-items:center; }
         .modal-overlay.visible { display: flex !important; }
         .modal-content { background: #000; border: 2px solid #333; padding: 40px; width: 90%; max-width: 450px; text-align: center; }
         
-        /* PANEL DE ACTIVACIÓN */
-        #editor-panel { display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:11000; overflow-y:auto; padding: 40px; }
+        #editor-panel { display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:31000; overflow-y:auto; padding: 40px; }
         .edit-card { background: #fff; max-width: 600px; margin: 0 auto; padding: 40px; border-radius: 8px; color: #000; }
         .edit-group { margin-bottom: 20px; text-align: left; }
         .edit-group label { display: block; color: #000; font-size: 0.8rem; margin-bottom: 5px; font-family: 'Orbitron'; font-weight: 700; }
         .edit-group input { width: 100%; padding: 15px; background: #f0f0f0; border: 1px solid #ccc; color: #000; font-family: 'Rajdhani'; font-weight: 600; }
 
-    /* BOTÓN DE RETORNO AL TECHO */
         .btn-scroll-top {
             position: fixed;
             bottom: 30px;
             right: 30px;
             width: 50px;
             height: 50px;
-            background: var(--btn-blue);
-            color: #fff;
-            border: 1px solid #ffffff;
+            background: var(--cyan-ia);
+            color: #000;
+            border: none;
             border-radius: 50%;
-            display: none; /* Se activa por JS */
+            display: none;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 9999;
-            font-size: 1.5rem;
+            z-index: 9000;
+            font-size: 1.3rem;
             transition: 0.3s;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
         }
 
         .btn-scroll-top:hover {
             background: #ffffff;
-            color: var(--master-blue-bg);
             transform: scale(1.1);
         }
-
     </style>
 </head>
 <body>
     <a href="index.html#final-footer" class="btn-escape">❮ VOLVER AL INICIO</a>
 
     <div class="master-container">
+        <!-- 1. BARRA DE TELEMETRÍA TÁCTICA EN VIVO -->
+    <div class="telemetry-strip">
+        <div class="telemetry-item">
+            <span class="live-dot"></span>
+            <span>ESTATUS: OPERATIVO (99.98%)</span>
+        </div>
+        <div class="telemetry-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>AMENAZAS BLOQUEADAS HOY: 14,208</span>
+        </div>
+        <div class="telemetry-item">
+            <i class="fa-solid fa-robot"></i>
+            <span>UNIDADES IA ACTIVAS: 1,842</span>
+        </div>
+    </div>
+
+    <!-- BOTÓN FLOTANTE SUPERIOR DE CARRITO CON CONTAGIO DE PRODUCTOS -->
+    <button class="btn-cart-floating" onclick="openCartModal()">
+        🛒 CARRITO <span id="cart-badge" class="cart-badge">0</span>
+    </button>
+
+    <div class="master-container">
         <header>
             <h1>TERMINAL DE ADQUISICIÓN</h1>
             <div class="subtitle">INFRAESTRUCTURA DE INTELIGENCIA Y DEFENSA</div>
         </header>
-        <div id="catalog-render"></div>
+
+        <!-- 2. FILTROS TÁCTICOS POR CATEGORÍA CON COLORES DISTINTIVOS Y ATRIBUTOS -->
+        <div class="tactical-filters">
+            <button class="filter-btn active" data-cat="ALL" onclick="filterCatalog('ALL', this)">TODAS</button>
+            <button class="filter-btn" data-cat="ADMINISTRATIVA" onclick="filterCatalog('ADMINISTRATIVA', this)">IA ADMINISTRACIÓN</button>
+            <button class="filter-btn" data-cat="OPERATIVA" onclick="filterCatalog('OPERATIVA', this)">IA OPERACIONES</button>
+            <button class="filter-btn" data-cat="MARKETING" onclick="filterCatalog('MARKETING', this)">IA MARKETING</button>
+            <button class="filter-btn" data-cat="PERSONAL" onclick="filterCatalog('PERSONAL', this)">SEGURIDAD PERSONAL</button>
+            <button class="filter-btn" data-cat="PYME" onclick="filterCatalog('PYME', this)">SEGURIDAD PYME</button>
+            <button class="filter-btn" data-cat="MEDIANA" onclick="filterCatalog('MEDIANA', this)">SEGURIDAD CORPORATIVA</button>
+        </div>
+
+        <!-- 3. RENDERIZADO DE MÓDULOS DE CRISTAL OSCURO -->
+        <div id="catalog-render" class="catalog-grid"></div>
     </div>
 
-    <footer style="padding: 60px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); margin-top: 50px;">
-        <div class="container" style="text-align: center; max-width: 1000px; margin: 0 auto; display: block;">
-            <div class="footer-nav" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-                <a href="desarrollo-web.html" style="color: #00f2ff; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">[ PRESENCIA ]</a>
-                <a href="soluciones-ia.html" style="color: #a29bfe; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">[ INTELIGENCIA ]</a>
-                <a href="seguridad-web.html" style="color: #ff7675; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">[ FORTALEZA ]</a>
-                <a href="membresia-black.html" style="color: #fdcb6e; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;">[ BLACK ]</a>
-                <a href="arsenal-completo.html" style="color: #39ff14; text-decoration: none; font-family: 'Orbitron'; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;">[ CATÁLOGO DE APPS ]</a>
+    <!-- MODAL DE CARRITO DE COMPRAS Y DESGLOSE IVA -->
+    <div id="cart-modal" class="cart-modal-overlay" onclick="closeCartModal()">
+        <div class="cart-modal-card" onclick="event.stopPropagation()">
+            <button class="drawer-close" onclick="closeCartModal()">&times;</button>
+            <h3 style="font-family: 'Orbitron'; color: var(--gold-accent); margin-top: 0; margin-bottom: 15px; text-transform: uppercase;">🛒 CARRITO DE COMPRAS</h3>
+            
+            <div id="cart-items-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
+                <p style="color: #94a3b8; font-size: 0.85rem;">Tu carrito está vacío.</p>
             </div>
+
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 15px; text-align: right; font-size: 0.85rem; space-y-1;">
+                <div>Subtotal: <strong id="cart-subtotal" style="color: #ffffff;">$0 USD</strong></div>
+                <div>IVA (16%): <strong id="cart-tax" style="color: #94a3b8;">$0 USD</strong></div>
+                <div style="font-size: 1.2rem; font-family: 'Orbitron'; font-weight: 900; color: var(--gold-accent); margin-top: 8px;">Total: <span id="cart-total">$0 USD</span></div>
+                <div style="font-size: 0.65rem; color: #64748b; margin-top: 4px;">* Precios de suscripción mensual</div>
+            </div>
+
+            <button id="cart-checkout-btn" onclick="checkoutCart()" class="btn-deploy" style="width: 100%; padding: 16px; margin-top: 20px; font-size: 0.85rem;" disabled>
+                COMPRAR AHORA CON PAYPAL
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. DRAWER LATERAL TÁCTICO (ESPECIFICACIONES EN VIVO) -->
+    <div id="drawer-overlay" class="drawer-overlay" onclick="closeTacticalDrawer()">
+        <div class="tactical-drawer" onclick="event.stopPropagation()">
+            <div>
+                <button class="drawer-close" onclick="closeTacticalDrawer()">&times;</button>
+                <div id="drawer-badge" class="badge-tag" style="width: fit-content; margin-bottom: 15px;">---</div>
+                <h2 id="drawer-title" style="font-family: 'Orbitron'; font-size: 1.6rem; color: #fff; margin-bottom: 10px; text-transform: uppercase;">---</h2>
+                <p id="drawer-desc" style="color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px;">---</p>
+                
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                    <div style="font-family: 'Orbitron'; font-size: 0.75rem; color: var(--cyan-ia); margin-bottom: 8px;">📈 RETORNO ESTIMADO (ROI)</div>
+                    <div id="drawer-roi" style="color: #ffffff; font-size: 0.9rem; font-weight: bold;">+85% de ahorro en horas operativas desde la semana 1.</div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                    <div style="font-family: 'Orbitron'; font-size: 0.75rem; color: var(--gold-accent); margin-bottom: 8px;">🛠️ DESPLIEGUE TÁCTICO</div>
+                    <div style="color: #cbd5e1; font-size: 0.85rem;">Instalación asistida en servidor privado, integración API limpia y soporte 24/7.</div>
+                </div>
+            </div>
+
+            <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; margin-top: 20px;">
+                <div id="drawer-price" style="font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 15px;">$0 USD</div>
+                <button id="drawer-buy-btn" class="btn-deploy" style="width: 100%; padding: 16px; font-size: 0.85rem;">COMPRAR AHORA</button>
+            </div>
+        </div>
+    </div>
+
+    <footer id="final-footer" style="padding: 60px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); margin-top: 50px;">
+        <div class="container" style="text-align: center; max-width: 1000px; margin: 0 auto; display: block;">
+            
+            <!-- NIVEL 1: NAVEGACIÓN DE PROTOCOLOS COMPLETA -->
+            <div class="footer-nav" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <a href="diagnostico.html" style="color: #00ff66; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(0,255,102,0.35);">DIAGNÓSTICO</a>
+                <a href="desarrollo-web.html" style="color: #00f2ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">PRESENCIA</a>
+                <a href="redes-sociales.html" style="color: #ff007f; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(255,0,127,0.35);">REDES SOCIALES</a>
+                <a href="ecommerce-elite.html" style="color: #ffd700; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(255,215,0,0.35);">E-COMMERCE</a>
+                <a href="soluciones-ia.html" style="color: #a29bfe; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">INTELIGENCIA</a>
+                <a href="seguridad-web.html" style="color: #ff7675; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">FORTALEZA</a>
+                <a href="membresia-black.html" style="color: #fdcb6e; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">BLACK</a>
+                <a href="arsenal-completo.html" style="color: #39ff14; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #39ff14;">CATÁLOGO DE APPS</a>
+                <a href="top10.html" style="color: #ff00ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; opacity: 0.85; text-shadow: 0 0 8px rgba(255,0,255,0.35);">TOP 10</a>
+                <a href="https://makumoto.com" target="_blank" style="color: #ffd700; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #ffd700;">MAKUMOTO</a>
+            </div>
+
+            <!-- NIVEL 2: LEGALES -->
             <div class="footer-legal" style="margin-bottom: 20px; display: flex; justify-content: center; gap: 30px;">
                 <a href="terminos-y-condiciones.html" style="color: #636e72; text-decoration: none; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px;">Términos y Condiciones</a>
                 <a href="politica-privacidad.html" style="color: #636e72; text-decoration: none; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px;">Política de Privacidad</a>
             </div>
-            <p style="font-size: 0.6rem; color: #444; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px;">ROBOTIAX® &copy; 2025. TERMINAL DE ADQUISICIÓN MAESTRA.</p>
+
+            <!-- NIVEL 2.5: CONTACTO SOPORTE -->
+            <div style="margin-bottom: 15px;">
+                <a href="mailto:soporte@gaoti.mx" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: soporte@gaoti.mx</a>
+            </div>
+
+            <!-- NIVEL 3: COPYRIGHT -->
+            <p style="font-size: 0.6rem; color: #2d3436; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px;">
+                ROBOTIAX® &copy; 2025. MAKUMOTO & ROBOTIAX® ENGINE. <br>
+                Arquitectos de tu Futuro Digital. Todos los derechos reservados.
+            </p>
+
         </div>
     </footer>
     <div id="payment-modal-overlay" class="modal-overlay">
@@ -250,40 +783,183 @@
 
         const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        let currentFilter = 'ALL';
+        let selectedSquad = [];
+
         const renderCatalog = () => {
             const container = document.getElementById('catalog-render');
-            const iaSectors = ['ADMINISTRATIVA', 'OPERATIVA', 'MARKETING'];
-            const secSectors = ['PERSONAL', 'PYME', 'MEDIANA'];
+            if (!container) return;
+            container.innerHTML = '';
 
-            container.innerHTML += `<div class="sector-title">SECTOR I: ARSENAL IA</div>`;
-            iaSectors.forEach(sector => {
-                const apps = window.app.catalog.ia.filter(a => a.category === sector);
-                apps.forEach(app => container.innerHTML += createRow(app));
-            });
+            const iaApps = window.app.catalog.ia || [];
+            const secApps = window.app.catalog.security || [];
+            const allApps = [
+                ...iaApps.map(a => ({ ...a, sector: 'IA' })),
+                ...secApps.map(a => ({ ...a, sector: 'SEC' }))
+            ];
 
-            container.innerHTML += `<div class="sector-title">SECTOR II: PROTOCOLO FORTALEZA</div>`;
-            secSectors.forEach(sector => {
-                const apps = window.app.catalog.security.filter(a => a.category === sector);
-                apps.forEach(app => container.innerHTML += createRow(app));
+            const filtered = currentFilter === 'ALL' 
+                ? allApps 
+                : allApps.filter(a => a.category === currentFilter);
+
+            const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+
+            filtered.forEach(p => {
+                const isSec = p.sector === 'SEC';
+                const isOwned = owned.includes(p.id);
+                const isChecked = selectedSquad.some(item => item.id === p.id);
+
+                const card = document.createElement('div');
+                card.className = `card-cyber-deck ${isSec ? 'sec-card' : ''}`;
+                const isInCart = cartItems.some(item => item.id === p.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-head">
+                            <div class="card-icon">${p.icon || (isSec ? '🛡️' : '🤖')}</div>
+                            <span class="badge-tag">${p.category}</span>
+                        </div>
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-desc">${p.desc}</div>
+                    </div>
+                    <div>
+                        <div class="p-price-row">
+                            <div>
+                                <div class="p-price">$${p.price}<span class="p-currency">${p.currency}</span></div>
+                                <div class="p-fine-print">* PRECIO MENSUAL + 16% IVA</div>
+                            </div>
+                            ${!isOwned ? `
+                                <button class="combo-pill ${isInCart ? 'active' : ''}" onclick="toggleCartItem('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.currency}')">
+                                    ${isInCart ? 'EN CARRITO ✓' : 'AGREGAR AL CARRITO'}
+                                </button>
+                            ` : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-spec" onclick="openTacticalDrawer('${p.id}', '${p.name.replace(/'/g, "\\'")}', '${p.desc.replace(/'/g, "\\'")}', ${p.price}, '${p.currency}', '${p.category}')">
+                                ESPECIFICACIONES
+                            </button>
+                            ${isOwned ? `
+                                <button class="btn-deploy btn-owned" disabled>ADQUIRIDO ✓</button>
+                            ` : `
+                                <button class="btn-deploy" onclick="window.app.payments.openModal('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price}, '${p.currency}')">
+                                    COMPRAR
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
             });
         };
 
-        const createRow = (p) => `
-            <div class="product-row">
-                <div class="p-name">${p.name}</div>
-                <div class="p-desc">${p.desc}</div>
-                <div class="p-price">$${p.price} <span style="font-size:0.9rem; color:#000000; opacity:0.5;">${p.currency}</span></div>
-                <div>
-                    ${(() => {
-                        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-                        if (owned.includes(p.id)) {
-                            return `<button class="btn-buy btn-owned" disabled>ADQUIRIDO ✓</button>`;
-                        }
-                        return `<button class="btn-buy" onclick="window.app.payments.openModal('${p.id}', '${p.name}', ${p.price}, '${p.currency}')">COMPRAR AHORA</button>`;
-                    })()}
-                </div>
-            </div>
-        `;
+        const filterCatalog = (cat, btnEl) => {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            renderCatalog();
+        };
+
+        let cartItems = [];
+
+        const toggleCartItem = (id, name, price, currency) => {
+            const index = cartItems.findIndex(item => item.id === id);
+            if (index > -1) {
+                cartItems.splice(index, 1);
+            } else {
+                cartItems.push({ id, name, price, currency });
+            }
+            updateCartUI();
+            renderCatalog();
+        };
+
+        const removeCartItem = (index) => {
+            cartItems.splice(index, 1);
+            updateCartUI();
+            renderCatalog();
+        };
+
+        const updateCartUI = () => {
+            const badge = document.getElementById('cart-badge');
+            const container = document.getElementById('cart-items-container');
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const taxEl = document.getElementById('cart-tax');
+            const totalEl = document.getElementById('cart-total');
+            const checkoutBtn = document.getElementById('cart-checkout-btn');
+
+            if (badge) badge.textContent = cartItems.length;
+
+            if (cartItems.length === 0) {
+                if (container) container.innerHTML = `<p style="color: #94a3b8; font-size: 0.85rem;">Tu carrito está vacío.</p>`;
+                if (subtotalEl) subtotalEl.textContent = '$0 USD';
+                if (taxEl) taxEl.textContent = '$0 USD';
+                if (totalEl) totalEl.textContent = '$0 USD';
+                if (checkoutBtn) checkoutBtn.disabled = true;
+                return;
+            }
+
+            const currency = cartItems[0].currency || 'USD';
+            const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+            const tax = Math.round(subtotal * 0.16);
+            const total = subtotal + tax;
+
+            if (container) {
+                container.innerHTML = cartItems.map((item, idx) => `
+                    <div class="cart-item-row">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div style="font-size:0.7rem; color:#94a3b8;">$${item.price} ${item.currency} / mes</div>
+                        </div>
+                        <button class="cart-del-btn" onclick="removeCartItem(${idx})">&times;</button>
+                    </div>
+                `).join('');
+            }
+
+            if (subtotalEl) subtotalEl.textContent = `$${subtotal.toLocaleString()} ${currency}`;
+            if (taxEl) taxEl.textContent = `$${tax.toLocaleString()} ${currency}`;
+            if (totalEl) totalEl.textContent = `$${total.toLocaleString()} ${currency}`;
+            if (checkoutBtn) checkoutBtn.disabled = false;
+        };
+
+        const openCartModal = () => {
+            document.getElementById('cart-modal').classList.add('active');
+        };
+
+        const closeCartModal = () => {
+            document.getElementById('cart-modal').classList.remove('active');
+        };
+
+        const checkoutCart = () => {
+            if (cartItems.length === 0) return;
+            closeCartModal();
+            const first = cartItems[0];
+            const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
+            const totalWithTax = Math.round(subtotal * 1.16);
+            const comboName = cartItems.length === 1 
+                ? cartItems[0].name 
+                : `Carrito Robotiax (${cartItems.length} Unidades con IVA)`;
+
+            window.app.payments.openModal(first.id, comboName, totalWithTax, first.currency);
+        };
+
+        const openTacticalDrawer = (id, name, desc, price, currency, category) => {
+            const overlay = document.getElementById('drawer-overlay');
+            document.getElementById('drawer-title').textContent = name;
+            document.getElementById('drawer-badge').textContent = category;
+            document.getElementById('drawer-desc').textContent = desc;
+            document.getElementById('drawer-price').textContent = `$${price} ${currency}`;
+
+            const buyBtn = document.getElementById('drawer-buy-btn');
+            buyBtn.onclick = () => {
+                closeTacticalDrawer();
+                window.app.payments.openModal(id, name, price, currency);
+            };
+
+            overlay.classList.add('active');
+        };
+
+        const closeTacticalDrawer = () => {
+            document.getElementById('drawer-overlay').classList.remove('active');
+        };
 
         document.addEventListener('DOMContentLoaded', renderCatalog);
     </script>

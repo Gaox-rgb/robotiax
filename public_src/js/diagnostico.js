@@ -42,11 +42,17 @@ function finalize(type) {
 function triggerWarp(type) {
     const routes = {
         'web': 'desarrollo-web.html',
+        'redes': 'redes-sociales.html',
+        'ecommerce': 'ecommerce-elite.html',
         'ia': 'soluciones-ia.html',
-        'sec': 'seguridad-web.html'
+        'sec': 'seguridad-web.html',
+        'catalog': 'arsenal-completo.html',
+        'top10': 'top10.html',
+        'black': 'membresia-black.html',
+        'makumoto': 'https://makumoto.com'
     };
 
-    const destination = routes[type];
+    const destination = routes[type] || 'index.html';
 
     // Activar animación warp
     let warp = document.getElementById('warp');
@@ -57,6 +63,10 @@ function triggerWarp(type) {
 
     // Redirigir al terminar la animación
     setTimeout(() => {
-        window.location.href = destination;
+        if (destination.startsWith('http')) {
+            window.open(destination, '_blank');
+        } else {
+            window.location.href = destination;
+        }
     }, 1400);
 }
