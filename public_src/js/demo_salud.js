@@ -190,27 +190,26 @@ window.app.demo = {
         }
 
         // 2. Hidratación de Identidad / Branding del Hero Card y Título de la Pestaña
+        const isClientSite = (window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) ||
+                             (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.'));
+        const cData = (window.app && window.app.clientData) ? window.app.clientData : null;
+
         const brand = { ...template.branding };
-        if (window.app && window.app.clientData) {
-            if (window.app.clientData.negocio) brand.title = window.app.clientData.negocio;
-            if (window.app.clientData.tagline) brand.slogan = window.app.clientData.tagline;
-            if (window.app.clientData.headline) brand.desc = window.app.clientData.headline;
-            if (window.app.clientData.direccion) brand.val_1 = window.app.clientData.direccion;
-            if (window.app.clientData.horarios) brand.val_2 = window.app.clientData.horarios;
-            if (window.app.clientData.telefono) brand.val_3 = window.app.clientData.telefono;
-            if (window.app.clientData.fee) brand.val_4 = window.app.clientData.fee;
+        if (cData) {
+            if (cData.negocio) brand.title = cData.negocio;
+            if (cData.tagline) brand.slogan = cData.tagline;
+            if (cData.headline) brand.desc = cData.headline;
+            if (cData.direccion) brand.val_1 = cData.direccion;
+            if (cData.horarios) brand.val_2 = cData.horarios;
+            if (cData.telefono) brand.val_3 = cData.telefono;
+            if (cData.fee) brand.val_4 = cData.fee;
+            if (cData.badge) brand.badge = cData.badge;
+            if (cData.specialty) brand.specialty = cData.specialty;
         }
-        if (window.app && window.app.clientData) {
-            if (window.app.clientData.badge) brand.badge = window.app.clientData.badge;
-            if (window.app.clientData.specialty) brand.specialty = window.app.clientData.specialty;
-        }
+
         if (brand) {
             const titleEl = document.getElementById('clinic-title');
             const badgeEl = document.getElementById('clinic-badge');
-            
-            if (brand.tab_title) {
-                document.title = brand.tab_title;
-            }
             const specialtyEl = document.getElementById('clinic-specialty');
             const sloganEl = document.getElementById('clinic-slogan');
             const descEl = document.getElementById('clinic-desc');
@@ -232,9 +231,43 @@ window.app.demo = {
             if (reserveBtn) reserveBtn.textContent = brand.button_text;
         }
 
-        if (window.app && window.app.clientData) {
-            const buyBtn = document.querySelector('.flashing-buy-btn');
-            if (buyBtn) buyBtn.style.setProperty('display', 'none', 'important');
+       const headerBrand = document.getElementById('header-brand-title');
+        if (headerBrand) {
+            const finalBrand = (cData && cData.negocio) ? cData.negocio : brand.title;
+            headerBrand.textContent = finalBrand;
+            headerBrand.style.setProperty('display', 'inline-block', 'important');
+        }
+
+        const targetFeeEl = document.getElementById('meta-val-4');
+        if (targetFeeEl) {
+            let displayedFee = (cData && cData.fee) ? cData.fee : (brand && brand.val_4 ? brand.val_4 : '$800 MXN');
+            if (!displayedFee || displayedFee.includes('233') || displayedFee.toLowerCase().includes('stripe')) {
+                displayedFee = template?.branding?.val_4 || '$800 MXN';
+            }
+            targetFeeEl.textContent = displayedFee;
+        }
+
+        document.title = (cData && cData.negocio) ? `${cData.negocio} | Portal Oficial` : (brand.tab_title || 'Portal Oficial');
+
+        if (isClientSite) {
+            const catBtn = document.getElementById('btn-return-catalog');
+            const coachBar = document.getElementById('interactive-coach-bar');
+            const closerModal = document.getElementById('closer-modal-overlay');
+
+            if (catBtn) catBtn.remove();
+            if (coachBar) coachBar.remove();
+            if (closerModal) closerModal.remove();
+
+            // Purgado destructivo de botones residuales en producción
+            document.querySelectorAll('button, a').forEach(el => {
+                const txt = (el.textContent || '').toUpperCase();
+                if (txt.includes('COMPRAR WEB') || txt.includes('VOLVER AL CATÁLOGO')) {
+                    el.remove();
+                }
+            });
+
+            const headerWaBtn = document.getElementById('header-whatsapp-btn');
+            if (headerWaBtn) headerWaBtn.remove();
         }
 
         // 3. Hidratación de Especialidades / Servicios
@@ -250,14 +283,25 @@ window.app.demo = {
             if (d2) d2.textContent = template.services[1].desc;
         }
 
-        // RE-INICIALIZACIÓN DE CARRUSEL CON IMÁGENES DEL NICHO
-        if (template && template.images && template.images.length > 0) {
-            this.cinematicPhotos = template.images.map(img => ({ ...img }));
+       // RE-INICIALIZACIÓN EXACTA DE IMÁGENES BASADA EN CATALOG.JS
+        if (template && Array.isArray(template.images) && template.images.length > 0) {
+            this.cinematicPhotos = template.images.map(img => {
+                let u = img.url || '';
+                if (!u.startsWith('http://') && !u.startsWith('https://')) {
+                    u = 'https://robotiax.mx/' + u.replace(/^\/+/, '');
+                }
+                return { url: u };
+            });
             this.currentIndex = 0;
             this.initCinematicViewer();
+
+            const mainPhotoEl = document.getElementById('cinematic-main-photo');
+            if (mainPhotoEl && this.cinematicPhotos.length > 0) {
+                mainPhotoEl.src = this.cinematicPhotos[0].url;
+            }
         }
 
-        if (template.trivia) {
+        if (template && template.trivia) {
             this.mainTriviaPool = template.trivia;
             this.mainTriviaIndex = 0; 
         }
@@ -548,16 +592,8 @@ window.app.demo = {
             this.slideshowInterval = null;
         }
 
-        const params = new URLSearchParams(window.location.search);
-        const originalHost = params.get('originalHost');
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-        let baseUrl = 'https://robotiax.mx/';
-        if (originalHost) {
-            baseUrl = `${window.location.protocol}//${originalHost}/`;
-        } else if (isLocal) {
-            baseUrl = `${window.location.protocol}//${window.location.host}/`;
-        }
+        // LAS IMÁGENES SIEMPRE CARGAN DESDE EL SERVIDOR CENTRAL DE ROBOTIAX (NUNCA DEL SUBDOMINIO)
+        const baseUrl = 'https://robotiax.mx/';
 
         this.cinematicPhotos = this.cinematicPhotos.map(p => {
             let fullUrl = p.url || '';
@@ -870,9 +906,21 @@ window.app.demo = {
         if (addressEl && data.direccion) addressEl.textContent = data.direccion;
         if (hoursEl && data.horarios) hoursEl.textContent = data.horarios;
         if (phoneEl && data.telefono) phoneEl.textContent = data.telefono;
-        if (feeEl && data.fee) feeEl.textContent = data.fee;
+        if (feeEl) {
+            let cleanFee = data.fee || "";
+            if (!cleanFee || cleanFee.includes('233') || cleanFee.toLowerCase().includes('stripe')) {
+                cleanFee = "$800 MXN";
+            }
+            feeEl.textContent = cleanFee;
+        }
         if (badgeEl && data.badge) badgeEl.textContent = data.badge;
         if (specialtyEl && data.specialty) specialtyEl.textContent = data.specialty;
+
+        const headerBrand = document.getElementById('header-brand-title');
+        if (headerBrand && data.negocio) {
+            headerBrand.textContent = data.negocio;
+            headerBrand.style.setProperty('display', 'inline-block', 'important');
+        }
 
         if (data.negocio) {
             document.title = `${data.negocio} | Portal Digital`;
@@ -1005,22 +1053,46 @@ window.app.demo = {
         introModal.style.setProperty('display', 'flex', 'important');
     },
 
-    toggleWhatsAppWidget: function() {
+   toggleWhatsAppWidget: function() {
+        const isClientSite = (window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) || 
+                             (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.'));
+
+        if (isClientSite) {
+            let waAlertModal = document.getElementById('wa-setup-alert-modal');
+            if (!waAlertModal) {
+                waAlertModal = document.createElement('div');
+                waAlertModal.id = 'wa-setup-alert-modal';
+                waAlertModal.style = "position:fixed; inset:0; background:rgba(15,23,42,0.88); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;";
+                waAlertModal.innerHTML = `
+                    <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                            <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0; text-transform:uppercase; letter-spacing:0.5px;">VINCULAR ASISTENTE</h3>
+                                <span style="font-size:10px; color:#64748b; font-weight:600;">PASOS PARA ACTIVACIÓN</span>
+                            </div>
+                        </div>
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
+                            <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
+                            <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
+                            <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
+                        </div>
+                        <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.setProperty('display', 'none', 'important')" style="width:100%; background:#0f172a; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
+                            ENTENDIDO Y CERRAR
+                        </button>
+                    </div>
+                `;
+                document.body.appendChild(waAlertModal);
+            }
+            waAlertModal.style.setProperty('display', 'flex', 'important');
+            return;
+        }
+
         const widget = document.getElementById('whatsapp-chat-widget');
         const introModal = document.getElementById('whatsapp-simulation-intro-modal');
         if (!widget) return;
-
-        // En sitio de cliente en producción, mostrar la ventana explicativa con botón ENTENDIDO (Imagen 3)
-        const waAlertModal = document.getElementById('wa-setup-alert-modal');
-        if (waAlertModal || (window.app && window.app.clientData && window.app.clientData.isProductionSite)) {
-            if (waAlertModal) waAlertModal.style.display = 'flex';
-            return;
-        }
-
-        if (window.app && window.app.clientData) {
-            this.showRealWhatsAppConfig();
-            return;
-        }
 
         if (!widget.classList.contains('hidden')) {
             widget.classList.add('hidden');
