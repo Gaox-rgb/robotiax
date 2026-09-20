@@ -195,6 +195,7 @@ window.app.editor = {
             email: document.getElementById('edit-email')?.value || "",
             direccion: document.getElementById('edit-address')?.value || document.getElementById('edit-address-fiscal')?.value || "No proporcionada",
             horarios: document.getElementById('edit-hours')?.value || "No proporcionado",
+            isDraft: true,
             timestamp: new Date().toISOString()
         };
 
@@ -208,20 +209,20 @@ window.app.editor = {
             }
         }
 
-        // AUTO-LOGIN INMEDIATO DEL COMPRADOR (Para que al volver vea su barra activa)
+        const folio = `ORD-STRIPE-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+        details.folio = folio;
+        details.orderNumber = folio;
+
         const activeUser = {
-            name: details.negocio || details.email.split('@')[0],
+            name: details.negocio,
             email: details.email,
             phone: details.telefono
         };
         localStorage.setItem('robotiax_user', JSON.stringify(activeUser));
         localStorage.setItem('pending_draft_details', JSON.stringify(details));
+        localStorage.setItem('pending_draft_folio', folio);
         localStorage.setItem('pending_purchase_id', this.currentTemplateId);
 
-        const folio = `ORD-STRIPE-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
-        localStorage.setItem('pending_draft_folio', folio);
-
-        // BLINDAJE TOTAL: Folio + Correo + Nombre Real del Negocio empaquetados en Stripe
         const clientReference = `${folio}__${encodeURIComponent(details.email)}__${encodeURIComponent(details.negocio)}`;
 
         const draftPayload = JSON.stringify({
@@ -229,23 +230,23 @@ window.app.editor = {
             details: details
         });
 
-        // Envío blindado que sobrevive a la navegación de página (Zero-Latency 0.0 ms)
+        // ESPERA SÍNCRONA GARANTIZADA: Se graba la Razón Social en Firestore antes de abrir Stripe
         try {
+            await fetch(this.endpoints.submitOrder, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025'
+                },
+                body: draftPayload
+            });
+        } catch (e) {
+            console.warn("Respaldo por sendBeacon activado:", e.message);
             if (navigator.sendBeacon) {
                 const blob = new Blob([draftPayload], { type: 'application/json' });
                 navigator.sendBeacon(this.endpoints.submitOrder, blob);
             }
-        } catch (e) {}
-
-        fetch(this.endpoints.submitOrder, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025'
-            },
-            body: draftPayload,
-            keepalive: true
-        }).catch(() => {});
+        }
 
         // ENLACE DIRECTO A STRIPE CON TRIPLE PARÁMETRO EMBEBIDO
         const stripeBaseLink = 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f';

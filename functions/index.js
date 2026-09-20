@@ -546,28 +546,25 @@ const negocioSlug = (details.negocio || "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 
-// DETECCIÓN DE PRE-REGISTRO BORRADOR (PREVIO A STRIPE)
-if (details.isDraft) {
-    await getDb().collection('orders_to_fulfill').doc(folio).set({
-        orderNumber: folio,
-        productName: pData.name,
-        isWeb: isWebProduct,
-        template: template,
-        status: 'pending_stripe_payment',
-        convenioCode: convenioCode,
-        provisionalPassword: tempPassword,
-        negocio_slug: negocioSlug,
-        ...details,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    console.log(`📝 [DRAFT_SAVED]: Borrador registrado para: ${details.negocio} (${folio}). Cero correos enviados hasta confirmar pago.`);
-    return res.status(200).json({ status: 'ok', folio: folio, negocioSlug: negocioSlug });
-}
+// PERSISTENCIA OBLIGATORIA DEL BORRADOR: Guarda siempre la razón social antes de pasarela
+await getDb().collection('orders_to_fulfill').doc(folio).set({
+    orderNumber: folio,
+    productName: pData.name,
+    isWeb: isWebProduct,
+    template: template,
+    status: 'pending_stripe_payment',
+    convenioCode: convenioCode,
+    provisionalPassword: tempPassword,
+    negocio: details.negocio,
+    negocio_slug: negocioSlug,
+    ...details,
+    timestamp: admin.firestore.FieldValue.serverTimestamp()
+}, { merge: true });
+console.log(`📝 [BUSINESS_SAVED]: Negocio "${details.negocio}" grabado bajo folio ${folio} (slug: ${negocioSlug}).`);
 
 // BLOQUEO DE SEGURIDAD: Ningún producto web envía correos al cliente antes de pagar en Stripe
 if (isWebProduct || template.startsWith('cfg-')) {
-    console.log(`🔒 [GUARD]: Orden ${folio} en espera de pasarela Stripe. Cancelando envío prematuro.`);
-    return res.status(200).json({ status: 'awaiting_payment', folio: folio });
+    return res.status(200).json({ status: 'awaiting_payment', folio: folio, negocioSlug: negocioSlug });
 }
 
 // --- FLUJO DE APROVISIONAMIENTO MODULAR ---
@@ -1268,12 +1265,11 @@ exports.stripeWebhook = onRequest({
             ''
         ).trim();
 
-        // BLINDAJE TOTAL: Prioridad absoluta al nombre real del negocio capturado
+        // PRIORIDAD ESTRICTA A LA RAZÓN SOCIAL DEL FORMULARIO (NUNCA EL NOMBRE DE LA TARJETA)
         const effectiveBusinessName = (
             draftData.negocio || 
             draftData.business_name || 
             embeddedBusinessName || 
-            session.customer_details?.name ||
             "Mi Negocio"
         ).trim();
 
@@ -1288,8 +1284,9 @@ exports.stripeWebhook = onRequest({
         const convenioCode = draftData.convenioCode || `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
         const tempPassword = draftData.provisionalPassword || Math.random().toString(36).substring(2, 8).toUpperCase();
 
-        // REGLA DE ORO: Construcción del slug con guiones y minúsculas (Ej: MALAZAR SA DE CV -> malazar-sa-de-cv)
-        const negocioSlug = effectiveBusinessName
+        // CONSTRUCCIÓN DEL SLUG BASADO EXCLUSIVAMENTE EN LA RAZÓN SOCIAL
+        const rawSlugBase = (draftData.negocio_slug || effectiveBusinessName);
+        const negocioSlug = rawSlugBase
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
