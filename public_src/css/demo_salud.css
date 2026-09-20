@@ -25,6 +25,7 @@ body {
 #servicios > div > div,
 #qr-promo-section,
 .entertainment-console,
+main > section,
 aside > section {
     background-color: var(--bg-container) !important;
     border: 1px solid var(--border-container) !important;
@@ -33,6 +34,22 @@ aside > section {
     max-width: 100% !important;
     box-sizing: border-box !important;
     transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease !important;
+}
+
+main > section h3,
+main > section h2,
+#clinic-hero-card h1,
+#clinic-hero-card h2,
+aside h4 {
+    color: var(--color-text) !important;
+    transition: color 0.4s ease !important;
+}
+
+main > section p,
+#clinic-hero-card p,
+aside p {
+    color: var(--color-text-secondary) !important;
+    transition: color 0.4s ease !important;
 }
 
 /* Tarjetas Internas o Split Cards */

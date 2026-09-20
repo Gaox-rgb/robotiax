@@ -334,45 +334,35 @@ window.app.demo = {
             clearInterval(this.notifLoopInterval);
         }
 
-        this.activeActState = 2; // ENTRAR DIRECTO A ACTO II (ACTIVO)
+        this.activeActState = 1;
         this.notifIndex = 0;
         
-        // Forzar Pilar 3 a estar activo SIEMPRE
         this.startLiveStreamInteractions(); 
-        this.setPhoneVisualState(2); 
+        this.setPhoneVisualState(1);
 
         const runCycleStep = () => {
-            if (this.activeActState === 1) {
-                // ACTO I: Mostrar notificaciones simpáticas de forma sucesiva
-                const pool = this.humorPool[this.currentNicheId] || this.humorPool['salud'];
-                const notifData = pool[this.notifIndex % pool.length];
+            const pool = this.humorPool[this.currentNicheId] || this.humorPool['salud'];
 
+            if (this.activeActState === 1) {
+                const notifData = pool[this.notifIndex % pool.length];
                 this.showPhonePushNotification(notifData.title, notifData.desc);
                 this.notifIndex++;
 
-                // Si ya pasamos por 4 notificaciones, hacemos la transición al Acto II
-                if (this.notifIndex >= 4) {
+                if (this.notifIndex >= 3) {
                     this.notifIndex = 0;
-                    this.activeActState = 2; // Pasar a Acto II
+                    this.activeActState = 2;
                 }
             } else {
-                // ACTO II: Despejar y aclarar la pantalla con llamado ENTRAR
                 this.hidePhonePushNotification();
-                this.setPhoneVisualState(2); // Quitar Blur y Rojo, mostrar letrero de Entrada
-
-                // Esperar 5 segundos en Acto II y luego regresar suavemente a Acto I
+                this.setPhoneVisualState(2);
+                this.activeActState = 1;
                 setTimeout(() => {
-                    if (this.activeActState === 2) {
-                        this.setPhoneVisualState(1); // Regresa a Blur y Rojo
-                        this.activeActState = 1; // Regresa al Acto I
-                    }
-                }, 5000);
+                    this.setPhoneVisualState(1);
+                }, 3000);
             }
         };
 
-        // Correr inmediatamente el primer paso
         runCycleStep();
-        // Ciclar el motor cada 3.5 segundos para refrescar alertas o cambiar de Acto
         this.notifLoopInterval = setInterval(runCycleStep, 3500);
     },
 
