@@ -750,32 +750,7 @@ window.app.demo = {
         
         const cleanId = id.toLowerCase().trim();
 
-        const linkMap = {
-            "boutique": "https://makumoto.com/?view=arcade&trivia=boutique",
-            "cafeteria": "https://makumoto.com/?view=arcade&trivia=cafeteria",
-            "ciber": "https://makumoto.com/?view=arcade&trivia=ciber",
-            "contable": "https://makumoto.com/?view=arcade&trivia=contable",
-            "eventos": "https://makumoto.com/?view=arcade&trivia=eventos",
-            "facebook": "https://makumoto.com/?view=arcade&trivia=facebook",
-            "ferreteria": "https://makumoto.com/?view=arcade&trivia=ferreteria",
-            "floreria": "https://makumoto.com/?view=arcade&trivia=floreria",
-            "fumigacion": "https://makumoto.com/?view=arcade&trivia=fumigacion",
-            "gourmet": "https://makumoto.com/?view=arcade&trivia=gourmet",
-            "gym": "https://makumoto.com/?view=arcade&trivia=gym",
-            "idiomas": "https://makumoto.com/?view=arcade&trivia=idiomas",
-            "instagram": "https://makumoto.com/?view=arcade&trivia=instagram",
-            "legal": "https://makumoto.com/?view=arcade&trivia=legal",
-            "prospeccion": "https://makumoto.com/?view=arcade&trivia=prospeccion",
-            "youtube": "https://makumoto.com/?view=arcade&trivia=youtube",
-            "abarrotes": "https://makumoto.com/?view=arcade&trivia=abarrotes",
-            "limpieza": "https://makumoto.com/?view=arcade&trivia=limpieza",
-            "webs": "https://makumoto.com/?view=arcade&trivia=webs",
-            "rh": "https://makumoto.com/?view=arcade&trivia=rh",
-            "talleres": "https://makumoto.com/?view=arcade&trivia=talleres",
-            "salud": "https://makumoto.com/?view=arcade&trivia=salud"
-        };
-
-        const targetLink = linkMap[cleanId] || "https://makumoto.com/?view=arcade";
+        const targetLink = `https://makumoto.com/?game=trivia&trivia=${encodeURIComponent(cleanId)}`;
         window.open(targetLink, '_blank');
     },
 
