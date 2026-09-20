@@ -1010,6 +1010,13 @@ window.app.demo = {
         const introModal = document.getElementById('whatsapp-simulation-intro-modal');
         if (!widget) return;
 
+        // En sitio de cliente en producción, mostrar la ventana explicativa con botón ENTENDIDO (Imagen 3)
+        const waAlertModal = document.getElementById('wa-setup-alert-modal');
+        if (waAlertModal || (window.app && window.app.clientData && window.app.clientData.isProductionSite)) {
+            if (waAlertModal) waAlertModal.style.display = 'flex';
+            return;
+        }
+
         if (window.app && window.app.clientData) {
             this.showRealWhatsAppConfig();
             return;

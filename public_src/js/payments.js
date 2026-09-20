@@ -3,77 +3,31 @@
  * Versión Certificada - Lógica de Pasarela
  */
 window.app = window.app || {};
-// Resolvedor de Red Táctico: Si detecta localhost se redirecciona al emulador en el puerto 5001
-const resolveBackendUrl = (functionName, cloudRunUrl) => {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    return isLocal 
-        ? `http://127.0.0.1:5001/robotiax/us-central1/${functionName}` 
-        : cloudRunUrl;
-};
-
 window.app.payments = {
-    endpoints: {
-        create: resolveBackendUrl('createPaypalOrder', 'https://createpaypalorder-bh64qprvqa-uc.a.run.app'),
-        capture: resolveBackendUrl('capturePaypalOrder', 'https://capturepaypalorder-bh64qprvqa-uc.a.run.app')
+    // ENLACES OFICIALES DE STRIPE: MAKUMOTO & ROBOTIAX PAY
+    stripeLinks: {
+        // Enlace Universal para todas las Suites Digitales Web con soporte de cupones
+        web_suite: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
+        upgrade_perfecciona: 'https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g',
+        default: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true'
     },
 
-    executePurchase: function(productId, fundingType, price, currency) {
-        const targetId = document.getElementById('modal-paypal-container') ? 'modal-paypal-container' : 'paypal-actual-button';
-        const btnBox = document.getElementById(targetId);
+    executePurchase: function(productId, price, currency) {
+        localStorage.setItem('pending_purchase_id', productId);
+        console.log("💳 [STRIPE PAY]: Redirigiendo con cupones activos para:", productId);
         
-        if (btnBox) btnBox.innerHTML = '<div style="color:#00f2ff; font-family:Rajdhani; padding:20px; font-size:0.8rem;">ESTABLECIENDO CONEXIÓN SEGURA...</div>';
-
-        fetch(this.endpoints.create, { 
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'X-Robotiax-Token': (window.app && window.app.vault) ? window.app.vault : 'RBX-PRT-99-MXN-SECURE-2025'
-            },
-            body: JSON.stringify({ 
-                productId: productId,
-                fundingType: fundingType,
-                price: price,
-                currency: currency,
-                returnUrl: window.location.origin + window.location.pathname 
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.approveUrl) {
-                localStorage.setItem('pending_purchase_id', productId);
-                window.location.href = data.approveUrl;
-            }
-        })
-        .catch(err => {
-            console.error("Fallo en Pasarela:", err);
-            if(btnBox) btnBox.innerHTML = '<p style="color:#ff003c;">ERROR DE PROTOCOLO. REINTENTE.</p>';
-        });
+        const targetLink = this.stripeLinks.web_suite || this.stripeLinks.default;
+        
+        if (window.top && window.top !== window) {
+            window.top.location.href = targetLink;
+        } else {
+            window.location.href = targetLink;
+        }
     },
 
     openModal: function(productId, productName, price, currency) {
-        const modal = document.getElementById('payment-modal-overlay');
-        const nameEl = document.getElementById('modal-template-name');
-        const targetId = document.getElementById('modal-paypal-container') ? 'modal-paypal-container' : 'paypal-actual-button';
-        const btnBox = document.getElementById(targetId);
-
-        if (modal && btnBox) {
-            if (nameEl) nameEl.textContent = productName;
-            modal.style.setProperty('display', 'flex', 'important');
-            modal.classList.add('visible');
-
-            btnBox.innerHTML = `
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'paypal', ${price}, '${currency}')" 
-                        style="background: #FFD700; color: #000; border: none; padding: 18px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 2px; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);">
-                        PAGAR CON CUENTA PAYPAL
-                    </button>
-                    <button onclick="window.app.payments.executePurchase('${productId}', 'card', ${price}, '${currency}')" 
-                        style="background: transparent; color: #00f2ff; border: 2px solid #00f2ff; padding: 16px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 2px; font-size: 0.85rem; letter-spacing: 1px; box-shadow: 0 0 20px rgba(0, 234, 255, 0.1);">
-                        TARJETA DE CRÉDITO / DÉBITO
-                    </button>
-                </div>
-            `;
-        }
+        // Ejecución directa de compra con Makumoto & Robotiax Pay
+        this.executePurchase(productId, price, currency);
     },
 
     closeModal: function() {
@@ -92,65 +46,46 @@ window.app.payments = {
 
     handleReturn: function() {
         const params = new URLSearchParams(window.location.search);
-        if (params.get('status') === 'success') {
-            const pendingId = localStorage.getItem('pending_purchase_id');
-            if (pendingId) {
-                // 1. FORZADO INMEDIATO DE INTERFAZ (LATENCIA CERO)
-                const panel = document.getElementById('editor-panel');
-                if (panel) {
-                    console.log("🔥 [SISTEMA]: Pago detectado. Forzando Panel de Activación para:", pendingId);
-                    panel.classList.add('active'); // Activación nativa por clases para permitir cierre
-                    panel.style.zIndex = "200000";
-                    
-                    // Asegurar que el overlay de pago se cierre si quedó abierto con la especificidad correcta
-                    const overlay = document.getElementById('payment-modal-overlay');
-                    if (overlay) {
-                        overlay.classList.remove('visible');
-                        overlay.style.display = 'none';
-                        overlay.style.setProperty('display', 'none', 'important');
-                    }
-                }
+        if (params.get('status') === 'success' || params.has('session_id') || params.has('client_reference_id')) {
+            const pendingId = localStorage.getItem('pending_purchase_id') || 'salud';
+            
+            // Persistencia inmediata de compra
+            const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+            if (!owned.includes(pendingId)) {
+                owned.push(pendingId);
+                localStorage.setItem('makumoto_owned', JSON.stringify(owned));
+            }
 
-                // 2. Persistencia de compra
-                const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-                if (!owned.includes(pendingId)) {
-                    owned.push(pendingId);
-                    localStorage.setItem('makumoto_owned', JSON.stringify(owned));
-                }
+            // AUTO-LOGIN: Activar sesión del comprador para que aparezca "Hola, [Nombre]"
+            const draftDetails = JSON.parse(localStorage.getItem('pending_draft_details') || '{}');
+            const buyerName = draftDetails.negocio || localStorage.getItem('pending_buyer_name') || 'Cliente';
+            const buyerEmail = draftDetails.email || localStorage.getItem('pending_buyer_email') || '';
 
-                // 3. Inicialización de datos
-                const checkDependencies = () => {
-                    if (window.app.editor) {
-                        // Si estamos en seguridad, usamos el inicializador de seguridad
-                        const path = window.location.pathname;
-                        if (path.includes('seguridad') || path.includes('arsenal-completo')) {
-                            // Sincronización manual para listados y seguridad
-                            window.app.editor.currentTemplateId = pendingId;
-                            const product = [...window.app.catalog.ia, ...window.app.catalog.security].find(p => p.id === pendingId);
-                            if (product) {
-                                window.app.editor.currentProductName = product.name;
-                                const n = document.getElementById('display-product-name');
-                                const p = document.getElementById('display-product-price');
-                                if (n) n.textContent = product.name;
-                                if (p) p.textContent = `$${product.price} ${product.currency}`;
-                            }
-                        } else if (window.app.editor.init) {
-                            window.app.editor.init(pendingId);
-                        }
-                        
-                        // Limpiar URL una vez asegurado el panel
-                        const cleanUrl = window.location.origin + window.location.pathname;
-                        window.history.replaceState({}, document.title, cleanUrl);
-                        localStorage.removeItem('pending_purchase_id');
-                    } else {
-                        setTimeout(checkDependencies, 50);
-                    }
-                };
-                checkDependencies();
+            localStorage.setItem('robotiax_user', JSON.stringify({
+                name: buyerName,
+                email: buyerEmail,
+                authenticated: true
+            }));
+
+            // Desplegar modal informativo automático
+            const modal = document.getElementById('post-payment-modal');
+            if (modal) {
+                modal.style.setProperty('display', 'flex', 'important');
             }
         }
+    },
+
+    closePostPaymentModal: function() {
+        const modal = document.getElementById('post-payment-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        // Limpiar parámetros de URL silenciosamente
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+        localStorage.removeItem('pending_purchase_id');
     }
 };
 
-// Ejecución inmediata: no espera al DOM, intercepta la carga
+// Ejecución inmediata al cargar para capturar retornos exitosos de Stripe
 window.app.payments.handleReturn();

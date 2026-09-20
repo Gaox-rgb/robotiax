@@ -6,16 +6,21 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body {
+html, body {
+    width: 100%;
+    min-height: 100vh;
     background-color: var(--terminal-bg);
     color: var(--terminal-green);
     font-family: 'Fira Code', monospace;
-    height: 100vh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     text-transform: uppercase;
+    padding-top: 80px;
+    padding-bottom: 40px;
 }
 
 /* --- EFECTO CRT POWER ON --- */
@@ -41,16 +46,18 @@ body {
     background: rgba(0, 20, 0, 0.9);
 }
 
-h1 { font-size: 2rem; margin-bottom: 30px; border-bottom: 1px dashed var(--terminal-green); padding-bottom: 10px; }
+h1 { font-size: clamp(1.2rem, 5vw, 2rem); margin-bottom: 25px; border-bottom: 1px dashed var(--terminal-green); padding-bottom: 10px; line-height: 1.2; }
 
 .question-box { display: none; }
 .question-box.active { display: block; animation: fadeIn 0.5s; }
 
 .btn-option {
-    display: block; width: 100%; padding: 15px; margin: 10px 0;
+    display: block; width: 100%; padding: 12px 15px; margin: 10px 0;
     background: transparent; border: 1px solid var(--terminal-green);
     color: var(--terminal-green); font-family: 'Fira Code', monospace;
-    font-size: 1.2rem; cursor: pointer; text-align: left; transition: 0.2s;
+    font-size: clamp(0.75rem, 3vw, 1rem); cursor: pointer; text-align: left; transition: 0.2s;
+    line-height: 1.4;
+    word-break: break-word;
 }
 
 .btn-option:hover {

@@ -6,22 +6,43 @@
     <title>ROBOTIAX® | El Futuro es Inevitable</title>
     
     <!-- SEO ESTRUCTURAL -->
-    <meta name="description" content="ROBOTIAX®: Desarrollo web profesional por $99 MXN, Agentes de IA autónomos y ciberseguridad avanzada. El arsenal tecnológico para dominar tu mercado.">
-    <meta name="keywords" content="desarrollo web, inteligencia artificial, ciberseguridad, agentes ia, robotiax, plantillas web economicas">
+    <meta name="description" content="ROBOTIAX®: Suites Digitales de Inteligencia Artificial por $200 MXN + IVA. Páginas Web Profesionales de marca blanca, Agentes de IA autónomos 24/7 y ciberseguridad.">
+    <meta name="keywords" content="desarrollo web, inteligencia artificial, ciberseguridad, agentes ia, robotiax, suites digitales">
     <meta name="author" content="ROBOTIAX® Engine">
     
-    <!-- OPEN GRAPH (Para que se vea bien en WhatsApp/Facebook) -->
+    <!-- OPEN GRAPH (WhatsApp / Facebook / Meta) -->
+    <meta property="og:type" content="website">
     <meta property="og:title" content="ROBOTIAX® | Arquitectos de tu Futuro Digital">
-    <meta property="og:description" content="Webs profesionales por $99 MXN y soluciones de IA de élite.">
+    <meta property="og:description" content="Suites Digitales de Inteligencia Artificial por $200 MXN + IVA, Webs profesionales y soluciones de IA de élite.">
     <meta property="og:image" content="https://robotiax.mx/assets/favicon.png">
     <meta property="og:url" content="https://robotiax.mx">
 
+    <!-- TWITTER CARDS -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ROBOTIAX® | Arquitectos de tu Futuro Digital">
+    <meta name="twitter:description" content="Suites Digitales de Inteligencia Artificial por $200 MXN + IVA, Webs profesionales y soluciones de IA de élite.">
+    <meta name="twitter:image" content="https://robotiax.mx/assets/favicon.png">
+
+    <!-- RECURSOS Y FUENTES -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;800;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="/css/style.css">
     <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="apple-touch-icon" href="/assets/favicon.png">
+
+    <!-- DATOS ESTRUCTURADOS SCHEMA.ORG -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "ROBOTIAX",
+      "url": "https://robotiax.mx",
+      "logo": "https://robotiax.mx/assets/favicon.png",
+      "description": "Suites Digitales de Inteligencia Artificial, Ingeniería Web Avanzada y Ciberseguridad."
+    }
+    </script>
 </head>
 
    <body>
@@ -30,9 +51,52 @@
     <div id="fx-tv" class="trans-tv"></div>
 
     <!-- BARRA DE NAVEGACIÓN SUPERIOR FIJA (HUD NAV) -->
-    <header class="hud-nav">
-        <div class="hud-nav-container" style="justify-content: center;">
-            <span class="hud-logo">ROBOTIAX® // ENGINE</span>
+    <header class="hud-nav" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding: 8px 14px; box-sizing: border-box;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto;">
+            
+            <!-- LADO IZQUIERDO: LOGOTIPO OFICIAL SIEMPRE VISIBLE -->
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-family: 'Roboto Mono', monospace; font-size: clamp(0.58rem, 2.2vw, 0.72rem); font-weight: 700; color: #e2e8f0; letter-spacing: 1.5px; text-transform: uppercase;">
+                    ROBOTIAX® // ENGINE
+                </span>
+            </div>
+
+            <!-- LADO DERECHO: MICRO-BARRA DE IDENTIDAD (TITANIO MATE) -->
+            <div id="rx-auth-dock" style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; padding: 2px 8px; font-family: 'Poppins', sans-serif;">
+                
+                <!-- Estado Visitante (Sin Sesión) -->
+                <div id="rx-dock-guest" style="display: flex; align-items: center; gap: 6px;">
+                    <button onclick="window.rxAuth.openModal('login')" style="background: none; border: none; color: #94a3b8; font-size: 0.58rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 4px; transition: 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">
+                        Ingresar
+                    </button>
+                    <span style="color: rgba(148, 163, 184, 0.3); font-size: 0.6rem;">•</span>
+                    <button onclick="window.rxAuth.openModal('register')" style="background: rgba(248, 250, 252, 0.12); border: 1px solid rgba(248, 250, 252, 0.25); color: #f8fafc; font-size: 0.58rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; transition: 0.2s;" onmouseover="this.style.background='#ffffff'; this.style.color='#000000'" onmouseout="this.style.background='rgba(248, 250, 252, 0.12)'; this.style.color='#f8fafc'">
+                        Registro
+                    </button>
+                </div>
+
+                <!-- Estado Autenticado (Con Sesión Activa) -->
+                <div id="rx-dock-user" style="display: none; align-items: center; gap: 8px;">
+                    <span id="rx-dock-greeting" style="color: #cbd5e1; font-size: 0.58rem; font-weight: 500;">
+                        Hola, <strong id="rx-dock-username" style="color: #ffffff; font-weight: 600;">Usuario</strong>
+                    </span>
+                    </div>
+            </div>
+
+            <!-- DOCK DE USUARIO CORREGIDO A 1 SOLA LÍNEA -->
+            <div id="rx-dock-user" style="display: none; align-items: center; gap: 4px; white-space: nowrap !important; flex-wrap: nowrap !important;">
+                <span id="rx-dock-greeting" style="color: #cbd5e1; font-size: 0.46rem; font-weight: 500; white-space: nowrap !important; display: inline-flex; align-items: center; gap: 2px;">
+                    Hola, <strong id="rx-dock-username" style="color: #00f2ff; font-weight: 700; font-size: 0.46rem; max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap !important; display: inline-block; vertical-align: middle;">Usuario</strong>
+                </span>
+                <button type="button" onclick="window.rxAuth.openAccountModal()" style="background: rgba(0, 242, 255, 0.15); border: 1px solid #00f2ff; color: #00f2ff; font-size: 0.44rem; font-weight: 800; cursor: pointer; text-transform: uppercase; padding: 2px 5px; border-radius: 5px; white-space: nowrap !important; letter-spacing: 0.2px;">
+                    MI CUENTA
+                </button>
+                <button type="button" onclick="window.rxAuth.logout()" title="Cerrar Sesión" style="background: none; border: none; color: #94a3b8; font-size: 0.52rem; cursor: pointer; padding: 0 1px; line-height: 1;">
+                    ✕
+                </button>
+            </div>
+            </div>
+
         </div>
     </header>
 
@@ -99,6 +163,38 @@
                     <h3>Convierte visitas en facturación. Diseñamos infraestructuras de venta, no simples páginas web.</h3>
                     <a href="desarrollo-web.html" class="action-button">
                         CONSTRUIR PRESENCIA
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="protocolo-redes" class="protocol-section" style="border-color: #ff007f;">
+            <div class="container">
+                <div class="section-tag" style="border-color: #ff007f; color: #ff007f;">
+                    <span class="typewriter" style="border-color: #ff007f;">&lt;PROTOCOLO: REDES SOCIALES&gt;</span>
+                </div>
+                <h2>Conquista el algoritmo y domina las redes.</h2>
+                <p>Stories, Reels y contenido estratégico diseñado para <strong>detener el scroll y captar atención masiva</strong> en Instagram, Facebook, TikTok y YouTube.</p>
+                <div class="content-wrapper">
+                    <h3 style="color: #ff007f;">Viralidad estructurada. Convertimos espectadores en clientes leales para tu marca.</h3>
+                    <a href="redes-sociales.html" class="action-button" style="background: #ff007f; color: #000000; box-shadow: 0 0 25px rgba(255, 0, 127, 0.5);">
+                        DOMINAR REDES SOCIALES
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="protocolo-ecommerce" class="protocol-section" style="border-color: #ffd700;">
+            <div class="container">
+                <div class="section-tag" style="border-color: #ffd700; color: #ffd700;">
+                    <span class="typewriter" style="border-color: #ffd700;">&lt;PROTOCOLO: E-COMMERCE&gt;</span>
+                </div>
+                <h2>Tu tienda abierta 24/7 al mundo entero.</h2>
+                <p>Infraestructura de venta en línea sin fricción técnica. <strong>Pasarelas globales, cobro con IVA automatizado</strong> y logística sincronizada.</p>
+                <div class="content-wrapper">
+                    <h3 style="color: #ffd700;">Despacha pedidos en piloto automático. Deja de soñar con vender y empieza a despachar.</h3>
+                    <a href="ecommerce-elite.html" class="action-button" style="background: #ffd700; color: #000000; box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);">
+                        DESPLEGAR E-COMMERCE
                     </a>
                 </div>
             </div>
@@ -187,14 +283,16 @@
             
             <!-- NIVEL 1: NAVEGACIÓN DE PROTOCOLOS -->
             <div class="footer-nav" style="margin-bottom: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                <a href="#" onclick="runEffect(event, 'diagnostico.html', 'matrix')" style="color: #00ff66; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(0,255,102,0.35);">[ DIAGNÓSTICO ]</a>
-                <a href="desarrollo-web.html" style="color: #00f2ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ PRESENCIA ]</a>
-                <a href="#" onclick="runEffect(event, 'soluciones-ia.html', 'warp')" style="color: #a29bfe; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ INTELIGENCIA ]</a>
-                <a href="#" onclick="runEffect(event, 'seguridad-web.html', 'tv')" style="color: #ff7675; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ FORTALEZA ]</a>
-                <a href="#" onclick="runEffect(event, 'membresia-black.html', 'gold')" style="color: #fdcb6e; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">[ BLACK ]</a>
-                <a href="arsenal-completo.html" style="color: #39ff14; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #39ff14;">[ CATÁLOGO DE APPS ]</a>
-                <a href="#" onclick="runEffect(event, 'top10.html', 'warp')" style="color: #ff00ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; opacity: 0.85; text-shadow: 0 0 8px rgba(255,0,255,0.35);">[ TOP 10 ]</a>
-                <a href="https://makumoto.com" target="_blank" style="color: #ffd700; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #ffd700;">[ MAKUMOTO ]</a>
+                <a href="#" onclick="runEffect(event, 'diagnostico.html', 'matrix')" style="color: #00ff66; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(0,255,102,0.35);">DIAGNÓSTICO</a>
+                <a href="desarrollo-web.html" style="color: #00f2ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">PRESENCIA</a>
+                <a href="redes-sociales.html" style="color: #ff007f; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(255,0,127,0.35);">REDES SOCIALES</a>
+                <a href="ecommerce-elite.html" style="color: #ffd700; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; text-shadow: 0 0 8px rgba(255,215,0,0.35);">E-COMMERCE</a>
+                <a href="#" onclick="runEffect(event, 'soluciones-ia.html', 'warp')" style="color: #a29bfe; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">INTELIGENCIA</a>
+                <a href="#" onclick="runEffect(event, 'seguridad-web.html', 'tv')" style="color: #ff7675; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">FORTALEZA</a>
+                <a href="#" onclick="runEffect(event, 'membresia-black.html', 'gold')" style="color: #fdcb6e; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7;">BLACK</a>
+                <a href="arsenal-completo.html" style="color: #39ff14; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #39ff14;">CATÁLOGO DE APPS</a>
+                <a href="#" onclick="runEffect(event, 'top10.html', 'warp')" style="color: #ff00ff; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; opacity: 0.85; text-shadow: 0 0 8px rgba(255,0,255,0.35);">TOP 10</a>
+                <a href="https://makumoto.com" target="_blank" style="color: #ffd700; text-decoration: none; font-family: 'Roboto Mono', monospace; font-size: 0.58rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; text-shadow: 0 0 10px #ffd700;">MAKUMOTO</a>
             </div>
             
 
@@ -202,6 +300,11 @@
             <div class="footer-legal" style="margin-bottom: 20px; display: flex; justify-content: center; gap: 30px;">
                 <a href="terminos-y-condiciones.html" style="color: #636e72; text-decoration: none; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px;">Términos y Condiciones</a>
                 <a href="politica-privacidad.html" style="color: #636e72; text-decoration: none; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px;">Política de Privacidad</a>
+            </div>
+
+            <!-- NIVEL 2.5: CONTACTO SOPORTE -->
+            <div style="margin-bottom: 15px;">
+                <a href="mailto:soporte@gaoti.mx" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: soporte@gaoti.mx</a>
             </div>
 
             <!-- NIVEL 3: COPYRIGHT -->
@@ -212,6 +315,276 @@
 
         </div>
     </footer>
+
+       <!-- MODAL DE ACCESO (LOGIN / REGISTRO) -->
+    <div id="rx-auth-modal" style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(8px); z-index: 20000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 12px; width: 100%; max-width: 380px; padding: 30px 25px; box-shadow: 0 0 40px rgba(0, 242, 255, 0.2); position: relative; font-family: 'Poppins', sans-serif;">
+            <button onclick="window.rxAuth.closeModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #64748b; font-size: 1.1rem; cursor: pointer;">✕</button>
+            
+            <!-- Selector de Pestañas -->
+            <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 22px;">
+                <button id="rx-tab-login" onclick="window.rxAuth.switchTab('login')" style="flex: 1; padding: 8px 0; background: none; border: none; border-bottom: 2px solid #00f2ff; color: #00f2ff; font-weight: 600; font-size: 0.78rem; cursor: pointer; text-transform: uppercase;">
+                    Iniciar Sesión
+                </button>
+                <button id="rx-tab-register" onclick="window.rxAuth.switchTab('register')" style="flex: 1; padding: 8px 0; background: none; border: none; border-bottom: 2px solid transparent; color: #64748b; font-weight: 600; font-size: 0.78rem; cursor: pointer; text-transform: uppercase;">
+                    Crear Cuenta
+                </button>
+            </div>
+
+            <form onsubmit="window.rxAuth.handleAuthSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
+                <div id="rx-field-name" style="display: none; flex-direction: column; gap: 5px;">
+                    <label style="color: #94a3b8; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;">Nombre Completo:</label>
+                    <input type="text" id="rx-input-name" placeholder="Tu nombre o negocio" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 6px; padding: 10px 12px; color: #ffffff; font-size: 0.8rem; outline: none;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="color: #94a3b8; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;">Correo Electrónico:</label>
+                    <input type="email" id="rx-input-email" required placeholder="tu-correo@ejemplo.com" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 6px; padding: 10px 12px; color: #ffffff; font-size: 0.8rem; outline: none;">
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="color: #94a3b8; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;">Contraseña:</label>
+                    <input type="password" id="rx-input-password" required placeholder="••••••••" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 6px; padding: 10px 12px; color: #ffffff; font-size: 0.8rem; outline: none;">
+                </div>
+
+                <div id="rx-auth-msg" style="display: none; font-size: 0.72rem; padding: 8px; border-radius: 6px; text-align: center;"></div>
+
+                <button type="submit" id="rx-btn-auth-submit" style="margin-top: 8px; background: #00f2ff; border: none; color: #020617; font-weight: 700; font-size: 0.82rem; padding: 12px; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Acceder a Terminal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL "MI CUENTA" (PANEL DEL CLIENTE) -->
+    <div id="rx-account-modal" style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(10px); z-index: 20000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 14px; width: 100%; max-width: 550px; max-height: 85vh; display: flex; flex-direction: column; padding: 30px 25px; box-shadow: 0 0 50px rgba(0, 242, 255, 0.2); position: relative; font-family: 'Poppins', sans-serif;">
+            <button onclick="window.rxAuth.closeAccountModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #64748b; font-size: 1.2rem; cursor: pointer;">✕</button>
+            
+            <h3 style="color: #ffffff; font-size: 1.1rem; font-weight: 700; margin: 0 0 5px 0; text-transform: uppercase;">
+                Centro de Mando <span style="color: #00f2ff;">Robotiax</span>
+            </h3>
+            <p style="color: #94a3b8; font-size: 0.75rem; margin: 0 0 20px 0;">Administra tus suites activas y tus credenciales de despliegue.</p>
+
+            <!-- Tarjeta de Perfil -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div id="rx-acc-name" style="color: #ffffff; font-weight: 600; font-size: 0.88rem;">-</div>
+                    <div id="rx-acc-email" style="color: #00f2ff; font-size: 0.75rem;">-</div>
+                </div>
+                <span style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; padding: 3px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase;">Cuenta Verificada</span>
+            </div>
+
+            <!-- Listado de Suites / Sitios Web -->
+            <div style="flex: 1; overflow-y: auto; margin-bottom: 15px;">
+                <h4 style="color: #94a3b8; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 10px 0;">
+                    Tus Suites y Sitios Activos:
+                </h4>
+                <div id="rx-orders-container" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="color: #64748b; font-size: 0.75rem; text-align: center; padding: 25px;">Sincronizando expedientes...</div>
+                </div>
+            </div>
+
+            <button onclick="window.rxAuth.closeAccountModal()" style="width: 100%; background: transparent; border: 1px solid #334155; color: #cbd5e1; font-weight: 600; font-size: 0.78rem; padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">
+                Cerrar Panel
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTROLADOR JAVASCRIPT NATIVO DE SESIÓN Y ORDENES (CLIENT-SIDE) -->
+    <script>
+    (function() {
+        window.rxAuth = {
+            currentTab: 'login',
+
+            init: function() {
+                this.checkSession();
+            },
+
+            checkSession: function() {
+                const userJson = localStorage.getItem('robotiax_user');
+                const guestDock = document.getElementById('rx-dock-guest');
+                const userDock = document.getElementById('rx-dock-user');
+                const usernameEl = document.getElementById('rx-dock-username');
+
+                if (userJson) {
+                    try {
+                        const user = JSON.parse(userJson);
+                        if (guestDock) guestDock.style.display = 'none';
+                        if (userDock) userDock.style.display = 'flex';
+                        if (usernameEl) usernameEl.textContent = user.name || user.email.split('@')[0];
+                    } catch(e) {
+                        this.logout();
+                    }
+                } else {
+                    if (guestDock) guestDock.style.display = 'flex';
+                    if (userDock) userDock.style.display = 'none';
+                }
+            },
+
+            openModal: function(tab) {
+                const modal = document.getElementById('rx-auth-modal');
+                if (modal) modal.style.display = 'flex';
+                this.switchTab(tab || 'login');
+            },
+
+            closeModal: function() {
+                const modal = document.getElementById('rx-auth-modal');
+                if (modal) modal.style.display = 'none';
+            },
+
+            switchTab: function(tab) {
+                this.currentTab = tab;
+                const tabLogin = document.getElementById('rx-tab-login');
+                const tabReg = document.getElementById('rx-tab-register');
+                const fieldName = document.getElementById('rx-field-name');
+                const btnSubmit = document.getElementById('rx-btn-auth-submit');
+                const msgBox = document.getElementById('rx-auth-msg');
+                if (msgBox) msgBox.style.display = 'none';
+
+                if (tab === 'login') {
+                    if (tabLogin) { tabLogin.style.color = '#00f2ff'; tabLogin.style.borderBottomColor = '#00f2ff'; }
+                    if (tabReg) { tabReg.style.color = '#64748b'; tabReg.style.borderBottomColor = 'transparent'; }
+                    if (fieldName) fieldName.style.display = 'none';
+                    if (btnSubmit) btnSubmit.textContent = 'Acceder a Terminal';
+                } else {
+                    if (tabReg) { tabReg.style.color = '#00f2ff'; tabReg.style.borderBottomColor = '#00f2ff'; }
+                    if (tabLogin) { tabLogin.style.color = '#64748b'; tabLogin.style.borderBottomColor = 'transparent'; }
+                    if (fieldName) fieldName.style.display = 'flex';
+                    if (btnSubmit) btnSubmit.textContent = 'Registrar y Activar';
+                }
+            },
+
+            handleAuthSubmit: function(e) {
+                e.preventDefault();
+                const email = document.getElementById('rx-input-email').value.trim();
+                const pass = document.getElementById('rx-input-password').value;
+                const name = document.getElementById('rx-input-name').value.trim();
+                const msgBox = document.getElementById('rx-auth-msg');
+
+                if (!email || !pass) return;
+
+                if (this.currentTab === 'register') {
+                    const newUser = {
+                        name: name || email.split('@')[0],
+                        email: email,
+                        registeredAt: new Date().toISOString()
+                    };
+                    localStorage.setItem('robotiax_user', JSON.stringify(newUser));
+                    if (msgBox) {
+                        msgBox.style.display = 'block';
+                        msgBox.style.background = 'rgba(46, 204, 113, 0.15)';
+                        msgBox.style.color = '#2ecc71';
+                        msgBox.textContent = '¡Cuenta creada con éxito! Conectando...';
+                    }
+                    setTimeout(() => {
+                        this.closeModal();
+                        this.checkSession();
+                    }, 800);
+                } else {
+                    const existingUser = localStorage.getItem('robotiax_user');
+                    let userName = email.split('@')[0];
+                    if (existingUser) {
+                        try {
+                            const parsed = JSON.parse(existingUser);
+                            if (parsed.name) userName = parsed.name;
+                        } catch(err) {}
+                    }
+                    localStorage.setItem('robotiax_user', JSON.stringify({ name: userName, email: email }));
+                    this.closeModal();
+                    this.checkSession();
+                }
+            },
+
+            logout: function() {
+                localStorage.removeItem('robotiax_user');
+                this.checkSession();
+            },
+
+            openAccountModal: async function() {
+                const userJson = localStorage.getItem('robotiax_user');
+                if (!userJson) return this.openModal('login');
+
+                const user = JSON.parse(userJson);
+                const modal = document.getElementById('rx-account-modal');
+                const nameEl = document.getElementById('rx-acc-name');
+                const emailEl = document.getElementById('rx-acc-email');
+                const container = document.getElementById('rx-orders-container');
+
+                if (nameEl) nameEl.textContent = user.name || 'Cliente Robotiax';
+                if (emailEl) emailEl.textContent = user.email;
+                if (modal) modal.style.display = 'flex';
+
+                if (container) {
+                    container.innerHTML = '<div style="color: #94a3b8; font-size: 0.75rem; text-align: center; padding: 20px;">🔍 Buscando tus suites en la nube...</div>';
+                    
+                    try {
+                        const url = 'https://firestore.googleapis.com/v1/projects/robotiax/databases/(default)/documents:runQuery';
+                        const res = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                structuredQuery: {
+                                    from: [{ collectionId: 'orders_to_fulfill' }],
+                                    where: {
+                                        fieldFilter: {
+                                            field: { fieldPath: 'email' },
+                                            op: 'EQUAL',
+                                            value: { stringValue: user.email }
+                                        }
+                                    },
+                                    limit: 10
+                                }
+                            })
+                        });
+
+                        const data = await res.json();
+                        const docs = Array.isArray(data) ? data.filter(d => d.document) : [];
+
+                        if (docs.length === 0) {
+                            container.innerHTML = `
+                                <div style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; text-align: center;">
+                                    <p style="color: #cbd5e1; font-size: 0.78rem; margin: 0 0 10px 0;">No se encontraron suites vinculadas a <strong>${user.email}</strong>.</p>
+                                    <a href="desarrollo-web.html#tablas" style="display: inline-block; padding: 8px 16px; background: #00f2ff; color: #020617; font-weight: 700; font-size: 0.7rem; border-radius: 4px; text-decoration: none; text-transform: uppercase;">Explorar Catálogo</a>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        container.innerHTML = docs.map(d => {
+                            const f = d.document.fields || {};
+                            const negocio = f.negocio?.stringValue || 'Suite Digital';
+                            const slug = f.negocio_slug?.stringValue || '';
+                            const folio = f.orderNumber?.stringValue || 'ORD-ACTIVA';
+                            const url = slug ? `https://${slug}.ikai.info` : 'https://robotiax.mx';
+
+                            return `
+                                <div style="background: rgba(0, 242, 255, 0.03); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 8px; padding: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                                    <div>
+                                        <div style="color: #ffffff; font-weight: 600; font-size: 0.82rem;">${negocio}</div>
+                                        <div style="color: #64748b; font-size: 0.68rem;">Folio: ${folio}</div>
+                                    </div>
+                                    <a href="${url}" target="_blank" style="padding: 7px 14px; background: rgba(0, 242, 255, 0.15); border: 1px solid #00f2ff; color: #00f2ff; font-weight: 600; font-size: 0.7rem; border-radius: 6px; text-decoration: none; text-transform: uppercase; white-space: nowrap;">
+                                        Ver Sitio Web ➔
+                                    </a>
+                                </div>
+                            `;
+                        }).join('');
+
+                    } catch(err) {
+                        console.warn("Fallo en consulta remota:", err);
+                        container.innerHTML = '<div style="color: #ff4757; font-size: 0.75rem; text-align: center; padding: 15px;">No fue posible cargar el listado. Intenta de nuevo más tarde.</div>';
+                    }
+                }
+            },
+
+            closeAccountModal: function() {
+                const modal = document.getElementById('rx-account-modal');
+                if (modal) modal.style.display = 'none';
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => window.rxAuth.init());
+    })();
+    </script>
 
     <script src="js/main.js?v=1.1"></script>
 </body>

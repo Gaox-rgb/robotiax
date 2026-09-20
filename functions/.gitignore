@@ -1,3 +1,31 @@
+# Dependencias
 node_modules/
-serviceAccountKey.json
+**/node_modules/
+
+# Archivos de Entorno y Secretos (Stripe, API Keys, Tokens)
 .env
+.env.*
+*.env
+**/.env
+**/.env.*
+
+# Credenciales de Servicio de Firebase y Google Cloud
+serviceAccountKey.json
+*serviceAccount*.json
+*.pem
+*.key
+.runtimeconfig.json
+
+# Archivos de Sistema y Temporales
+.DS_Store
+Thumbs.db
+*.lnk
+
+# Logs de depuración
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log*
+
+# Caché de Firebase CLI
+.firebase/

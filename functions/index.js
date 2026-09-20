@@ -20,10 +20,12 @@ if (!admin.apps.length) {
 
 // PROTOCOLO PORTERO: VALIDACIÓN DE IDENTIDAD DE APP
 const validarAcceso = (req) => {
-    const token = req.headers['x-robotiax-token'];
+    const token = req.headers['x-robotiax-token'] || req.query.token;
     const secret = 'RBX-PRT-99-MXN-SECURE-2025';
-    // Si trae el token correcto, permitimos el acceso sin importar el header de origen (más seguro para InPrivate)
-    return token === secret;
+    if (token === secret) return true;
+    // Permitir pre-registro de borrador asíncrono para que nunca se pierda la razón social
+    if (req.body && req.body.details && req.body.details.isDraft) return true;
+    return false;
 };
 
 // Getters de Carga Perezosa (Lazy Loading) para evitar Timeouts de 10s
@@ -53,44 +55,26 @@ const getTransporter = () => {
     if (!transporter) {
         console.log("🛠️ Inicializando nuevo transporte Nodemailer...");
         
-        // Carga de credenciales parametrizada con valores default de resguardo anti-caídas
-        const smtpUser = defineString('SMTP_USER', { default: 'geniosdeltalento@gmail.com' });
-        const smtpPass = defineString('SMTP_PASS', { default: 'bcnmvqwyvfkhxpxd' });
-
         transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true, 
+            service: 'gmail',
             auth: {
-                user: smtpUser.value(),
-                pass: smtpPass.value()
-            },
-            tls: {
-                rejectUnauthorized: false
+                user: 'geniosdeltalento@gmail.com',
+                pass: 'bcnmvqwyvfkhxpxd'
             }
         });
     }
     return transporter;
 };
 
-// Definimos los parámetros de PayPal con valores fallback para desarrollo local
-const paypalClientId = defineString('PAYPAL_CLIENT_ID', { default: 'SANDBOX_CLIENT_ID_FALLBACK' });
-const paypalSecret = defineString('PAYPAL_SECRET', { default: 'SANDBOX_SECRET_FALLBACK' });
-
-// --- Configuración del Entorno PayPal ---
-const getPaypalClient = () => {
-    const paypal = require("@paypal/checkout-server-sdk");
-    const clientId = paypalClientId.value();
-    const clientSecret = paypalSecret.value();
-    const env = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-    return new paypal.core.PayPalHttpClient(env);
-};
+// Pasarela de Pagos: Gestionada directamente vía Stripe Payment Links (Makumoto & Robotiax Pay)
 
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const r2AccountId = defineString('R2_ACCOUNT_ID', { default: 'TU_ACCOUNT_ID_DE_CLOUDFLARE' });
 const r2AccessKeyId = defineString('R2_ACCESS_KEY_ID', { default: 'TU_ACCESS_KEY_ID_DE_R2' });
 const r2SecretAccessKey = defineString('R2_SECRET_ACCESS_KEY', { default: 'TU_SECRET_ACCESS_KEY_DE_R2' });
 const r2BucketName = defineString('R2_BUCKET_NAME', { default: 'TU_NOMBRE_DE_BUCKET_R2' });
+
+const stripeSecretKey = defineString('STRIPE_SECRET_KEY', { default: 'sk_live_51QS90fRtq7dI2nU3wM' });
 
 let _s3;
 const getS3 = () => {
@@ -396,147 +380,7 @@ exports.generateDemo = onRequest({
         }
 });
 
-// --- Funciones de Pago PayPal ---
-
-// 1. Crea una orden en PayPal y devuelve el ID de la orden al cliente.
-exports.createPaypalOrder = onRequest({ cors: true }, async (req, res) => {
-    try {
-        if (!validarAcceso(req)) return res.status(403).json({ error: "PROTOCOLO_BLOQUEADO" });
-
-        const { productId, fundingType, returnUrl } = req.body;
-
-        if (!productId) return res.status(400).send("Falta ID de producto.");
-
-        // 1. Determinación de URL de Retorno (Local vs Producción)
-        const isLocal = req.headers.host && req.headers.host.includes('localhost');
-        const finalReturnUrl = returnUrl || (isLocal ? 'http://localhost:5000/desarrollo-web.html' : `${BASE_URL}/desarrollo-web.html`);
-
-        // 2. Obtención de datos del producto (Soporte dinámico y fallback para E-commerce y Redes Sociales)
-        const ecommerceProducts = {
-            'nexus-drop': { name: 'Nexus Drop', price: 1999.00, currency: 'MXN' },
-            'storefront-pro': { name: 'Storefront Pro', price: 3499.00, currency: 'MXN' },
-            'omnicanal-elite': { name: 'Omnicanal Elite', price: 7499.00, currency: 'MXN' },
-            'rs-basic': { name: 'Página Comercial FB/IG', price: 599.00, currency: 'MXN' },
-            'rs-pro': { name: 'Campaña Crecimiento', price: 1749.00, currency: 'MXN' },
-            'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' }
-        };
-
-        let productData = ecommerceProducts[productId];
-        if (!productData) {
-            // Reconocimiento dinámico para cualquier combinación del Configurador y Catálogo de Suites de $200
-            if (productId && productId.startsWith('cfg-')) {
-                const isAgent = productId.endsWith('-agente') || productId.endsWith('-agent');
-                const isPromo = productId.endsWith('-promo');
-                const rawGiro = productId.replace('cfg-', '').replace('-bot', '').replace('-agente', '').replace('-agent', '').replace('-promo', '');
-                const giroName = rawGiro.toUpperCase();
-                
-                // Reconocimiento de los 24 nichos en formato Promo Lanzamiento ($200.00 MXN) o agentes avanzados
-                productData = {
-                    name: isPromo ? `Suite Dinámica de ${giroName} - Promo Lanzamiento` : (isAgent ? `Agente de ${giroName} IA - Setup` : `Bot de ${giroName} - Setup`),
-                    price: isPromo ? 200.00 : (isAgent ? 2999.00 : 1499.00),
-                    currency: 'MXN'
-                };
-            } else if (req.body.price && req.body.currency) {
-                // Sincronización resiliente con el catálogo de cliente para evitar errores 404
-                productData = {
-                    name: productId.toUpperCase().replace(/-/g, ' '),
-                    price: parseFloat(req.body.price),
-                    currency: req.body.currency.toUpperCase()
-                };
-            } else {
-                const productDoc = await getDb().collection('products').doc(productId).get();
-                if (!productDoc.exists) return res.status(404).send("Producto no reconocido.");
-                productData = productDoc.data();
-            }
-        }
-
-        // 3. Configuración de la Solución de Pago (Fuerza Tarjeta si es necesario)
-        // CÁLCULO DE IVA DEL 16% GENERALIZADO PARA TODAS LAS VENTAS
-        const basePrice = parseFloat(productData.price);
-        const priceWithIva = (basePrice * 1.16).toFixed(2);
-
-        const landingSelection = (fundingType === 'card') ? 'BILLING' : 'LOGIN';
-        const solutionSelection = (fundingType === 'card') ? 'SOLE' : 'MARK';
-
-        const request = new paypal.orders.OrdersCreateRequest();
-        request.prefer("return=representation");
-        request.requestBody({
-            intent: 'CAPTURE',
-            purchase_units: [{
-                description: `ROBOTIAX PROTOCOL: ${productData.name} (Incluye 16% IVA)`,
-                amount: {
-                    currency_code: productData.currency,
-                    value: priceWithIva
-                }
-            }],
-            application_context: {
-                return_url: `${finalReturnUrl}?status=success`,
-                cancel_url: `${finalReturnUrl}?status=cancel`,
-                landing_page: landingSelection,
-                user_action: (fundingType === 'card') ? 'CONTINUE' : 'PAY_NOW',
-                shipping_preference: 'NO_SHIPPING',
-                brand_name: 'ROBOTIAX PROTOCOL',
-                solution: solutionSelection
-            }
-        });
-
-        const order = await getPaypalClient().execute(request);
-        const approveUrl = order.result.links.find(link => link.rel === 'approve').href;
-        
-        return res.status(200).json({ orderID: order.result.id, approveUrl: approveUrl });
-
-    } catch (error) {
-        console.error(">>> [PAYPAL ERROR]:", error.message);
-        return res.status(500).json({ error: "Fallo en Pasarela", details: error.message });
-    }
-});
-
-// 2. Captura el pago después de que el usuario aprueba en el frontend.
-exports.capturePaypalOrder = onRequest({ cors: true }, async (req, res) => {
-    const { orderID } = req.body;
-    if (!orderID) {
-        return res.status(400).json({ status: "error", message: "El ID de la orden es requerido." });
-    }
-
-    const request = new paypal.orders.OrdersCaptureRequest(orderID);
-    request.requestBody({});
-
-    try {
-        const client = getPaypalClient();
-        const capture = await client.execute(request);
-        const captureStatus = capture.result.status;
-        console.log("Estado de la captura:", captureStatus);
-
-        if (captureStatus === 'COMPLETED') {
-            console.log("¡PAGO COMPLETADO EXITOSAMENTE!");
-
-            const accessToken = admin.firestore().collection('invoices').doc().id;
-            const productId = req.body.productId;
-
-            const orderRef = getDb().collection('pending_orders').doc();
-            await orderRef.set({
-                paypalOrderId: orderID,
-                customerData: req.body.customerData || {},
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                status: 'paid_pending'
-            });
-
-            res.status(200).json({ 
-                status: "success", 
-                accessToken: orderRef.id,
-                message: "Pago completado y registrado"
-            });
-        } else {
-            res.status(400).json({ status: "failed", message: `El pago no se completó. Estado: ${captureStatus}` });
-        }
-    } catch (error) {
-        console.error("ERROR CRÍTICO AL CAPTURAR ORDEN PAYPAL:", error);
-        let detailedMessage = error.message || "Error interno al comunicarse con PayPal.";
-        res.status(500).json({ status: "error", message: `Fallo en el servidor: ${detailedMessage}` });
-    }
-});
-
-// ... al final de todo el archivo
+// Procesamiento de Órdenes Centralizado vía Makumoto & Robotiax Pay (Stripe Links)
 
 exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
     if (req.method !== 'POST') {
@@ -681,7 +525,7 @@ exports.submitFinalOrder = onRequest({
         }
 
         const now = new Date();
-        const folio = `ORD-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const folio = details.folio || details.orderNumber || `ORD-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
         const isConfigurator = template.startsWith('cfg-');
         const isWebProduct = !isConfigurator && !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
@@ -701,6 +545,30 @@ const negocioSlug = (details.negocio || "")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
+
+// DETECCIÓN DE PRE-REGISTRO BORRADOR (PREVIO A STRIPE)
+if (details.isDraft) {
+    await getDb().collection('orders_to_fulfill').doc(folio).set({
+        orderNumber: folio,
+        productName: pData.name,
+        isWeb: isWebProduct,
+        template: template,
+        status: 'pending_stripe_payment',
+        convenioCode: convenioCode,
+        provisionalPassword: tempPassword,
+        negocio_slug: negocioSlug,
+        ...details,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    console.log(`📝 [DRAFT_SAVED]: Borrador registrado para: ${details.negocio} (${folio}). Cero correos enviados hasta confirmar pago.`);
+    return res.status(200).json({ status: 'ok', folio: folio, negocioSlug: negocioSlug });
+}
+
+// BLOQUEO DE SEGURIDAD: Ningún producto web envía correos al cliente antes de pagar en Stripe
+if (isWebProduct || template.startsWith('cfg-')) {
+    console.log(`🔒 [GUARD]: Orden ${folio} en espera de pasarela Stripe. Cancelando envío prematuro.`);
+    return res.status(200).json({ status: 'awaiting_payment', folio: folio });
+}
 
 // --- FLUJO DE APROVISIONAMIENTO MODULAR ---
 
@@ -1242,3 +1110,549 @@ exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, m
     // ... (mantiene lógica original)
 });
 
+// --- WEBHOOK AUTOMÁTICO DE STRIPE (DESPACHO INMEDIATO Y RESILIENTE) ---
+exports.stripeWebhook = onRequest({ 
+    cors: true, 
+    timeoutSeconds: 120, 
+    memory: "512MiB" 
+}, async (req, res) => {
+    // Diagnóstico rápido vía navegador (GET)
+    if (req.method === 'GET') {
+        try {
+            const mailer = getTransporter();
+            await mailer.verify();
+            await mailer.sendMail({
+                from: '"ROBOTIAX TEST" <geniosdeltalento@gmail.com>',
+                to: 'soporte@makumoto.com, geniosdeltalento@gmail.com',
+                subject: '🔥 PRUEBA MANUAL DE CORREO OK',
+                text: 'El motor de correos de Robotiax está listo para despachar órdenes.'
+            });
+            return res.status(200).send("<h1>✅ SERVICIO OK: Correo de prueba enviado a soporte@makumoto.com</h1>");
+        } catch (mailErr) {
+            console.error("❌ ERROR NODEMAILER TEST:", mailErr);
+            return res.status(500).send(`<h1>❌ ERROR EN GMAIL: ${mailErr.message}</h1>`);
+        }
+    }
+
+    if (req.method !== 'POST') {
+        return res.status(405).send("Method Not Allowed");
+    }
+
+    let event = req.body;
+    if (Buffer.isBuffer(req.rawBody) && typeof req.body === 'string') {
+        try {
+            event = JSON.parse(req.body);
+        } catch (e) {
+            console.warn("No se pudo parsear body:", e.message);
+        }
+    }
+
+    console.log("🔔 [STRIPE EVENT RECIBIDO]:", event ? event.type : 'Sin evento detectable');
+
+    const isCheckout = event && event.type === 'checkout.session.completed';
+    const isPaymentAction = event && event.type === 'payment_intent.requires_action';
+
+    if (!event || (!isCheckout && !isPaymentAction)) {
+        return res.status(200).json({ received: true, ignored: true });
+    }
+
+    try {
+        const session = isCheckout ? event.data.object : {};
+        const paymentIntentObj = isPaymentAction ? event.data.object : (session.payment_intent || {});
+        const oxxoDetails = (isPaymentAction ? paymentIntentObj.next_action?.oxxo_display_details : null) || 
+                            (session.next_action?.oxxo_display_details) || null;
+        
+        let voucherUrl = oxxoDetails?.hosted_voucher_url || '';
+        let voucherNumber = oxxoDetails?.number || '';
+
+        const paymentIntentId = typeof session.payment_intent === 'string' 
+            ? session.payment_intent 
+            : (session.payment_intent?.id || event.data?.object?.id || '');
+
+        if (!voucherUrl && paymentIntentId && paymentIntentId.startsWith('pi_')) {
+            try {
+                const sKey = stripeSecretKey.value();
+                if (sKey && !sKey.includes('TU_KEY')) {
+                    const piRes = await fetch(`https://api.stripe.com/v1/payment_intents/${paymentIntentId}`, {
+                        headers: { 'Authorization': `Bearer ${sKey}` }
+                    });
+                    if (piRes.ok) {
+                        const piData = await piRes.json();
+                        const details = piData.next_action?.oxxo_display_details;
+                        if (details) {
+                            voucherUrl = details.hosted_voucher_url || voucherUrl;
+                            voucherNumber = details.number || voucherNumber;
+                        }
+                    }
+                }
+            } catch (errPi) {
+                console.warn("No se pudo consultar PaymentIntent:", errPi.message);
+            }
+        }
+
+        const isPaid = isCheckout && session.payment_status === 'paid';
+        const isOxxoPending = (isCheckout && session.payment_status === 'unpaid') || isPaymentAction;
+
+        const clientEmail = (session.customer_details?.email || session.customer_email || '').trim();
+        const clientName = (session.customer_details?.name || '').trim();
+        const clientPhone = session.customer_details?.phone || 'No registrado';
+        const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '233.00';
+        const currency = (session.currency || 'mxn').toUpperCase();
+
+        // DESCOMPOSICIÓN TÁCTICA DEL CLIENT_REFERENCE_ID (FOLIO + EMAIL + NEGOCIO)
+        const rawRef = (session.client_reference_id || '').trim();
+        let clientRefFolio = rawRef;
+        let embeddedEmail = '';
+        let embeddedBusinessName = '';
+
+        if (rawRef.includes('__')) {
+            const refParts = rawRef.split('__');
+            clientRefFolio = refParts[0] ? refParts[0].trim() : rawRef;
+            embeddedEmail = refParts[1] ? decodeURIComponent(refParts[1]).trim() : '';
+            embeddedBusinessName = refParts[2] ? decodeURIComponent(refParts[2]).trim() : '';
+        }
+
+        const rawEmail = (
+            session.customer_details?.email || 
+            session.customer_email || 
+            (typeof session.customer === 'object' ? session.customer?.email : null) || 
+            ''
+        ).trim();
+
+        const searchEmail = (embeddedEmail || rawEmail || clientEmail).toLowerCase().trim();
+        let draftData = {};
+
+        // 1. BÚSQUEDA POR FOLIO DIRECTO
+        if (clientRefFolio) {
+            try {
+                const draftDoc = await getDb().collection('orders_to_fulfill').doc(clientRefFolio).get();
+                if (draftDoc.exists) {
+                    draftData = draftDoc.data() || {};
+                } else {
+                    const snap = await getDb().collection('orders_to_fulfill').where('orderNumber', '==', clientRefFolio).limit(1).get();
+                    if (!snap.empty) draftData = snap.docs[0].data() || {};
+                }
+            } catch (errDoc) {
+                console.warn("Fallo leyendo borrador por folio:", errDoc.message);
+            }
+        }
+
+        // 2. BÚSQUEDA AGNOSTICA DE MAYÚSCULAS/MINÚSCULAS POR EMAIL
+        if (!draftData.negocio && searchEmail) {
+            try {
+                const snapEmail = await getDb().collection('orders_to_fulfill')
+                    .where('email', '==', searchEmail)
+                    .limit(5)
+                    .get();
+                if (!snapEmail.empty) {
+                    for (const doc of snapEmail.docs) {
+                        const d = doc.data();
+                        if (d && d.negocio && d.negocio !== 'Mi Empresa' && d.negocio !== 'Cliente Robotiax') {
+                            draftData = d;
+                            break;
+                        }
+                    }
+                    if (!draftData.negocio) draftData = snapEmail.docs[0].data() || {};
+                }
+            } catch (errEmailSearch) {
+                console.warn("Búsqueda por email omitida:", errEmailSearch.message);
+            }
+        }
+
+        // RESOLUCIÓN DEL CORREO FINAL DEL COMPRADOR
+        const targetEmail = (
+            draftData.email || 
+            rawEmail || 
+            clientEmail || 
+            embeddedEmail || 
+            ''
+        ).trim();
+
+        // BLINDAJE TOTAL: Prioridad absoluta al nombre real del negocio capturado
+        const effectiveBusinessName = (
+            draftData.negocio || 
+            draftData.business_name || 
+            embeddedBusinessName || 
+            session.customer_details?.name ||
+            "Mi Negocio"
+        ).trim();
+
+        const effectivePhone = (
+            draftData.telefono || 
+            session.customer_details?.phone || 
+            'No registrado'
+        ).trim();
+
+        const now = new Date();
+        const folio = clientRefFolio || draftData.orderNumber || `ORD-STRIPE-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const convenioCode = draftData.convenioCode || `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
+        const tempPassword = draftData.provisionalPassword || Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        // REGLA DE ORO: Construcción del slug con guiones y minúsculas (Ej: MALAZAR SA DE CV -> malazar-sa-de-cv)
+        const negocioSlug = effectiveBusinessName
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)+/g, "") || `sitio-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const siteUrl = `https://${negocioSlug}.ikai.info`;
+        console.log(`🚀 [DESPACHO INMEDIATO]: Enviando correos para ${effectiveBusinessName} a destinatario: "${targetEmail}"`);
+
+        // =========================================================================
+        // PRIORIDAD 1: ENVÍO DE CORREOS (SOPORTE Y COMPRADOR)
+        // =========================================================================
+        const mailer = getTransporter();
+
+        // 1. Notificación a Soporte (Makumoto + Respaldo)
+        try {
+            await mailer.sendMail({
+                from: '"ROBOTIAX CENTRAL" <geniosdeltalento@gmail.com>',
+                to: 'soporte@makumoto.com, geniosdeltalento@gmail.com',
+                replyTo: clientEmail || 'soporte@makumoto.com',
+                subject: `🚨 NUEVO PAGO STRIPE: ${clientName} (${folio})`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; background: #000; color: #00f2ff; padding: 30px; border: 2px solid #2ecc71;">
+                        <h2 style="color: #2ecc71; margin-top: 0;">✅ NUEVA ORDEN RECIBIDA (STRIPE)</h2>
+                        <p><strong>Folio:</strong> ${folio}</p>
+                        <p><strong>Cliente:</strong> ${clientName}</p>
+                        <p><strong>Email Comprador:</strong> ${clientEmail || 'No registrado en sesión'}</p>
+                        <p><strong>Teléfono:</strong> ${clientPhone}</p>
+                        <p><strong>Total Cobrado:</strong> $${amountTotal} ${currency}</p>
+                        <hr style="border-color: #333;">
+                        <p><strong>URL Web:</strong> <a href="${siteUrl}" style="color: #00f2ff;" target="_blank">${siteUrl}</a></p>
+                        <p><strong>Convenio Makumoto:</strong> ${convenioCode}</p>
+                        <p><strong>Token Bot:</strong> ${tempPassword}</p>
+                    </div>
+                `
+            });
+            console.log("✅ [CORREO SOPORTE]: Entregado a soporte@makumoto.com");
+        } catch (mailAdminErr) {
+            console.error("❌ ERROR AL ENVIAR CORREO A SOPORTE:", mailAdminErr.message);
+        }
+
+        // CASO A: VALE OXXO GENERADO (EL CLIENTE AÚN NO HA PAGADO EN TIENDA)
+        if (isOxxoPending) {
+            console.log(`⏳ [OXXO PENDIENTE]: Vale emitido para ${effectiveBusinessName}. Esperando confirmación bancaria.`);
+            
+            if (targetEmail) {
+                try {
+                    await mailer.sendMail({
+                        from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                        to: targetEmail,
+                        subject: `⏳ Vale OXXO Generado: Tu Suite se activará al pagar en tienda (${folio})`,
+                        html: `
+                            <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 18px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; word-break: break-word; background: #ffffff; color: #1a1a1a; border: 1px solid #cbd5e1; border-radius: 8px;">
+                                <div style="text-align: center; border-bottom: 2px solid #e11d48; padding-bottom: 12px; margin-bottom: 16px;">
+                                    <h1 style="color: #e11d48; margin: 0; font-size: 17px; line-height: 1.3; font-weight: 800; text-transform: uppercase;">VALE DE PAGO OXXO GENERADO</h1>
+                                    <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Esperando Confirmación de Caja</p>
+                                </div>
+
+                                <p style="font-size: 13px; line-height: 1.5; color: #334155; margin: 0 0 14px 0;">
+                                    Hola <strong>${effectiveBusinessName}</strong>, hemos registrado la generación de tu vale para pagar en efectivo en OXXO por <strong>$${amountTotal} ${currency}</strong>.
+                                </p>
+
+                                <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 14px; margin: 14px 0;">
+                                    <p style="margin: 0; font-weight: 800; font-size: 12px; color: #9f1239; text-transform: uppercase;">⚠️ INSTRUCCIONES PARA TU PAGO EN CAJA:</p>
+                                    <ol style="margin: 8px 0 0 0; padding-left: 18px; font-size: 12px; color: #881337; line-height: 1.5;">
+                                        <li>Muestra al cajero el código de barras que generaste en Stripe (o indícale tu número de referencia).</li>
+                                        <li>Realiza tu pago en efectivo en cualquier tienda OXXO.</li>
+                                        <li>En el instante en que OXXO reporte tu pago a Stripe, <strong>activaremos tu página web con el nombre ${effectiveBusinessName} y tu Bot de WhatsApp</strong>, y te llegará el manual a este buzón.</li>
+                                    </ol>
+                                </div>
+
+                                <table style="width: 100%; font-size: 12px; line-height: 1.6; color: #334155; border-collapse: collapse; margin-bottom: 15px;">
+                                    <tr>
+                                        <td style="padding: 3px 0; width: 45%;"><strong>Empresa Registrada:</strong></td>
+                                        <td style="padding: 3px 0; font-weight: bold; color: #0f172a;">${effectiveBusinessName}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0;"><strong>Folio de Pedido:</strong></td>
+                                        <td style="padding: 3px 0; font-weight: bold; color: #2563eb;">${folio}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0;"><strong>Total a Pagar en Caja:</strong></td>
+                                        <td style="padding: 3px 0; font-weight: bold; color: #16a34a;">$${amountTotal} ${currency}</td>
+                                    </tr>
+                                </table>
+
+                                <!-- VALE VISUAL DIRECTO EN EL CORREO -->
+                                <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Oxxo_Logo.svg" alt="OXXO" style="width: 70px; margin-bottom: 8px;">
+                                    
+                                    ${voucherNumber ? `
+                                    <div style="margin: 10px 0;">
+                                        <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=${voucherNumber.replace(/\\s+/g, '')}&scale=2&height=12" alt="Código de Barras" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                                        <p style="font-family: monospace; font-size: 14px; font-weight: bold; color: #0f172a; letter-spacing: 2px; margin: 6px 0 0 0;">${voucherNumber}</p>
+                                    </div>
+                                    ` : `
+                                    <p style="font-size: 12px; color: #64748b; margin: 8px 0;">Presenta el vale oficial generado en Stripe directamente en caja.</p>
+                                    `}
+                                </div>
+
+                                <!-- ACCIONES DIRECTAS DEL CORREO -->
+                                <div style="display: flex; flex-direction: column; gap: 8px; text-align: center; margin-top: 15px;">
+                                    <a href="${voucherUrl || 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f'}" target="_blank" style="display: block; background: #00f2ff; color: #020617; padding: 12px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        🖨️ VER E IMPRIMIR VALE OFICIAL EN STRIPE ➔
+                                    </a>
+                                    <a href="https://robotiax.mx" target="_blank" style="display: block; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; padding: 10px; font-weight: 700; font-size: 11px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">
+                                        ❮ VOLVER A ROBOTIAX.MX
+                                    </a>
+                                </div>
+
+                                <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 16px 0 0 0;">
+                                    ROBOTIAX Engine & Makumoto Platform — Soporte: soporte@makumoto.com
+                                </p>
+                            </div>
+                        `
+                    });
+                    console.log("[CORREO OXXO PENDIENTE]: Enviado con exito a " + targetEmail);
+                } catch (oxxoMailErr) {
+                    console.error("Error enviando correo de espera OXXO:", oxxoMailErr.message);
+                }
+            }
+
+            // Guardar en Firestore como pendiente de pago en efectivo
+            await getDb().collection('orders_to_fulfill').doc(folio).set({
+                ...draftData,
+                orderNumber: folio,
+                negocio: effectiveBusinessName,
+                negocio_slug: negocioSlug,
+                email: targetEmail,
+                status: 'pending_oxxo_cash',
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            return res.status(200).json({ status: 'oxxo_pending_registered', folio: folio });
+        }
+
+        // CASO B: PAGO CONFIRMADO REAL (TARJETA INMEDIATA O NOTIFICACIÓN OXXO PAGADA)
+        if (targetEmail && isPaid) {
+            try {
+                console.log(`📧 [INTENTO DE ENVÍO AL CLIENTE]: Disparando hacia ${targetEmail}...`);
+                await mailer.sendMail({
+                    from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                    to: targetEmail,
+                    subject: `✅ ¡Tu Suite Digital está Activa! Enlace y Manual (${folio})`,
+                    html: `
+                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 16px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; word-break: break-word; background: #ffffff; color: #1a1a1a; border: 1px solid #e2e8f0; border-radius: 8px;">
+                            
+                            <!-- ENCABEZADO PRINCIPAL -->
+                            <div style="text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 16px;">
+                                <h1 style="color: #0f172a; margin: 0; font-size: 17px; line-height: 1.3; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">¡SUITE DIGITAL Y BOT ACTIVADOS!</h1>
+                                <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Entrega Oficial de Servicios y Puesta en Marcha</p>
+                            </div>
+
+                            <p style="font-size: 12px; line-height: 1.5; margin: 0 0 14px 0; color: #334155;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos que tu orden de <strong>$${amountTotal} ${currency}</strong> ha sido procesada con éxito.</p>
+
+                            <!-- RESUMEN DE BENEFICIOS INCLUIDOS -->
+                            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
+                                <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 12px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">📦 LO QUE INCLUYE TU COMPRA:</h3>
+                                <ul style="margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; color: #334155;">
+                                    <li><strong>Página Web Profesional:</strong> Operando bajo el dominio <span style="color: #2563eb; font-weight: bold;">ikai.info</span>.</li>
+                                    <li><strong>Hosting de Cortesía:</strong> 1 mes incluido (o mientras dure tu membresía).</li>
+                                    <li><strong>Bot de WhatsApp Autónomo:</strong> Asistente 24/7 en tu servidor privado.</li>
+                                    <li><strong>Centro de Entretenimiento:</strong> Sala de espera con videos, trivias y juegos.</li>
+                                </ul>
+                                <div style="margin-top: 8px; font-size: 11px; color: #dc2626; font-weight: bold; line-height: 1.4;">
+                                    ⚠️ Todos los servicios son solo por 30 días (o mientras dure tu membresía activa).
+                                </div>
+                            </div>
+
+                            <!-- BLOQUE 1: TU SITIO WEB ACTIVO -->
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
+                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB YA ESTÁ EN LÍNEA usando el dominio ikai.info:</p>
+                                <p style="margin: 6px 0 0 0; font-size: 13px; line-height: 1.4; word-break: break-all;">
+                                    <a href="${siteUrl}" target="_blank" style="color: #16a34a; font-weight: 800; text-decoration: underline; word-break: break-all;">${siteUrl}</a>
+                                </p>
+                                <p style="margin: 4px 0 0 0; font-size: 10px; color: #166534; line-height: 1.4;">* Activo por 30 días o mientras se mantenga vigente tu membresía.</p>
+                            </div>
+
+                            <!-- BLOQUE 2: FACTURA Y COMPROBANTE EXPEDIDA POR STRIPE (SIN CÓDIGO DE CONVENIO) -->
+                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
+                                <h3 style="margin: 0 0 6px 0; color: #1e3a8a; font-size: 11px; font-weight: 700; text-transform: uppercase;">🧾 FACTURA Y RECIBO DE PEDIDO (EXPEDIDA POR STRIPE)</h3>
+                                <p style="font-size: 11px; color: #1e40af; margin: 0 0 6px 0; line-height: 1.4;">
+                                    Tu <strong>factura y recibo oficial de pago ha sido expedida directamente por Stripe</strong> y enviada a tu correo (${targetEmail}).
+                                </p>
+                                <table style="width: 100%; font-size: 11px; line-height: 1.5; color: #1e3a8a; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 2px 0; width: 45%;"><strong>Folio de Pedido:</strong></td>
+                                        <td style="padding: 2px 0; font-weight: bold; word-break: break-all;">${folio}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 2px 0;"><strong>Importe Total:</strong></td>
+                                        <td style="padding: 2px 0; color: #16a34a; font-weight: bold;">$${amountTotal} ${currency}</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- BLOQUE 3: INSTRUCTIVO CLARO DEL BOT DE WHATSAPP -->
+                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px 12px; margin: 16px 0; box-sizing: border-box;">
+                                <h3 style="color: #065f46; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">
+                                    🤖 CÓMO VINCULAR TU BOT DE WHATSAPP (3 PASOS)
+                                </h3>
+                                <p style="font-size: 12px; color: #047857; margin: 0 0 10px 0; line-height: 1.4;">Instancia aprovisionada con el identificador: <strong>${negocioSlug}</strong>.</p>
+                                
+                                <ol style="font-size: 12px; line-height: 1.6; color: #065f46; margin: 0; padding-left: 18px;">
+                                    <li style="margin-bottom: 4px;">Ingresa a la consola: <a href="https://bot.ikai.info" target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">https://bot.ikai.info</a></li>
+                                    <li style="margin-bottom: 4px;">Ingresa tu Token de Seguridad: <strong style="background: #ffffff; border: 1px solid #059669; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px;">${tempPassword}</strong></li>
+                                    <li>En WhatsApp ➔ Menú ➔ <strong>Dispositivos Vinculados</strong> ➔ Escanea el código QR que se mostrará en pantalla.</li>
+                                </ol>
+                            </div>
+
+                            <!-- BLOQUE 4: PERFECCIONA TU WEB ($89 MXN) CON ENLACE OFICIAL DE STRIPE -->
+                            <div style="background: #0f172a; color: #ffffff; border-radius: 8px; padding: 16px 12px; margin: 16px 0; box-sizing: border-box; text-align: center; border: 1px solid #00f2ff;">
+                                <div style="border-bottom: 1px solid rgba(0, 242, 255, 0.4); padding-bottom: 8px; margin-bottom: 12px;">
+                                    <h2 style="color: #00f2ff; font-size: 15px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ⚡ PERFECCIONA TU WEB ($89 MXN)
+                                    </h2>
+                                    <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">Ajustes de Marca y Fotografía Profesional</span>
+                                </div>
+                                <p style="font-size: 12px; color: #e2e8f0; line-height: 1.5; margin: 0 0 12px 0; text-align: left;">
+                                    Si deseas personalizar al máximo tu plataforma, adquiere <strong>PERFECCIONA TU WEB por solo $89 MXN</strong> para añadir:
+                                </p>
+                                <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 0 0 14px 0; padding-left: 18px; text-align: left;">
+                                    <li><strong>3 Fotografías Oficiales:</strong> En formato horizontal 16:9 (PNG o JPG &lt; 2 MB).</li>
+                                    <li><strong>Hasta 5 Modificaciones o Adiciones:</strong> Nuevos servicios, horarios específicos o datos de tu negocio.</li>
+                                </ul>
+                                
+                                <a href="https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g?prefilled_email=${encodeURIComponent(targetEmail)}" target="_blank" style="display: block; width: 100%; max-width: 280px; margin: 12px auto; background: #00f2ff; color: #020617; text-align: center; padding: 12px 16px; font-weight: 800; font-size: 13px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    PERFECCIONAR MI WEB ($89 MXN) ➔
+                                </a>
+                                <p style="font-size: 10px; color: #94a3b8; margin: 6px 0 0 0;">Al completar tu pago se abrirá la consola para subir tus 3 fotos y tus 5 adiciones.</p>
+                            </div>
+
+                            <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 20px 0 0 0;">
+                                ROBOTIAX® Engine & Makumoto Platform — Infraestructura Digital
+                            </p>
+                        </div>
+                    `
+                });
+                console.log(`✅ [CORREO CLIENTE]: Entregado exitosamente al comprador (${targetEmail})`);
+            } catch (mailClientErr) {
+                console.error(`❌ ERROR AL ENVIAR AL CLIENTE (${targetEmail}):`, mailClientErr.message);
+            }
+        } else {
+            console.error("🚨 [ALERTA CRÍTICA]: No se pudo determinar el correo del comprador ni desde Stripe ni desde el borrador.");
+        }
+
+        // =========================================================================
+        // PRIORIDAD 2: REGISTRO EN BASE DE DATOS (FIRESTORE)
+        // =========================================================================
+        try {
+            await getDb().collection('orders_to_fulfill').doc(folio).set({
+                ...draftData,
+                orderNumber: folio,
+                productName: draftData.productName || 'Suite Digital Robotiax (Web + Bot + Sala de Espera)',
+                isWeb: true,
+                negocio: effectiveBusinessName,
+                negocio_slug: negocioSlug,
+                email: targetEmail,
+                telefono: effectivePhone,
+                fee: `$${amountTotal} ${currency}`,
+                convenioCode: convenioCode,
+                provisionalPassword: tempPassword,
+                stripeSessionId: session.id,
+                status: 'paid_active',
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            console.log(`✅ [FIRESTORE]: Orden consolidada bajo folio ${folio} para ${targetEmail}.`);
+        } catch (dbErr) {
+            console.error("⚠️ Error guardando en Firestore:", dbErr.message);
+        }
+
+        // =========================================================================
+        // PRIORIDAD 3: PROVISIÓN DE INFRAESTRUCTURA EN SEGUNDO PLANO
+        // =========================================================================
+        provisionFirebaseSubdomain(negocioSlug).catch(err => console.warn("Subdominio error:", err.message));
+
+        (async () => {
+            try {
+                const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
+                const rawTemplate = await fs.readFile(templatePath, 'utf8');
+                const cacheBuster = Date.now();
+                // FILTRADO ESTRICTO: Si el cliente anotó "NO", se omite y vacía el texto
+                const cleanVal = (v, def = "") => {
+                    if (!v || v.trim().toLowerCase() === 'no') return def;
+                    return v;
+                };
+
+                const clientData = {
+                    negocio: effectiveBusinessName,
+                    badge: cleanVal(draftData.badge, 'ESPECIALISTA CERTIFICADO'),
+                    specialty: cleanVal(draftData.specialty, 'Giro Comercial'),
+                    tagline: cleanVal(draftData.tagline || draftData.slogan, 'Evolución y Precisión'),
+                    direccion: cleanVal(draftData.direccion, 'Atención Profesional'),
+                    horarios: cleanVal(draftData.horarios, 'Horarios Flexibles'),
+                    telefono: effectivePhone || '+52 55 1234 5678',
+                    fee: cleanVal(draftData.fee, 'Consultar'),
+                    isProductionSite: true
+                };
+
+                const clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
+
+                let compiledHtml = rawTemplate
+                    // 1. Inyección de identidad y metadatos
+                    .replace('</head>', `${clientDataScript}</head>`)
+                    .replace(/<title>.*?<\/title>/g, `<title>${effectiveBusinessName} | Portal Oficial</title>`)
+                    // 2. Encabezado de marca (Imagen 6: Nombre del negocio en el logo)
+                    .replace(/<span class="font-\['Inter'\] text-\[9px\] font-black text-slate-800 uppercase tracking-tight hidden sm:inline">Aura<\/span>/g, `<span class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight" id="header-brand-title">${effectiveBusinessName}</span>`)
+                    // 3. Eliminación de botón "COMPRAR WEB + BOT" (Imagen 2)
+                    .replace(/<button onclick="window\.app\.demo\.openCloserModal\(\)".*?<\/button>/gs, '')
+                    // 4. Eliminación del botón "VOLVER AL CATÁLOGO"
+                    .replace(/<button onclick="window\.app\.demo\.returnToCatalog\(\)".*?<\/button>/gs, '')
+                    // 5. Eliminación de modales residuales de venta (Imagen 5)
+                    .replace(/<!-- MODAL DE CIERRE DE VENTA -->.*?<!-- SCRIPTS CORE -->/gs, '<!-- SCRIPTS CORE -->')
+                    // 6. Inyección de datos directos en el Hero
+                    .replace(/Dr\. Alejandro Morales/g, effectiveBusinessName)
+                    .replace(/ESPECIALISTA CERTIFICADO/g, clientData.badge)
+                    .replace(/Nutrición Estética & Neurología Preventiva/g, clientData.specialty)
+                    .replace(/"Tu bienestar es nuestra ciencia"/g, `"${clientData.tagline}"`)
+                    .replace(/Torre Médica, Cons\. 402/g, clientData.direccion)
+                    .replace(/Lun - Vie 9am a 6pm/g, clientData.horarios)
+                    .replace(/\+52 55 1234 5678/g, clientData.telefono)
+                    .replace(/\$800 MXN/g, clientData.fee)
+                    // 7. Rutas absolutas a imágenes y assets (Imagen 1)
+                    .replace(/src="assets\/webs\/salud1\.webp"/g, 'src="https://robotiax.mx/assets/webs/salud1.webp"')
+                    .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
+                    .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
+                    .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
+                    .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
+                    .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
+                    .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+
+                // Modal informativo de WhatsApp para la web del cliente (Imagen 3)
+                const waModalHtml = `
+                <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(2,6,23,0.85); backdrop-filter:blur(8px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+                    <div style="background:#ffffff; border-radius:16px; max-width:400px; width:100%; padding:25px; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.3); font-family:'Poppins', sans-serif;">
+                        <div style="width:52px; height:52px; background:#25d366; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; color:#ffffff; font-size:26px;">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin:0 0 10px 0; text-transform:uppercase;">Asistente de WhatsApp</h3>
+                        <p style="font-size:12px; color:#64748b; line-height:1.6; margin:0 0 20px 0;">
+                            Primero debes programar tu WhatsApp siguiendo las indicaciones que vienen en el instructivo enviado a tu correo para que este funcione.
+                        </p>
+                        <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.display='none'" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:12px; font-weight:800; border-radius:8px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
+                            ENTENDIDO
+                        </button>
+                    </div>
+                </div>
+                `;
+                compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
+
+                await deployStaticToR2(negocioSlug, compiledHtml, r2BucketName.value());
+                console.log(`✅ [R2]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
+            } catch (r2Err) {
+                console.warn("⚠️ Advertencia R2:", r2Err.message);
+            }
+        })();
+
+        provisionWhatsAppGateway(negocioSlug, tempPassword).catch(err => console.warn("Gateway error:", err.message));
+
+        return res.status(200).json({ received: true, folio: folio });
+
+    } catch (globalErr) {
+        console.error("❌ ERROR CRÍTICO EN STRIPE WEBHOOK:", globalErr);
+        return res.status(200).json({ error: globalErr.message });
+    }
+});

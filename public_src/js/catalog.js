@@ -365,7 +365,7 @@ window.app.catalog.demoTemplates = {
             "border": "rgba(131, 24, 67, 0.08)",
             "crt_bg": "#4c0519",
             "crt_text": "#fbcfe8",
-            "crt_border": "rgba(251, 207, 232, 0.2)"
+            "crt_border": "rgba(251, 207, 233, 0.2)"
         },
         "branding": {
             "tab_title": "AURA-BOUTIQUE | Suite de Catálogo y Moda",
@@ -595,7 +595,7 @@ window.app.catalog.demoTemplates = {
             "border": "rgba(131, 24, 67, 0.08)",
             "crt_bg": "#4c0519",
             "crt_text": "#fbcfe8",
-            "crt_border": "rgba(251, 207, 232, 0.2)"
+            "crt_border": "rgba(251, 207, 233, 0.2)"
         },
         "branding": {
             "tab_title": "AURA-BOTÁNICA | Diseños Florales",
@@ -1055,7 +1055,7 @@ window.app.catalog.demoTemplates = {
             "border": "rgba(131, 24, 67, 0.08)",
             "crt_bg": "#4c0519",
             "crt_text": "#fbcfe8",
-            "crt_border": "rgba(251, 207, 232, 0.2)"
+            "crt_border": "rgba(251, 207, 233, 0.2)"
         },
         "branding": {
             "tab_title": "AURA-INSTA | Estrategias de Contenido",

@@ -61,14 +61,15 @@ window.app.ui = {
     },
 
     requestPurchase: function(templateId, templateName) {
-        console.log("Iniciando compra de Suite:", templateId);
+        console.log("Abriendo panel de personalización para:", templateId);
         this.selectedTemplate.id = templateId;
         this.selectedTemplate.name = templateName;
 
-        if (!window.app.payments) return console.error("Error: payments.js no cargado.");
-
-        // Flujo transaccional directo sin formularios pesados: Abre la pasarela para cobro con IVA ($232 MXN Final)
-        window.app.payments.openModal(templateId, templateName, 200, 'MXN');
+        if (window.app.editor && typeof window.app.editor.init === 'function') {
+            window.app.editor.init(templateId);
+        } else if (window.app.payments) {
+            window.app.payments.openModal(templateId, templateName, 200, 'MXN');
+        }
     },
 
     openDemoVisor: function(templateId) {

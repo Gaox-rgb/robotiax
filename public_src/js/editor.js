@@ -201,93 +201,70 @@ window.app.editor = {
         const inputs = document.querySelectorAll('#editor-panel input, #editor-panel textarea');
         for (let input of inputs) {
             if (!input.value.trim()) {
-                this.notify("CAMPOS INCOMPLETOS. REVISE EL FORMULARIO.", "error");
+                this.notify("CAMPOS INCOMPLETOS. Si no deseas incluir algún dato, escribe 'NO' en ese campo y será omitido automáticamente de tu web.", "error");
                 input.style.borderColor = "#ff003c";
                 input.focus();
                 return;
             }
         }
 
-        const btn = document.querySelector('#editor-panel button[onclick*="submitOrder"]');
-        if(btn) {
-            btn.disabled = true;
-            btn.style.fontSize = "9px";
-            btn.textContent = "REGISTRANDO PEDIDO... NO CIERRES NI CAMBIES DE PÁGINA EN LO QUE SE GESTIONA TU ORDEN DE PEDIDO";
-        }
-
-        // CONTROLADOR DE TRANSICIÓN OPTIMISTA (Evita que el cliente espere por latencia de red)
-        let orderProcessed = false;
-        const completeOrderSuccessfully = () => {
-            if (orderProcessed) return;
-            orderProcessed = true;
-            
-            // Guardar en makumoto_owned para sincronizar la galería local
-            const purchased = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
-            if (!purchased.includes(this.currentTemplateId)) {
-                purchased.push(this.currentTemplateId);
-                localStorage.setItem('makumoto_owned', JSON.stringify(purchased));
-            }
-            
-            // Ocultar formulario y desplegar ventana de éxito
-            document.getElementById('editor-panel').style.setProperty('display', 'none', 'important');
-            const notif = document.getElementById('success-notif');
-            if (notif) {
-                console.log("✅ [EDITOR]: Orden procesada de forma optimista. Transicionando.");
-                notif.classList.add('visible');
-                notif.style.setProperty('display', 'flex', 'important');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                const okBtn = notif.querySelector('button') || notif.querySelector('.action-button');
-                if(okBtn) {
-                    okBtn.onclick = () => {
-                        localStorage.removeItem('pending_purchase_id');
-                        window.location.href = 'index.html';
-                    };
-                }
-            }
+        // AUTO-LOGIN INMEDIATO DEL COMPRADOR (Para que al volver vea su barra activa)
+        const activeUser = {
+            name: details.negocio || details.email.split('@')[0],
+            email: details.email,
+            phone: details.telefono
         };
+        localStorage.setItem('robotiax_user', JSON.stringify(activeUser));
+        localStorage.setItem('pending_draft_details', JSON.stringify(details));
+        localStorage.setItem('pending_purchase_id', this.currentTemplateId);
 
-        // Disparador de contingencia: Si a los 2.5s el backend no responde, asume éxito para el usuario
-        const optimisticTimeout = setTimeout(() => {
-            console.log("⚡ [EDITOR]: Latencia de red detectada. Activando transición optimista.");
-            completeOrderSuccessfully();
-        }, 2500);
+        const folio = `ORD-STRIPE-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+        localStorage.setItem('pending_draft_folio', folio);
 
+        // BLINDAJE TOTAL: Folio + Correo + Nombre Real del Negocio empaquetados en Stripe
+        const clientReference = `${folio}__${encodeURIComponent(details.email)}__${encodeURIComponent(details.negocio)}`;
+
+        const draftPayload = JSON.stringify({
+            template: this.currentTemplateId,
+            details: details
+        });
+
+        // Envío blindado que sobrevive a la navegación de página (Zero-Latency 0.0 ms)
         try {
-            const response = await fetch(this.endpoints.submitOrder || 'https://submitfinalorder-bh64qprvqa-uc.a.run.app', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-Robotiax-Token': window.app.vault || 'RBX-PRT-99-MXN-SECURE-2025'
-                },
-                body: JSON.stringify({ template: this.currentTemplateId, details })
-            });
-
-            if (response.ok) {
-                clearTimeout(optimisticTimeout);
-                completeOrderSuccessfully();
-            } else {
-                if (!orderProcessed) {
-                    clearTimeout(optimisticTimeout);
-                    this.notify("ERROR AL REGISTRAR ORDEN EN EL SERVIDOR.", "error");
-                    if(btn) {
-                        btn.disabled = false;
-                        btn.style.fontSize = "";
-                        btn.textContent = "REINTENTAR ACTIVACIÓN";
-                    }
-                }
+            if (navigator.sendBeacon) {
+                const blob = new Blob([draftPayload], { type: 'application/json' });
+                navigator.sendBeacon(this.endpoints.submitOrder, blob);
             }
+        } catch (e) {}
 
-        } catch (e) {
-            console.error("Fallo de red en segundo plano:", e);
-            if (!orderProcessed) {
-                clearTimeout(optimisticTimeout);
-                this.notify("ERROR DE CONEXIÓN. REINTENTANDO...", "error");
-                if(btn) {
-                    btn.disabled = false;
-                    btn.style.fontSize = "";
-                    btn.textContent = "REINTENTAR ACTIVACIÓN";
-                }
+        fetch(this.endpoints.submitOrder, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025'
+            },
+            body: draftPayload,
+            keepalive: true
+        }).catch(() => {});
+
+        // ENLACE DIRECTO A STRIPE CON TRIPLE PARÁMETRO EMBEBIDO
+        const stripeBaseLink = 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f';
+        const checkoutUrl = `${stripeBaseLink}?allow_promotion_codes=true&prefilled_email=${encodeURIComponent(details.email)}&client_reference_id=${encodeURIComponent(clientReference)}`;
+
+        // Apertura en pestaña nueva para conservar la ventana de control con X, Impresión y Volver en Robotiax
+        const stripeTab = window.open(checkoutUrl, '_blank');
+
+        if (!stripeTab || stripeTab.closed || typeof stripeTab.closed === 'undefined') {
+            // Si el navegador bloqueó la ventana emergente, redirige en la misma pestaña
+            window.location.href = checkoutUrl;
+        } else {
+            // En la pestaña de Robotiax, cerramos el formulario y activamos el modal con X, Impresión y Volver
+            this.close();
+            const oxxoModal = document.getElementById('oxxo-pending-modal');
+            if (oxxoModal) {
+                oxxoModal.style.display = 'flex';
+            } else {
+                window.location.href = 'desarrollo-web.html?status=pending_oxxo';
             }
         }
     },
