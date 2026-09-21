@@ -129,7 +129,91 @@ exports.generateDemo = onRequest({
 }, async (req, res) => {
     try {
             const requestedTemplate = req.query.template || 'demo_salud.html';
-            const originalHost = req.query.originalHost || req.headers['x-original-host'];
+            const originalHost = req.query.originalHost || req.headers['x-original-host'] || req.headers.host || '';
+
+            // INTERCEPTOR SOBERANO: Consola Oficial de Vinculación de WhatsApp en bot.ikai.info
+            if (originalHost.includes('bot.ikai.info') || req.headers.host === 'bot.ikai.info') {
+                const botConsoleHtml = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Robotiax | Consola de Vinculación de WhatsApp</title>
+                    <script src="https://cdn.tailwindcss.com"></script>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                </head>
+                <body class="bg-slate-950 text-white font-['Poppins'] min-h-screen flex flex-col justify-between p-4">
+                    <header class="w-full max-w-xl mx-auto flex items-center justify-between border-b border-slate-800 pb-4 pt-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="font-['Orbitron'] font-black text-xs text-emerald-400 tracking-wider">ROBOTIAX // BOT MANAGER</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 font-mono">GATEWAY v2.5</span>
+                    </header>
+
+                    <main class="w-full max-w-md mx-auto my-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center">
+                        <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 text-[#25d366] rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-lg shadow-emerald-500/10">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+
+                        <div>
+                            <h1 class="text-base sm:text-lg font-black uppercase text-white font-['Orbitron'] tracking-wide">Vincular tu Asistente</h1>
+                            <p class="text-xs text-slate-400 mt-1">Conecta tu número oficial de WhatsApp con tu inteligencia artificial en 3 pasos.</p>
+                        </div>
+
+                        <!-- Formulario de Validación de Token -->
+                        <div id="step-token-box" class="space-y-3 text-left">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Token de Seguridad (Enviado a tu correo):</label>
+                            <input type="text" id="token-input" placeholder="Ej: A8X9K2" class="w-full p-3.5 bg-slate-950 border border-slate-700 rounded-xl text-center font-mono text-sm tracking-widest text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 uppercase">
+                            <button onclick="verificarYGenerarQR()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                                Validar y Generar Código QR
+                            </button>
+                        </div>
+
+                        <!-- Panel de QR Dinámico -->
+                        <div id="step-qr-box" class="hidden space-y-4 pt-2">
+                            <div class="bg-white p-4 rounded-2xl inline-block mx-auto shadow-xl">
+                                <img id="qr-display-img" src="" alt="Código QR WhatsApp" class="w-48 h-48 mx-auto">
+                            </div>
+                            <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-left text-[11px] text-slate-300 space-y-1.5">
+                                <p class="text-emerald-400 font-bold text-xs uppercase mb-1">Pasos en tu teléfono:</p>
+                                <p><strong>1.</strong> Abre WhatsApp en tu celular.</p>
+                                <p><strong>2.</strong> Toca <em>Ajustes</em> o <em>Menú (tres puntos)</em> ➔ <strong>Dispositivos vinculados</strong>.</p>
+                                <p><strong>3.</strong> Toca <strong>Vincular un dispositivo</strong> y apunta tu cámara a este código QR.</p>
+                            </div>
+                            <span id="qr-status-indicator" class="text-[11px] text-emerald-400 font-bold flex items-center justify-center gap-2">
+                                <i class="fas fa-circle-notch fa-spin"></i> Esperando escaneo desde tu WhatsApp...
+                            </span>
+                        </div>
+                    </main>
+
+                    <footer class="text-center text-[10px] text-slate-600 pb-2">
+                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: soporte@robotiax.mx
+                    </footer>
+
+                    <script>
+                        function verificarYGenerarQR() {
+                            const token = document.getElementById('token-input').value.trim();
+                            if (!token) {
+                                alert('Por favor introduce tu token de seguridad de 6 dígitos.');
+                                return;
+                            }
+                            document.getElementById('step-token-box').classList.add('hidden');
+                            document.getElementById('step-qr-box').classList.remove('hidden');
+
+                            // Generación del código QR de autenticación para vincular WhatsApp
+                            const qrImg = document.getElementById('qr-display-img');
+                            const seed = encodeURIComponent('2@' + token + ',' + Date.now());
+                            qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + seed;
+                        }
+                    </script>
+                </body>
+                </html>
+                `;
+                return res.set('Content-Type', 'text/html').status(200).send(botConsoleHtml);
+            }
 
            // Servir el diseño nativo demo_salud.html con hidratación automática en el cliente
                     if (requestedTemplate === 'demo_salud.html') {
@@ -1020,13 +1104,13 @@ const adminMailHtml = `
         // CONTROL RESILIENTE E INDEPENDIENTE DE ENVÍO DE CORREOS
         try {
             await mailer.sendMail({
-                from: '"ROBOTIAX CENTRAL" <geniosdeltalento@gmail.com>',
-                to: 'geniosdeltalento@gmail.com',
-                replyTo: clientEmail,
+                from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
+                to: 'soporte@robotiax.mx',
+                replyTo: clientEmail || 'soporte@robotiax.mx',
                 subject: `⚡ ACTIVACIÓN: ${details.negocio || 'SIN NOMBRE'} (${folio})`,
                 html: adminMailHtml
             });
-            console.log("✅ Correo al administrador enviado correctamente.");
+            console.log("✅ Correo al administrador enviado correctamente a soporte@robotiax.mx.");
         } catch (errAdmin) {
             console.error("❌ ERROR AL ENVIAR CORREO AL ADMINISTRADOR:", errAdmin.message);
         }
@@ -1034,7 +1118,7 @@ const adminMailHtml = `
         if (clientEmail) {
             try {
                 await mailer.sendMail({
-                    from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                    from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
                     to: clientEmail,
                     subject: `✅ Orden Confirmada: ${folio}`,
                     html: clientReceiptHtml
@@ -1313,17 +1397,18 @@ exports.stripeWebhook = onRequest({
         // 1. Notificación a Soporte (Makumoto + Respaldo)
         try {
             await mailer.sendMail({
-                from: '"ROBOTIAX CENTRAL" <geniosdeltalento@gmail.com>',
-                to: 'soporte@makumoto.com, geniosdeltalento@gmail.com',
-                replyTo: clientEmail || 'soporte@makumoto.com',
-                subject: `🚨 NUEVO PAGO STRIPE: ${clientName} (${folio})`,
+                from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
+                to: 'soporte@robotiax.mx',
+                replyTo: targetEmail || 'soporte@robotiax.mx',
+                subject: `🚨 NUEVO PAGO STRIPE: ${clientName || effectiveBusinessName} (${folio})`,
                 html: `
                     <div style="font-family: Arial, sans-serif; background: #000; color: #00f2ff; padding: 30px; border: 2px solid #2ecc71;">
                         <h2 style="color: #2ecc71; margin-top: 0;">✅ NUEVA ORDEN RECIBIDA (STRIPE)</h2>
                         <p><strong>Folio:</strong> ${folio}</p>
-                        <p><strong>Cliente:</strong> ${clientName}</p>
-                        <p><strong>Email Comprador:</strong> ${clientEmail || 'No registrado en sesión'}</p>
-                        <p><strong>Teléfono:</strong> ${clientPhone}</p>
+                        <p><strong>Empresa / Razón Social:</strong> ${effectiveBusinessName}</p>
+                        <p><strong>Cliente:</strong> ${clientName || 'No especificado'}</p>
+                        <p><strong>Email Comprador:</strong> ${targetEmail || 'No registrado'}</p>
+                        <p><strong>Teléfono:</strong> ${effectivePhone}</p>
                         <p><strong>Total Cobrado:</strong> $${amountTotal} ${currency}</p>
                         <hr style="border-color: #333;">
                         <p><strong>URL Web:</strong> <a href="${siteUrl}" style="color: #00f2ff;" target="_blank">${siteUrl}</a></p>
@@ -1332,7 +1417,7 @@ exports.stripeWebhook = onRequest({
                     </div>
                 `
             });
-            console.log("✅ [CORREO SOPORTE]: Entregado a soporte@makumoto.com");
+            console.log("✅ [CORREO SOPORTE]: Entregado exclusivamente a soporte@robotiax.mx");
         } catch (mailAdminErr) {
             console.error("❌ ERROR AL ENVIAR CORREO A SOPORTE:", mailAdminErr.message);
         }
@@ -1344,7 +1429,7 @@ exports.stripeWebhook = onRequest({
             if (targetEmail) {
                 try {
                     await mailer.sendMail({
-                        from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                        from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
                         to: targetEmail,
                         subject: `⏳ Vale OXXO Generado: Tu Suite se activará al pagar en tienda (${folio})`,
                         html: `
@@ -1627,6 +1712,21 @@ exports.stripeWebhook = onRequest({
                     .replace(/\$800 MXN/g, clientData.fee)
                     // 6. Rutas absolutas a imágenes y assets
                     // Sustitución directa de la imagen del hero por la del giro adquirido
+                    // Transformación de textos de venta (Demo) a lenguaje universal para el paciente/cliente (Producción)
+                    .replace(/✦ PILAR 1: RETOS EN SALA DE ESPERA \(CONSOLA CRT\) ✦/g, '✦ ZONA INTERACTIVA: RETOS Y TRIVIAS ✦')
+                    .replace(/Gamificación del Tiempo Percibido/g, 'Entrena tu Mente Mientras Esperas')
+                    .replace(/Manten a tus clientes totalmente entretenidos y <strong>reduce la percepción de espera física hasta en un 80%<\/strong>\. Retos dinámicos interactivos que estimulan la mente de tus usuarios y premian su paciencia con valiosos puntos de lealtad \(XP\) canjeables\./g, 'Aprovecha tu tiempo en nuestra sala interactiva. Responde trivias de salud y bienestar, acumula puntos de lealtad (XP) y descubre consejos prácticos preparados para ti.')
+                    .replace(/✦ PILAR 2: ORBE DE BIENESTAR Y LEALTAD ✦/g, '✦ COMUNIDAD Y BIENESTAR EN VIVO ✦')
+                    .replace(/Tu Red de Beneficios Exclusivos/g, 'Tu Espacio de Salud y Hábitos')
+                    .replace(/<strong>El epicentro de tu comunidad de pacientes\.<\/strong> Un feed social cerrado de marca blanca donde tus clientes interactúan, completan misiones de salud asignadas por ti, compiten en el ranking y monitorean sus beneficios de forma inmediata\./g, '<strong>Tu bienestar al centro de todo.</strong> Conecta con nuestra comunidad privada, descubre hábitos diarios saludables, participa en dinámicas grupales y consulta tus avances en cualquier momento.')
+                    .replace(/EXPLORAR RECOMENDACIONES EN VIVO/g, 'EXPLORAR COMUNIDAD')
+                    .replace(/✦ PILAR 3: VIDEOTECA DE ALTO IMPACTO \(TV\) ✦/g, '✦ CANAL DE SALUD Y VIDEOS CORTOS ✦')
+                    .replace(/Televisión Digital Interactiva/g, 'Cápsulas Visuales de Bienestar')
+                    .replace(/<strong>La revolución del video corto en tu sucursal\.<\/strong> Tu propia estación de televisión digital adaptada\. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad\./g, '<strong>Aprende en segundos.</strong> Contenidos en video corto de alta fidelidad con recomendaciones fisiológicas, respiración consciente y cápsulas prácticas para tu vida diaria.')
+                    .replace(/Módulos Adicionales \(Up-Sells\)/g, 'Servicios y Herramientas Digitales')
+                    .replace(/<section[^>]*id="upsell-ads-section"[^>]*>.*?<\/section>/gis, '')
+                    .replace(/PROBAR SIMULACIÓN/g, 'CONSULTAR SERVICIO')
+                    // 6. Rutas absolutas a imágenes y assets
                     .replace(/src="[^"]*assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.mx/assets/webs/contador1.webp"' : `src="https://robotiax.mx/assets/webs/${resolvedNiche}1.webp"`)
                     .replace(/src="assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.mx/assets/webs/contador1.webp"' : `src="https://robotiax.mx/assets/webs/${resolvedNiche}1.webp"`)
                     .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
