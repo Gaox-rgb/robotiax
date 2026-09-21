@@ -1072,19 +1072,65 @@ window.app.demo = {
         introModal.style.setProperty('display', 'flex', 'important');
     },
 
-   toggleWhatsAppWidget: function() {
+   launchWhatsAppNow: function() {
+        const modal = document.getElementById('wa-setup-alert-modal');
+        if (modal) modal.style.setProperty('display', 'none', 'important');
+        
+        const data = window.app.clientData || {};
+        const phoneRaw = data.telefono || document.getElementById('meta-val-3')?.textContent || '';
+        const cleanPhone = phoneRaw.replace(/\D/g, '');
+        const businessName = encodeURIComponent(data.negocio || 'su negocio');
+        const waTarget = cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20una%20cita%20con%20${businessName}.` : 'https://bot.ikai.info';
+        window.open(waTarget, '_blank');
+    },
+
+    closeWhatsAppModal: function() {
+        const modal = document.getElementById('wa-setup-alert-modal');
+        if (modal) modal.style.setProperty('display', 'none', 'important');
+    },
+
+    toggleWhatsAppWidget: function() {
         const isClientSite = (window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) || 
                              (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.'));
 
         if (isClientSite) {
-            // EN SITIO DE CLIENTE: Abrir directamente la conversación de WhatsApp con el negocio
-            const data = window.app.clientData || {};
-            const phoneRaw = data.telefono || document.getElementById('meta-val-3')?.textContent || '';
-            const cleanPhone = phoneRaw.replace(/\D/g, '');
-            const businessName = encodeURIComponent(data.negocio || 'su negocio');
-            const waTarget = cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20una%20cita%20con%20${businessName}.` : 'https://wa.me/?text=Hola!';
-            
-            window.open(waTarget, '_blank');
+            let waAlertModal = document.getElementById('wa-setup-alert-modal');
+            if (!waAlertModal) {
+                waAlertModal = document.createElement('div');
+                waAlertModal.id = 'wa-setup-alert-modal';
+                document.body.appendChild(waAlertModal);
+            }
+            waAlertModal.style = "position:fixed; inset:0; background:rgba(15,23,42,0.88); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;";
+            waAlertModal.innerHTML = `
+                <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                        <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0; text-transform:uppercase; letter-spacing:0.5px;">VINCULAR ASISTENTE</h3>
+                            <span style="font-size:10px; color:#64748b; font-weight:600;">PASOS PARA ACTIVACIÓN</span>
+                        </div>
+                    </div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
+                        <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
+                        <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
+                        <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button type="button" onclick="window.app.demo.launchWhatsAppNow()" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 12px rgba(37,211,102,0.25);">
+                            CONFIGURAR AHORA
+                        </button>
+                        <button type="button" onclick="window.app.demo.closeWhatsAppModal()" style="width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px; font-size:11px; font-weight:700; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
+                            CONFIGURAR DESPUÉS
+                        </button>
+                    </div>
+                    <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
+                        tech@robotiax.mx
+                    </div>
+                </div>
+            `;
+            waAlertModal.style.setProperty('display', 'flex', 'important');
             return;
         }
 

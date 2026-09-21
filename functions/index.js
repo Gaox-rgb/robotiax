@@ -1741,7 +1741,7 @@ exports.stripeWebhook = onRequest({
                 <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
                     <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
                         <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                            <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; shrink-0;">
+                            <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
                                 <i class="fa-brands fa-whatsapp"></i>
                             </div>
                             <div>
@@ -1751,16 +1751,28 @@ exports.stripeWebhook = onRequest({
                         </div>
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
                             <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
-                            <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa tu token enviado por correo.</p>
-                            <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el QR.</p>
+                            <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
+                            <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
                         </div>
-                        <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.display='none'" style="width:100%; background:#0f172a; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px;">
-                            ENTENDIDO Y CERRAR
-                        </button>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <button type="button" onclick="window.app.demo.launchWhatsAppNow()" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 12px rgba(37,211,102,0.25);">
+                                CONFIGURAR AHORA
+                            </button>
+                            <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.setProperty('display', 'none', 'important')" style="width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px; font-size:11px; font-weight:700; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
+                                CONFIGURAR DESPUÉS
+                            </button>
+                        </div>
+                        <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
+                            tech@robotiax.mx
+                        </div>
                     </div>
                 </div>
                 `;
-                compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
+                if (compiledHtml.includes('<div id="wa-setup-alert-modal"')) {
+                    compiledHtml = compiledHtml.replace(/<div id="wa-setup-alert-modal"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g, waModalHtml);
+                } else {
+                    compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
+                }
 
                 await deployStaticToR2(negocioSlug, compiledHtml, r2BucketName.value());
                 console.log(`✅ [R2]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
