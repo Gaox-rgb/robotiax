@@ -85,23 +85,24 @@ window.app.editor = {
     /**
      * Inicializa el panel de edición para una plantilla específica.
      */
-    init: function(templateId) {
+    init: function(templateId, customTitle = null) {
         this.currentTemplateId = templateId;
         
-        const product = window.app.catalog.ia.find(p => p.id === templateId) || 
-                        window.app.catalog.security.find(p => p.id === templateId) ||
-                        window.app.catalog.web.find(p => p.id === templateId);
+        const product = window.app.catalog.ia?.find(p => p.id === templateId) || 
+                        window.app.catalog.security?.find(p => p.id === templateId) ||
+                        window.app.catalog.web?.find(p => p.id === templateId);
 
-        if(product) {
-            const nameEl = document.getElementById('display-product-name');
-            const priceEl = document.getElementById('display-product-price');
-            if(nameEl) nameEl.textContent = product.name;
-            if(priceEl) priceEl.textContent = `$${product.price} ${product.currency}`;
-            
-            // Guardamos la categoría para el submitOrder
-            this.currentCategory = product.category;
-            this.currentProductName = product.name;
-        }
+        const resolvedName = customTitle || product?.name || this.currentProductName || "Suite Digital";
+        this.currentProductName = resolvedName;
+
+        const nameEl = document.getElementById('display-product-name');
+        const priceEl = document.getElementById('display-product-price');
+        const suiteTitleEl = document.getElementById('display-suite-title');
+
+        if(suiteTitleEl) suiteTitleEl.textContent = resolvedName.toUpperCase();
+        if(nameEl) nameEl.textContent = resolvedName;
+        if(priceEl && product) priceEl.textContent = `$${product.price} ${product.currency}`;
+        if(product) this.currentCategory = product.category;
 
         const panel = document.getElementById('editor-panel');
         if (panel) {
@@ -185,8 +186,8 @@ window.app.editor = {
             tagline: document.getElementById('edit-slogan')?.value || document.getElementById('edit-tagline')?.value || "",
             slogan: document.getElementById('edit-slogan')?.value || "",
             headline: document.getElementById('edit-headline')?.value || "",
-            badge: document.getElementById('edit-badge')?.value || "Especialista Certificado",
-            specialty: document.getElementById('edit-specialty')?.value || "Giro Comercial",
+            badge: document.getElementById('edit-badge')?.value || "ESPECIALISTA CERTIFICADO",
+            specialty: document.getElementById('edit-specialty')?.value || document.getElementById('edit-services')?.value || "Giro Comercial",
             especialidades: document.getElementById('edit-services')?.value || this.currentProductName,
             servicios: document.getElementById('edit-services')?.value || this.currentProductName,
             cta: document.getElementById('edit-cta')?.value || "Activación Directa",

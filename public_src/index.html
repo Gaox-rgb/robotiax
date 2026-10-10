@@ -76,25 +76,17 @@
                 </div>
 
                 <!-- Estado Autenticado (Con Sesión Activa) -->
-                <div id="rx-dock-user" style="display: none; align-items: center; gap: 8px;">
-                    <span id="rx-dock-greeting" style="color: #cbd5e1; font-size: 0.58rem; font-weight: 500;">
-                        Hola, <strong id="rx-dock-username" style="color: #ffffff; font-weight: 600;">Usuario</strong>
+                <div id="rx-dock-user" style="display: none; align-items: center; gap: 6px; white-space: nowrap !important;">
+                    <span id="rx-dock-greeting" style="color: #cbd5e1; font-size: 0.52rem; font-weight: 500; white-space: nowrap !important; display: inline-flex; align-items: center; gap: 2px;">
+                        Hola, <strong id="rx-dock-username" style="color: #00f2ff; font-weight: 700; font-size: 0.52rem; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap !important; display: inline-block; vertical-align: middle;">Usuario</strong>
                     </span>
-                    </div>
-            </div>
-
-            <!-- DOCK DE USUARIO CORREGIDO A 1 SOLA LÍNEA -->
-            <div id="rx-dock-user" style="display: none; align-items: center; gap: 4px; white-space: nowrap !important; flex-wrap: nowrap !important;">
-                <span id="rx-dock-greeting" style="color: #cbd5e1; font-size: 0.46rem; font-weight: 500; white-space: nowrap !important; display: inline-flex; align-items: center; gap: 2px;">
-                    Hola, <strong id="rx-dock-username" style="color: #00f2ff; font-weight: 700; font-size: 0.46rem; max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap !important; display: inline-block; vertical-align: middle;">Usuario</strong>
-                </span>
-                <button type="button" onclick="window.rxAuth.openAccountModal()" style="background: rgba(0, 242, 255, 0.15); border: 1px solid #00f2ff; color: #00f2ff; font-size: 0.44rem; font-weight: 800; cursor: pointer; text-transform: uppercase; padding: 2px 5px; border-radius: 5px; white-space: nowrap !important; letter-spacing: 0.2px;">
-                    MI CUENTA
-                </button>
-                <button type="button" onclick="window.rxAuth.logout()" title="Cerrar Sesión" style="background: none; border: none; color: #94a3b8; font-size: 0.52rem; cursor: pointer; padding: 0 1px; line-height: 1;">
-                    ✕
-                </button>
-            </div>
+                    <button type="button" onclick="window.rxAuth.openAccountModal()" style="background: rgba(0, 242, 255, 0.15); border: 1px solid #00f2ff; color: #00f2ff; font-size: 0.48rem; font-weight: 800; cursor: pointer; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; white-space: nowrap !important; letter-spacing: 0.2px;">
+                        MI CUENTA
+                    </button>
+                    <button type="button" onclick="window.rxAuth.logout()" title="Cerrar Sesión" style="background: none; border: none; color: #94a3b8; font-size: 0.58rem; cursor: pointer; padding: 0 2px; line-height: 1;">
+                        ✕
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -123,18 +115,7 @@
         });
     </script>
 
-    <style>
-        .btn-scroll-top {
-            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
-            background: #00f2ff; color: #000; border: none; border-radius: 50%;
-            display: none; justify-content: center; align-items: center;
-            cursor: pointer; z-index: 9999; font-size: 1.5rem; transition: 0.3s;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
-        }
-        .btn-scroll-top:hover { transform: scale(1.1); background: #fff; }
-    </style>
-
-    <div id="btn-up" class="btn-scroll-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">▲</div>
+    
     <div id="fx-tv" class="trans-tv"></div>
     <div id="fx-gold" class="trans-gold-container">
         <div class="trans-gold-layer t-left"></div>
@@ -304,7 +285,7 @@
 
             <!-- NIVEL 2.5: CONTACTO SOPORTE -->
             <div style="margin-bottom: 15px;">
-                <a href="mailto:soporte@gaoti.mx" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: soporte@gaoti.mx</a>
+                <a href="mailto:contacto@robotiax.mx" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: contacto@robotiax.mx</a>
             </div>
 
             <!-- NIVEL 3: COPYRIGHT -->

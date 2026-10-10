@@ -52,14 +52,23 @@ const modelAI = 'gemini-2.5-flash';
 
 let transporter;
 const getTransporter = () => {
+    const mailUser = defineString('MAIL_USER', { default: 'geniosdeltalento@gmail.com' });
+const mailPass = defineString('MAIL_PASS', { default: 'bcnmvqwyvfkhxpxd' });
+
+// Helper global de saneamiento para omisiones voluntarias ('NO')
+const cleanVal = (v, def = "") => {
+    if (!v || typeof v !== 'string' || v.trim().toLowerCase() === 'no') return def;
+    return v.trim();
+};
+
     if (!transporter) {
         console.log("🛠️ Inicializando nuevo transporte Nodemailer...");
         
         transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'geniosdeltalento@gmail.com',
-                pass: 'bcnmvqwyvfkhxpxd'
+                user: mailUser.value(),
+                pass: mailPass.value()
             }
         });
     }
@@ -1398,8 +1407,8 @@ exports.stripeWebhook = onRequest({
         try {
             await mailer.sendMail({
                 from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
-                to: 'soporte@robotiax.mx',
-                replyTo: targetEmail || 'soporte@robotiax.mx',
+                to: ['contacto@robotiax.mx', 'klvenoticias@gmail.com'],
+                replyTo: targetEmail || 'contacto@robotiax.mx',
                 subject: `🚨 NUEVO PAGO STRIPE: ${clientName || effectiveBusinessName} (${folio})`,
                 html: `
                     <div style="font-family: Arial, sans-serif; background: #000; color: #00f2ff; padding: 30px; border: 2px solid #2ecc71;">
@@ -1417,9 +1426,9 @@ exports.stripeWebhook = onRequest({
                     </div>
                 `
             });
-            console.log("✅ [CORREO SOPORTE]: Entregado exclusivamente a soporte@robotiax.mx");
+            console.log("✅ [CORREO ADMINISTRACIÓN]: Entregado a contacto@robotiax.mx y klvenoticias@gmail.com");
         } catch (mailAdminErr) {
-            console.error("❌ ERROR AL ENVIAR CORREO A SOPORTE:", mailAdminErr.message);
+            console.error("❌ ERROR AL ENVIAR CORREO A ADMINISTRACIÓN:", mailAdminErr.message);
         }
 
         // CASO A: VALE OXXO GENERADO (EL CLIENTE AÚN NO HA PAGADO EN TIENDA)
@@ -1662,12 +1671,6 @@ exports.stripeWebhook = onRequest({
                 const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
                 const rawTemplate = await fs.readFile(templatePath, 'utf8');
                 const cacheBuster = Date.now();
-                // FILTRADO ESTRICTO: Si el cliente anotó "NO", se omite y vacía el texto
-                const cleanVal = (v, def = "") => {
-                    if (!v || v.trim().toLowerCase() === 'no') return def;
-                    return v;
-                };
-
                 const resolvedNiche = (draftData.template || 'salud')
                     .replace(/^cfg-/, '')
                     .replace(/-bot(-promo)?$/, '')

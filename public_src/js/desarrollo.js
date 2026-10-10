@@ -63,12 +63,27 @@ window.app.ui = {
     requestPurchase: function(templateId, templateName) {
         console.log("Abriendo panel de personalización para:", templateId);
         this.selectedTemplate.id = templateId;
-        this.selectedTemplate.name = templateName;
+
+        let resolvedTitle = templateName;
+        const btn = document.querySelector(`button[onclick*="'${templateId}'"]`);
+        if (btn) {
+            const card = btn.closest('.glow-card-cyber');
+            const h4 = card ? card.querySelector('h4') : null;
+            if (h4 && h4.textContent.trim()) {
+                resolvedTitle = h4.textContent.trim();
+            }
+        }
+
+        this.selectedTemplate.name = resolvedTitle;
+        const titleEl = document.getElementById('display-suite-title');
+        if (titleEl && resolvedTitle) {
+            titleEl.textContent = resolvedTitle.toUpperCase();
+        }
 
         if (window.app.editor && typeof window.app.editor.init === 'function') {
-            window.app.editor.init(templateId);
+            window.app.editor.init(templateId, resolvedTitle);
         } else if (window.app.payments) {
-            window.app.payments.openModal(templateId, templateName, 200, 'MXN');
+            window.app.payments.openModal(templateId, resolvedTitle, 200, 'MXN');
         }
     },
 
