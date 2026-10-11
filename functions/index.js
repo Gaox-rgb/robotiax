@@ -206,7 +206,7 @@ exports.generateDemo = onRequest({
                     </main>
 
                     <footer class="text-center text-[10px] text-slate-600 pb-2">
-                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: soporte@robotiax.mx
+                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: contacto@robotiax.mx
                     </footer>
 
                     <script>
@@ -1085,13 +1085,13 @@ const adminMailHtml = `
         // CONTROL RESILIENTE E INDEPENDIENTE DE ENVÍO DE CORREOS
         try {
             await mailer.sendMail({
-                from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
-                to: 'soporte@robotiax.mx',
-                replyTo: clientEmail || 'soporte@robotiax.mx',
+                from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
+                to: 'contacto@robotiax.mx',
+                replyTo: clientEmail || 'contacto@robotiax.mx',
                 subject: `⚡ ACTIVACIÓN: ${details.negocio || 'SIN NOMBRE'} (${folio})`,
                 html: adminMailHtml
             });
-            console.log("✅ Correo al administrador enviado correctamente a soporte@robotiax.mx.");
+            console.log("✅ Correo al administrador enviado correctamente a contacto@robotiax.mx.");
         } catch (errAdmin) {
             console.error("❌ ERROR AL ENVIAR CORREO AL ADMINISTRADOR:", errAdmin.message);
         }
@@ -1099,7 +1099,7 @@ const adminMailHtml = `
         if (clientEmail) {
             try {
                 await mailer.sendMail({
-                    from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
+                    from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
                     to: clientEmail,
                     subject: `✅ Orden Confirmada: ${folio}`,
                     html: clientReceiptHtml
@@ -1378,7 +1378,7 @@ exports.stripeWebhook = onRequest({
         // 1. Notificación a Soporte (Makumoto + Respaldo)
         try {
             await mailer.sendMail({
-                from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
+                from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
                 to: ['contacto@robotiax.mx', 'klvenoticias@gmail.com'],
                 replyTo: targetEmail || 'contacto@robotiax.mx',
                 subject: `🚨 NUEVO PAGO STRIPE: ${clientName || effectiveBusinessName} (${folio})`,
@@ -1410,7 +1410,7 @@ exports.stripeWebhook = onRequest({
             if (targetEmail) {
                 try {
                     await mailer.sendMail({
-                        from: '"Robotiax Intelligence" <soporte@robotiax.mx>',
+                        from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
                         to: targetEmail,
                         subject: `⏳ Vale OXXO Generado: Tu Suite se activará al pagar en tienda (${folio})`,
                         html: `
