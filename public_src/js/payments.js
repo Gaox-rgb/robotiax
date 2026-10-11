@@ -6,9 +6,13 @@ window.app = window.app || {};
 window.app.payments = {
     // ENLACES OFICIALES DE STRIPE: MAKUMOTO & ROBOTIAX PAY
     stripeLinks: {
-        // Enlace Universal para todas las Suites Digitales Web con soporte de cupones
+        // Enlaces Oficiales del Consorcio Makumoto & Robotiax Pay
         web_suite: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
         upgrade_perfecciona: 'https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g',
+        ecommerce: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
+        social: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
+        arsenal_ia: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
+        arsenal_sec: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true',
         default: 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true'
     },
 

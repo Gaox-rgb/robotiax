@@ -73,13 +73,13 @@ window.app.editor = {
     endpoints: {
         generate: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
             ? 'http://127.0.0.1:5001/robotiax/us-central1/generateDemo' 
-            : 'https://generatedemo-bh64qprvqa-uc.a.run.app',
+            : 'https://us-central1-robotiax.cloudfunctions.net/generateDemo',
         upload: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? 'http://127.0.0.1:5001/robotiax/us-central1/getUploadUrl'
-            : 'https://getuploadurl-bh64qprvqa-uc.a.run.app',
+            : 'https://us-central1-robotiax.cloudfunctions.net/getUploadUrl',
         submitOrder: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
-            : 'https://submitfinalorder-bh64qprvqa-uc.a.run.app'
+            : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder'
     },
 
     /**

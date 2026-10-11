@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configura tu Solución | ROBOTIAX®</title>
+    <title>Configura tu Solución | ROBOTIAX</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <style>
@@ -317,11 +317,13 @@
     <!-- MODAL DE PAGO PAYPAL -->
     <div id="payment-modal-overlay" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin-bottom: 10px; font-size: 1.2rem;">ORDEN DE ACTIVACIÓN</h2>
+            <h2 style="font-family: 'Orbitron', sans-serif; color: #fff; margin-bottom: 10px; font-size: 1.2rem;">MAKUMOTO & ROBOTIAX PAY</h2>
             <p style="font-family: 'Inter', sans-serif; color: #9ca3af; margin-bottom: 20px;">
                 <span id="modal-template-name">Asistente</span>
             </p>
-            <div id="modal-paypal-container" style="width: 100%;"></div>
+            <div id="modal-stripe-container" style="width: 100%;">
+                <button onclick="window.app.payments.executePurchase('web_suite', 200, 'MXN')" style="background: #00f2ff; color: #000; border: none; padding: 14px; font-family: 'Orbitron'; font-weight: 900; width: 100%; border-radius: 8px; cursor: pointer; text-transform: uppercase;">PAGAR CON STRIPE 💳</button>
+            </div>
             <button onclick="window.app.payments.closeModal()" style="background:transparent; border:none; color:#ff4757; font-family:'Inter'; cursor:pointer; margin-top:25px; font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">❮ CANCELAR Y VOLVER</button>
         </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARSENAL TÁCTICO | ROBOTIAX® Intelligence</title>
+    <title>ARSENAL TÁCTICO | ROBOTIAX Intelligence</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/ia.css">
@@ -80,7 +80,7 @@
 
             <!-- NIVEL 3: COPYRIGHT -->
             <p style="font-size: 0.6rem; color: #2d3436; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px;">
-                ROBOTIAX® &copy; 2025. MAKUMOTO & ROBOTIAX® ENGINE. <br>
+                ROBOTIAX &copy; 2025. MAKUMOTO & ROBOTIAX ENGINE. <br>
                 Arquitectos de tu Futuro Digital. Todos los derechos reservados.
             </p>
 
@@ -91,9 +91,11 @@
     <div id="payment-modal-overlay" class="payment-modal-overlay" style="display:none !important; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:10000; justify-content:center; align-items:center; backdrop-filter: blur(10px);">
         <div class="payment-modal-content" style="background: #050505; border: 1px solid #ff3333; padding: 50px; max-width: 450px; width: 90%; text-align: center; position: relative; border-radius: 4px;">
             <button onclick="window.app.payments.closeModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; font-family: 'Orbitron';">×</button>
-            <h2 style="font-family: 'Orbitron'; color: #fff; margin-bottom: 10px; font-size: 1.4rem;">ORDEN DE ACTIVACIÓN</h2>
+            <h2 style="font-family: 'Orbitron'; color: #fff; margin-bottom: 10px; font-size: 1.4rem;">MAKUMOTO & ROBOTIAX PAY</h2>
             <p style="color: #888; font-family: 'Rajdhani'; margin-bottom: 30px; font-size: 1.1rem;">Estás adquiriendo: <strong id="modal-template-name" style="color: #ff3333;"></strong></p>
-            <div id="modal-paypal-container"></div>
+            <div id="modal-stripe-container">
+                <button onclick="window.app.payments.executePurchase('arsenal_ia', 20, 'USD')" style="background: #ff3333; color: #fff; border: none; padding: 14px; font-family: 'Orbitron'; font-weight: 900; width: 100%; border-radius: 4px; cursor: pointer; text-transform: uppercase;">PAGAR CON STRIPE 💳</button>
+            </div>
         </div>
     </div>
 
@@ -144,7 +146,6 @@
 
     <!-- SCRIPTS -->
     <script src="js/catalog.js"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=AYQNfuvMDpSNO5zTj3zKNwdv7O9oeEK5Ar467UQzfVcwh15l__01q_o7uPyJKfFVQKcFiNFWlYHehCr6&currency=USD"></script>
     <script src="js/payments.js"></script>
     <script src="js/editor.js"></script>
     <script src="js/ia.js"></script>

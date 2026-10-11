@@ -3,74 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo de Términos | ROBOTIAX</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <title>Términos y Condiciones Globales | Global Terms of Service | ROBOTIAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --brand: #00f2ff; --punk: #ff003c; --bg: #050505; --text: #f5f5f5; }
+        :root { 
+            --brand: #00f2ff; 
+            --punk: #ff003c; 
+            --gold: #ffd700;
+            --green: #39ff14;
+            --bg: #030712; 
+            --card-bg: rgba(15, 23, 42, 0.75);
+            --border-card: rgba(0, 242, 255, 0.2);
+            --text: #e2e8f0; 
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;
-            background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
-            line-height: 1.6; padding-bottom: 100px;
+            background-image: radial-gradient(circle at 50% 0%, #0c1833 0%, #020617 100%);
+            line-height: 1.7; padding-bottom: 100px;
         }
         .legal-header { 
-            padding: 60px 20px; text-align: center; border-bottom: 1px solid rgba(0, 242, 255, 0.2); 
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+            padding: 40px 20px 25px 20px; text-align: center; border-bottom: 1.5px solid var(--brand); 
+            background: rgba(3, 7, 18, 0.95); position: static; backdrop-filter: blur(10px);
         }
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--brand); letter-spacing: 4px; text-transform: uppercase; font-size: 2.5rem; }
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--brand); letter-spacing: 3px; text-transform: uppercase; font-size: 1.45rem; line-height: 1.3; }
+        .tagline { color: var(--gold); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+        .lang-switch-box { display: flex; justify-content: center; gap: 8px; margin: 18px 0 10px 0; }
+        .lang-btn { background: transparent; border: 1.5px solid #444; color: #888; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; padding: 5px 16px; border-radius: 6px; cursor: pointer; font-weight: 900; letter-spacing: 1px; transition: all 0.2s; }
+        .lang-btn.active { background: rgba(0, 242, 255, 0.18); border-color: var(--brand); color: var(--brand); box-shadow: 0 0 12px rgba(0, 242, 255, 0.4); }
+        .container { max-width: 960px; margin: 30px auto; padding: 0 20px; }
         .protocol-block { 
-            border-left: 2px solid var(--brand); padding-left: 25px; margin-bottom: 40px; 
-            background: rgba(255,255,255,0.02); padding: 30px; border-radius: 0 10px 10px 0;
+            border-left: 4px solid var(--brand); padding: 24px 22px; margin-bottom: 24px; 
+            background: var(--card-bg); border-radius: 0 14px 14px 0; border: 1px solid var(--border-card);
+            border-left-width: 4px; backdrop-filter: blur(8px);
         }
-        h2 { font-family: 'Orbitron', sans-serif; color: var(--brand); font-size: 1.1rem; margin-bottom: 15px; letter-spacing: 2px; }
-        p { color: #aaa; margin-bottom: 15px; font-size: 1rem; }
-        .highlight { color: var(--punk); font-weight: bold; }
+        .protocol-block.punk { border-left-color: var(--punk); border-color: rgba(255, 0, 60, 0.2); }
+        .protocol-block.gold { border-left-color: var(--gold); border-color: rgba(255, 215, 0, 0.2); }
+        .protocol-block.green { border-left-color: var(--green); border-color: rgba(57, 255, 20, 0.2); }
+        h2 { font-family: 'Orbitron', sans-serif; color: var(--brand); font-size: 0.95rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; line-height: 1.35; }
+        .protocol-block.punk h2 { color: var(--punk); }
+        .protocol-block.gold h2 { color: var(--gold); }
+        .protocol-block.green h2 { color: var(--green); }
+        p { color: #cbd5e1; margin-bottom: 10px; font-size: 0.95rem; font-weight: 500; }
+        ul { list-style: none; padding-left: 0; margin-bottom: 15px; }
+        ul li { position: relative; padding-left: 24px; margin-bottom: 9px; color: #cbd5e1; font-size: 0.92rem; font-weight: 500; }
+        ul li::before { content: "►"; position: absolute; left: 0; color: var(--brand); font-size: 0.75rem; }
+        .protocol-block.punk ul li::before { color: var(--punk); }
+        .protocol-block.gold ul li::before { color: var(--gold); }
+        .protocol-block.green ul li::before { color: var(--green); }
+        .highlight-cyan { color: var(--brand); font-weight: 700; }
+        .highlight-gold { color: var(--gold); font-weight: 700; }
+        .highlight-green { color: var(--green); font-weight: 700; }
+        .highlight-punk { color: var(--punk); font-weight: 700; }
         .back-btn { 
-            position: fixed; bottom: 30px; right: 30px; background: var(--brand); color: #000;
-            padding: 10px 25px; font-family: 'Orbitron'; text-decoration: none; font-weight: bold;
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-            transition: 0.3s; z-index: 100;
+            position: fixed; bottom: 25px; right: 25px; 
+            width: 48px; height: 48px; border-radius: 50%;
+            background: rgba(3, 7, 18, 0.9); color: var(--brand);
+            border: 1.5px solid var(--brand); text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; transition: all 0.25s ease; z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        .back-btn:hover { background: #fff; transform: translateY(-3px); }
+        .back-btn:hover { 
+            background: var(--brand); color: #000; 
+            transform: scale(1.12); box-shadow: 0 0 25px rgba(0, 242, 255, 0.7); 
+        }
     </style>
 </head>
 <body>
     <header class="legal-header">
-        <h1>Términos y Condiciones</h1>
-        <p style="color: var(--punk); letter-spacing: 5px;">[ PROTOCOLO DE ACUERDO DE SERVICIO ]</p>
+        <h1 id="terms-title">Términos y Condiciones Globales de Servicio</h1>
+        <p class="tagline" id="terms-tagline">Contrato Digital de Adhesión // Master Service Agreement // ROBOTIAX v2.6</p>
     </header>
 
+    <div class="lang-switch-box">
+        <button type="button" onclick="setTermsLang('es')" id="btn-terms-es" class="lang-btn active">ES</button>
+        <button type="button" onclick="setTermsLang('en')" id="btn-terms-en" class="lang-btn">EN</button>
+    </div>
+
     <div class="container">
-        <div class="protocol-block">
-            <h2>04. LIMITACIÓN DE RESPONSABILIDAD</h2>
-            <p>ROBOTIAX® no se hace responsable por el mal uso de los agentes de inteligencia artificial o fallos externos derivados de plataformas de terceros como Stripe (Makumoto & Robotiax Pay), Firebase o Vertex AI.</p>
+        <!-- =================================================================== -->
+        <!-- BLOQUE COMPLETO EN ESPAÑOL                                         -->
+        <!-- =================================================================== -->
+        <div id="terms-es">
+            <!-- 01 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-file-contract"></i> 01. INTEGRACIÓN DEL ECOSISTEMA, SOBERANÍA Y VÍNCULO CON MAKUMOTO</h2>
+                <p>El presente instrumento constituye un <strong class="highlight-cyan">Contrato Digital de Adhesión Vinculante</strong> celebrado entre la firma tecnológica <span class="highlight-cyan">ROBOTIAX</span> (operando comercialmente bajo <code>robotiax.mx</code>), en lo sucesivo <span class="highlight-cyan">"ROBOTIAX"</span> o <span class="highlight-cyan">"EL PROVEEDOR"</span>, y cualquier persona física o moral que adquiera, contrate o interactúe con sus servicios digitales, en lo sucesivo <span class="highlight-cyan">"EL CLIENTE"</span> o <span class="highlight-cyan">"EL USUARIO"</span>.</p>
+                <p>• <span class="highlight-gold">Vínculo con el Ecosistema Makumoto:</span> ROBOTIAX es la firma propietaria de las patentes de software, modelos de IA y arquitectura técnica del ecosistema <span class="highlight-gold">MAKUMOTO</span> (accesible en <code>makumoto.com</code> y <code>afiliados.makumoto.com</code>). El presente contrato regula exclusivamente los servicios de diseño web, hosting, instancias de WhatsApp y licencias de IA provistos por ROBOTIAX.</p>
+            </div>
+
+            <!-- 02 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-credit-card"></i> 02. PROCESAMIENTO FINANCIERO DELEGADO: MAKUMOTO & ROBOTIAX PAY EN STRIPE</h2>
+                <p>Toda transacción comercial, suscripción o compra en ROBOTIAX se gestiona de forma delegada a través de la pasarela oficial <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>, operada mediante la infraestructura bancaria certificada de <span class="highlight-cyan">STRIPE</span> (Stripe Payments Mexico S. de R.L. de C.V. / Stripe Inc.).</p>
+                <p>• Los cargos bancarios y recibos fiscales automatizados se reflejarán bajo dicha denominación comercial en los estados de cuenta bancarios del CLIENTE.</p>
+                <p>• <span class="highlight-punk">Prohibición de Efectivo:</span> Ningún asesor técnico o intermediario de ROBOTIAX está autorizado para recibir dinero en efectivo. Todo pago debe liquidarse directamente en la pasarela encriptada de Stripe.</p>
+            </div>
+
+            <!-- 03 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-undo-alt"></i> 03. POLÍTICA DE NO REEMBOLSO Y AUDITORÍA TÉCNICA (30 A 90 DÍAS)</h2>
+                <p>Dada la naturaleza del software como servicio (SaaS), la compilación estática inmediata en servidores en la nube y el consumo computacional instantáneo de recursos, <span class="highlight-punk">todas las ventas, suscripciones y activaciones son finales y no sujetas a reembolso automático</span>.</p>
+                <p>• <span class="highlight-punk">Periodo de Auditoría Técnica:</span> Cualquier reclamación excepcional deberá enviarse formalmente al buzón jurídico <span class="highlight-gold">legal@robotiax.mx</span>, reservándose LA EMPRESA un periodo de evaluación técnica de <span class="highlight-punk">30 a 90 días hábiles</span> para analizar el consumo de servidores, logs de transferencia y emitir una resolución discrecional.</p>
+            </div>
+
+            <!-- 04 -->
+            <div class="protocol-block green">
+                <h2><i class="fas fa-globe"></i> 04. SUITES DIGITALES WEB ($200 MXN + IVA = $233 MXN) Y ENTREGABLES</h2>
+                <p>La contratación de la Suite Digital Web incluye una página web profesional de marca blanca responsiva, acceso a la sala de espera interactiva de Makumoto y el aprovisionamiento de una instancia de Bot de WhatsApp en servidor privado.</p>
+                <p>• <span class="highlight-green">Hosting de Cortesía por 30 Días:</span> El servicio incluye 30 (treinta) días naturales de hospedaje web sin costo adicional en Cloudflare R2 bajo un subdominio de cortesía <code>{slug}.ikai.info</code>.</p>
+                <p>• <span class="highlight-gold">Mantenimiento Mensual Recurrente:</span> Concluidos los primeros 30 días, el CLIENTE deberá cubrir la cuota de mantenimiento mensual ($299 MXN para bots de flujo o $499 MXN para agentes con IA) para preservar activo el hosting en <code>.ikai.info</code> y la instancia de WhatsApp en el servidor VPS.</p>
+            </div>
+
+            <!-- 05 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-desktop"></i> 05. PLANTILLAS WEB ESTÁTICAS DE CATÁLOGO ($99 MXN)</h2>
+                <p>La compra de plantillas web estáticas de catálogo otorga una licencia de uso comercial de la maqueta seleccionada con la información básica ingresada en el formulario.</p>
+                <p>• Incluye <strong>7 días naturales de visualización de cortesía</strong> en <code>.ikai.info</code> para revisión. Al ser un producto autogestionado, no incluye el Bot de WhatsApp ni la sala de espera interactiva salvo contratación complementaria.</p>
+            </div>
+
+            <!-- 06 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-tools"></i> 06. SERVICIO "PERFECCIONA TU WEB" ($89 MXN) Y MODIFICACIONES</h2>
+                <p>El paquete complementario *Perfecciona tu Web* ($89 MXN) faculta al CLIENTE a solicitar la incorporación de <strong>hasta 3 fotografías oficiales</strong> (en formato 16:9, PNG o JPG menores a 2 MB) y <strong>hasta 5 modificaciones específicas</strong> de textos, horarios o servicios sobre su página web.</p>
+                <p>• Estas modificaciones deben suministrarse en un solo paquete consolidado a través del modal de confirmación o en respuesta al correo de bienvenida para su ejecución en un plazo de 24 a 72 horas hábiles.</p>
+            </div>
+
+            <!-- 07 -->
+            <div class="protocol-block punk">
+                <h2><i class="fab fa-whatsapp"></i> 07. INSTANCIAS DE WHATSAPP (BOT.IKAI.INFO) Y DESLINDE DE META</h2>
+                <p>ROBOTIAX aprovisiona el contenedor técnico y la lógica del asistente en <code>bot.ikai.info</code>. La vinculación telefónica se realiza bajo la estricta responsabilidad del CLIENTE mediante el escaneo del código QR.</p>
+                <p>• <span class="highlight-punk">Deslinde de Responsabilidad ante Meta/WhatsApp:</span> ROBOTIAX no es propietaria de WhatsApp ni de Meta Platforms Inc. El CLIENTE se compromete a no utilizar el bot para envío de SPAM masivo o fraudes. ROBOTIAX queda legalmente eximida de responsabilidad si WhatsApp suspende, banea o restringe la línea telefónica del CLIENTE por infracción a las políticas de uso de Meta.</p>
+            </div>
+
+            <!-- 08 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-cogs"></i> 08. MODALIDADES DE IMPLEMENTACIÓN DEL ASISTENTE DE WHATSAPP</h2>
+                <p>El CLIENTE podrá seleccionar una de las siguientes tres modalidades de puesta en marcha del Bot de WhatsApp:</p>
+                <ul>
+                    <li><span class="highlight-gold">1. Soporte de Cortesía (Sin Costo):</span> ROBOTIAX configura la lógica base y los parámetros primarios capturados en la orden de compra.</li>
+                    <li><span class="highlight-gold">2. Autogestión Técnica:</span> Entrega de la instancia en estado limpio para empresas con personal de sistemas que desean programar sus propios flujos.</li>
+                    <li><span class="highlight-gold">3. Implementación Avanzada "Plug & Play" (+50 USD):</span> Ingeniería avanzada de prompts, carga masiva de catálogos y calibración de respuestas complejas realizada directamente por el equipo técnico de Robotiax.</li>
+                </ul>
+            </div>
+
+            <!-- 09 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-brain"></i> 09. CATÁLOGO DE INTELIGENCIA ARTIFICIAL Y CIBERSEGURIDAD EN USD</h2>
+                <p>Las 30 unidades de IA y los 30 escudos de ciberseguridad comercializados en dólares (USD) en `arsenal-completo.html` operan bajo modalidad de suscripción mensual.</p>
+                <p>• <span class="highlight-cyan">Carácter Orientativo:</span> Los agentes de IA generan análisis automatizados asistidos por Google Vertex AI. Bajo ninguna circunstancia sustituyen la opinión, dictamen o asesoría vinculante de un abogado, contador público, médico colegiado o perito informático certificado.</p>
+            </div>
+
+            <!-- 10 -->
+            <div class="protocol-block danger" style="border-left-width: 6px;">
+                <h2><i class="fas fa-shield-virus"></i> 10. PROPIEDAD INTELECTUAL Y CLÁUSULA ANTI-CLON ($10M-$50M USD)</h2>
+                <p>Todo el código fuente, hojas de estilo CSS, compiladores R2, plantillas Handlebars, diseños visuales de `robotiax.mx` y prompts del sistema de IA son propiedad intelectual exclusiva y reservada de ROBOTIAX.</p>
+                <p>• Queda prohibida la ingeniería inversa, desensamblado, reventa no autorizada o extracción de prompts mediante técnicas de *Prompt Injection* o *Jailbreak*. Toda infracción deliberada facultará a ROBOTIAX a demandar la indemnización de daños y perjuicios comerciales punitivos por un monto inicial de <span class="highlight-punk">$10,000,000 USD hasta $50,000,000 USD</span>, además de acciones penales internacionales.</p>
+            </div>
+
+            <!-- 11 -->
+            <div class="protocol-block danger">
+                <h2><i class="fas fa-child"></i> 11. RESTRICCIÓN ABSOLUTA DE EDAD (MAYORÍA DE EDAD 18+)</h2>
+                <p>La contratación de cualquier servicio o unidad de software de ROBOTIAX está reservada exclusivamente para personas mayores de 18 años con plena capacidad jurídica comercial y a empresas legalmente constituidas. El procesamiento de pagos por menores de edad está prohibido y sus cuentas serán canceladas sin derecho a reclamo.</p>
+            </div>
+
+            <!-- 12 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-hand-holding-usd"></i> 12. LIMITACIÓN DE RESPONSABILIDAD FINANCIERA (CAP DE 30 DÍAS)</h2>
+                <p>El CLIENTE acepta que los servicios se proveen "tal cual" (<em>as is</em>). En cualquier controversia o falla técnica comprobada imputable a ROBOTIAX, la responsabilidad financiera acumulada máxima de LA EMPRESA ante el CLIENTE estará <span class="highlight-cyan">estrictamente limitada a la cantidad total neta que el CLIENTE haya pagado efectivamente en los últimos 30 (treinta) días naturales</span> por concepto del servicio afectado.</p>
+            </div>
+
+            <!-- 13 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-server"></i> 13. ACUERDO DE NIVEL DE SERVICIO (SLA) Y FUERZA MAYOR</h2>
+                <p>ROBOTIAX procura una disponibilidad operativa del 99.9%. No obstante, al depender de infraestructura global externa (Google Cloud Platform, Cloudflare, IONOS, Stripe y WhatsApp/Meta), LA EMPRESA queda legalmente eximida de responsabilidad ante interrupciones derivadas de caídas masivas de centros de datos, ataques DDoS externos, cortes de fibra óptica o causas de fuerza mayor.</p>
+            </div>
+
+            <!-- 14 -->
+            <div class="protocol-block success">
+                <h2><i class="fas fa-file-invoice-dollar"></i> 14. POLÍTICA DE FACTURACIÓN CFDI Y FISCALIDAD</h2>
+                <p>Todos los precios publicados en Pesos Mexicanos causan el Impuesto al Valor Agregado (IVA del 16%) conforme a las leyes fiscales de México. La factura digital CFDI correspondiente se expedirá y enviará al correo del comprador los primeros días del mes inmediato posterior a la transacción o de forma automatizada a través de Stripe.</p>
+            </div>
+
+            <!-- 15 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-ban"></i> 15. POLÍTICA DE USO ACEPTABLE Y CONTENIDOS PROHIBIDOS</h2>
+                <p>Queda estrictamente prohibido utilizar los sitios web, hosting en `ikai.info` o bots de WhatsApp de ROBOTIAX para: pornografía infantil, comercialización de sustancias ilícitas, estafas financieras, esquemas piramidales, venta de armas, difamación o distribución de malware. Cualquier infracción causará la baja inmediata e irrevocable del servicio sin derecho a reembolso.</p>
+            </div>
+
+            <!-- 16 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-sync-alt"></i> 16. SUSPENSIONES POR MORA Y CANCELACIÓN DEL SERVICIO</h2>
+                <p>En servicios sujetos a mantenimiento mensual ($299/$499 MXN o licencias en USD), el atraso mayor a <strong>5 días naturales</strong> en la liquidación de la mensualidad provocará la suspensión automática del subdominio <code>.ikai.info</code> y el apagado del contenedor de WhatsApp. Transcurridos 15 días sin regularización, los archivos estáticos en R2 podrán ser eliminados definitivamente.</p>
+            </div>
+
+            <!-- 17 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-shield-alt"></i> 17. CLÁUSULA DE INDEMNIDAD CORPORATIVA</h2>
+                <p>EL CLIENTE se compromete a defender, indemnizar y mantener a salvo a ROBOTIAX, sus accionistas, directivos, ingenieros y empleados frente a cualquier demanda, juicio, sanción administrativa o multa interpuesta por terceros o autoridades (incluyendo PROFECO o INAI) originada por los productos, servicios, publicaciones o mensajes transmitidos por EL CLIENTE a través de sus sitios web o bots.</p>
+            </div>
+
+            <!-- 18 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-certificate"></i> 18. DOMINIOS Y HOSTINGS EXTERNOS</h2>
+                <p>Si el CLIENTE opta por conectar un dominio propio (ej. <code>tunegocio.com</code>) o migrar su código a servidores externos ajenos a `ikai.info`, la configuración de DNS, compra del dominio y mantenimiento del servidor externo correrán por cuenta y riesgo del CLIENTE.</p>
+            </div>
+
+            <!-- 19 -->
+            <div class="protocol-block green">
+                <h2><i class="fas fa-gamepad"></i> 19. INTEGRACIÓN DE LA SALA DE ESPERA DE MAKUMOTO</h2>
+                <p>La sala de espera interactiva y las trivias integradas en las suites se proporcionan como valor agregado tecnológico enlazado a la plataforma Makumoto. ROBOTIAX se reserva el derecho de actualizar, rotar o calibrar los retos lúdicos para mantener la estabilidad del sistema.</p>
+            </div>
+
+            <!-- 20 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-file-upload"></i> 20. RESPONSABILIDAD SOBRE ACTIVOS Y LOGOTIPOS SUBIDOS</h2>
+                <p>EL CLIENTE declara bajo protesta de decir verdad ser el legítimo titular de los derechos de autor y marcas registradas sobre los logotipos, textos e imágenes que cargue a través de `getUploadUrl` o envíe para su sitio web. ROBOTIAX no asume responsabilidad por violaciones de propiedad intelectual cometidas por el CLIENTE.</p>
+            </div>
+
+            <!-- 21 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-user-times"></i> 21. PROHIBICIÓN DE CHARGEBACKS Y DISPUTAS DE MALA FE</h2>
+                <p>Cualquier disputa bancaria o contracargo (<em>chargeback</em>) infundado abierto ante Stripe tras la entrega del sitio o de la instancia de software causará la inhabilitación inmediata de todas las suites vinculadas al CLIENTE, el bloqueo de su RFC/nombre en la pasarela de pagos y el ejercicio de las acciones mercantiles procedentes para el cobro de daños.</p>
+            </div>
+
+            <!-- 22 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-balance-scale"></i> 22. ARBITRAJE PRIVADO Y JURISDICCIÓN EN LA CIUDAD DE MÉXICO</h2>
+                <p>Toda controversia derivada de la interpretación, ejecución o incumplimiento de este contrato se resolverá de manera definitiva mediante <span class="highlight-gold">arbitraje privado en la Ciudad de México</span>, bajo las leyes mercantiles de los Estados Unidos Mexicanos, renunciando las partes a cualquier otro fuero que pudiera corresponderles por sus domicilios presentes o futuros.</p>
+            </div>
+
+            <!-- 23 -->
+            <div class="protocol-block success">
+                <h2><i class="fas fa-signature"></i> 23. VALIDEZ DE FIRMA DIGITAL CLICKWRAP Y DIVISIBILIDAD</h2>
+                <p>La pulsación del botón de compra, el pago en Stripe o el envío de formularios de personalización perfecciona el consentimiento expreso y constituye una firma electrónica plena y vinculante (<em>Clickwrap Agreement</em>). Si cualquier disposición de este contrato fuere declarada nula por un tribunal competente, dicha nulidad no invalidará las restantes cláusulas, las cuales conservarán plena fuerza legal.</p>
+            </div>
+
+            <!-- 24 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-envelope-open-text"></i> 24. CANALES OFICIALES DE ATENCIÓN Y CONTACTO SEGREGADO</h2>
+                <p>Para garantizar una atención expedita y cumplimiento estricto de los procesos corporativos, se establecen dos vías oficiales independientes:</p>
+                <ul>
+                    <li><span class="highlight-gold">Canal Jurídico Exclusivo (Notificaciones Legales, Arbitraje y Controversias):</span> Toda comunicación formal de carácter legal deberá dirigirse únicamente a: <strong class="highlight-gold" style="font-family:'Share Tech Mono';">legal@robotiax.mx</strong>.</li>
+                    <li><span class="highlight-cyan">Canal Operativo y de Soporte:</span> Para solicitudes de configuración técnica, vinculación de WhatsApp, dudas comerciales o soporte de hosting, comuníquese a: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.mx</strong> o <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">soporte@robotiax.mx</strong>.</li>
+                </ul>
+            </div>
         </div>
 
-        <div class="protocol-block">
-            <h2>01. INTEGRACIÓN DEL ECOSISTEMA Y PROCESAMIENTO</h2>
-            <p>El presente documento constituye un Contrato Digital de Adhesión. Toda transacción comercial se procesa a través de <span class="highlight">Makumoto & Robotiax Pay</span> mediante la infraestructura certificada de Stripe.</p>
-        </div>
+        <!-- =================================================================== -->
+        <!-- BLOQUE COMPLETO EN INGLÉS (ENGLISH BLOCK)                         -->
+        <!-- =================================================================== -->
+        <div id="terms-en" style="display: none;">
+            <!-- 01 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-file-contract"></i> 01. ECOSYSTEM ARCHITECTURE, SOVEREIGNTY & TIE WITH MAKUMOTO</h2>
+                <p>This instrument constitutes a <strong class="highlight-cyan">Binding Digital Adhesion Master Agreement</strong> entered into by and between the technology firm <span class="highlight-cyan">ROBOTIAX</span> (operating commercially at <code>robotiax.mx</code>), hereinafter <span class="highlight-cyan">"ROBOTIAX"</span> or <span class="highlight-cyan">"THE PROVIDER"</span>, and any natural or legal person purchasing, subscribing, or interacting with its services, hereinafter <span class="highlight-cyan">"THE CLIENT"</span> or <span class="highlight-cyan">"THE USER"</span>.</p>
+                <p>• <span class="highlight-gold">Relationship with the Makumoto Ecosystem:</span> ROBOTIAX is the sovereign patent holder, software architect, and technical custodian of the <span class="highlight-gold">MAKUMOTO</span> platform (accessible at <code>makumoto.com</code> and <code>afiliados.makumoto.com</code>). This contract independently governs web development, hosting, WhatsApp bot instances, and AI unit licenses marketed directly by ROBOTIAX.</p>
+            </div>
 
-        <div class="protocol-block" style="border-color: var(--punk);">
-            <h2>02. POLÍTICA DE NO REEMBOLSO Y AUDITORÍA TÉCNICA (30 A 90 DÍAS)</h2>
-            <p>Dada la naturaleza de los servicios de software digital, agentes de IA e infraestructura en la nube de aprovisionamiento inmediato y consumo computacional instantáneo, <span class="highlight">todas las ventas y activaciones son finales y no sujetas a reembolso automático</span>.</p>
-            <p>• Toda reclamación o aclaración excepcional deberá remitirse formalmente a <span class="highlight">legal@robotiax.mx</span>, sujetándose a un periodo de auditoría técnica y revisión de seguridad interna de un plazo de <strong>30 a 90 días hábiles</strong> para analizar el consumo de recursos de software y emitir una resolución discrecional.</p>
-        </div>
+            <!-- 02 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-credit-card"></i> 02. DELEGATED FINANCIAL PROCESSING: MAKUMOTO & ROBOTIAX PAY ON STRIPE</h2>
+                <p>All commercial transactions, subscriptions, and checkouts at ROBOTIAX are delegated to the official gateway <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>, operating over the certified banking infrastructure of <span class="highlight-cyan">STRIPE</span> (Stripe Payments Mexico / Stripe Inc.).</p>
+                <p>• Bank statements and automated digital receipts will reflect transactions under this commercial trade name.</p>
+                <p>• <span class="highlight-punk">Zero Cash Tolerance:</span> No ROBOTIAX agent or technical consultant is authorized to collect cash payments. All transactions must clear directly via Stripe's encrypted checkout.</p>
+            </div>
 
-        <div class="protocol-block">
-            <h2>03. PROPIEDAD INTELECTUAL Y PATENTES</h2>
-            <p>Todo el código, prompts de sistema de IA, diseños industriales y estructuras de seguridad desarrolladas por ROBOTIAX® son propiedad intelectual exclusiva vinculada al ecosistema Makumoto. Se otorga al cliente una licencia de uso comercial intransferible, prohibiéndose estrictamente su reventa, clonación o ingeniería inversa.</p>
-        </div>
+            <!-- 03 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-undo-alt"></i> 03. NO-REFUND POLICY & TECHNICAL AUDIT (30 TO 90 DAYS)</h2>
+                <p>Due to the live computational provisioning, immediate SaaS compilation, and real-time cloud resource consumption, <span class="highlight-punk">all software purchases, subscriptions, and activations are final and strictly non-refundable</span>.</p>
+                <p>• <span class="highlight-punk">Technical Audit Period:</span> Any exceptional claim must be formally addressed to <span class="highlight-gold">legal@robotiax.mx</span>, reserving an internal technical and financial audit window of <span class="highlight-punk">30 to 90 business days</span> to assess server consumption, transfer logs, and issue a discretionary ruling.</p>
+            </div>
 
-        <div class="protocol-block">
-            <h2>04. LIMITACIÓN DE RESPONSABILIDAD Y CANAL LEGAL</h2>
-            <p>ROBOTIAX® no se hace responsable por el mal uso de los agentes de inteligencia artificial o fallos derivados de proveedores externos como Stripe, Firebase o Vertex AI. Cualquier controversia jurídica será dirimida mediante arbitraje privado y formal en la Ciudad de México, canalizándose exclusivamente a través de: <span class="highlight">legal@robotiax.mx</span>.</p>
+            <!-- 04 -->
+            <div class="protocol-block green">
+                <h2><i class="fas fa-globe"></i> 04. DIGITAL WEB SUITES ($200 MXN + VAT) & DELIVERABLES</h2>
+                <p>Purchasing the Digital Web Suite includes a white-label mobile-responsive professional website, integrated Makumoto interactive waiting room, and a dedicated WhatsApp Bot instance provisioned on a private server.</p>
+                <p>• <span class="highlight-green">30-Day Courtesy Hosting:</span> Includes 30 (thirty) calendar days of cloud hosting at no extra charge on Cloudflare R2 under a courtesy subdomain <code>{slug}.ikai.info</code>.</p>
+                <p>• <span class="highlight-gold">Recurring Monthly Maintenance:</span> After the initial 30 days, THE CLIENT must cover monthly maintenance ($299 MXN for button bots or $499 MXN for AI conversational bots) to preserve active hosting on <code>.ikai.info</code> and keep the VPS WhatsApp bot container running.</p>
+            </div>
+
+            <!-- 05 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-desktop"></i> 05. STATIC WEB CATALOG TEMPLATES ($99 MXN)</h2>
+                <p>Purchasing catalog static templates grants a commercial license to the selected layout populated with the data entered in the form.</p>
+                <p>• Includes <strong>7 calendar days of courtesy hosting</strong> on <code>.ikai.info</code> for visual inspection. As an autonomous static product, it excludes WhatsApp bots and interactive waiting rooms unless separately contracted.</p>
+            </div>
+
+            <!-- 06 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-tools"></i> 06. "PERFECT YOUR WEB" UPGRADE ($89 MXN) & REVISIONS</h2>
+                <p>The optional *Perfect Your Web* add-on ($89 MXN) entitles THE CLIENT to incorporate <strong>up to 3 official photographs</strong> (16:9 ratio, PNG/JPG under 2 MB) and <strong>up to 5 specific modifications</strong> covering services, copy, phone numbers, or hours on their site.</p>
+                <p>• Assets must be submitted in a single consolidated package via the confirmation modal or by replying to the welcome email for execution within 24 to 72 business hours.</p>
+            </div>
+
+            <!-- 07 -->
+            <div class="protocol-block punk">
+                <h2><i class="fab fa-whatsapp"></i> 07. WHATSAPP INSTANCES (BOT.IKAI.INFO) & META DISCLAIMER</h2>
+                <p>ROBOTIAX provisions the technical container and assistant logic on <code>bot.ikai.info</code>. Phone linking operates under the sole responsibility of THE CLIENT by scanning the QR code.</p>
+                <p>• <span class="highlight-punk">Meta/WhatsApp Non-Affiliation Disclaimer:</span> ROBOTIAX does not own WhatsApp or Meta Platforms Inc. THE CLIENT agrees not to engage in mass unsolicited messaging (SPAM) or fraud. ROBOTIAX is held completely harmless if Meta suspends or bans THE CLIENT's phone number due to policy violations.</p>
+            </div>
+
+            <!-- 08 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-cogs"></i> 08. WHATSAPP BOT ONBOARDING MODALITIES</h2>
+                <p>THE CLIENT may select one of three operational onboarding paths for their WhatsApp assistant:</p>
+                <ul>
+                    <li><span class="highlight-gold">1. Courtesy Setup (Zero Cost):</span> ROBOTIAX configures baseline logic and primary parameters captured during checkout.</li>
+                    <li><span class="highlight-gold">2. Technical Self-Management:</span> Handover of an empty technical container for enterprise IT teams wanting to program their own conversational knowledge.</li>
+                    <li><span class="highlight-gold">3. Advanced Plug & Play Onboarding (+50 USD):</span> Full custom prompt engineering, complex knowledge base ingestion, and multi-turn conversational calibration handled by Robotiax engineers.</li>
+                </ul>
+            </div>
+
+            <!-- 09 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-brain"></i> 09. AI & CYBERSECURITY CATALOG IN USD</h2>
+                <p>The 30 AI units and 30 cybersecurity shields offered in US Dollars (USD) on `arsenal-completo.html` operate under monthly subscriptions.</p>
+                <p>• <span class="highlight-cyan">Informational Nature:</span> AI agents generate automated analysis powered by Google Vertex AI. They do not constitute binding advice, formal legal opinions, clinical medical diagnoses, or certified forensic audits.</p>
+            </div>
+
+            <!-- 10 -->
+            <div class="protocol-block danger" style="border-left-width: 6px;">
+                <h2><i class="fas fa-shield-virus"></i> 10. INTELLECTUAL PROPERTY & ZERO-CLONE POLICY ($10M-$50M USD)</h2>
+                <p>All source code, CSS architectures, R2 compilers, Handlebars templates, UI designs across `robotiax.mx`, and AI system prompts are exclusive proprietary trade dress of ROBOTIAX.</p>
+                <p>• Decompilation, scraping, unauthorized reselling, or extracting prompts via *Prompt Injection* or *Jailbreak* constitutes criminal theft of Trade Secrets under international treaties. Infringements trigger punitive statutory damages claims starting at <span class="highlight-punk">$10,000,000 USD up to $50,000,000 USD</span>.</p>
+            </div>
+
+            <!-- 11 -->
+            <div class="protocol-block danger">
+                <h2><i class="fas fa-child"></i> 11. STRICT ADULT RESTRICTION (M18 POLICY)</h2>
+                <p>Contracting ROBOTIAX software suites, AI tools, or digital services is restricted exclusively to legal adults aged 18 and older and legally established corporate entities. Access or purchases by minors is strictly forbidden, and accounts will be terminated without refund.</p>
+            </div>
+
+            <!-- 12 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-hand-holding-usd"></i> 12. MAXIMUM FINANCIAL LIABILITY CAPPING (30-DAY LIMIT)</h2>
+                <p>THE CLIENT agrees services are supplied on an *as is* basis. In any proven technical dispute attributable to ROBOTIAX, maximum cumulative financial liability toward THE CLIENT is <span class="highlight-cyan">strictly capped at the exact total amount paid by THE CLIENT over the preceding 30 (thirty) calendar days</span> for the affected service.</p>
+            </div>
+
+            <!-- 13 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-server"></i> 13. SERVICE LEVEL AGREEMENT (SLA) & FORCE MAJEURE</h2>
+                <p>ROBOTIAX targets 99.9% network uptime. However, relying on global third-party providers (Google Cloud, Cloudflare, IONOS, Stripe, Meta/WhatsApp), THE PROVIDER is legally held harmless from downtime resulting from foreign data center blackouts, external DDoS attacks, fiber optic cuts, or force majeure events.</p>
+            </div>
+
+            <!-- 14 -->
+            <div class="protocol-block success">
+                <h2><i class="fas fa-file-invoice-dollar"></i> 14. DIGITAL TAX INVOICING (CFDI / VAT)</h2>
+                <p>Prices listed in Mexican Pesos incur a 16% Value Added Tax (VAT) under Mexican law. Digital tax invoices are issued and dispatched during the first business days of the subsequent month or automatically via Stripe.</p>
+            </div>
+
+            <!-- 15 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-ban"></i> 15. ACCEPTABLE USE POLICY & PROHIBITED CONTENT</h2>
+                <p>Websites, `ikai.info` hostings, and WhatsApp bots may not be utilized for: child exploitation, narcotics sales, financial scams, pyramid schemes, unlicensed weapons sales, hate speech, or malware distribution. Violations trigger immediate termination without refund.</p>
+            </div>
+
+            <!-- 16 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-sync-alt"></i> 16. SUSPENSION FOR NON-PAYMENT & TERMINATION</h2>
+                <p>For recurring maintenance services ($299/$499 MXN or USD licenses), non-payment exceeding <strong>5 calendar days</strong> causes automated suspension of the `ikai.info` subdomain and WhatsApp bot container. After 15 days without settlement, static files on R2 may be permanently deleted.</p>
+            </div>
+
+            <!-- 17 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-shield-alt"></i> 17. CORPORATE INDEMNIFICATION CLAUSE</h2>
+                <p>THE CLIENT agrees to defend, indemnify, and hold harmless ROBOTIAX, its shareholders, directors, engineers, and employees against any third-party claims, lawsuits, or regulatory penalties arising from products, services, claims, or messaging distributed by THE CLIENT via their websites or bots.</p>
+            </div>
+
+            <!-- 18 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-certificate"></i> 18. THIRD-PARTY DOMAINS AND EXTERNAL HOSTING</h2>
+                <p>If THE CLIENT chooses to point a custom domain (e.g., <code>yourbrand.com</code>) or deploy code to external servers outside `ikai.info`, all DNS routing, domain renewals, and server maintenance remain the sole responsibility and cost of THE CLIENT.</p>
+            </div>
+
+            <!-- 19 -->
+            <div class="protocol-block green">
+                <h2><i class="fas fa-gamepad"></i> 19. INTEGRATION OF MAKUMOTO INTERACTIVE WAITING ROOM</h2>
+                <p>Interactive waiting rooms and trivia modules are provided as added value linked to Makumoto's infrastructure. ROBOTIAX reserves the right to calibrate or update game mechanics to ensure system stability.</p>
+            </div>
+
+            <!-- 20 -->
+            <div class="protocol-block accent">
+                <h2><i class="fas fa-file-upload"></i> 20. LIABILITY FOR CLIENT-UPLOADED ASSETS AND LOGOS</h2>
+                <p>THE CLIENT warrants that they hold lawful copyright and trademark licenses over all logos, text, and imagery uploaded via `getUploadUrl` or submitted for website custom compilation. ROBOTIAX disclaims liability for intellectual property violations committed by THE CLIENT.</p>
+            </div>
+
+            <!-- 21 -->
+            <div class="protocol-block punk">
+                <h2><i class="fas fa-user-times"></i> 21. PROHIBITION OF UNJUSTIFIED CHARGEBACKS</h2>
+                <p>Filing bad-faith chargebacks or bank payment disputes following delivery of the website or software instance triggers immediate deactivation of all connected services, permanent blacklisting, and initiation of commercial legal recovery procedures.</p>
+            </div>
+
+            <!-- 22 -->
+            <div class="protocol-block">
+                <h2><i class="fas fa-balance-scale"></i> 22. BINDING PRIVATE ARBITRATION IN MEXICO CITY</h2>
+                <p>Any dispute arising from the interpretation, performance, or breach of this contract shall be definitively settled by <span class="highlight-gold">binding private arbitration in Mexico City</span>, under Mexican commercial law. The parties waive any alternative territorial jurisdiction.</p>
+            </div>
+
+            <!-- 23 -->
+            <div class="protocol-block success">
+                <h2><i class="fas fa-signature"></i> 23. CLICKWRAP DIGITAL SIGNATURE & SEVERABILITY</h2>
+                <p>Clicking purchase buttons, completing payments via Stripe, or submitting custom configuration forms constitutes full and binding electronic execution (<em>Clickwrap Agreement</em>). If any provision is deemed unenforceable, remaining terms remain in full legal force.</p>
+            </div>
+
+            <!-- 24 -->
+            <div class="protocol-block gold">
+                <h2><i class="fas fa-envelope-open-text"></i> 24. SEGREGATED OFFICIAL COMMUNICATION CHANNELS</h2>
+                <p>To ensure strict corporate compliance and prevent inquiry dilution, two segregated communication channels are established:</p>
+                <ul>
+                    <li><span class="highlight-gold">Exclusive Legal Channel (Legal Inquiries, Arbitration & Notices):</span> All formal legal correspondence must be directed solely to: <strong class="highlight-gold" style="font-family:'Share Tech Mono';">legal@robotiax.mx</strong>.</li>
+                    <li><span class="highlight-cyan">Operations & Technical Support Channel:</span> For technical onboarding, WhatsApp bot linking, standard billing, or presale questions, contact: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.mx</strong> or <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">soporte@robotiax.mx</strong>.</li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <a href="index.html#final-footer" class="back-btn">VOLVER AL CENTRO</a>
+    <a href="index.html#final-footer" class="back-btn" title="Volver al inicio / Back to Home"><i class="fas fa-arrow-left"></i></a>
+
+    <script>
+        let currentTermsLang = localStorage.getItem('rx_terms_lang') || 'es';
+
+        function setTermsLang(lang) {
+            currentTermsLang = lang;
+            localStorage.setItem('rx_terms_lang', lang);
+
+            const isEng = (lang === 'en');
+            const blockEs = document.getElementById('terms-es');
+            const blockEn = document.getElementById('terms-en');
+            const btnEs = document.getElementById('btn-terms-es');
+            const btnEn = document.getElementById('btn-terms-en');
+            const h1 = document.getElementById('terms-title');
+            const tag = document.getElementById('terms-tagline');
+
+            if (blockEs) blockEs.style.display = isEng ? 'none' : 'block';
+            if (blockEn) blockEn.style.display = isEng ? 'block' : 'none';
+
+            if (btnEs) btnEs.className = 'lang-btn' + (!isEng ? ' active' : '');
+            if (btnEn) btnEn.className = 'lang-btn' + (isEng ? ' active' : '');
+
+            if (h1) h1.innerText = isEng ? "Global Master Service Agreement" : "Términos y Condiciones Globales de Servicio";
+            if (tag) tag.innerText = isEng ? "Digital Adhesion Contract // Global Master Terms // ROBOTIAX v2.6" : "Contrato Digital de Adhesión // Master Service Agreement // ROBOTIAX v2.6";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTermsLang(currentTermsLang);
+        });
+    </script>
 </body>
 </html>

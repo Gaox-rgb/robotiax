@@ -1660,35 +1660,14 @@ window.app.demo = {
             if (window.app.payments && window.app.payments.openModal) {
                 window.app.payments.openModal(productId, productName, 200, 'MXN');
             } else {
-                this._showToast("CONECTANDO DIRECTAMENTE CON PAYPAL...");
-
-                fetch('https://createpaypalorder-bh64qprvqa-uc.a.run.app', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Robotiax-Token': 'RBX-PRT-99-MXN-SECURE-2025'
-                    },
-                    body: JSON.stringify({
-                        productId: productId,
-                        fundingType: 'paypal',
-                        price: 200,
-                        currency: 'MXN',
-                        returnUrl: window.location.origin + window.location.pathname
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.approveUrl) {
-                        localStorage.setItem('pending_purchase_id', productId);
-                        window.location.href = data.approveUrl;
-                    } else {
-                        throw new Error("ID de orden ausente.");
-                    }
-                })
-                .catch(err => {
-                    console.error("Fallo crítico en pasarela:", err);
-                    alert("Error en conexión con PayPal. Intenta de nuevo.");
-                });
+                this._showToast("CONECTANDO CON MAKUMOTO & ROBOTIAX PAY (STRIPE)...");
+                localStorage.setItem('pending_purchase_id', productId);
+                const stripeUrl = 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true';
+                if (window.top && window.top !== window) {
+                    window.top.location.href = stripeUrl;
+                } else {
+                    window.location.href = stripeUrl;
+                }
             }
         };
 

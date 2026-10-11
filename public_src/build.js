@@ -28,7 +28,7 @@ const OBFUSCATOR_OPTIONS = {
     stringArrayShuffle: true,
     stringArrayThreshold: 0.8,
     transformObjectKeys: false,
-    unicodeEscapeSequence: true // Convierte strings a secuencias unicode indescifrables (\x61\x62)
+    unicodeEscapeSequence: false // Permite UTF-8 nativo para preservar emojis, tildes y eñes sin corrupción visual
 };
 
 function safeDeleteFile(filePath) {

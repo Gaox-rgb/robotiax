@@ -62,7 +62,7 @@ window.app.productPage = {
         const giro = parts[1] || 'salud';
 
         // 2. Elementos DOM
-        document.title = `${product.name} | ROBOTIAX®`;
+        document.title = `${product.name} | ROBOTIAX`;
         
         const catEl = document.getElementById('display-category');
         const titleEl = document.getElementById('display-title');
