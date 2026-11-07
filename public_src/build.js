@@ -224,7 +224,40 @@ async function run() {
     }
     
     await buildRecursive(SRC_DIR);
+    
+    // Generación automática de sitemap.xml para robotiax.shop
+    generateSitemap();
+
     console.log('>>> [BUILD] Compilación finalizada exitosamente.');
+}
+
+function generateSitemap() {
+    const DOMAIN = 'https://robotiax.shop';
+    if (!fs.existsSync(DIST_DIR)) return;
+
+    const files = fs.readdirSync(DIST_DIR);
+    const htmlFiles = files.filter(file => file.endsWith('.html'));
+
+    let urls = '';
+    htmlFiles.forEach(file => {
+        if (file === '404.html') return;
+
+        const pageUrl = file === 'index.html' ? `${DOMAIN}/` : `${DOMAIN}/${file}`;
+        urls += `
+  <url>
+    <loc>${pageUrl}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>${file === 'index.html' ? '1.0' : '0.8'}</priority>
+  </url>`;
+    });
+
+    const sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+
+    safeWriteFile(path.join(DIST_DIR, 'sitemap.xml'), sitemapContent.trim());
+    console.log(`[SEO] Sitemap.xml generado automáticamente (${htmlFiles.length} páginas indexadas).`);
 }
 
 run();

@@ -6,10 +6,16 @@ const handlebars = require("handlebars");
 const { defineString } = require('firebase-functions/params');
 const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
-const BASE_URL = 'https://robotiax.mx'; 
+const BASE_URL = 'https://robotiax.shop'; 
 
-// Configuración Global para v2: Obliga al emulador a reconocer la región y el mapeo
-setGlobalOptions({ region: "us-central1" });
+// Configuración Global para v2 con Techo Estricto Antidesbordamiento
+setGlobalOptions({ 
+    region: "us-central1",
+    runtime: "nodejs22",
+    maxInstances: 5,
+    concurrency: 40,
+    timeoutSeconds: 60
+});
 
 // Helper global para inyectar cabeceras CORS permisivas (incluyendo X-Robotiax-Token)
 const setCorsHeaders = (req, res) => {
@@ -42,81 +48,70 @@ const getDb = () => { if (!_db) _db = admin.firestore(); return _db; };
 let _bucket;
 const getBucket = () => { if (!_bucket) _bucket = admin.storage().bucket('robotiax.appspot.com'); return _bucket; };
 
-let vertexAIInstance;
-const getVertexAI = () => {
-    if (!vertexAIInstance) {
-        const { VertexAI } = require('@google-cloud/vertexai');
-        vertexAIInstance = new VertexAI({ 
-            project: process.env.GCLOUD_PROJECT || 'robotiax', 
-            location: 'us-central1' 
-        });
-    }
-    return vertexAIInstance;
-};
-
-// Actualización según ciclo de vida de Google (Abril 2026)
-const modelAI = 'gemini-2.5-flash';
+// Vertex AI eliminado: Dependencia innecesaria y costosa.
 
 let transporter;
-const getTransporter = () => {
-    const mailUser = defineString('MAIL_USER', { default: 'geniosdeltalento@gmail.com' });
-const mailPass = defineString('MAIL_PASS', { default: 'bcnmvqwyvfkhxpxd' });
+const mailUserParam = defineString('MAIL_USER', { default: 'geniosdeltalento@gmail.com' });
+const mailPassParam = defineString('MAIL_PASS', { default: 'bcnmvqwyvfkhxpxd' });
+const r2AccountId = defineString('R2_ACCOUNT_ID', { default: 'TU_ACCOUNT_ID_DE_CLOUDFLARE' });
+const r2AccessKeyId = defineString('R2_ACCESS_KEY_ID', { default: 'TU_ACCESS_KEY_ID_DE_R2' });
+const r2SecretAccessKey = defineString('R2_SECRET_ACCESS_KEY', { default: 'TU_SECRET_ACCESS_KEY_DE_R2' });
+const r2BucketName = defineString('R2_BUCKET_NAME', { default: 'TU_NOMBRE_DE_BUCKET_R2' });
+const stripeSecretKey = defineString('STRIPE_SECRET_KEY', { default: 'sk_live_51QS90fRtq7dI2nU3wM' });
 
-// Helper global de saneamiento para omisiones voluntarias ('NO')
 const cleanVal = (v, def = "") => {
     if (!v || typeof v !== 'string' || v.trim().toLowerCase() === 'no') return def;
     return v.trim();
 };
 
+const getTransporter = () => {
     if (!transporter) {
-        console.log("🛠️ Inicializando nuevo transporte Nodemailer...");
-        
         transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: mailUser.value(),
-                pass: mailPass.value()
+                user: mailUserParam.value(),
+                pass: mailPassParam.value()
             }
         });
     }
     return transporter;
 };
 
-// Pasarela de Pagos: Gestionada directamente vía Stripe Payment Links (Makumoto & Robotiax Pay)
-
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const r2AccountId = defineString('R2_ACCOUNT_ID', { default: 'TU_ACCOUNT_ID_DE_CLOUDFLARE' });
-const r2AccessKeyId = defineString('R2_ACCESS_KEY_ID', { default: 'TU_ACCESS_KEY_ID_DE_R2' });
-const r2SecretAccessKey = defineString('R2_SECRET_ACCESS_KEY', { default: 'TU_SECRET_ACCESS_KEY_DE_R2' });
-const r2BucketName = defineString('R2_BUCKET_NAME', { default: 'TU_NOMBRE_DE_BUCKET_R2' });
-
-const stripeSecretKey = defineString('STRIPE_SECRET_KEY', { default: 'sk_live_51QS90fRtq7dI2nU3wM' });
 
 let _s3;
 const getS3 = () => {
     if (!_s3) {
+        const accessKey = (r2AccessKeyId.value() || "").trim();
+        const secretKey = (r2SecretAccessKey.value() || "").trim();
+        if (accessKey.length !== 32 || secretKey.length !== 64) {
+            console.warn(`[CIRCUIT_BREAKER_R2]: Credenciales R2 inválidas (Key: ${accessKey.length}/32, Secret: ${secretKey.length}/64). Abortando cliente S3.`);
+            return null;
+        }
         _s3 = new S3Client({
             region: "auto",
             endpoint: `https://${r2AccountId.value()}.r2.cloudflarestorage.com`,
             credentials: {
-                accessKeyId: r2AccessKeyId.value(),
-                secretAccessKey: r2SecretAccessKey.value(),
+                accessKeyId: accessKey,
+                secretAccessKey: secretKey,
             },
         });
     }
     return _s3;
 };
 
-// La constante BASE_URL ya fue declarada previamente en la parte superior.
-
-// Función auxiliar para carga segura de assets
-
-// Función auxiliar para carga segura de assets
+// Caché en memoria para eliminar lectura repetitiva de disco y ahorrar CPU/Bandwidth
+const assetMemoryCache = new Map();
 async function loadAsset(filePath) {
+    if (assetMemoryCache.has(filePath)) {
+        return assetMemoryCache.get(filePath);
+    }
     try {
-        return await fs.readFile(path.join(__dirname, filePath), 'utf8');
+        const fullPath = path.resolve(__dirname, filePath);
+        const content = await fs.readFile(fullPath, 'utf8');
+        assetMemoryCache.set(filePath, content);
+        return content;
     } catch (e) {
-        console.warn(`Asset no encontrado: ${filePath}`);
         return "";
     }
 }
@@ -206,7 +201,7 @@ exports.generateDemo = onRequest({
                     </main>
 
                     <footer class="text-center text-[10px] text-slate-600 pb-2">
-                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: contacto@robotiax.mx
+                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: contacto@robotiax.shop
                     </footer>
 
                     <script>
@@ -273,7 +268,7 @@ exports.generateDemo = onRequest({
 
                         const localCatalogJs = await loadAsset('../public/js/catalog.js');
                         const isLocal = req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'));
-                        const domainBase = 'https://robotiax.mx';
+                        const domainBase = 'https://robotiax.shop';
 
                         if (localCatalogJs) {
                             finalHtmlWithFix = finalHtmlWithFix.replace('<script src="js/catalog.js"></script>', `<script>${localCatalogJs}</script>`);
@@ -312,22 +307,32 @@ exports.generateDemo = onRequest({
                             .replace('</head>', clientDataScript + '</head>');
 
                         if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
-                            const slug = originalHost.split('.')[0];
-                            try {
-                                console.log(`📡 [AUTO_MIGRATE]: Migrando y compilando sitio estático para R2: ${slug}.html`);
-                                const putCommand = new PutObjectCommand({
-                                    Bucket: r2BucketName.value(),
-                                    Key: `sitios/${slug}.html`,
-                                    Body: finalHtmlWithFix,
-                                    ContentType: "text/html; charset=utf-8"
-                                });
-                                await getS3().send(putCommand);
-                            } catch (r2Err) {
-                                console.error("❌ Error en auto-migración de R2:", r2Err.message);
+                            const slug = originalHost.split('.')[0].toLowerCase().trim();
+                            const reservedSubdomains = ['metrics', 'deploy', 'testing', 'status', 'bot', 'api', 'admin', 'mail', 'store', 'test'];
+                            const s3Client = getS3();
+
+                            if (reservedSubdomains.includes(slug)) {
+                                console.log(`🛑 [AUTO_MIGRATE_BYPASS]: Subdominio reservado detectado (${slug}). Auto-migración omitida.`);
+                            } else if (!s3Client) {
+                                console.warn(`⚠️ [AUTO_MIGRATE_ABORT]: Cliente S3/R2 no disponible. Subida a R2 omitida para: ${slug}.html`);
+                            } else {
+                                try {
+                                    console.log(`📡 [AUTO_MIGRATE]: Migrando y compilando sitio estático para R2: ${slug}.html`);
+                                    const putCommand = new PutObjectCommand({
+                                        Bucket: r2BucketName.value(),
+                                        Key: `sitios/${slug}.html`,
+                                        Body: finalHtmlWithFix,
+                                        ContentType: "text/html; charset=utf-8"
+                                    });
+                                    await s3Client.send(putCommand);
+                                    console.log(`✅ [AUTO_MIGRATE_SUCCESS]: Compilación y subida completada en R2 para ${slug}.html`);
+                                } catch (r2Err) {
+                                    console.error("❌ Error en auto-migración de R2:", r2Err.message);
+                                }
                             }
                         }
                             
-                        res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+                        res.set('Cache-Control', 'public, max-age=60, s-maxage=300');
                         res.set('Vary', 'X-Original-Host');
                         return res.set('Content-Type', 'text/html').status(200).send(finalHtmlWithFix);
                     }
@@ -369,14 +374,14 @@ exports.generateDemo = onRequest({
                     subheadline: "Diseño de alta conversión optimizado para resultados inmediatos.", 
                     primary_cta_text: "Agendar Ahora",
                     secondary_cta_text: "Saber Más",
-                    image: { value: "https://robotiax.mx/assets/frenzy_1.webp" }
+                    image: { value: "https://robotiax.shop/assets/frenzy_1.webp" }
                 },
                 services_section: { title: "Nuestros Servicios", services: [
                     { name: "Calidad Premium", description: "Atención especializada con estándares internacionales.", icon_class: "fa-star" },
                     { name: "Soporte 24/7", description: "Estamos contigo en cada paso del proceso.", icon_class: "fa-headset" }
                 ]},
-                about_section: { doctor_name: "Equipo Robotiax", doctor_title: "Especialistas en Despliegue", bio: "Líderes en integración de inteligencia artificial y desarrollo web de élite.", image: { value: "https://robotiax.mx/assets/frenzy_2.webp" }, stats: [{value: "10y", label: "Experiencia"}] },
-                contact_section: { headline: "Contacta con Nosotros", address: "Centro de Mando Digital", phone: "55 0000 0000", email: "contacto@robotiax.mx", copyright_text: "&copy; 2025 Robotiax Intelligence." },
+                about_section: { doctor_name: "Equipo Robotiax", doctor_title: "Especialistas en Despliegue", bio: "Líderes en integración de inteligencia artificial y desarrollo web de élite.", image: { value: "https://robotiax.shop/assets/frenzy_2.webp" }, stats: [{value: "10y", label: "Experiencia"}] },
+                contact_section: { headline: "Contacta con Nosotros", address: "Centro de Mando Digital", phone: "55 0000 0000", email: "contacto@robotiax.shop", copyright_text: "&copy; 2025 Robotiax Intelligence." },
                 seo: { title: `${folderName} | Demo`, description: "Vista previa del sistema Robotiax." }
             };
 
@@ -477,8 +482,8 @@ exports.generateDemo = onRequest({
             
             // Regex agnóstica de comillas para capturar y reescribir de forma infalible las rutas de assets
             let finalHtmlWithFix = finalHtml
-                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')")
                 .replace('</head>', cssInject + '</head>');
             
             res.set('Content-Type', 'text/html').status(200).send(finalHtmlWithFix);
@@ -525,26 +530,7 @@ exports.getUploadUrl = onRequest({ cors: true }, async (req, res) => {
     }
 });
 
-exports.getSalesAgentResponse = onRequest({ 
-    timeoutSeconds: 120, 
-    memory: "1GiB",
-    cors: true 
-}, async (req, res) => {
-    try {
-        setCorsHeaders(req, res);
-        if (req.method === 'OPTIONS') return res.status(204).send('');
-
-        if (!validarAcceso(req)) return res.status(403).json({ response: "ACCESO_DENEGADO_NUCLEO" });
-        const finalResponse = result.response.candidates[0].content.parts[0].text;
-        return res.status(200).json({ response: finalResponse });
-
-    } catch (error) {
-        console.error(">>> [FALLO CRÍTICO]:", error.message);
-        return res.status(500).json({ 
-            response: "ERROR DE PROTOCOLO: Reiniciando núcleo. ¿Requerimiento técnico?" 
-        });
-    }
-});
+// Endpoint getSalesAgentResponse eliminado (Dependencia Vertex AI erradicada)
 
 exports.submitFinalOrder = onRequest({ 
     cors: true, timeoutSeconds: 120, memory: "1GiB"     
@@ -603,12 +589,7 @@ exports.submitFinalOrder = onRequest({
 
         const isConfigurator = template.startsWith('cfg-');
         const isWebProduct = !isConfigurator && !template.startsWith('ia-') && !template.startsWith('sec-') && template !== 'nexus-drop' && template !== 'storefront-pro' && template !== 'omnicanal-elite' && !template.startsWith('rs-');
-        let vertexInstructions = "";
-
-        // Solo ejecutar Vertex AI para Agentes de Inteligencia Artificial (ia-) o de Ciberseguridad (sec-)
-        const shouldRunVertex = template.startsWith('ia-') || template.startsWith('sec-');
-
-        // Generación dinámica de credenciales de acceso para Makumoto (Declaradas antes de ser leídas)
+       // Generación dinámica de credenciales de acceso para Makumoto (Declaradas antes de ser leídas)
 const convenioCode = `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
 const tempPassword = Math.random().toString(36).substring(2, 8).toUpperCase();
 
@@ -645,28 +626,6 @@ if (isWebProduct || template.startsWith('cfg-')) {
 
 // 1. Aprovisionamiento de Hosting (Ejecución Pasiva vía Auxiliar)
 await provisionFirebaseSubdomain(negocioSlug);
-
-// 2. Generación de Reporte Técnico (Vertex AI) si aplica
-if (shouldRunVertex) {
-    try {
-        console.log(`📡 [AI_ENGINE]: Generando reporte para ${pData.name}...`);
-        const promptMaquila = `
-        ACTÚA COMO INGENIERO DE DESPLIEGUE SENIOR DE ROBOTIAX. 
-        Genera un REPORTE TÉCNICO DE ACTIVACIÓN para: ${pData.name}. CLIENTE: ${details.negocio || 'No proporcionado'}.
-        1. 🧠 NÚCLEO DE INTELIGENCIA (SYSTEM PROMPT)
-        2. ⚙️ PARÁMETROS TÉCNICOS
-        3. 📋 DOCUMENTACIÓN BÁSICA REQUERIDA
-        4. ⚡ PROTOCOLO DE IMPLEMENTACIÓN BÁSICA (< 5 MIN)
-        5. 💎 PROTOCOLO DE INSTALACIÓN AVANZADA ($50 USD)
-        6. ⏳ CRONOGRAMA AVANZADO (24H)`;
-
-        const aiResult = await getVertexAI().getGenerativeModel({ model: modelAI }).generateContent(promptMaquila);
-        vertexInstructions = aiResult.response.candidates?.[0]?.content?.parts?.[0]?.text || "Revisar manual interno.";
-    } catch (e) { 
-        console.error("❌ Error Vertex AI:", e.message);
-        vertexInstructions = "Error en generación de reporte técnico."; 
-    }
-}
 
 // FUNCIÓN AUXILIAR PARA EVITAR REPORTES DIFUSOS Y VACÍOS
 const buildFieldRow = (label, val) => {
@@ -734,12 +693,7 @@ const adminMailHtml = `
             </table>
         </div>
 
-        ${(!isWebProduct && vertexInstructions) ? `
-        <div style="background: #000; border: 2px dashed #ff003c; padding: 25px; margin-bottom: 25px;">
-            <h3 style="color: #ff003c; margin-top: 0; text-transform: uppercase; font-size: 13px;">📡 REPORTE TÉCNICO DE INTELIGENCIA VERTEX:</h3>
-            <div style="color: #ffffff; font-size: 13px; line-height: 1.6; white-space: pre-wrap; font-family: monospace;">${vertexInstructions}</div>
-        </div>` : ''}
-    </div>
+        </div>
 `;
     // REGISTRO SEGURO EN BASE DE DATOS CON CREDENCIALES E IDENTIFICADOR SLUG
     await getDb().collection('orders_to_fulfill').add({
@@ -805,8 +759,8 @@ const adminMailHtml = `
             `;
             htmlContent = htmlContent
                 .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
-                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')")
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')")
                 .replace('</head>', cssInject + '</head>');
 
         } else {
@@ -822,12 +776,12 @@ const adminMailHtml = `
                 .replace(/\+52 55 1234 5678/g, details.telefono || '+52 55 1234 5678')
                 .replace(/\$800 MXN/g, details.fee || '$800 MXN')
                 .replace(/<title>AURA-CLINIC PRO \| Centro de Mando Médico<\/title>/g, `<title>${details.negocio || 'Robotiax'} | Portal Digital</title>`)
-                .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
-                .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
-                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-                .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
-                .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
-                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+                .replace(/css\/demo_salud\.css/g, `https://robotiax.shop/css/demo_salud.css?v=${cacheBuster}`)
+                .replace(/js\/demo_salud\.js/g, `https://robotiax.shop/js/demo_salud.js?v=${cacheBuster}`)
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
+                .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.shop/css/$2"')
+                .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.shop/js/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')");
         }
 
         const putCommand = new PutObjectCommand({
@@ -900,8 +854,9 @@ const adminMailHtml = `
                 }
             });
 
-            // Promesa síncrona nativa de Node.js compatible con todas las versiones (Anti-ReferenceError)
-            const syncPromise = new Promise((resolve) => {
+            // DELEGACIÓN ASÍNCRONA: Ya no usamos 'await' para bloquear la función.
+            // La sincronización ocurre en segundo plano de forma independiente.
+            new Promise((resolve) => {
                 const reqSync = https.request("https://us-central1-makumoto-app-2026.cloudfunctions.net/syncAffiliateLicense", {
                     method: "POST",
                     headers: {
@@ -914,44 +869,27 @@ const adminMailHtml = `
                     resSync.on("data", (chunk) => { responseData += chunk; });
                     resSync.on("end", async () => {
                         if (resSync.statusCode === 200) {
-                            console.log("✅ [SYNC_SUCCESS]: Licencia sincronizada en Makumoto Core.", responseData);
+                            console.log("✅ [SYNC_SUCCESS]: Licencia sincronizada en Makumoto Core.");
                         } else {
-                            console.warn(`⚠️ [SYNC_WARN]: Makumoto Core rechazó la sincronización (${resSync.statusCode}): ${responseData}`);
-                            // Registro de contingencia ante rechazo de API
-                            await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Core rechazó sincronización (${resSync.statusCode}): ${responseData}`);
+                            await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Core rechazó: ${resSync.statusCode}`);
                         }
-                        resolve();
                     });
                 });
 
                 reqSync.on("error", async (errSync) => {
-                    console.error("❌ [SYNC_ERROR]: Fallo de conexión física al sincronizar con Makumoto:", errSync.message);
-                    await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Fallo de conexión física TCP: ${errSync.message}`);
-                    resolve();
+                    await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, errSync.message);
                 });
 
                 reqSync.write(syncPayload);
                 reqSync.end();
-            });
+            }).catch(e => console.error("❌ [SYNC_ERROR_FATAL]: Fallo en secuencia de sincronización:", e.message));
 
-            // Forzar timeout de seguridad de 5 segundos para evitar cuelgues del hilo de ejecución
-            await Promise.race([
-                syncPromise,
-                new Promise(async (resolve) => {
-                    setTimeout(async () => {
-                        console.warn("⚠️ [SYNC_TIMEOUT]: Se excedió el límite de 5 segundos al sincronizar con Makumoto.");
-                        await logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, "Exceso de tiempo límite de red (Timeout > 5s)");
-                        resolve();
-                    }, 5000);
-                })
-            ]);
-
+            console.log(`🚀 [ASYNC_SYNC]: Proceso de sincronización delegado a background para ${folio}.`);
         } catch (syncError) {
-            console.error("❌ [SYNC_ERROR_FATAL]: Fallo en secuencia de sincronización nativa:", syncError.message);
-            logFailedProvision(folio, 'MAKUMOTO_CORE_LICENSE', syncPayload, `Excepción fatal en hilo de ejecución: ${syncError.message}`);
+            console.error("❌ [SYNC_ERROR_FATAL]: Fallo bloque Try/Catch Makumoto:", syncError.message);
         }
 
-        // Cálculos precisos desglosados de cobro fiscal (Base + IVA)
+       // Cálculos precisos desglosados de cobro fiscal (Base + IVA)
         const basePriceNum = parseFloat(pData.price);
         const ivaNum = parseFloat((basePriceNum * 0.16).toFixed(2));
         const totalNum = parseFloat((basePriceNum * 1.16).toFixed(2));
@@ -960,165 +898,36 @@ const adminMailHtml = `
         let clientReceiptHtml = "";
 
         if (isWebProduct) {
-            // Plantilla de Correo de Entrega 24-72h para Compras Pasivas de $99
-            clientReceiptHtml = `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                    <h2 style="color: #3b82f6; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡PEDIDO RECIBIDO! TU PLANTILLA ESTÁ EN PRODUCCIÓN</h2>
-                    <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos registrado la adquisición de tu plantilla web estática y tus especificaciones de marca.</p>
-                    
-                    <div style="background: #eff6ff; padding: 20px; border-radius: 12px; border: 1px solid #bfdbfe; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #1e3a8a;">
-                        <p style="margin: 0; font-weight: bold; font-size: 14px; margin-bottom: 8px;">🌐 HOSTING DE CORTESÍA ACTIVO (7 DÍAS):</p>
-                        <p style="margin: 0;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #3b82f6; font-weight: bold; text-decoration: none;">https://${negocioSlug}.ikai.info</a></p>
-                        <p style="margin-top: 6px; font-size: 11px; opacity: 0.85;">* Este enlace te servirá como entorno de prueba para visualizar y validar la carga de tus datos durante el periodo de revisión.</p>
-                    </div>
-
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #333;">
-                        <p style="margin: 4px 0;"><strong>FOLIO DE PEDIDO:</strong> ${folio}</p>
-                        <p style="margin: 4px 0;"><strong>PLANTILLA ADQUIRIDA:</strong> ${pData.name}</p>
-                        <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12px 0;">
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>PRECIO BASE:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></p>
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>IVA TRASLADADO (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></p>
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between; font-size: 15px; color: #3b82f6; font-weight: bold; padding-top: 5px; border-top: 1px dashed #e2e8f0;"><span>TOTAL PROCESADO (CON IVA):</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></p>
-                    </div>
-
-                    <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155; text-align: left;">
-                        <h3 style="color: #38bdf8; margin-top: 0; font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 10px;">
-                            📋 PROCESO DE ENTREGA TÉCNICA
-                        </h3>
-                        <p style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">
-                            Al ser un producto estático de catálogo autogestionado, nuestros ingenieros maquetarán la información proporcionada de manera óptima sobre el diseño original. 
-                        </p>
-                        <p style="font-size: 12px; color: #cbd5e1; line-height: 1.6; font-weight: bold; margin-bottom: 5px;">Plazo estimado de entrega final:</p>
-                        <ul style="font-size: 12px; color: #38bdf8; line-height: 1.5; margin-left: 20px; margin-top: 0;">
-                            <li>De 24 a 72 horas hábiles contadas a partir de la confirmación de este correo.</li>
-                        </ul>
-                        <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; font-style: italic; line-height: 1.4;">
-                            * Nota: Si cuentas con logotipos o esquemas de color específicos que desees sustituir, por favor responde directamente a este correo adjuntando tus materiales en formato PNG o JPG de alta resolución.
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                        <strong>POLÍTICA DE FACTURACIÓN:</strong> Tu factura CFDI correspondiente se procesará automáticamente y te será enviada los primeros días del mes inmediato posterior.
-                    </div>
-                    <p style="font-size: 11px; color: #999; margin-top: 30px; text-align: center;">Robotiax Engine - Despliegue de Catálogo Pasivo</p>
-                </div>
-            `;
+            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #3b82f6; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡PEDIDO RECIBIDO! TU PLANTILLA ESTÁ EN PRODUCCIÓN</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos registrado la adquisición de tu plantilla web estática.</p></div>`;
         } else {
-            // Plantilla de Correo de Liberación de Suite Activa e Instancia de WhatsApp para Demos de $200
-            clientReceiptHtml = `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #333;">
-                    <h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU SUITE DE CAMPAÑA ESTÁ EN PROCESO</h2>
-                    <p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos recibido tus datos de configuración correctamente.</p>
-                    
-                    <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; border: 1px solid #bbf7d0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #14532d;">
-                        <p style="margin: 0; font-weight: bold; font-size: 14px; margin-bottom: 8px;">🌐 TU SITIO WEB PROFESIONAL YA ESTÁ EN LÍNEA:</p>
-                        <p style="margin: 0;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #16a34a; font-weight: bold; text-decoration: none;">https://${negocioSlug}.ikai.info</a></p>
-                        <p style="margin-top: 6px; font-size: 11px; opacity: 0.85;">* El bot de WhatsApp agendador se activará automáticamente al seguir el protocolo que se detalla más abajo.</p>
-                    </div>
-
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0; font-size: 13px; line-height: 1.5; color: #333;">
-                        <p style="margin: 4px 0;"><strong>FOLIO DE ACTIVACIÓN:</strong> ${folio}</p>
-                        <p style="margin: 4px 0;"><strong>PRODUCTO CONTRATADO:</strong> ${pData.name}</p>
-                        <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12px 0;">
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>PRECIO BASE:</span> <strong>$${basePriceNum.toFixed(2)} ${pData.currency}</strong></p>
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between;"><span>IVA TRASLADADO (16%):</span> <strong>$${ivaNum.toFixed(2)} ${pData.currency}</strong></p>
-                        <p style="margin: 4px 0; display: flex; justify-content: space-between; font-size: 15px; color: #16a34a; font-weight: bold; padding-top: 5px; border-top: 1px dashed #e2e8f0;"><span>TOTAL CON IVA:</span> <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong></p>
-                    </div>
-
-                    <!-- SECCIÓN UNIFICADA DE LIBERACIÓN TÉCNICA (FOTOS + PROTOCOLO) -->
-                    <div style="background: #0f172a; color: #f8fafc; padding: 25px; border-radius: 12px; margin: 25px 0; border: 1px solid #334155; text-align: left;">
-                        <h3 style="color: #38bdf8; margin-top: 0; font-size: 14px; text-transform: uppercase; font-weight: bold; border-bottom: 1px solid #334155; padding-bottom: 10px;">
-                            🛡️ PROTOCOLO DE LIBERACIÓN TÉCNICA (ACCIÓN REQUERIDA)
-                        </h3>
-                        <p style="font-size: 13px; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px;">
-                            Para proceder con la maquetación final de tu sitio web y la liberación de tu bot, <strong>es imperativo que respondas a este correo electrónico proporcionando la siguiente información en un solo mensaje:</strong>
-                        </p>
-
-                        <!-- Bloque 1: Fotos -->
-                        <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
-                            <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">📷 PARTE 1: TUS TRES FOTOGRAFÍAS OPCIONALES</p>
-                            <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Envíanos las siguientes imágenes para ilustrar tu nuevo sitio web:</p>
-                            <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-left: 20px; margin-top: 5px; margin-bottom: 8px; padding-left: 0;">
-                                <li>Foto física de tus oficinas o local comercial.</li>
-                                <li>Foto profesional de tu perfil.</li>
-                                <li>Foto tuya interactuando con clientes o colaboradores.</li>
-                            </ul>
-                            <p style="font-size: 11px; color: #64748b; font-style: italic; margin: 0; line-height: 1.3;">* Nota: En caso de no contar con alguna de estas fotos, las omitiremos en el diseño de forma limpia y minimalista.</p>
-                        </div>
-
-                        <!-- Bloque 2: Protocolo -->
-                        <div style="margin-top: 15px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">
-                            <p style="margin: 0; color: #fff; font-size: 13px; font-weight: bold;">🤖 PARTE 2: SELECCIÓN DE PROTOCOLO DE IMPLEMENTACIÓN (BOT)</p>
-                            <p style="margin: 5px 0; font-size: 12px; color: #94a3b8; line-height: 1.5;">Selecciona cuál de las siguientes tres vías deseas para la configuración y entrenamiento de tu asistente de WhatsApp:</p>
-                            
-                            <div style="margin-top: 10px; margin-bottom: 10px;">
-                                <span style="color: #fff; font-size: 11px; font-weight: bold;">1. SOPORTE DE CORTESÍA: CONFIGURACIÓN BÁSICA (SIN COSTO)</span>
-                                <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nuestra ingeniería diseñará su <em>System Instruction</em> inicial. Le solicitaremos datos básicos para configurar la lógica primaria de su bot.</p>
-                            </div>
-                            
-                            <div style="margin-bottom: 10px;">
-                                <span style="color: #fff; font-size: 11px; font-weight: bold;">2. AUTOGESTIÓN TÉCNICA (PRIVACIDAD TOTAL)</span>
-                                <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Entrega de unidad en estado base (limpia). Ideal para empresas con personal de sistemas que prefieren manejar su propia base de conocimientos por seguridad.</p>
-                            </div>
-                            
-                            <div>
-                                <span style="color: #38bdf8; font-size: 11px; font-weight: bold;">3. IMPLEMENTACIÓN AVANZADA "PLUG & PLAY" (+50 USD)</span>
-                                <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Nosotros realizamos la ingeniería de prompts, carga de conocimientos y calibración de respuesta. Reciba su Bot 100% operativo y listo para producción inmediata.</p>
-                            </div>
-                        </div>
-
-                        <!-- Bloque 3: Nota de Cierre unificada -->
-                        <div style="margin-top: 15px; font-size: 12px; color: #ff4d4d; font-weight: bold; line-height: 1.5;">
-                            ⚠️ NOTA DE LIBERACIÓN TÉCNICA: En cuanto recibamos estas tres fotografías (o la confirmación de omitirlas) junto con tu elección de protocolo en respuesta a este correo electrónico, procederemos de inmediato con la activación de tu Página Web, la puesta en marcha de tu Bot de WhatsApp de agendamiento automático y te enviaremos los datos de acceso oficiales y el manual operativo para tu Centro de Entretenimiento de sala de espera en un plazo estimado de 24 a 72 horas hábiles.
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 25px; padding: 15px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                        <strong>POLÍTICA DE FACTURACIÓN:</strong> Su factura le será enviada automáticamente los días 2 o 3 del mes inmediato posterior a su compra.
-                    </div>
-                    <p style="font-size: 11px; color: #999; margin-top: 30px; text-align: center;">Robotiax Engine - Despliegue Automatizado</p>
-                </div>
-            `;
+            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU SUITE ESTÁ ACTIVADA</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, confirmamos que tu orden de <strong>$${amountTotal} ${currency}</strong> ha sido procesada.</p></div>`;
         }
+
         const mailer = getTransporter();
 
-        // CONTROL RESILIENTE E INDEPENDIENTE DE ENVÍO DE CORREOS
-        try {
-            await mailer.sendMail({
-                from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
-                to: 'contacto@robotiax.mx',
-                replyTo: clientEmail || 'contacto@robotiax.mx',
+        Promise.all([
+            mailer.sendMail({
+                from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
+                to: 'contacto@robotiax.shop',
+                replyTo: clientEmail || 'contacto@robotiax.shop',
                 subject: `⚡ ACTIVACIÓN: ${details.negocio || 'SIN NOMBRE'} (${folio})`,
                 html: adminMailHtml
-            });
-            console.log("✅ Correo al administrador enviado correctamente a contacto@robotiax.mx.");
-        } catch (errAdmin) {
-            console.error("❌ ERROR AL ENVIAR CORREO AL ADMINISTRADOR:", errAdmin.message);
-        }
-
-        if (clientEmail) {
-            try {
-                await mailer.sendMail({
-                    from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
-                    to: clientEmail,
-                    subject: `✅ Orden Confirmada: ${folio}`,
-                    html: clientReceiptHtml
-                });
-                console.log(`✅ Correo al cliente enviado correctamente a: ${clientEmail}`);
-            } catch (errClient) {
-                console.error(`❌ ERROR AL ENVIAR CORREO AL CLIENTE (${clientEmail}):`, errClient.message);
-            }
-        } else {
-            console.warn("⚠️ No se detectó dirección de correo del cliente. Omisión de envío.");
-        }
+            }).catch(e => console.error("❌ Correo Admin Falló:", e.message)),
+            
+            clientEmail ? mailer.sendMail({
+                from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
+                to: clientEmail,
+                subject: `✅ Orden Confirmada: ${folio}`,
+                html: clientReceiptHtml
+            }).catch(e => console.error("❌ Correo Cliente Falló:", e.message)) : Promise.resolve()
+        ]);
+        console.log(`🚀 [ASYNC_MAIL]: Procesos de correo disparados para ${folio}.`);
 
         return res.status(200).json({ status: 'ok', folio: folio });
     } catch (error) {
         console.error("ERROR CRÍTICO:", error);
         return res.status(500).json({ status: 'error', message: error.message });
     }
-
-
 });
 
 // --- FUNCIONES AUXILIARES DE DESPLIEGUE (REFACTOR PASIVO) ---
@@ -1236,29 +1045,11 @@ exports.stripeWebhook = onRequest({
         let voucherUrl = oxxoDetails?.hosted_voucher_url || '';
         let voucherNumber = oxxoDetails?.number || '';
 
-        const paymentIntentId = typeof session.payment_intent === 'string' 
-            ? session.payment_intent 
-            : (session.payment_intent?.id || event.data?.object?.id || '');
-
-        if (!voucherUrl && paymentIntentId && paymentIntentId.startsWith('pi_')) {
-            try {
-                const sKey = stripeSecretKey.value();
-                if (sKey && !sKey.includes('TU_KEY')) {
-                    const piRes = await fetch(`https://api.stripe.com/v1/payment_intents/${paymentIntentId}`, {
-                        headers: { 'Authorization': `Bearer ${sKey}` }
-                    });
-                    if (piRes.ok) {
-                        const piData = await piRes.json();
-                        const details = piData.next_action?.oxxo_display_details;
-                        if (details) {
-                            voucherUrl = details.hosted_voucher_url || voucherUrl;
-                            voucherNumber = details.number || voucherNumber;
-                        }
-                    }
-                }
-            } catch (errPi) {
-                console.warn("No se pudo consultar PaymentIntent:", errPi.message);
-            }
+        // Extracción directa desde el evento de Stripe sin llamadas externas
+        const paymentIntent = event.data.object.payment_intent;
+        if (paymentIntent && paymentIntent.next_action?.oxxo_display_details) {
+            voucherUrl = paymentIntent.next_action.oxxo_display_details.hosted_voucher_url;
+            voucherNumber = paymentIntent.next_action.oxxo_display_details.number;
         }
 
         const isPaid = isCheckout && session.payment_status === 'paid';
@@ -1378,9 +1169,9 @@ exports.stripeWebhook = onRequest({
         // 1. Notificación a Soporte (Makumoto + Respaldo)
         try {
             await mailer.sendMail({
-                from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
-                to: ['contacto@robotiax.mx', 'klvenoticias@gmail.com'],
-                replyTo: targetEmail || 'contacto@robotiax.mx',
+                from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
+                to: ['contacto@robotiax.shop', 'klvenoticias@gmail.com'],
+                replyTo: targetEmail || 'contacto@robotiax.shop',
                 subject: `🚨 NUEVO PAGO STRIPE: ${clientName || effectiveBusinessName} (${folio})`,
                 html: `
                     <div style="font-family: Arial, sans-serif; background: #000; color: #00f2ff; padding: 30px; border: 2px solid #2ecc71;">
@@ -1398,7 +1189,7 @@ exports.stripeWebhook = onRequest({
                     </div>
                 `
             });
-            console.log("✅ [CORREO ADMINISTRACIÓN]: Entregado a contacto@robotiax.mx y klvenoticias@gmail.com");
+            console.log("✅ [CORREO ADMINISTRACIÓN]: Entregado a contacto@robotiax.shop y klvenoticias@gmail.com");
         } catch (mailAdminErr) {
             console.error("❌ ERROR AL ENVIAR CORREO A ADMINISTRACIÓN:", mailAdminErr.message);
         }
@@ -1410,7 +1201,7 @@ exports.stripeWebhook = onRequest({
             if (targetEmail) {
                 try {
                     await mailer.sendMail({
-                        from: '"Robotiax Intelligence" <contacto@robotiax.mx>',
+                        from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
                         to: targetEmail,
                         subject: `⏳ Vale OXXO Generado: Tu Suite se activará al pagar en tienda (${folio})`,
                         html: `
@@ -1467,8 +1258,8 @@ exports.stripeWebhook = onRequest({
                                     <a href="${voucherUrl || 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f'}" target="_blank" style="display: block; background: #00f2ff; color: #020617; padding: 12px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
                                         🖨️ VER E IMPRIMIR VALE OFICIAL EN STRIPE ➔
                                     </a>
-                                    <a href="https://robotiax.mx" target="_blank" style="display: block; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; padding: 10px; font-weight: 700; font-size: 11px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">
-                                        ❮ VOLVER A ROBOTIAX.MX
+                                    <a href="https://robotiax.shop" target="_blank" style="display: block; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; padding: 10px; font-weight: 700; font-size: 11px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">
+                                        ❮ VOLVER A robotiax.shop
                                     </a>
                                 </div>
 
@@ -1638,125 +1429,113 @@ exports.stripeWebhook = onRequest({
         // =========================================================================
         provisionFirebaseSubdomain(negocioSlug).catch(err => console.warn("Subdominio error:", err.message));
 
-        (async () => {
-            try {
-                const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
-                const rawTemplate = await fs.readFile(templatePath, 'utf8');
-                const cacheBuster = Date.now();
-                const resolvedNiche = (draftData.template || 'salud')
-                    .replace(/^cfg-/, '')
-                    .replace(/-bot(-promo)?$/, '')
-                    .replace(/-01$/, '');
+        try {
+            const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
+            const rawTemplate = await fs.readFile(templatePath, 'utf8');
+            const cacheBuster = Date.now();
+            const resolvedNiche = (draftData.template || 'salud')
+                .replace(/^cfg-/, '')
+                .replace(/-bot(-promo)?$/, '')
+                .replace(/-01$/, '');
 
-                const clientData = {
-                    negocio: effectiveBusinessName,
-                    badge: cleanVal(draftData.badge, 'ESPECIALISTA CERTIFICADO'),
-                    specialty: cleanVal(draftData.specialty, 'Giro Comercial'),
-                    tagline: cleanVal(draftData.tagline || draftData.slogan, 'Evolución y Precisión'),
-                    direccion: cleanVal(draftData.direccion, 'Atención Profesional'),
-                    horarios: cleanVal(draftData.horarios, 'Horarios Flexibles'),
-                    telefono: effectivePhone || '+52 55 1234 5678',
-                    fee: cleanVal(draftData.fee, '$800 MXN'),
-                    nicheId: resolvedNiche,
-                    isProductionSite: true
-                };
+            const clientData = {
+                negocio: effectiveBusinessName,
+                badge: cleanVal(draftData.badge, 'ESPECIALISTA CERTIFICADO'),
+                specialty: cleanVal(draftData.specialty, 'Giro Comercial'),
+                tagline: cleanVal(draftData.tagline || draftData.slogan, 'Evolución y Precisión'),
+                direccion: cleanVal(draftData.direccion, 'Atención Profesional'),
+                horarios: cleanVal(draftData.horarios, 'Horarios Flexibles'),
+                telefono: effectivePhone || '+52 55 1234 5678',
+                fee: cleanVal(draftData.fee, '$800 MXN'),
+                nicheId: resolvedNiche,
+                isProductionSite: true
+            };
 
-                const clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
+            const clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
 
-                let compiledHtml = rawTemplate
-                    // 1. Inyección de identidad y metadatos
-                    .replace('</head>', `${clientDataScript}</head>`)
-                    .replace(/<title>.*?<\/title>/g, `<title>${effectiveBusinessName} | Portal Oficial</title>`)
-                    // 2. Encabezado de marca con razón social
-                    .replace(/<span id="header-brand-title".*?<\/span>/gs, `<span id="header-brand-title" class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight">${effectiveBusinessName}</span>`)
-                    // 3. Supresión total del bloque selector de colores de demo
-                    .replace(/<div id="header-theme-picker".*?<\/div>/gs, '')
-                    // 4. Eliminación de cualquier botón de compra o modales de venta
-                    .replace(/<button[^>]*onclick="[^"]*openCloserModal[^"]*"[^>]*>.*?<\/button>/gis, '')
-                    .replace(/<button[^>]*>.*?COMPRAR WEB.*?<\/button>/gis, '')
-                    .replace(/<button[^>]*id="btn-return-catalog"[^>]*>.*?<\/button>/gis, '')
-                    .replace(/<!-- MODAL DE CIERRE DE VENTA -->.*?<!-- SCRIPTS CORE -->/gs, '<!-- SCRIPTS CORE -->')
-                    // 5. Inyección de datos directos en el Hero
-                    .replace(/Dr\. Alejandro Morales/g, effectiveBusinessName)
-                    .replace(/ESPECIALISTA CERTIFICADO/g, clientData.badge)
-                    .replace(/Nutrición Estética & Neurología Preventiva/g, clientData.specialty)
-                    .replace(/"Tu bienestar es nuestra ciencia"/g, `"${clientData.tagline}"`)
-                    .replace(/Torre Médica, Cons\. 402/g, clientData.direccion)
-                    .replace(/Lun - Vie 9am a 6pm/g, clientData.horarios)
-                    .replace(/\+52 55 1234 5678/g, clientData.telefono)
-                    .replace(/\$800 MXN/g, clientData.fee)
-                    // 6. Rutas absolutas a imágenes y assets
-                    // Sustitución directa de la imagen del hero por la del giro adquirido
-                    // Transformación de textos de venta (Demo) a lenguaje universal para el paciente/cliente (Producción)
-                    .replace(/✦ PILAR 1: RETOS EN SALA DE ESPERA \(CONSOLA CRT\) ✦/g, '✦ ZONA INTERACTIVA: RETOS Y TRIVIAS ✦')
-                    .replace(/Gamificación del Tiempo Percibido/g, 'Entrena tu Mente Mientras Esperas')
-                    .replace(/Manten a tus clientes totalmente entretenidos y <strong>reduce la percepción de espera física hasta en un 80%<\/strong>\. Retos dinámicos interactivos que estimulan la mente de tus usuarios y premian su paciencia con valiosos puntos de lealtad \(XP\) canjeables\./g, 'Aprovecha tu tiempo en nuestra sala interactiva. Responde trivias de salud y bienestar, acumula puntos de lealtad (XP) y descubre consejos prácticos preparados para ti.')
-                    .replace(/✦ PILAR 2: ORBE DE BIENESTAR Y LEALTAD ✦/g, '✦ COMUNIDAD Y BIENESTAR EN VIVO ✦')
-                    .replace(/Tu Red de Beneficios Exclusivos/g, 'Tu Espacio de Salud y Hábitos')
-                    .replace(/<strong>El epicentro de tu comunidad de pacientes\.<\/strong> Un feed social cerrado de marca blanca donde tus clientes interactúan, completan misiones de salud asignadas por ti, compiten en el ranking y monitorean sus beneficios de forma inmediata\./g, '<strong>Tu bienestar al centro de todo.</strong> Conecta con nuestra comunidad privada, descubre hábitos diarios saludables, participa en dinámicas grupales y consulta tus avances en cualquier momento.')
-                    .replace(/EXPLORAR RECOMENDACIONES EN VIVO/g, 'EXPLORAR COMUNIDAD')
-                    .replace(/✦ PILAR 3: VIDEOTECA DE ALTO IMPACTO \(TV\) ✦/g, '✦ CANAL DE SALUD Y VIDEOS CORTOS ✦')
-                    .replace(/Televisión Digital Interactiva/g, 'Cápsulas Visuales de Bienestar')
-                    .replace(/<strong>La revolución del video corto en tu sucursal\.<\/strong> Tu propia estación de televisión digital adaptada\. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad\./g, '<strong>Aprende en segundos.</strong> Contenidos en video corto de alta fidelidad con recomendaciones fisiológicas, respiración consciente y cápsulas prácticas para tu vida diaria.')
-                    .replace(/Módulos Adicionales \(Up-Sells\)/g, 'Servicios y Herramientas Digitales')
-                    .replace(/<section[^>]*id="upsell-ads-section"[^>]*>.*?<\/section>/gis, '')
-                    .replace(/PROBAR SIMULACIÓN/g, 'CONSULTAR SERVICIO')
-                    // 6. Rutas absolutas a imágenes y assets
-                    .replace(/src="[^"]*assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.mx/assets/webs/contador1.webp"' : `src="https://robotiax.mx/assets/webs/${resolvedNiche}1.webp"`)
-                    .replace(/src="assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.mx/assets/webs/contador1.webp"' : `src="https://robotiax.mx/assets/webs/${resolvedNiche}1.webp"`)
-                    .replace(/css\/demo_salud\.css/g, `https://robotiax.mx/css/demo_salud.css?v=${cacheBuster}`)
-                    .replace(/js\/demo_salud\.js/g, `https://robotiax.mx/js/demo_salud.js?v=${cacheBuster}`)
-                    .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.mx/assets/$2"')
-                    .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.mx/css/$2"')
-                    .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.mx/js/$2"')
-                    .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.mx/assets/$1')");
+            let compiledHtml = rawTemplate
+                .replace('</head>', `${clientDataScript}</head>`)
+                .replace(/<title>.*?<\/title>/g, `<title>${effectiveBusinessName} | Portal Oficial</title>`)
+                .replace(/<span id="header-brand-title".*?<\/span>/gs, `<span id="header-brand-title" class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight">${effectiveBusinessName}</span>`)
+                .replace(/<div id="header-theme-picker".*?<\/div>/gs, '')
+                .replace(/<button[^>]*onclick="[^"]*openCloserModal[^"]*"[^>]*>.*?<\/button>/gis, '')
+                .replace(/<button[^>]*>.*?COMPRAR WEB.*?<\/button>/gis, '')
+                .replace(/<button[^>]*id="btn-return-catalog"[^>]*>.*?<\/button>/gis, '')
+                .replace(/<!-- MODAL DE CIERRE DE VENTA -->.*?<!-- SCRIPTS CORE -->/gs, '<!-- SCRIPTS CORE -->')
+                .replace(/Dr\. Alejandro Morales/g, effectiveBusinessName)
+                .replace(/ESPECIALISTA CERTIFICADO/g, clientData.badge)
+                .replace(/Nutrición Estética & Neurología Preventiva/g, clientData.specialty)
+                .replace(/"Tu bienestar es nuestra ciencia"/g, `"${clientData.tagline}"`)
+                .replace(/Torre Médica, Cons\. 402/g, clientData.direccion)
+                .replace(/Lun - Vie 9am a 6pm/g, clientData.horarios)
+                .replace(/\+52 55 1234 5678/g, clientData.telefono)
+                .replace(/\$800 MXN/g, clientData.fee)
+                .replace(/✦ PILAR 1: RETOS EN SALA DE ESPERA \(CONSOLA CRT\) ✦/g, '✦ ZONA INTERACTIVA: RETOS Y TRIVIAS ✦')
+                .replace(/Gamificación del Tiempo Percibido/g, 'Entrena tu Mente Mientras Esperas')
+                .replace(/Manten a tus clientes totalmente entretenidos y <strong>reduce la percepción de espera física hasta en un 80%<\/strong>\. Retos dinámicos interactivos que estimulan la mente de tus usuarios y premian su paciencia con valiosos puntos de lealtad \(XP\) canjeables\./g, 'Aprovecha tu tiempo en nuestra sala interactiva. Responde trivias de salud y bienestar, acumula puntos de lealtad (XP) y descubre consejos prácticos preparados para ti.')
+                .replace(/✦ PILAR 2: ORBE DE BIENESTAR Y LEALTAD ✦/g, '✦ COMUNIDAD Y BIENESTAR EN VIVO ✦')
+                .replace(/Tu Red de Beneficios Exclusivos/g, 'Tu Espacio de Salud y Hábitos')
+                .replace(/<strong>El epicentro de tu comunidad de pacientes\.<\/strong> Un feed social cerrado de marca blanca donde tus clientes interactúan, completan misiones de salud asignadas por ti, compiten en el ranking y monitorean sus beneficios de forma inmediata\./g, '<strong>Tu bienestar al centro de todo.</strong> Conecta con nuestra comunidad privada, descubre hábitos diarios saludables, participa en dinámicas grupales y consulta tus avances en cualquier momento.')
+                .replace(/EXPLORAR RECOMENDACIONES EN VIVO/g, 'EXPLORAR COMUNIDAD')
+                .replace(/✦ PILAR 3: VIDEOTECA DE ALTO IMPACTO \(TV\) ✦/g, '✦ CANAL DE SALUD Y VIDEOS CORTOS ✦')
+                .replace(/Televisión Digital Interactiva/g, 'Cápsulas Visuales de Bienestar')
+                .replace(/<strong>La revolución del video corto en tu sucursal\.<\/strong> Tu propia estación de televisión digital adaptada\. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad\./g, '<strong>Aprende en segundos.</strong> Contenidos en video corto de alta fidelidad con recomendaciones fisiológicas, respiración consciente y cápsulas prácticas para tu vida diaria.')
+                .replace(/Módulos Adicionales \(Up-Sells\)/g, 'Servicios y Herramientas Digitales')
+                .replace(/<section[^>]*id="upsell-ads-section"[^>]*>.*?<\/section>/gis, '')
+                .replace(/PROBAR SIMULACIÓN/g, 'CONSULTAR SERVICIO')
+                .replace(/src="[^"]*assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
+                .replace(/src="assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
+                .replace(/css\/demo_salud\.css/g, `https://robotiax.shop/css/demo_salud.css?v=${cacheBuster}`)
+                .replace(/js\/demo_salud\.js/g, `https://robotiax.shop/js/demo_salud.js?v=${cacheBuster}`)
+                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
+                .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.shop/css/$2"')
+                .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.shop/js/$2"')
+                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')");
 
-                // Modal minimalista ultra-optimizado para móviles con los 3 pasos de activación
-                const waModalHtml = `
-                <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
-                    <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                            <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
-                                <i class="fa-brands fa-whatsapp"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0; text-transform:uppercase; letter-spacing:0.5px;">VINCULAR ASISTENTE</h3>
-                                <span style="font-size:10px; color:#64748b; font-weight:600;">PASOS PARA ACTIVACIÓN</span>
-                            </div>
+            const waModalHtml = `
+            <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
+                <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                        <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
+                            <i class="fa-brands fa-whatsapp"></i>
                         </div>
-                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
-                            <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
-                            <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
-                            <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
-                        </div>
-                        <div style="display:flex; flex-direction:column; gap:8px;">
-                            <button type="button" onclick="window.app.demo.launchWhatsAppNow()" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 12px rgba(37,211,102,0.25);">
-                                CONFIGURAR AHORA
-                            </button>
-                            <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.setProperty('display', 'none', 'important')" style="width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px; font-size:11px; font-weight:700; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
-                                CONFIGURAR DESPUÉS
-                            </button>
-                        </div>
-                        <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
-                            tech@robotiax.mx
+                        <div>
+                            <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0; text-transform:uppercase; letter-spacing:0.5px;">VINCULAR ASISTENTE</h3>
+                            <span style="font-size:10px; color:#64748b; font-weight:600;">PASOS PARA ACTIVACIÓN</span>
                         </div>
                     </div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
+                        <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
+                        <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
+                        <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button type="button" onclick="window.app.demo.launchWhatsAppNow()" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 12px rgba(37,211,102,0.25);">
+                            CONFIGURAR AHORA
+                        </button>
+                        <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.setProperty('display', 'none', 'important')" style="width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px; font-size:11px; font-weight:700; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
+                            CONFIGURAR DESPUÉS
+                        </button>
+                    </div>
+                    <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
+                        tech@robotiax.shop
+                    </div>
                 </div>
-                `;
-                if (compiledHtml.includes('<div id="wa-setup-alert-modal"')) {
-                    compiledHtml = compiledHtml.replace(/<div id="wa-setup-alert-modal"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g, waModalHtml);
-                } else {
-                    compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
-                }
-
-                await deployStaticToR2(negocioSlug, compiledHtml, r2BucketName.value());
-                console.log(`✅ [R2]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
-            } catch (r2Err) {
-                console.warn("⚠️ Advertencia R2:", r2Err.message);
+            </div>
+            `;
+            if (compiledHtml.includes('<div id="wa-setup-alert-modal"')) {
+                compiledHtml = compiledHtml.replace(/<div id="wa-setup-alert-modal"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g, waModalHtml);
+            } else {
+                compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
             }
-        })();
 
-        provisionWhatsAppGateway(negocioSlug, tempPassword).catch(err => console.warn("Gateway error:", err.message));
+            await deployStaticToR2(negocioSlug, compiledHtml, r2BucketName.value());
+            console.log(`✅ [R2]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
+        } catch (r2Err) {
+            console.warn("⚠️ Advertencia R2:", r2Err.message);
+        }
+
+        await provisionWhatsAppGateway(negocioSlug, tempPassword).catch(err => console.warn("Gateway error:", err.message));
 
         return res.status(200).json({ received: true, folio: folio });
 

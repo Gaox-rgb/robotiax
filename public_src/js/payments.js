@@ -17,8 +17,8 @@ window.app.payments = {
     },
 
     executePurchase: function(productId, price, currency) {
+        if (!window.app.editor.validateSession()) return;
         localStorage.setItem('pending_purchase_id', productId);
-        console.log("💳 [STRIPE PAY]: Redirigiendo con cupones activos para:", productId);
         
         const targetLink = this.stripeLinks.web_suite || this.stripeLinks.default;
         

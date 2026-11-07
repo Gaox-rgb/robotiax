@@ -10,17 +10,17 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://robotiax.mx/desarrollo-web.html">
+    <meta property="og:url" content="https://robotiax.shop/desarrollo-web.html">
     <meta property="og:title" content="Suite Digital de IA & Desarrollo Web | ROBOTIAX">
     <meta property="og:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp AI 24/7 + Centro de Entretenimiento de Sala de Espera por $200 MXN + IVA. Despliegue en 24h.">
-    <meta property="og:image" content="https://robotiax.mx/assets/favicon.png">
+    <meta property="og:image" content="https://robotiax.shop/assets/favicon.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://robotiax.mx/desarrollo-web.html">
+    <meta name="twitter:url" content="https://robotiax.shop/desarrollo-web.html">
     <meta name="twitter:title" content="Suite Digital de IA & Desarrollo Web | ROBOTIAX">
     <meta name="twitter:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp AI 24/7 + Centro de Entretenimiento de Sala de Espera por $200 MXN + IVA. Despliegue en 24h.">
-    <meta name="twitter:image" content="https://robotiax.mx/assets/favicon.png">
+    <meta name="twitter:image" content="https://robotiax.shop/assets/favicon.png">
 
     <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/png" href="/assets/favicon.png">
@@ -37,12 +37,12 @@
       "@context": "https://schema.org",
       "@type": "Product",
       "name": "Suite Digital de IA & Desarrollo Web ROBOTIAX",
-      "image": "https://robotiax.mx/assets/favicon.png",
+      "image": "https://robotiax.shop/assets/favicon.png",
       "description": "Página Web Profesional de Marca Blanca, Bot de WhatsApp AI 24/7 y Sala de Espera Interactiva.",
       "brand": {
         "@type": "Brand",
         "name": "ROBOTIAX",
-        "logo": "https://robotiax.mx/assets/favicon.png"
+        "logo": "https://robotiax.shop/assets/favicon.png"
       },
       "offers": {
         "@type": "Offer",
@@ -244,6 +244,14 @@
         </div>
 
         <!-- LADO DERECHO: MICRO-BARRA DE IDENTIDAD (1 SOLA LÍNEA GARANTIZADA) -->
+        <!-- BOTÓN CENTRAL ORÁCULO IA DE VENTAS (VENTANA FLOTANTE EMERGENTE) -->
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <a href="diagnostico.html" onclick="window.open('diagnostico.html', 'OraculoRobotiax', 'width=1050,height=750,menubar=no,toolbar=no,status=no,resizable=yes'); return false;" style="display: flex; align-items: center; gap: 6px; background: rgba(0, 242, 255, 0.08); border: 1px solid #00f2ff; color: #00f2ff; font-family: 'Orbitron', sans-serif; font-size: 0.58rem; font-weight: 800; padding: 5px 12px; border-radius: 20px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 12px rgba(0, 242, 255, 0.35); transition: all 0.3s ease; white-space: nowrap;" onmouseover="this.style.background='#00f2ff'; this.style.color='#020617'; this.style.boxShadow='0 0 20px #00f2ff';" onmouseout="this.style.background='rgba(0, 242, 255, 0.08)'; this.style.color='#00f2ff'; this.style.boxShadow='0 0 12px rgba(0, 242, 255, 0.35)';">
+                <span style="display: inline-block; width: 6px; height: 6px; background: #00f2ff; border-radius: 50%; box-shadow: 0 0 6px #00f2ff;"></span>
+                <span>⚡ CONSULTOR IA // ORÁCULO</span>
+            </a>
+        </div>
+
         <div id="rx-auth-dock-desarrollo" style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 12px; padding: 2px 6px; font-family: 'Poppins', sans-serif; white-space: nowrap !important; flex-shrink: 0;">
             <div id="rx-dock-guest-desarrollo" style="display: flex; align-items: center; gap: 4px;">
                 <a href="index.html" style="color: #94a3b8; font-size: 0.52rem; font-weight: 600; text-decoration: none; text-transform: uppercase;">Ingresar</a>
@@ -362,7 +370,7 @@ window.rxOpenAccount = async function() {
                             negocio: f.negocio?.stringValue || user.name || 'Mi Suite Digital',
                             productName: f.productName?.stringValue || 'Suite Digital Robotiax',
                             folio: f.orderNumber?.stringValue || 'ORD-PAGADA',
-                            url: slug ? `https://${slug}.ikai.info` : 'https://robotiax.mx'
+                            url: slug ? `https://${slug}.ikai.info` : 'https://robotiax.shop'
                         });
                     }
                 });
@@ -386,7 +394,7 @@ window.rxOpenAccount = async function() {
                         negocio: user.name || draft.negocio || `Suite ${cleanName}`,
                         productName: `Suite Digital ${cleanName}`,
                         folio: `${draftFolio}-${idx + 1}`,
-                        url: baseSlug ? `https://${baseSlug}.ikai.info` : 'https://robotiax.mx'
+                        url: baseSlug ? `https://${baseSlug}.ikai.info` : 'https://robotiax.shop'
                     });
                 }
             });
@@ -397,7 +405,7 @@ window.rxOpenAccount = async function() {
                 negocio: draft.negocio,
                 productName: 'Suite Digital Activa',
                 folio: draftFolio,
-                url: baseSlug ? `https://${baseSlug}.ikai.info` : 'https://robotiax.mx'
+                url: baseSlug ? `https://${baseSlug}.ikai.info` : 'https://robotiax.shop'
             });
         }
 
@@ -1337,7 +1345,7 @@ window.rxSubmitPerfeccionamiento = function(e) {
 
             <!-- NIVEL 2.5: CONTACTO SOPORTE -->
             <div style="margin-bottom: 15px;">
-                <a href="mailto:contacto@robotiax.mx" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: contacto@robotiax.mx</a>
+                <a href="mailto:contacto@robotiax.shop" style="color: #636e72; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; text-transform: lowercase; font-family: 'Roboto Mono', monospace; opacity: 0.85; transition: 0.3s;" onmouseover="this.style.color='#00f2ff'; this.style.opacity='1';" onmouseout="this.style.color='#636e72'; this.style.opacity='0.85';">contacto: contacto@robotiax.shop</a>
             </div>
 
             <!-- NIVEL 3: COPYRIGHT -->

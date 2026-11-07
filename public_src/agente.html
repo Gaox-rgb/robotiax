@@ -309,7 +309,7 @@
     <div class="chat-interface">
         <div class="chat-header mobile-only">
             <div id="open-menu">☰ DASHBOARD</div>
-            <div class="glow-text" style="margin-left: auto; font-size: 0.7rem; letter-spacing: 2px;">ROBOTIAX.MX</div>
+            <div class="glow-text" style="margin-left: auto; font-size: 0.7rem; letter-spacing: 2px;">robotiax.shop</div>
         </div>
         <div id="messages"></div>
         <form id="chat-form">
@@ -409,44 +409,46 @@
             input.value = '';
             showTypingIndicator();
 
-            try {
-                console.log('>>> [FRONTEND] Llamando a:', cloudFunctionUrl);
-                
-                const response = await fetch(cloudFunctionUrl, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-Robotiax-Token': 'RBX-PRT-99-MXN-SECURE-2025'
-                    },
-                    body: JSON.stringify({ 
-                        userQuery: userQuery,
-                        chatHistory: conversationHistory 
-                    })
-                });
-
-                console.log('>>> [FRONTEND] Respuesta recibida status:', response.status);
-
-                const data = await response.json();
-                
-                // Quitamos los puntos inmediatamente después de recibir CUALQUIER respuesta
+            // MOTOR LOCAL: ORÁCULO DE RECOMENDACIÓN (0 LATENCIA, 0 COSTO)
+            setTimeout(() => {
                 removeTypingIndicator();
+                
+                const q = userQuery.toLowerCase();
+                let botResponse = "";
 
-                if (!response.ok) {
-                    addMessage(`⚠️ ERROR: ${data.response || data.message || 'Error en el servidor'}`, 'agent');
-                    return;
+                // Reglas de Negocio (Expresiones Regulares)
+                if (/(legal|abogad|derecho|juridic|despacho|leyes)/.test(q)) {
+                    botResponse = "Análisis completado. Para firmas jurídicas, requieres el protocolo **Legal Services 01** combinado con un **Bot de Recepción Jurídica** para filtrar clientes 24/7.\n[SERVICIO: Suite Legal]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                } 
+                else if (/(salud|medic|doctor|clinic|dentist|psicolog|nutriolog)/.test(q)) {
+                    botResponse = "Telemetría clínica detectada. El despliegue óptimo es **Clínica Médica 01** sincronizado con el **Bot de Agenda Médica** para eliminar tiempos muertos.\n[SERVICIO: Suite Médica]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(gym|fitness|gimnasi|entrenador|crossfit|deporte)/.test(q)) {
+                    botResponse = "Análisis táctico: Tu centro requiere la **Suite Fitness y Fuerza** integrada con el Bot para entregar pases de cortesía automáticamente.\n[SERVICIO: Suite Fitness]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(contab|contador|impuestos|sat|finanzas)/.test(q)) {
+                    botResponse = "Estructura detectada. Te sugiero la **Suite de Impuestos SAT**; incluye un portal seguro y un Bot clasificador de facturas.\n[SERVICIO: Suite Contable]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(ropa|boutique|moda|vestido|zapatos)/.test(q)) {
+                    botResponse = "Para retail de moda, aplica la **Suite Boutique y Apartados**. Tu Bot actuará como un Personal Shopper reservando prendas.\n[SERVICIO: Suite Boutique]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(ferreteria|herramientas|plomeria|construccion|tlapaleria)/.test(q)) {
+                    botResponse = "Suministros pesados requiere la **Suite Ferretera e Inventario**. Automatiza cotizaciones de material por WhatsApp.\n[SERVICIO: Suite Ferretera]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(comida|restaurant|gourmet|banquete|chef|cafe|pastel)/.test(q)) {
+                    botResponse = "Sector gastronómico confirmado. Desplegaremos la **Suite Gourmet / Cafetería** con sistema de toma de pedidos o reservas de mesa.\n[SERVICIO: Suite Gastronómica]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else if (/(precio|costo|cuanto|pagar)/.test(q)) {
+                    botResponse = "Nuestra Suite Digital completa (Web Blanca + Hosting + Bot IA + Entretenimiento) tiene una inversión única de **$200.00 MXN + IVA**. Listo para operar en 24h.\n[SERVICIO: Suite Digital]\n[PRECIO: $233.00 MXN]\n[TIEMPO: 24h]";
+                }
+                else {
+                    // Fallback (Comodín)
+                    botResponse = "Mi base de datos indica que tu requerimiento es específico. ¿A qué sector pertenece tu negocio? (Ej: Médico, Legal, Restaurante, Gimnasio, Tienda...).";
                 }
 
-                addMessage(data.response, 'agent');
-
-                // ACTUALIZAR MEMORIA: Guardamos la ida y la vuelta en formato Vertex AI
-                conversationHistory.push({ role: 'user', parts: [{ text: userQuery }] });
-                conversationHistory.push({ role: 'model', parts: [{ text: data.response }] });
-
-            } catch (error) {
-                console.error('Error al conectar con el agente:', error);
-                removeTypingIndicator();
-                addMessage(`❌ ERROR CRÍTICO: ${error.message}`, 'agent');
-            }
+                addMessage(botResponse, 'agent');
+                
+            }, 800); // Simulamos 800ms de "pensamiento" para dar realismo a la IA
         });
 
         // CONTROL DE MENÚ MÓVIL

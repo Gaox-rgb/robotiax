@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Gestión del Overlay de Entrada
     window.onscroll = function() {
-        const btn = document.getElementById('btn-up');
+        const btn = window.app.ui.selectors.get('btn-up');
         if (btn) {
             btn.style.display = (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) ? "flex" : "none";
         }
@@ -54,6 +54,13 @@ window.app = window.app || {};
 
 window.app.ui = {
     selectedTemplate: { id: null, name: null },
+
+    selectors: {
+        get: (id) => document.getElementById(id),
+        title: () => document.getElementById('clinic-title'),
+        desc: () => document.getElementById('clinic-desc'),
+        fee: () => document.getElementById('meta-val-4')
+    },
 
     closeModal: function() {
         const modal = document.getElementById('payment-modal-overlay');

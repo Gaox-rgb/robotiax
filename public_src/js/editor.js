@@ -85,35 +85,16 @@ window.app.editor = {
     /**
      * Inicializa el panel de edición para una plantilla específica.
      */
-    init: function(templateId, customTitle = null) {
-        this.currentTemplateId = templateId;
-        
-        const product = window.app.catalog.ia?.find(p => p.id === templateId) || 
-                        window.app.catalog.security?.find(p => p.id === templateId) ||
-                        window.app.catalog.web?.find(p => p.id === templateId);
-
-        const resolvedName = customTitle || product?.name || this.currentProductName || "Suite Digital";
-        this.currentProductName = resolvedName;
-
-        const nameEl = document.getElementById('display-product-name');
-        const priceEl = document.getElementById('display-product-price');
-        const suiteTitleEl = document.getElementById('display-suite-title');
-
-        if(suiteTitleEl) suiteTitleEl.textContent = resolvedName.toUpperCase();
-        if(nameEl) nameEl.textContent = resolvedName;
-        if(priceEl && product) priceEl.textContent = `$${product.price} ${product.currency}`;
-        if(product) this.currentCategory = product.category;
-
+   init: function(templateId, templateName) {
+        if (!window.app.editor.validateSession()) return;
         const panel = document.getElementById('editor-panel');
-        if (panel) {
-            panel.style.setProperty('display', 'block', 'important');
-            panel.style.visibility = 'visible';
-            panel.style.opacity = '1';
-            panel.classList.add('active');
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            window.app.editor.preview();
-        }
+        if (panel) panel.classList.add('active');
+        document.getElementById('display-suite-title').textContent = templateName;
+    },
+    validateSession: function() {
+        const user = localStorage.getItem('robotiax_user');
+        if (!user) { alert("Inicia sesión primero"); return false; }
+        return JSON.parse(user);
     },
 
     /**
@@ -175,6 +156,8 @@ window.app.editor = {
     },
 
     submitOrder: async function() {
+        if (!window.app.editor.validateSession()) return;
+
         if (!this.currentTemplateId) {
             alert("❌ ERROR CRÍTICO: No se detectó ID de producto. Reinicie el proceso.");
             return;

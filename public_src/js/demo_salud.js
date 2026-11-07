@@ -341,7 +341,7 @@ window.app.demo = {
             this.cinematicPhotos = template.images.map(img => {
                 let u = img.url || '';
                 if (!u.startsWith('http://') && !u.startsWith('https://')) {
-                    u = 'https://robotiax.mx/' + u.replace(/^\/+/, '');
+                    u = 'https://robotiax.shop/' + u.replace(/^\/+/, '');
                 }
                 return { url: u };
             });
@@ -483,7 +483,7 @@ window.app.demo = {
             const params = new URLSearchParams(window.location.search);
             const originalHost = params.get('originalHost');
             const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            let baseUrl = 'https://robotiax.mx/';
+            let baseUrl = 'https://robotiax.shop/';
             if (originalHost) {
                 baseUrl = `${window.location.protocol}//${originalHost}/`;
             } else if (isLocal) {
@@ -637,7 +637,7 @@ window.app.demo = {
         }
 
         // LAS IMÁGENES SIEMPRE CARGAN DESDE EL SERVIDOR CENTRAL DE ROBOTIAX (NUNCA DEL SUBDOMINIO)
-        const baseUrl = 'https://robotiax.mx/';
+        const baseUrl = 'https://robotiax.shop/';
 
         this.cinematicPhotos = this.cinematicPhotos.map(p => {
             let fullUrl = p.url || '';
@@ -819,7 +819,7 @@ window.app.demo = {
             const params = new URLSearchParams(window.location.search);
             const originalHost = params.get('originalHost');
             const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            let baseUrl = 'https://robotiax.mx/';
+            let baseUrl = 'https://robotiax.shop/';
             if (originalHost) {
                 baseUrl = `${window.location.protocol}//${originalHost}/`;
             } else if (isLocal) {
@@ -1126,7 +1126,7 @@ window.app.demo = {
                         </button>
                     </div>
                     <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
-                        tech@robotiax.mx
+                        tech@robotiax.shop
                     </div>
                 </div>
             `;
