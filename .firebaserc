@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "robotiax"
-  }
+  },
+  "targets": {
+    "robotiax": {
+      "hosting": {
+        "app": [
+          "robotiax"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

@@ -158,6 +158,30 @@
         }
 
         /* --- LIVE STREAMING ENGINE --- */
+        /* Animación de Respiración / Zoom Elegante */
+        @keyframes pulse-zoom-smooth {
+            0%, 100% { transform: translate(-50%, 0) scale(1); }
+            50% { transform: translate(-50%, 0) scale(1.025); }
+        }
+
+        /* Cortinilla de Luz / Destello Continuo */
+        @keyframes shimmer-sweep {
+            0% { transform: translateX(-150%) skewX(-20deg); }
+            40%, 100% { transform: translateX(200%) skewX(-20deg); }
+        }
+
+        /* Tarjeta Amarillo Sólido Anti-Transparencia */
+        .solid-yellow-card {
+            background-color: #fef08a !important;
+            background: #fef08a !important;
+            opacity: 1 !important;
+            border: 3px solid #d97706 !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45) !important;
+            animation: pulse-zoom-smooth 3.5s infinite ease-in-out !important;
+            position: relative;
+            overflow: hidden;
+        }
+
         .live-stream-overlay {
             position: absolute;
             inset: 0;
@@ -302,13 +326,19 @@
             const params = new URLSearchParams(window.location.search);
             const activeId = params.get('id') || 'salud';
             const productId = `cfg-${activeId}-bot-promo`;
+            const suiteName = `Suite de ${activeId.toUpperCase()}`;
 
             if (window.app.demo && typeof window.app.demo.closeCloserModal === 'function') {
                 window.app.demo.closeCloserModal();
             }
 
-            if (window.app.editor && typeof window.app.editor.init === 'function') {
-                window.app.editor.init(productId);
+            if (window.parent && window.parent !== window && window.parent.app && window.parent.app.editor) {
+                window.parent.app.editor.init(productId, suiteName);
+                if (window.parent.app.ui && window.parent.app.ui.closeDemoVisor) {
+                    window.parent.app.ui.closeDemoVisor();
+                }
+            } else if (window.app.editor && typeof window.app.editor.init === 'function') {
+                window.app.editor.init(productId, suiteName);
             } else if (window.app.payments) {
                 window.app.payments.executePurchase(productId, 200, 'MXN');
             }
@@ -324,7 +354,12 @@
             <span id="header-brand-title" class="font-['Inter'] text-[10px] font-black text-slate-900 uppercase tracking-tight truncate block">Robotiax</span>
         </div>
         
-        <div id="header-theme-picker" class="bg-slate-50 border border-slate-200/60 px-2.5 py-1.5 rounded-xl flex justify-center items-center gap-2 shrink-0">
+        <!-- VÍNCULO LIMPIO DE COMPRA EN EL HEADER -->
+        <button type="button" onclick="triggerRobotiaxPayment()" id="header-buy-suite-btn" class="text-rose-600 hover:text-rose-700 font-['Inter'] font-black text-[10px] sm:text-xs tracking-wider uppercase underline underline-offset-4 decoration-2 shrink-0 bg-transparent border-0 cursor-pointer p-1">
+            🛒 COMPRAR WEB ($233 MXN)
+        </button>
+
+        <div id="header-theme-picker" class="bg-slate-50 border border-slate-200/60 px-2 py-1.5 rounded-xl flex justify-center items-center gap-1.5 shrink-0">
             <button type="button" onclick="window.app.demo.setTheme('blue')" class="w-3.5 h-3.5 rounded-full bg-[#abc8e2] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Azul"></button>
             <button type="button" onclick="window.app.demo.setTheme('green')" class="w-3.5 h-3.5 rounded-full bg-[#10b981] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Verde"></button>
             <button type="button" onclick="window.app.demo.setTheme('pink')" class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Rosa"></button>
@@ -372,11 +407,11 @@
                             Agenda tu cita o servicio al instante. Selecciona tu horario directamente por WhatsApp y disfruta de una atención profesional de alta precisión sin filas ni demoras.
                         </p>
                     </div>
-                    <div class="flex flex-wrap gap-3 pt-1">
-                        <button onclick="window.app.demo.toggleWhatsAppWidget()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-md shadow-blue-500/15 font-['Inter']">
-                            RESERVAR MI CITA POR WHATSAPP
+                    <div class="flex flex-wrap gap-3 pt-1 items-center">
+                        <button onclick="window.app.demo.toggleWhatsAppWidget()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-3 rounded-xl transition-all text-xs sm:text-sm shadow-md shadow-blue-500/15 font-['Inter']">
+                            PROBAR BOT WHATSAPP
                         </button>
-                        <a href="#servicios" class="px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center border" style="background: var(--bg-subcard, #ffffff); color: var(--color-text, #334155); border-color: var(--border-container, #e2e8f0);">Ver Especialidades</a>
+                        <a href="#servicios" class="px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center border" style="background: var(--bg-subcard, #ffffff); color: var(--color-text, #334155); border-color: var(--border-container, #e2e8f0);">Ver Especialidades</a>
                     </div>
                 </div>
 
@@ -719,10 +754,36 @@
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </button>
 
-    <!-- BOTÓN FLOTANTE INFERIOR VOLVER AL CATÁLOGO -->
-    <button id="btn-return-catalog" onclick="window.app.demo.returnToCatalog()" class="fixed bottom-6 left-6 bg-slate-900/90 hover:bg-slate-900 text-white font-['Inter'] font-black text-[9px] sm:text-[10px] py-3 px-4 rounded-full shadow-2xl backdrop-blur-md border border-slate-700 transition-all hover:scale-105 active:scale-95 z-[100000] flex items-center gap-2 tracking-wider uppercase">
-        <i class="fa-solid fa-arrow-left text-xs"></i> <span>VOLVER AL CATÁLOGO</span>
-    </button>
+    <!-- VENTANA INFORMATIVA AMARILLO SÓLIDO (FLOTANTE FIJA SOBRE PANTALLA) -->
+    <div id="floating-benefits-card" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background-color: #fef08a !important; border: 3px solid #d97706 !important; border-radius: 16px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 99999; box-sizing: border-box; font-family: 'Poppins', sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f59e0b; padding-bottom: 5px; margin-bottom: 8px;">
+            <div style="text-align: left;">
+                <div style="font-size: 12px; font-weight: 900; color: #000000; font-family: 'Inter', sans-serif; text-transform: uppercase; line-height: 1.1;">
+                    ¡MIRA TODO LO QUE TE LLEVAS!
+                </div>
+                <div style="font-size: 9px; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+                    LISTO Y FUNCIONANDO EN MENOS DE 24 HORAS
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('floating-benefits-card').style.display='none'" style="background: #f59e0b; color: #000000; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; text-align: left; font-size: 10.5px; color: #000000;">
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 8px; line-height: 1.25;">
+                • <strong>Página Web con tus datos:</strong> <span style="color: #dc2626; font-weight: 800;">Diseño profesional adaptado a tu marca</span>.
+            </div>
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 1.25;">
+                • <strong>Bot de WhatsApp 24/7:</strong> <span style="color: #dc2626; font-weight: 800;">Agenda citas y atiende clientes en automático</span>.
+            </div>
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 1.25;">
+                • <strong>Sala de espera interactiva:</strong> <span style="color: #dc2626; font-weight: 800;">Trivias y videos de fidelización gratis</span>.
+            </div>
+        </div>
+
+        <button type="button" onclick="triggerRobotiaxPayment()" style="width: 100%; background: #dc2626; color: #fef08a; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 9px 12px; border-radius: 10px; border: 2px solid #b91c1c; cursor: pointer; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4); letter-spacing: 0.5px;">
+            🛒 COMPRAR MI WEB Y BOT ($233 MXN)
+        </button>
+    </div>
 
     <!-- MODAL MINIMALISTA DE INSTRUCCIONES DE WHATSAPP -->
     <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">

@@ -312,12 +312,17 @@ window.app.demo = {
             });
 
             // Purgado destructivo de botones residuales en producción
-            document.querySelectorAll('button, a').forEach(el => {
-                const txt = (el.textContent || '').toUpperCase();
-                if (txt.includes('COMPRAR WEB') || txt.includes('VOLVER AL CATÁLOGO')) {
-                    el.remove();
-                }
-            });
+            const isPureDemo = window.location.hostname.includes('robotiax.shop') || window.location.search.includes('id=');
+            if (!isPureDemo) {
+                document.querySelectorAll('button, a').forEach(el => {
+                    const txt = (el.textContent || '').toUpperCase();
+                    if (txt.includes('COMPRAR WEB') || txt.includes('VOLVER AL CATÁLOGO')) {
+                        el.remove();
+                    }
+                });
+                const buyHeader = document.getElementById('header-buy-suite-btn');
+                if (buyHeader) buyHeader.remove();
+            }
 
             const headerWaBtn = document.getElementById('header-whatsapp-btn');
             if (headerWaBtn) headerWaBtn.remove();
@@ -572,13 +577,14 @@ window.app.demo = {
     // REDIRECCIÓN SEGURA E INMUNE DE ORBE (Abre el feed sintonizado en Makumoto)
     triggerAffiliateDemo: function() {
         console.log("🚀 [ORBE_EXTRACTION]: Redirigiendo al Orbe de Sintonía Profesional en Makumoto...");
-        const targetUrl = 'https://makumoto.com/?view=home&sintonia=profesional';
+        const targetUrl = 'https://makumoto.com/?affiliate=true&convenio=MAK-AURA-DEMO&demo=true&step=5';
         window.open(targetUrl, '_blank');
     },
 
     triggerVideoDemo: function() {
         console.log("🚀 [TV_EXTRACTION]: Redirigiendo a Makumoto TV Stream...");
-        window.open('https://makumoto.com/?view=tv', '_blank');
+        const targetUrl = 'https://makumoto.com/?affiliate=true&convenio=MAK-AURA-DEMO&demo=true&step=5';
+        window.open(targetUrl, '_blank');
     },
 
     setTheme: function(themeName) {
@@ -804,7 +810,7 @@ window.app.demo = {
         
         const cleanId = id.toLowerCase().trim();
 
-        const targetLink = `https://makumoto.com/?game=trivia&trivia=${encodeURIComponent(cleanId)}`;
+        const targetLink = `https://makumoto.com/?affiliate=true&convenio=MAK-AURA-DEMO&demo=true&step=5`;
         window.open(targetLink, '_blank');
     },
 

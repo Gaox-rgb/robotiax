@@ -162,7 +162,8 @@ window.app.catalog.configurator = {
     "cfg-twitter-bot": { id: "cfg-twitter-bot", name: "Bot Programador para X", price: 1499, currency: "MXN", usdEquiv: "~$85 USD", desc: "Programador estático de tweets, retweets automáticos cruzados y respuestas basadas en palabras clave rígidas." },
     "cfg-twitter-agente": { id: "cfg-twitter-agente", name: "Agente Growth Hacker para X", price: 2999, currency: "MXN", usdEquiv: "~$175 USD", desc: "Growth Hacker autónomo. Monitorea tendencias de nicho, redacta hilos virales e interactúa en cuentas grandes para monetizar." },
     "cfg-ciber-bot": { id: "cfg-ciber-bot", name: "Bot Escáner de Vulnerabilidad", price: 1499, currency: "MXN", usdEquiv: "~$85 USD", desc: "Escáner silencioso de dominios. Revisa de forma automatizada si el sitio de tu prospecto carece de cifrado SSL o protección." },
-    "cfg-ciber-agente": { id: "cfg-ciber-agente", name: "Agente Auditor de Ciberseguridad", price: 2999, currency: "MXN", usdEquiv: "~$175 USD", desc: "Consultor de ciberseguridad con IA. Audita vulnerabilidades, sugiere políticas de contraseñas y asesora en incidentes." }
+    "cfg-ciber-agente": { id: "cfg-ciber-agente", name: "Agente Auditor de Ciberseguridad", price: 2999, currency: "MXN", usdEquiv: "~$175 USD", desc: "Consultor de ciberseguridad con IA. Audita vulnerabilidades, sugiere políticas de contraseñas y asesora en incidentes." },
+    "rs-hook-arsenal": { id: "rs-hook-arsenal", name: "Hook Arsenal Pro", price: 100, currency: "MXN", usdEquiv: "~$6 USD", desc: "Software táctico de 100 ganchos virales con simulador de video en vivo, editor dinámico y matriz semanal." }
 };
 
 

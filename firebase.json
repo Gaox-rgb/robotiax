@@ -3,6 +3,7 @@
     "source": "functions"
   },
   "hosting": {
+    "site": "robotiax",
     "public": "public",
     "trailingSlash": false,
     "ignore": [
@@ -11,11 +12,9 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-  { "source": "/createPaypalOrder", "function": "createPaypalOrder" },
-  { "source": "/capturePaypalOrder", "function": "capturePaypalOrder" },
-  { "source": "/submitFinalOrder", "function": "submitFinalOrder" },
-  { "source": "/generateDemo", "function": "generateDemo" },
-  { "source": "/getUploadUrl", "function": "getUploadUrl" }
-]
+      { "source": "/submitFinalOrder", "function": "submitFinalOrder" },
+      { "source": "/generateDemo", "function": "generateDemo" },
+      { "source": "/getUploadUrl", "function": "getUploadUrl" }
+    ]
   }
 }

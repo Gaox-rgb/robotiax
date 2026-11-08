@@ -271,6 +271,79 @@
             color: #000000;
             transform: scale(1.05);
         }
+   /* MÓDULO EXCLUSIVO: HOOK ARSENAL PRO */
+        .arsenal-showcase-section {
+            padding: 90px 5%;
+            background: radial-gradient(circle at center, #1f0022 0%, #000000 100%);
+            text-align: center;
+            border-top: 2px solid var(--neon-social);
+            position: relative;
+        }
+        .arsenal-card-master {
+            background: rgba(10, 10, 10, 0.85);
+            border: 2px solid var(--neon-social);
+            border-radius: 16px;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 45px 30px;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.25), inset 0 0 25px rgba(255, 0, 255, 0.05);
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+        .badge-software {
+            display: inline-block;
+            background: rgba(0, 242, 255, 0.12);
+            color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .features-grid-arsenal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin: 35px 0;
+            text-align: left;
+        }
+        .feature-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid var(--neon-blue);
+            padding: 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .feature-box:hover {
+            border-color: var(--neon-social);
+            border-left-color: var(--neon-social);
+            background: rgba(255, 0, 255, 0.04);
+            transform: translateY(-3px);
+        }
+        .feature-box h4 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: #ffffff;
+            margin: 0 0 6px 0;
+        }
+        .feature-box p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.4;
+        }
+        .price-callout {
+            margin: 30px 0 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 
     <section class="hero-social">
@@ -351,10 +424,56 @@
             </div>
         </section>
 
-    <section class="ecommerce-teaser">
-        <h2 style="font-family: 'Orbitron'; font-size: 2.5rem;">¿LISTO PARA VENDER EN SERIO?</h2>
-        <p>Tu arsenal social necesita un destino. Próximamente: E-COMMERCE DE ÉLITE.</p>
-        <a href="desarrollo-web.html" class="btn-glitch">REGRESAR AL ARSENAL</a>
+    <section class="arsenal-showcase-section">
+        <div class="arsenal-card-master">
+            <span class="badge-software">⚡ SOFTWARE DESCARGABLE V1.0</span>
+            <h2 style="font-family: 'Orbitron', sans-serif; font-size: clamp(1.8rem, 5vw, 2.8rem); color: #fff; margin: 0; text-transform: uppercase; letter-spacing: 2px;">
+                HOOK <span style="color: var(--neon-social);">ARSENAL</span> PRO
+            </h2>
+            <p style="color: #94a3b8; font-size: 0.95rem; max-width: 680px; margin: 15px auto 0 auto; line-height: 1.6;">
+                La suite de ingeniería táctica para dominar los primeros 3 segundos de tus Reels, TikToks y YouTube Shorts. Retén la atención, destruye el scroll y llena tus videos de retención algorítmica masiva.
+            </p>
+
+            <div class="features-grid-arsenal">
+                <div class="feature-box">
+                    <h4>🎯 100 Ganchos Psicológicos</h4>
+                    <p>Subdivididos en 5 categorías tácticas probadas: Mitos, Curiosidad, Listas, Dolor y Transformación.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>📱 Simulador Visual en Vivo</h4>
+                    <p>Previsualiza con fidelidad 1:1 cómo lucirá tu texto sobre el reproductor de Reels y TikTok antes de grabar.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>⚡ Editor de Variables Dinámico</h4>
+                    <p>Reemplaza [TU NICHO] en tiempo real y visualiza tus adaptaciones sin salir de la pantalla.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>📅 Matriz Semanal de Publicación</h4>
+                    <p>Fija tus ganchos de Lunes a Domingo con persistencia de memoria local en tu dispositivo.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>💾 Exportador Táctico en 1 Clic</h4>
+                    <p>Descarga tu plan de trabajo semanal formateado en un archivo limpio listo para tu equipo o creadores.</p>
+                </div>
+                <div class="feature-box">
+                    <h4>🛡️ 100% Offline & Sin Rentas</h4>
+                    <p>Mini-App interactiva descargable. Cero pagos mensuales, cero dependencias caídas, cero latencia.</p>
+                </div>
+            </div>
+
+            <div class="price-callout">
+                <div style="font-family: 'Orbitron'; font-size: 0.85rem; color: #64748b; text-transform: uppercase;">PRECIO REGULAR: <span style="text-decoration: line-through;">$500.00 MXN</span></div>
+                <div style="font-family: 'Orbitron'; font-size: clamp(2rem, 6vw, 3rem); font-weight: 900; color: #39ff14; margin: 8px 0;">$100.00 <span style="font-size: 1rem; color: #cbd5e1;">MXN</span></div>
+                <div style="font-size: 0.75rem; color: #cbd5e1; font-family: 'Roboto Mono';">+ 16% IVA ($16.00) = <strong style="color: var(--neon-social);">$116.00 MXN Total</strong></div>
+            </div>
+
+            <button class="btn-glitch" style="background: #39ff14; color: #000; font-size: 0.85rem; width: 100%; max-width: 480px; padding: 18px;" onclick="window.app.ui.requestPurchase('rs-hook-arsenal', 'Hook Arsenal Pro', 100)">
+                ADQUIRIR Y DESCARGAR SOFTWARE ($116.00 MXN)
+            </button>
+            <div style="font-size: 0.65rem; color: #64748b; margin-top: 12px; font-family: 'Orbitron'; text-transform: uppercase; letter-spacing: 1px;">
+                ACCESO INMEDIATO • ARCHIVO .HTML LISTO PARA OPERAR
+            </div>
+        </div>
     </section>
 
 <footer id="final-footer" style="padding: 60px 20px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); margin-top: 60px;">

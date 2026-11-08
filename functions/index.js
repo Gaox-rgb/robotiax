@@ -548,7 +548,8 @@ exports.submitFinalOrder = onRequest({
             'omnicanal-elite': { name: 'Omnicanal Elite', price: 7499.00, currency: 'MXN' },
             'rs-basic': { name: 'Página Comercial FB/IG', price: 599.00, currency: 'MXN' },
             'rs-pro': { name: 'Campaña Crecimiento', price: 1749.00, currency: 'MXN' },
-            'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' }
+            'rs-elite': { name: 'Dominación Total Redes', price: 3999.00, currency: 'MXN' },
+            'rs-hook-arsenal': { name: 'Hook Arsenal Pro', price: 100.00, currency: 'MXN' }
         };
 
         const configuratorKeys = [
@@ -1293,11 +1294,45 @@ exports.stripeWebhook = onRequest({
         if (targetEmail && isPaid) {
             try {
                 console.log(`📧 [INTENTO DE ENVÍO AL CLIENTE]: Disparando hacia ${targetEmail}...`);
-                await mailer.sendMail({
-                    from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
-                    to: targetEmail,
-                    subject: `✅ ¡Tu Suite Digital está Activa! Enlace y Manual (${folio})`,
-                    html: `
+                const isHookArsenal = Boolean(draftData.template === 'rs-hook-arsenal' || (draftData.productName && draftData.productName.includes('Hook Arsenal')));
+                let emailSubject = `✅ ¡Tu Suite Digital está Activa! Enlace y Manual (${folio})`;
+                let clientEmailHtml = "";
+
+                if (isHookArsenal) {
+                    emailSubject = `⚡ Acceso Inmediato: Software Hook Arsenal Pro (${folio})`;
+                    clientEmailHtml = `
+                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #000000; color: #ffffff; border: 2px solid #00f2ff; border-radius: 12px;">
+                            <div style="text-align: center; border-bottom: 2px solid #ff00ff; padding-bottom: 15px; margin-bottom: 20px;">
+                                <h1 style="color: #00f2ff; margin: 0; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">HOOK ARSENAL PRO ACTIVADO</h1>
+                                <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">Entrega Oficial de Software Táctico</p>
+                            </div>
+
+                            <p style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos tu pago de <strong>$${amountTotal} ${currency}</strong>. Tu copia de <strong>Hook Arsenal Pro</strong> está lista para operar.</p>
+
+                            <div style="background: rgba(0, 242, 255, 0.08); border: 1px solid #00f2ff; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center;">
+                                <p style="margin: 0 0 10px 0; font-size: 12px; color: #00f2ff; font-weight: bold; text-transform: uppercase;">🚀 ACCESO DIRECTO AL SOFTWARE:</p>
+                                <a href="https://robotiax.shop/downloads/hook-arsenal.html" target="_blank" style="display: block; background: #39ff14; color: #000000; padding: 14px 20px; font-weight: 900; font-size: 13px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px;">
+                                    ABRIR Y DESCARGAR SOFTWARE AHORA ➔
+                                </a>
+                                <p style="margin: 8px 0 0 0; font-size: 10px; color: #94a3b8;">* Puedes guardar el archivo directamente en tu computadora o celular para usarlo 100% offline.</p>
+                            </div>
+
+                            <div style="background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+                                <p style="margin: 0 0 8px 0; color: #ff00ff; font-weight: bold; text-transform: uppercase;">📋 CÓMO USAR TU ARSENAL:</p>
+                                <ol style="margin: 0; padding-left: 18px;">
+                                    <li>Abre el archivo en cualquier navegador (Chrome, Safari, Edge).</li>
+                                    <li>Elige una de las 5 categorías de ganchos tácticos.</li>
+                                    <li>Adapta las áreas en cian a tu negocio y fíjalo en tu calendario semanal.</li>
+                                </ol>
+                            </div>
+
+                            <p style="font-size: 10px; color: #64748b; text-align: center; margin: 25px 0 0 0;">
+                                Folio de Transacción: ${folio} • ROBOTIAX ENGINE
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    clientEmailHtml = `
                         <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 16px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; word-break: break-word; background: #ffffff; color: #1a1a1a; border: 1px solid #e2e8f0; border-radius: 8px;">
                             
                             <!-- ENCABEZADO PRINCIPAL -->
@@ -1389,7 +1424,14 @@ exports.stripeWebhook = onRequest({
                                 ROBOTIAX Engine & Makumoto Platform — Infraestructura Digital
                             </p>
                         </div>
-                    `
+                    `;
+                }
+
+                await mailer.sendMail({
+                    from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
+                    to: targetEmail,
+                    subject: emailSubject,
+                    html: clientEmailHtml
                 });
                 console.log(`✅ [CORREO CLIENTE]: Entregado exitosamente al comprador (${targetEmail})`);
             } catch (mailClientErr) {
