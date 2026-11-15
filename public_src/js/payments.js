@@ -53,12 +53,14 @@ window.app.payments = {
         if (params.get('status') === 'success' || params.has('session_id') || params.has('client_reference_id')) {
             const pendingId = localStorage.getItem('pending_purchase_id') || 'salud';
             
-            // Persistencia inmediata de compra
+            // Persistencia inmediata de compra y registro de cuota mensual
             const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
             if (!owned.includes(pendingId)) {
                 owned.push(pendingId);
                 localStorage.setItem('makumoto_owned', JSON.stringify(owned));
             }
+            localStorage.setItem('robotiax_subscription_active', 'true');
+            localStorage.setItem('robotiax_renewal_deadline', new Date(Date.now() + 30*24*60*60*1000).toISOString());
 
             // AUTO-LOGIN: Activar sesión del comprador para que aparezca "Hola, [Nombre]"
             const draftDetails = JSON.parse(localStorage.getItem('pending_draft_details') || '{}');

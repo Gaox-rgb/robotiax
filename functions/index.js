@@ -53,10 +53,9 @@ const getBucket = () => { if (!_bucket) _bucket = admin.storage().bucket('roboti
 let transporter;
 const mailUserParam = defineString('MAIL_USER', { default: 'geniosdeltalento@gmail.com' });
 const mailPassParam = defineString('MAIL_PASS', { default: 'bcnmvqwyvfkhxpxd' });
-const r2AccountId = defineString('R2_ACCOUNT_ID', { default: 'TU_ACCOUNT_ID_DE_CLOUDFLARE' });
-const r2AccessKeyId = defineString('R2_ACCESS_KEY_ID', { default: 'TU_ACCESS_KEY_ID_DE_R2' });
-const r2SecretAccessKey = defineString('R2_SECRET_ACCESS_KEY', { default: 'TU_SECRET_ACCESS_KEY_DE_R2' });
-const r2BucketName = defineString('R2_BUCKET_NAME', { default: 'TU_NOMBRE_DE_BUCKET_R2' });
+const awsAccessKeyId = defineString('AWS_ACCESS_KEY_ID', { default: 'TUS_ACCESS_KEY_DE_AWS' });
+const awsSecretAccessKey = defineString('AWS_SECRET_ACCESS_KEY', { default: 'TUS_SECRET_KEY_DE_AWS' });
+const awsBucketName = defineString('AWS_BUCKET_NAME', { default: 'robotiax-sitios-web-2026' });
 const stripeSecretKey = defineString('STRIPE_SECRET_KEY', { default: 'sk_live_51QS90fRtq7dI2nU3wM' });
 
 const cleanVal = (v, def = "") => {
@@ -81,19 +80,12 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 let _s3;
 const getS3 = () => {
-    if (!_s3) {
-        const accessKey = (r2AccessKeyId.value() || "").trim();
-        const secretKey = (r2SecretAccessKey.value() || "").trim();
-        if (accessKey.length !== 32 || secretKey.length !== 64) {
-            console.warn(`[CIRCUIT_BREAKER_R2]: Credenciales R2 inválidas (Key: ${accessKey.length}/32, Secret: ${secretKey.length}/64). Abortando cliente S3.`);
-            return null;
-        }
+   if (!_s3) {
         _s3 = new S3Client({
-            region: "auto",
-            endpoint: `https://${r2AccountId.value()}.r2.cloudflarestorage.com`,
+            region: "us-east-2",
             credentials: {
-                accessKeyId: accessKey,
-                secretAccessKey: secretKey,
+                accessKeyId: (awsAccessKeyId.value() || "").trim(),
+                secretAccessKey: (awsSecretAccessKey.value() || "").trim(),
             },
         });
     }
@@ -319,13 +311,13 @@ exports.generateDemo = onRequest({
                                 try {
                                     console.log(`📡 [AUTO_MIGRATE]: Migrando y compilando sitio estático para R2: ${slug}.html`);
                                     const putCommand = new PutObjectCommand({
-                                        Bucket: r2BucketName.value(),
+                                        Bucket: awsBucketName.value(),
                                         Key: `sitios/${slug}.html`,
                                         Body: finalHtmlWithFix,
                                         ContentType: "text/html; charset=utf-8"
                                     });
                                     await s3Client.send(putCommand);
-                                    console.log(`✅ [AUTO_MIGRATE_SUCCESS]: Compilación y subida completada en R2 para ${slug}.html`);
+                                    console.log(`✅ [AUTO_MIGRATE_SUCCESS]: Compilación y subida completada en AWS S3 para ${slug}.html`);
                                 } catch (r2Err) {
                                     console.error("❌ Error en auto-migración de R2:", r2Err.message);
                                 }
@@ -794,8 +786,17 @@ const adminMailHtml = `
 
         await getS3().send(putCommand);
         console.log(`✅ [R2_STATIC_SUCCESS]: Archivo estático cargado exitosamente en sitios/${negocioSlug}.html`);
+    const putCommandStatic = new PutObjectCommand({
+            Bucket: awsBucketName.value(),
+            Key: `sitios/${negocioSlug}.html`,
+            Body: htmlContent,
+            ContentType: "text/html; charset=utf-8"
+        });
+
+        await getS3().send(putCommandStatic);
+        console.log(`✅ [S3_STATIC_SUCCESS]: Archivo estático cargado exitosamente en sitios/${negocioSlug}.html`);
     } catch (errStatic) {
-        console.error("❌ [R2_STATIC_ERROR]: Error compilando u hospedando sitio estático:", errStatic.message);
+        console.error("❌ [S3_STATIC_ERROR]: Error compilando u hospedando sitio estático:", errStatic.message);
     }
 
       // -------------------------------------------------------------------------
@@ -964,7 +965,7 @@ async function deployStaticToR2(negocioSlug, htmlContent, r2BucketName) {
     try {
         const { PutObjectCommand } = require("@aws-sdk/client-s3");
         const putCommand = new PutObjectCommand({
-            Bucket: r2BucketName,
+            Bucket: awsBucketName.value(),
             Key: `sitios/${negocioSlug}.html`,
             Body: htmlContent,
             ContentType: "text/html; charset=utf-8"

@@ -179,6 +179,10 @@ window.app.editor = {
             email: document.getElementById('edit-email')?.value || "",
             direccion: document.getElementById('edit-address')?.value || document.getElementById('edit-address-fiscal')?.value || "No proporcionada",
             horarios: document.getElementById('edit-hours')?.value || "No proporcionado",
+            messageCount: 0,
+            messageLimit: 100,
+            subscriptionActive: true,
+            expiresAt: new Date(Date.now() + 30*24*60*60*1000).toISOString(),
             isDraft: true,
             timestamp: new Date().toISOString()
         };

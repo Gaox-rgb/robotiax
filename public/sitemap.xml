@@ -12,6 +12,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://robotiax.shop/conect.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://robotiax.shop/demo_salud.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -38,6 +43,11 @@
   </url>
   <url>
     <loc>https://robotiax.shop/membresia-black.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robotiax.shop/panel.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

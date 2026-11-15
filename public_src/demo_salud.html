@@ -164,6 +164,12 @@
             50% { transform: translate(-50%, 0) scale(1.025); }
         }
 
+        /* Respiración suave manteniendo centrado perfecto */
+        @keyframes floating-breathe-center {
+            0%, 100% { transform: translate(-50%, 0) scale(1); }
+            50% { transform: translate(-50%, 0) scale(1.03); }
+        }
+
         /* Cortinilla de Luz / Destello Continuo */
         @keyframes shimmer-sweep {
             0% { transform: translateX(-150%) skewX(-20deg); }
@@ -356,7 +362,7 @@
         
         <!-- VÍNCULO LIMPIO DE COMPRA EN EL HEADER -->
         <button type="button" onclick="triggerRobotiaxPayment()" id="header-buy-suite-btn" class="text-rose-600 hover:text-rose-700 font-['Inter'] font-black text-[10px] sm:text-xs tracking-wider uppercase underline underline-offset-4 decoration-2 shrink-0 bg-transparent border-0 cursor-pointer p-1">
-            🛒 COMPRAR WEB ($233 MXN)
+            🛒 COMPRAR WEB ($255 MXN)
         </button>
 
         <div id="header-theme-picker" class="bg-slate-50 border border-slate-200/60 px-2 py-1.5 rounded-xl flex justify-center items-center gap-1.5 shrink-0">
@@ -781,7 +787,7 @@
         </div>
 
         <button type="button" onclick="triggerRobotiaxPayment()" style="width: 100%; background: #dc2626; color: #fef08a; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 9px 12px; border-radius: 10px; border: 2px solid #b91c1c; cursor: pointer; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4); letter-spacing: 0.5px;">
-            🛒 COMPRAR MI WEB Y BOT ($233 MXN)
+            🛒 COMPRAR MI WEB Y BOT ($255 MXN)
         </button>
     </div>
 
@@ -926,12 +932,12 @@
                 <div class="text-center my-3 bg-[#0a0f1d] border border-slate-800 p-3 rounded-xl">
                     <div class="text-slate-400 text-[9px] tracking-wider font-mono">DESGLOSE DE INSTALACIÓN Y LICENCIA:</div>
                     <div class="text-xs text-slate-300 mt-1">Precio Base: <strong>$200.00 MXN</strong> + IVA 16%: <strong>$33.00 MXN</strong></div>
-                    <div class="text-2xl font-black font-['Inter'] text-[#39ff14] mt-1">$233.00 MXN <span class="text-xs text-slate-400 font-normal">TOTAL CON IVA</span></div>
+                    <div class="text-2xl font-black font-['Inter'] text-[#39ff14] mt-1">$255.00 MXN <span class="text-xs text-slate-400 font-normal">TOTAL CON IVA</span></div>
                     <div class="text-[8px] text-slate-400 mt-1">Mantenimiento mensual de $299 MXN a partir del segundo mes | Cancela cuando quieras</div>
                 </div>
 
                 <button onclick="triggerRobotiaxPayment()" class="w-full py-3.5 rounded-xl btn-neon-green hover:scale-[1.01] active:scale-[0.99] transition-all text-[11px] tracking-widest font-black shadow-lg shadow-emerald-500/10">
-                    🚀 ACTIVAR MI WEB Y BOT ($233.00 MXN TOTAL CON IVA)
+                    🚀 ACTIVAR MI WEB Y BOT ($255.00 MXN TOTAL CON IVA)
                 </button>
                 
                 <p style="font-size: 8px;" class="text-slate-400 mt-2 italic leading-normal text-center">

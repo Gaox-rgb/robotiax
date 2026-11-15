@@ -164,6 +164,12 @@
             50% { transform: translate(-50%, 0) scale(1.025); }
         }
 
+        /* Respiración suave manteniendo centrado perfecto */
+        @keyframes floating-breathe-center {
+            0%, 100% { transform: translate(-50%, 0) scale(1); }
+            50% { transform: translate(-50%, 0) scale(1.03); }
+        }
+
         /* Cortinilla de Luz / Destello Continuo */
         @keyframes shimmer-sweep {
             0% { transform: translateX(-150%) skewX(-20deg); }
@@ -354,17 +360,17 @@
             <span id="header-brand-title" class="font-['Inter'] text-[10px] font-black text-slate-900 uppercase tracking-tight truncate block">Robotiax</span>
         </div>
         
-        <div id="header-theme-picker" class="bg-slate-50 border border-slate-200/60 px-2.5 py-1.5 rounded-xl flex justify-center items-center gap-2 shrink-0">
+        <!-- VÍNCULO LIMPIO DE COMPRA EN EL HEADER -->
+        <button type="button" onclick="triggerRobotiaxPayment()" id="header-buy-suite-btn" class="text-rose-600 hover:text-rose-700 font-['Inter'] font-black text-[10px] sm:text-xs tracking-wider uppercase underline underline-offset-4 decoration-2 shrink-0 bg-transparent border-0 cursor-pointer p-1">
+            🛒 COMPRAR WEB ($255 MXN)
+        </button>
+
+        <div id="header-theme-picker" class="bg-slate-50 border border-slate-200/60 px-2 py-1.5 rounded-xl flex justify-center items-center gap-1.5 shrink-0">
             <button type="button" onclick="window.app.demo.setTheme('blue')" class="w-3.5 h-3.5 rounded-full bg-[#abc8e2] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Azul"></button>
             <button type="button" onclick="window.app.demo.setTheme('green')" class="w-3.5 h-3.5 rounded-full bg-[#10b981] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Verde"></button>
             <button type="button" onclick="window.app.demo.setTheme('pink')" class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Rosa"></button>
             <button type="button" onclick="window.app.demo.setTheme('purple')" class="w-3.5 h-3.5 rounded-full bg-[#a855f7] border border-slate-300 focus:outline-none hover:scale-110 transition-transform" title="Morado"></button>
         </div>
-    </div>
-
-   <button type="button" onclick="triggerRobotiaxPayment()" id="header-buy-suite-btn" class="bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 text-white font-['Inter'] font-black text-[9px] sm:text-[10px] px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-md shadow-emerald-500/20 active:scale-95 transition-all shrink-0">
-            🚀 COMPRAR SUITE ($233 MXN)
-        </button>
     </div>
 
    <!-- CONTENEDOR PRINCIPAL -->
@@ -754,34 +760,34 @@
         <i class="fa-brands fa-whatsapp text-2xl"></i>
     </button>
 
-    <!-- CARD FLOTANTE AMARILLO SÓLIDO 100% OPACO (CERO TRANSPARENCIAS, CERO TRASLAPES) -->
-    <div id="floating-benefits-card" class="solid-yellow-card fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] sm:w-full max-w-[430px] p-4 rounded-3xl z-[95000] font-['Poppins']">
-        <div class="flex items-center justify-between border-b-2 border-amber-500/40 pb-2 mb-2.5">
-            <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-2xl bg-amber-300 text-amber-950 flex items-center justify-center text-base shadow border border-amber-500 font-black">⚡</span>
-                <div class="text-left">
-                    <h4 class="font-black text-xs sm:text-sm text-slate-950 font-['Inter'] tracking-tight uppercase leading-tight">¡MIRA TODO LO QUE TE LLEVAS!</h4>
-                    <span class="text-[9px] text-amber-950 block leading-tight font-extrabold mt-0.5">Listo y funcionando en tu celular en menos de 24h</span>
+    <!-- VENTANA INFORMATIVA AMARILLO SÓLIDO (FLOTANTE FIJA SOBRE PANTALLA) -->
+    <div id="floating-benefits-card" style="position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background-color: #fef08a !important; border: 3px solid #d97706 !important; border-radius: 16px; padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 99999; box-sizing: border-box; font-family: 'Poppins', sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f59e0b; padding-bottom: 5px; margin-bottom: 8px;">
+            <div style="text-align: left;">
+                <div style="font-size: 12px; font-weight: 900; color: #000000; font-family: 'Inter', sans-serif; text-transform: uppercase; line-height: 1.1;">
+                    ¡MIRA TODO LO QUE TE LLEVAS!
+                </div>
+                <div style="font-size: 9px; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+                    LISTO Y FUNCIONANDO EN MENOS DE 24 HORAS
                 </div>
             </div>
-            <button onclick="document.getElementById('floating-benefits-card').remove()" class="w-6 h-6 rounded-full bg-amber-300 hover:bg-rose-600 text-amber-950 hover:text-white flex items-center justify-center text-xs font-black transition-all shadow shrink-0" title="Cerrar">&times;</button>
+            <button type="button" onclick="document.getElementById('floating-benefits-card').style.display='none'" style="background: #f59e0b; color: #000000; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
         </div>
-        <div class="space-y-2 text-[11px] text-slate-950 mb-3.5 text-left font-medium">
-            <div class="flex items-center gap-2.5 bg-[#fef9c3] border-2 border-amber-300 px-3 py-2 rounded-2xl shadow-sm">
-                <span class="text-amber-600 font-black text-sm shrink-0">🚀</span>
-                <span class="leading-snug"><strong>Página Web con tus datos:</strong> Diseño moderno y profesional adaptado a tu marca.</span>
+
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; text-align: left; font-size: 10.5px; color: #000000;">
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 8px; line-height: 1.25;">
+                • <strong>Página Web con tus datos:</strong> <span style="color: #dc2626; font-weight: 800;">Diseño profesional adaptado a tu marca</span>.
             </div>
-            <div class="flex items-center gap-2.5 bg-[#fef9c3] border-2 border-amber-300 px-3 py-2 rounded-2xl shadow-sm">
-                <span class="text-emerald-700 font-black text-sm shrink-0">💬</span>
-                <span class="leading-snug"><strong>Bot de WhatsApp 24/7:</strong> Agenda citas y atiende pacientes sin que tengas que responder.</span>
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 1.25;">
+                • <strong>Bot de WhatsApp 24/7:</strong> <span style="color: #dc2626; font-weight: 800;">Agenda citas y atiende clientes en automático</span>.
             </div>
-            <div class="flex items-center gap-2.5 bg-[#fef9c3] border-2 border-amber-300 px-3 py-2 rounded-2xl shadow-sm">
-                <span class="text-purple-700 font-black text-sm shrink-0">🎮</span>
-                <span class="leading-snug"><strong>Sala de espera interactiva:</strong> Retos, comunidad privada y videos de fidelización gratis.</span>
+            <div style="background: #fef9c3; border: 1px solid #f59e0b; padding: 5px 8px; border-radius: 1.25;">
+                • <strong>Sala de espera interactiva:</strong> <span style="color: #dc2626; font-weight: 800;">Trivias y videos de fidelización gratis</span>.
             </div>
         </div>
-        <button onclick="triggerRobotiaxPayment()" class="w-full py-3.5 bg-[#e11d48] hover:bg-[#be123c] text-white font-['Inter'] font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-rose-600/40 active:scale-95 transition-all">
-            🛒 COMPRAR MI WEB Y BOT ($233 MXN)
+
+        <button type="button" onclick="triggerRobotiaxPayment()" style="width: 100%; background: #dc2626; color: #fef08a; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; padding: 9px 12px; border-radius: 10px; border: 2px solid #b91c1c; cursor: pointer; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4); letter-spacing: 0.5px;">
+            🛒 COMPRAR MI WEB Y BOT ($255 MXN)
         </button>
     </div>
 
@@ -926,12 +932,12 @@
                 <div class="text-center my-3 bg-[#0a0f1d] border border-slate-800 p-3 rounded-xl">
                     <div class="text-slate-400 text-[9px] tracking-wider font-mono">DESGLOSE DE INSTALACIÓN Y LICENCIA:</div>
                     <div class="text-xs text-slate-300 mt-1">Precio Base: <strong>$200.00 MXN</strong> + IVA 16%: <strong>$33.00 MXN</strong></div>
-                    <div class="text-2xl font-black font-['Inter'] text-[#39ff14] mt-1">$233.00 MXN <span class="text-xs text-slate-400 font-normal">TOTAL CON IVA</span></div>
+                    <div class="text-2xl font-black font-['Inter'] text-[#39ff14] mt-1">$255.00 MXN <span class="text-xs text-slate-400 font-normal">TOTAL CON IVA</span></div>
                     <div class="text-[8px] text-slate-400 mt-1">Mantenimiento mensual de $299 MXN a partir del segundo mes | Cancela cuando quieras</div>
                 </div>
 
                 <button onclick="triggerRobotiaxPayment()" class="w-full py-3.5 rounded-xl btn-neon-green hover:scale-[1.01] active:scale-[0.99] transition-all text-[11px] tracking-widest font-black shadow-lg shadow-emerald-500/10">
-                    🚀 ACTIVAR MI WEB Y BOT ($233.00 MXN TOTAL CON IVA)
+                    🚀 ACTIVAR MI WEB Y BOT ($255.00 MXN TOTAL CON IVA)
                 </button>
                 
                 <p style="font-size: 8px;" class="text-slate-400 mt-2 italic leading-normal text-center">
