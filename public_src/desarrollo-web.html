@@ -726,35 +726,50 @@ window.rxSubmitPerfeccionamiento = function(e) {
             <h1>TU SUITE DIGITAL PROFESIONAL.<br>DESDE $255.00 MXN/MES.</h1>
             <p style="margin-bottom: 20px;">Infraestructura esencial para operar sin fricción técnica. Tu paquete base incluye tres pilares integrados:</p>
             
-            <!-- Segmentación Visual de los 3 Pilares -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; max-width: 1040px; margin: 0 auto; text-align: left;">
-                <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 10px; padding: 16px;">
+            <!-- Segmentación Visual de los 3 Pilares en 1 Sola Línea Horizontal -->
+            <style>
+                .rx-pilares-3col {
+                    display: grid !important;
+                    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                    gap: 14px !important;
+                    max-width: 1060px !important;
+                    margin: 0 auto !important;
+                    text-align: left !important;
+                }
+                @media (max-width: 768px) {
+                    .rx-pilares-3col {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+            </style>
+            <div class="rx-pilares-3col">
+                <div style="background: rgba(8, 16, 36, 0.88); border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 10px; padding: 14px 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                        <span style="background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.75rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
-                        <strong style="color: #ffffff; font-size: 0.82rem; text-transform: uppercase;">Página Web Profesional</strong>
+                        <span style="background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.72rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</span>
+                        <strong style="color: #ffffff; font-size: 0.80rem; text-transform: uppercase;">Página Web Profesional</strong>
                     </div>
-                    <p style="font-size: 0.74rem; color: #94a3b8; margin: 0; line-height: 1.5;">Subdominio a tu nombre o marca en <code>.ikai.info</code> con Hosting de alta velocidad incluido por 30 días.</p>
+                    <p style="font-size: 0.73rem; color: #94a3b8; margin: 0; line-height: 1.45;">Subdominio propio en <code>.ikai.info</code> con Hosting de alta velocidad incluido por 30 días.</p>
                 </div>
 
-                <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(37, 211, 102, 0.35); border-radius: 10px; padding: 16px;">
+                <div style="background: rgba(8, 16, 36, 0.88); border: 1px solid rgba(37, 211, 102, 0.4); border-radius: 10px; padding: 14px 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                        <span style="background: #25d366; color: #020617; font-weight: 900; font-size: 0.75rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
-                        <strong style="color: #ffffff; font-size: 0.82rem; text-transform: uppercase;">Bot de WhatsApp 24/7</strong>
+                        <span style="background: #25d366; color: #020617; font-weight: 900; font-size: 0.72rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</span>
+                        <strong style="color: #ffffff; font-size: 0.80rem; text-transform: uppercase;">Bot de WhatsApp 24/7</strong>
                     </div>
-                    <p style="font-size: 0.74rem; color: #94a3b8; margin: 0; line-height: 1.5;">Informa servicios, da precios y agenda citas en automático, cediendo prioridad humana (Hand-off de 2 min).</p>
+                    <p style="font-size: 0.73rem; color: #94a3b8; margin: 0; line-height: 1.45;">Informa servicios, da precios y agenda citas en automático con prioridad humana (Hand-off de 2 min).</p>
                 </div>
 
-                <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 10px; padding: 16px;">
+                <div style="background: rgba(8, 16, 36, 0.88); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 10px; padding: 14px 16px;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                        <span style="background: #a855f7; color: #ffffff; font-weight: 900; font-size: 0.75rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
-                        <strong style="color: #ffffff; font-size: 0.82rem; text-transform: uppercase;">Centro de Entretenimiento</strong>
+                        <span style="background: #a855f7; color: #ffffff; font-weight: 900; font-size: 0.72rem; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</span>
+                        <strong style="color: #ffffff; font-size: 0.80rem; text-transform: uppercase;">Centro de Entretenimiento</strong>
                     </div>
-                    <p style="font-size: 0.74rem; color: #94a3b8; margin: 0; line-height: 1.5;">Trivias y dinámicas interactivas en sala de espera para entretener y fidelizar a tus clientes mientras esperan.</p>
+                    <p style="font-size: 0.73rem; color: #94a3b8; margin: 0; line-height: 1.45;">Trivias y dinámicas interactivas en sala de espera para entretener y retener a tus clientes mientras esperan.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Comparativa de Mercado -->
+        <!-- Comparativa de Mercado con Tipografía Limpia y Clara -->
         <section style="width: 100%; max-width: 1040px; margin: 18px auto 28px; padding: 0 16px;">
             <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 14px; padding: 20px; overflow-x: auto;">
                 <h3 style="margin: 0 0 12px; text-align: center; color: #00f2ff !important; font-size: 0.95rem; text-transform: uppercase;">Comparativa Real: ¿Cuánto cuesta armar esto por separado vs. ROBOTIAX?</h3>
@@ -771,7 +786,11 @@ window.rxSubmitPerfeccionamiento = function(e) {
                         <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Bot WhatsApp 24/7 + Bandeja Chats</td><td style="padding: 8px; color: #fda4af;">$1,500 – $2,800/mes</td><td style="padding: 8px; color: #4ade80;">✓ Incluido + Hand-off 2 min</td></tr>
                         <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Agenda Citas + CRM Clientes + Ventas + Inventario + Corte 8 PM</td><td style="padding: 8px; color: #fda4af;">$1,800 – $3,500/mes</td><td style="padding: 8px; color: #4ade80;">✓ Solo +$200 o +$300 con ERP</td></tr>
                         <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Secretaria / Auxiliar de Captura</td><td style="padding: 8px; color: #fda4af;">$7,500 – $10,000/mes</td><td style="padding: 8px; color: #4ade80;">✓ Automatizado $0 nómina</td></tr>
-                        <tr><td style="padding: 10px 8px; font-weight: 800; color: #ffffff;">TOTAL MENSUAL REAL</td><td style="padding: 10px 8px; font-weight: 800; color: #ff003c;">+$11,200 a $16,700 MXN/mes</td><td style="padding: 10px 8px; font-weight: 900; color: #39ff14;">Desde $255.00 MXN/mes ($455 con ERP)</td></tr>
+                        <tr>
+                            <td style="padding: 10px 8px; font-weight: 700; color: #ffffff;">TOTAL MENSUAL REAL</td>
+                            <td style="padding: 10px 8px; font-weight: 700; color: #ff003c;">+$11,200 a $16,700 MXN/mes</td>
+                            <td style="padding: 10px 8px; font-weight: 600; color: #39ff14; font-size: 0.82rem; letter-spacing: 0.2px;">Desde $255.00 MXN/mes ($455 con ERP)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -1008,15 +1027,20 @@ window.rxSubmitPerfeccionamiento = function(e) {
 
     </section> <!-- CIERRE DE pricing-container -->    
 
-    <div style="width: 100%; max-width: 1100px; margin: 24px auto 36px; padding: 0 16px; text-align: center; box-sizing: border-box;">
-        <a href="catalogo-24.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 32px; background: #00f2ff !important; color: #000000 !important; font-weight: 900 !important; border-radius: 10px; font-size: clamp(0.75rem, 2.3vw, 0.92rem); text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; box-shadow: 0 0 35px rgba(0,242,255,0.6); border: 2px solid #ffffff;">
+   <div style="width: 100%; max-width: 1100px; margin: 30px auto 0; padding: 0 16px; text-align: center; box-sizing: border-box;">
+        <a href="catalogo-24.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 32px; background: #00f2ff !important; color: #000000 !important; font-weight: 900 !important; border-radius: 10px; font-size: clamp(0.75rem, 2.3vw, 0.92rem); text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; box-shadow: 0 0 35px rgba(0,242,255,0.55); border: 2px solid #ffffff;">
             <span style="color: #000000 !important; font-weight: 900 !important; text-shadow: none !important;">🔍 CONOCER LAS 24 PLANTILLAS POR GIRO</span>
             <span style="color: #000000 !important; font-weight: 900 !important; font-size: 1.1rem; text-shadow: none !important;">➔</span>
         </a>
+    </div>
+
+    <!-- Divisor Espaciador de Separación Limpia -->
+    <div style="width: 100%; max-width: 1040px; margin: 55px auto 40px; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(0, 242, 255, 0.3) 50%, transparent 100%);"></div>
+
     <!-- ================================================================= -->
     <!-- MÓDULO A: ACELERACIÓN COMERCIAL Y AUTOMATIZACIÓN TOTAL PYME       -->
     <!-- ================================================================= -->
-    <section style="width: 100%; max-width: 1040px; margin: 0 auto 24px; padding: 0 16px;">
+    <section style="width: 100%; max-width: 1040px; margin: 0 auto 28px; padding: 0 16px;">
         <div style="background: linear-gradient(135deg, rgba(8, 16, 36, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); border: 2px solid #00f2ff; border-radius: 16px; padding: 26px 20px; box-shadow: 0 0 40px rgba(0, 242, 255, 0.2); position: relative; overflow: hidden;">
             <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px;">
                 <div style="max-width: 720px; text-align: left;">
