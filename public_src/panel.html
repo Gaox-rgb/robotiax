@@ -511,28 +511,21 @@
                     <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">Todos los planes incluyen tu web en ikai.info, sala de entretenimiento y Bot de WhatsApp 24/7 con Hand-off de 2 minutos. Envío de videos deshabilitado.</p>
                 </div>
 
-                <div style="display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
-                    <div style="display: inline-flex; background: #040914; border: 1px solid rgba(148,163,184,0.3); border-radius: 10px; padding: 4px; gap: 4px;">
-                        <button id="panel-btn-erp-off" type="button" onclick="window.app.panel.togglePanelErp(false)" style="padding: 8px 14px; border-radius: 7px; border: none; background: #00f2ff; color: #020617; font-size: 0.72rem; font-weight: 800; cursor: pointer;">⚡ Solo Web + Bot WhatsApp</button>
-                        <button id="panel-btn-erp-on" type="button" onclick="window.app.panel.togglePanelErp(true)" style="padding: 8px 14px; border-radius: 7px; border: none; background: transparent; color: #39ff14; font-size: 0.72rem; font-weight: 800; cursor: pointer;">💼 Con ERP PyME + Corte 8 PM</button>
-                    </div>
-                </div>
-
+                <h3 style="margin: 18px 0 6px; font-size: 0.92rem; color: #00f2ff; text-transform: uppercase; text-align: center;">1. Planes Solo Web + Bot WhatsApp 24/7</h3>
                 <div class="rx-plans-grid">
                     <div class="rx-plan-card">
                         <div>
                             <div style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Plan Básico</div>
-                            <div id="p-price-100" class="rx-plan-price">$255.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
-                            <div id="p-iva-100" class="rx-plan-iva">Subtotal: $219.83 + IVA (16%): $35.17 MXN</div>
+                            <div class="rx-plan-price">$255.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $219.83 + IVA (16%): $35.17 MXN</div>
                             <ul class="rx-plan-list">
                                 <li>✓ Hasta <strong>100 mensajes/mes</strong> (entrantes + salientes)</li>
                                 <li>✓ Alertas automáticas en mensajes 80, 90 y 97</li>
                                 <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
                                 <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
-                                <li id="p-erp-100" style="display:none; color:#4ade80;">✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
                             </ul>
                         </div>
-                        <button id="p-btn-100" type="button" onclick="window.app.panel.openStripePlan('PLAN_100')" class="rx-plan-btn" style="background: rgba(148, 163, 184, 0.16); color: #ffffff; border: 1px solid rgba(148, 163, 184, 0.35);">
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100')" class="rx-plan-btn" style="background: rgba(148, 163, 184, 0.16); color: #ffffff; border: 1px solid rgba(148, 163, 184, 0.35);">
                             Renovar Plan 100 ($255 MXN)
                         </button>
                     </div>
@@ -540,17 +533,16 @@
                     <div class="rx-plan-card">
                         <div>
                             <div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8; text-transform: uppercase;">Plan Crecimiento</div>
-                            <div id="p-price-300" class="rx-plan-price">$500.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
-                            <div id="p-iva-300" class="rx-plan-iva">Subtotal: $431.03 + IVA (16%): $68.97 MXN</div>
+                            <div class="rx-plan-price">$500.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $431.03 + IVA (16%): $68.97 MXN</div>
                             <ul class="rx-plan-list">
                                 <li>✓ Hasta <strong>300 mensajes/mes</strong> (entrantes + salientes)</li>
                                 <li>✓ Alertas automáticas al 80%, 90% y 97%</li>
                                 <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
                                 <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
-                                <li id="p-erp-300" style="display:none; color:#4ade80;">✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
                             </ul>
                         </div>
-                        <button id="p-btn-300" type="button" onclick="window.app.panel.openStripePlan('PLAN_300')" class="rx-plan-btn" style="background: #38bdf8; color: #020617;">
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_300')" class="rx-plan-btn" style="background: #38bdf8; color: #020617;">
                             Subir a 300 Mensajes ($500 MXN)
                         </button>
                     </div>
@@ -559,18 +551,72 @@
                         <span class="rx-popular-badge">⭐ Más Popular • Mejor Valor</span>
                         <div>
                             <div style="font-size: 0.78rem; font-weight: 900; color: #00f2ff; text-transform: uppercase;">Plan Élite Ilimitado</div>
-                            <div id="p-price-unl" class="rx-plan-price" style="color: #00f2ff;">$599.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
-                            <div id="p-iva-unl" class="rx-plan-iva">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
+                            <div class="rx-plan-price" style="color: #00f2ff;">$599.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
                             <ul class="rx-plan-list">
                                 <li>✓ <strong>MENSAJES ILIMITADOS</strong> (entrantes + salientes)</li>
                                 <li>✓ Cero cortes por volumen durante todo tu mes</li>
                                 <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
                                 <li>✓ Chat en vivo 24/7 + Hand-off de 2 minutos</li>
-                                <li id="p-erp-unl" style="display:none; color:#4ade80;">✓ <strong>ERP PyME Full:</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
                             </ul>
                         </div>
-                        <button id="p-btn-unl" type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED')" class="rx-plan-btn" style="background: #00f2ff; color: #020617;">
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED')" class="rx-plan-btn" style="background: #00f2ff; color: #020617;">
                             Activar Plan Ilimitado ($599 MXN) ➔
+                        </button>
+                    </div>
+                </div>
+
+                <h3 style="margin: 28px 0 6px; font-size: 0.92rem; color: #4ade80; text-transform: uppercase; text-align: center;">2. Planes Completos con ERP PyME + Corte de Caja Diario 8:00 PM</h3>
+                <div class="rx-plans-grid">
+                    <div class="rx-plan-card" style="border-color: rgba(57, 255, 20, 0.35);">
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 800; color: #4ade80; text-transform: uppercase;">Plan Básico + ERP PyME</div>
+                            <div class="rx-plan-price">$455.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $392.24 + IVA (16%): $62.76 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Web + Sala + Bot <strong>100 mensajes/mes</strong></li>
+                                <li>✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas y Ventas</li>
+                                <li>✓ <strong>Inventario</strong> con alertas de stock mínimo</li>
+                                <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100_ERP')" class="rx-plan-btn" style="background: rgba(57,255,20,0.14); color: #4ade80; border: 1px solid #39ff14;">
+                            Activar Básico + ERP ($455 MXN)
+                        </button>
+                    </div>
+
+                    <div class="rx-plan-card" style="border-color: rgba(57, 255, 20, 0.45);">
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 800; color: #39ff14; text-transform: uppercase;">Plan Crecimiento + ERP PyME</div>
+                            <div class="rx-plan-price">$800.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $689.66 + IVA (16%): $110.34 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Web + Sala + Bot <strong>300 mensajes/mes</strong></li>
+                                <li>✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas y Ventas</li>
+                                <li>✓ <strong>Inventario</strong> con alertas de stock mínimo</li>
+                                <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_300_ERP')" class="rx-plan-btn" style="background: #39ff14; color: #020617;">
+                            Activar 300 + ERP ($800 MXN)
+                        </button>
+                    </div>
+
+                    <div class="rx-plan-card featured" style="border-color: #ffd700;">
+                        <span class="rx-popular-badge" style="background: #ffd700;">👑 Máxima Potencia PyME</span>
+                        <div>
+                            <div style="font-size: 0.78rem; font-weight: 900; color: #ffd700; text-transform: uppercase;">Plan Élite Ilimitado + ERP</div>
+                            <div class="rx-plan-price" style="color: #ffd700;">$1,598.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $1,377.59 + IVA (16%): $220.41 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Web + Sala + Bot <strong>MENSAJES ILIMITADOS</strong></li>
+                                <li>✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas y Ventas</li>
+                                <li>✓ <strong>Inventario</strong> + Reportes de quién vendió más</li>
+                                <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED_ERP')" class="rx-plan-btn" style="background: #ffd700; color: #020617;">
+                            Activar Ilimitado + ERP ($1,598 MXN) ➔
                         </button>
                     </div>
                 </div>

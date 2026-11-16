@@ -151,15 +151,14 @@ window.app.ui = {
     },
 
     selectPlan: function(baseTag) {
-        const suffix = this.erpModeEnabled ? '_ERP' : '';
-        const finalTag = ((baseTag === 'PLAN_300' || baseTag === 'PLAN_UNLIMITED') ? baseTag : 'PLAN_100') + suffix;
+        const validTags = ['PLAN_100', 'PLAN_300', 'PLAN_UNLIMITED', 'PLAN_100_ERP', 'PLAN_300_ERP', 'PLAN_UNLIMITED_ERP'];
+        const finalTag = validTags.includes(baseTag) ? baseTag : 'PLAN_100';
         localStorage.setItem('pending_plan_tag', finalTag);
 
         document.querySelectorAll('.rx-dw-plan-card').forEach(card => {
             card.classList.remove('rx-dw-selected');
         });
-        const cardKey = (baseTag === 'PLAN_300' || baseTag === 'PLAN_UNLIMITED') ? baseTag : 'PLAN_100';
-        const selectedCard = document.getElementById('dw-card-' + cardKey);
+        const selectedCard = document.getElementById('dw-card-' + finalTag);
         if (selectedCard) selectedCard.classList.add('rx-dw-selected');
 
         const badgeEl = document.getElementById('dw-selected-plan-banner');

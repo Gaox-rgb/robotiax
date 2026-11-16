@@ -644,12 +644,11 @@ window.app.panel = {
     },
 
     openStripePlan: function(planTag) {
-        const finalTag = this.panelErpMode ? (planTag + '_ERP') : planTag;
-        const baseLink = this.stripePlans[finalTag] || this.stripePlans[planTag];
+        const baseLink = this.stripePlans[planTag] || this.stripePlans.PLAN_100;
         const s = window.app.state.summary || {};
         const folio = s.folio || 'RENOVACION';
         const negocio = s.negocio || 'Cliente';
-        const ref = folio + '__' + encodeURIComponent(this.email) + '__' + encodeURIComponent(negocio) + '__' + finalTag;
+        const ref = folio + '__' + encodeURIComponent(this.email) + '__' + encodeURIComponent(negocio) + '__' + planTag;
         const sep = baseLink.includes('?') ? '&' : '?';
         const finalUrl = baseLink + sep + 'prefilled_email=' + encodeURIComponent(this.email) + '&client_reference_id=' + encodeURIComponent(ref);
         window.open(finalUrl, '_blank');
