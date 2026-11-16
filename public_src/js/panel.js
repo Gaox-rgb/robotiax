@@ -11,6 +11,10 @@ window.app.panel = {
         ? 'http://127.0.0.1:5001/robotiax/us-central1/whatsappClientApi'
         : 'https://us-central1-robotiax.cloudfunctions.net/whatsappClientApi',
 
+    erpEndpoint: 'https://c2weabqkje5ssmfg4xlw7rhgsi0zstvy.lambda-url.us-east-2.on.aws/',
+
+    erpEndpoint: 'https://c2weabqkje5ssmfg4xlw7rhgsi0zstvy.lambda-url.us-east-2.on.aws/',
+
     stripePlans: {
         PLAN_100: 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u',
         PLAN_300: 'https://buy.stripe.com/dRmcN6gtuc4O6Q66t94gg0v',
@@ -234,16 +238,32 @@ window.app.panel = {
         const bCitas = document.getElementById('tab-btn-citas');
         const bConfig = document.getElementById('tab-btn-config');
 
+        const pErp = document.getElementById('tab-panel-erp');
+        const bErp = document.getElementById('tab-btn-erp');
+
         if (pChats) pChats.style.display = tab === 'chats' ? 'grid' : 'none';
         if (pCitas) pCitas.style.display = tab === 'citas' ? 'block' : 'none';
         if (pConfig) pConfig.style.display = tab === 'config' ? 'block' : 'none';
+        if (pErp) pErp.style.display = tab === 'erp' ? 'block' : 'none';
 
         if (bChats) bChats.className = 'rx-chip-btn' + (tab === 'chats' ? ' cyan' : '');
         if (bCitas) bCitas.className = 'rx-chip-btn' + (tab === 'citas' ? ' cyan' : '');
         if (bConfig) bConfig.className = 'rx-chip-btn' + (tab === 'config' ? ' cyan' : '');
+        if (bErp) bErp.className = 'rx-chip-btn' + (tab === 'erp' ? ' green' : '');
 
         if (tab === 'citas' && !this.appointmentsLoaded) {
             this.loadAppointments(true);
+        }
+        if (tab === 'erp') {
+            const isErpActive = Boolean(window.app.state.summary?.erpActive);
+            const gate = document.getElementById('erp-locked-gate');
+            const content = document.getElementById('erp-unlocked-content');
+            if (gate) gate.style.display = isErpActive ? 'none' : 'block';
+            if (content) content.style.display = isErpActive ? 'block' : 'none';
+
+            if (isErpActive) {
+                this.refreshErpData();
+            }
         }
     },
 
@@ -643,7 +663,316 @@ window.app.panel = {
         }
     },
 
-    openStripePlan: function(planTag) {
+    // =========================================================================
+    // CONTROLADOR ERP PYME (AWS DYNAMODB + LAMBDA API EN TIEMPO REAL)
+    // =========================================================================
+    activeErpSubTab: 'citas',
+
+    switchErpSubTab: function(subTab) {
+        this.activeErpSubTab = subTab;
+        const tabs = ['citas', 'ventas', 'clientes', 'servicios', 'inventario', 'cortes'];
+        tabs.forEach(t => {
+            const p = document.getElementById(`erp-sub-panel-${t}`);
+            const b = document.getElementById(`erp-sub-btn-${t}`);
+            if (p) p.style.display = t === subTab ? 'block' : 'none';
+            if (b) b.className = 'rx-chip-btn' + (t === subTab ? (t === 'cortes' ? ' green' : ' cyan') : '');
+        });
+        this.loadErpEntity(subTab);
+    },
+
+    erpApiCall: async function(entity, action, payload = {}) {
+        const bizSlug = window.app.state.summary?.negocio_slug;
+        if (!bizSlug) throw new Error('No se ha detectado el identificador del negocio.');
+
+        const res = await fetch(this.erpEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                bizSlug: bizSlug,
+                entity: entity,
+                action: action,
+                payload: payload
+            })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || 'Error en AWS ERP');
+        return data;
+    },
+
+    refreshErpData: function() {
+        this.loadErpEntity(this.activeErpSubTab);
+    },
+
+    loadErpEntity: async function(subTab) {
+        try {
+            if (subTab === 'citas') {
+                const res = await this.erpApiCall('appointments', 'list');
+                const listEl = document.getElementById('erp-list-citas');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">No hay citas registradas en DynamoDB aún.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(a => `
+                    <div style="background:#040914; border:1px solid rgba(148,163,184,0.16); border-radius:8px; padding:10px 12px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px;">
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.8rem;">${this.escapeHtml(a.clientName)} (${this.escapeHtml(a.phone)})</strong>
+                            <div style="color:#38bdf8; font-size:0.72rem; margin-top:2px;">📅 ${a.date} a las ${a.time} hrs • <strong>${this.escapeHtml(a.serviceName)}</strong> ($${a.price})</div>
+                            <div style="color:#64748b; font-size:0.65rem;">Atiende: ${this.escapeHtml(a.assignedStaff)}</div>
+                        </div>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <select onchange="window.app.panel.erpChangeApptStatus('${this.escapeHtml(a.id)}', '${a.date}', '${this.escapeHtml(a.clientName)}', '${a.phone}', this.value)" class="rx-input" style="padding:5px 8px; font-size:0.7rem; width:auto;">
+                                <option value="AGENDADA" ${a.status === 'AGENDADA' ? 'selected' : ''}>⏳ Agendada</option>
+                                <option value="CONFIRMADA" ${a.status === 'CONFIRMADA' ? 'selected' : ''}>✅ Confirmada</option>
+                                <option value="LLEGO" ${a.status === 'LLEGO' ? 'selected' : ''}>🟢 Llegó (Asistió)</option>
+                                <option value="NO_LLEGO" ${a.status === 'NO_LLEGO' ? 'selected' : ''}>🔴 No Llegó (Falta)</option>
+                                <option value="CANCELADA" ${a.status === 'CANCELADA' ? 'selected' : ''}>✕ Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (subTab === 'ventas') {
+                const res = await this.erpApiCall('sales', 'list');
+                const listEl = document.getElementById('erp-list-ventas');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">No hay ventas registradas hoy.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(s => `
+                    <div style="background:#040914; border:1px solid rgba(148,163,184,0.16); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.8rem;">${this.escapeHtml(s.concept)}</strong>
+                            <div style="color:#94a3b8; font-size:0.7rem;">Cliente: ${this.escapeHtml(s.clientName)} • Método: <span style="color:#00f2ff;">${s.method}</span> • Cajero: ${this.escapeHtml(s.staff)}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="color:#4ade80; font-weight:800; font-size:0.88rem;">$${Number(s.amount).toFixed(2)} MXN</div>
+                            <span style="font-size:0.6rem; color:#64748b;">${s.date}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (subTab === 'clientes') {
+                const res = await this.erpApiCall('clients', 'list');
+                const listEl = document.getElementById('erp-list-clientes');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">Aún no hay clientes con historial. Se registran automáticamente con las citas.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(c => `
+                    <div style="background:#040914; border:1px solid rgba(148,163,184,0.16); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.84rem;">${this.escapeHtml(c.name)}</strong>
+                            <div style="color:#00f2ff; font-size:0.74rem;">📱 ${this.escapeHtml(c.phone)}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.74rem; color:#cbd5e1;">Visitas: <strong style="color:#4ade80;">${c.visits || 0}</strong> • Faltas: <strong style="color:#fda4af;">${c.noShows || 0}</strong></div>
+                            ${c.isFrequent ? '<span style="background:rgba(57,255,20,0.15); border:1px solid #39ff14; color:#39ff14; font-size:0.6rem; font-weight:800; padding:2px 6px; border-radius:4px; text-transform:uppercase;">⭐ Cliente Frecuente</span>' : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (subTab === 'servicios') {
+                const res = await this.erpApiCall('services', 'list');
+                const listEl = document.getElementById('erp-list-servicios');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">No hay servicios dados de alta. Agrega el primero arriba.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(s => `
+                    <div style="background:#040914; border:1px solid rgba(148,163,184,0.16); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.82rem;">${this.escapeHtml(s.name)}</strong>
+                            <div style="color:#94a3b8; font-size:0.7rem;">Duración: ${s.durationMinutes} min • ${this.escapeHtml(s.description || '')}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="color:#00f2ff; font-weight:800; font-size:0.88rem;">$${Number(s.price).toFixed(2)} MXN</span>
+                            <button type="button" onclick="window.app.panel.erpDeleteService('${this.escapeHtml(s.id)}')" class="rx-chip-btn" style="color:#fda4af; border-color:#e11d48; padding:3px 8px;">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (subTab === 'inventario') {
+                const res = await this.erpApiCall('inventory', 'list');
+                const listEl = document.getElementById('erp-list-inventario');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">No hay productos en inventario. Registra el primero arriba.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(p => `
+                    <div style="background:#040914; border:1px solid ${p.isLowStock ? '#e11d48' : 'rgba(148,163,184,0.16)'}; border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:#ffffff; font-size:0.82rem;">${this.escapeHtml(p.name)}</strong>
+                            <div style="color:${p.isLowStock ? '#fda4af' : '#94a3b8'}; font-size:0.72rem;">Stock Actual: <strong>${p.currentStock}</strong> (Mínimo: ${p.minStock})</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="color:#39ff14; font-weight:800; font-size:0.85rem;">$${Number(p.salePrice).toFixed(2)}</span>
+                            ${p.isLowStock ? '<span style="background:rgba(225,29,72,0.2); color:#fda4af; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:800;">ALERTA STOCK</span>' : ''}
+                            <button type="button" onclick="window.app.panel.erpDeleteProduct('${this.escapeHtml(p.id)}')" class="rx-chip-btn" style="color:#fda4af; border-color:#e11d48; padding:3px 8px;">✕</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (subTab === 'cortes') {
+                const res = await this.erpApiCall('close_reports', 'list');
+                const listEl = document.getElementById('erp-list-cortes');
+                if (!listEl) return;
+                const items = res.data || [];
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div style="padding:16px;text-align:center;color:#64748b;font-size:0.76rem;">El corte nocturno se genera automáticamente a las 8:00 PM y se envía por WhatsApp. Aquí aparecerá el histórico.</div>';
+                    return;
+                }
+                listEl.innerHTML = items.map(r => `
+                    <div style="background:#040914; border:1px solid rgba(57,255,20,0.3); border-radius:10px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(148,163,184,0.15); padding-bottom:6px; margin-bottom:8px;">
+                            <strong style="color:#39ff14; font-size:0.84rem;">📊 CORTE DEL DÍA: ${r.date}</strong>
+                            <span style="color:#ffffff; font-weight:900; font-size:1rem;">$${Number(r.totalSales || 0).toFixed(2)} MXN</span>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px; font-size:0.7rem; color:#cbd5e1;">
+                            <div>💵 Efectivo: <strong>$${Number(r.cashTotal || 0).toFixed(2)}</strong></div>
+                            <div>💳 Tarjeta: <strong>$${Number(r.cardTotal || 0).toFixed(2)}</strong></div>
+                            <div>📱 Transferencia: <strong>$${Number(r.transferTotal || 0).toFixed(2)}</strong></div>
+                            <div>📅 Total Citas: <strong>${r.totalAppointments || 0}</strong></div>
+                            <div>✕ Canceladas/No show: <strong>${r.cancelledAppointments || 0}</strong></div>
+                            <div>🏆 Top Vendedor: <strong>${this.escapeHtml(r.topSeller || 'Sin ventas')}</strong></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch (err) {
+            console.warn('Error cargando entidad ERP:', err.message);
+        }
+    },
+
+    erpSaveAppointment: async function(e) {
+        if (e) e.preventDefault();
+        try {
+            await this.erpApiCall('appointments', 'save', {
+                date: document.getElementById('erp-appt-date')?.value,
+                time: document.getElementById('erp-appt-time')?.value,
+                clientName: document.getElementById('erp-appt-name')?.value,
+                phone: document.getElementById('erp-appt-phone')?.value,
+                serviceName: document.getElementById('erp-appt-service')?.value,
+                price: document.getElementById('erp-appt-price')?.value,
+                assignedStaff: document.getElementById('erp-appt-staff')?.value,
+                status: 'AGENDADA'
+            });
+            document.getElementById('erp-appt-name').value = '';
+            document.getElementById('erp-appt-phone').value = '';
+            document.getElementById('erp-appt-service').value = '';
+            document.getElementById('erp-appt-price').value = '';
+            await this.loadErpEntity('citas');
+        } catch (err) {
+            alert(err.message || 'No se pudo guardar la cita en DynamoDB.');
+        }
+    },
+
+    erpChangeApptStatus: async function(id, date, name, phone, status) {
+        try {
+            await this.erpApiCall('appointments', 'save', {
+                id: id,
+                date: date,
+                clientName: name,
+                phone: phone,
+                status: status
+            });
+            await this.loadErpEntity('citas');
+        } catch (err) {
+            alert('Error actualizando estatus de cita.');
+        }
+    },
+
+    erpSaveSale: async function(e) {
+        if (e) e.preventDefault();
+        try {
+            await this.erpApiCall('sales', 'save', {
+                concept: document.getElementById('erp-sale-concept')?.value,
+                amount: document.getElementById('erp-sale-amount')?.value,
+                method: document.getElementById('erp-sale-method')?.value,
+                clientName: document.getElementById('erp-sale-client')?.value,
+                clientPhone: document.getElementById('erp-sale-phone')?.value,
+                staff: document.getElementById('erp-sale-staff')?.value,
+                collected: true
+            });
+            document.getElementById('erp-sale-concept').value = '';
+            document.getElementById('erp-sale-amount').value = '';
+            document.getElementById('erp-sale-client').value = '';
+            document.getElementById('erp-sale-phone').value = '';
+            await this.loadErpEntity('ventas');
+        } catch (err) {
+            alert(err.message || 'No se pudo guardar la venta.');
+        }
+    },
+
+    erpSaveService: async function(e) {
+        if (e) e.preventDefault();
+        try {
+            await this.erpApiCall('services', 'save', {
+                name: document.getElementById('erp-srv-name')?.value,
+                price: document.getElementById('erp-srv-price')?.value,
+                durationMinutes: document.getElementById('erp-srv-duration')?.value,
+                description: document.getElementById('erp-srv-desc')?.value
+            });
+            document.getElementById('erp-srv-name').value = '';
+            document.getElementById('erp-srv-price').value = '';
+            document.getElementById('erp-srv-desc').value = '';
+            await this.loadErpEntity('servicios');
+        } catch (err) {
+            alert(err.message || 'No se pudo guardar el servicio.');
+        }
+    },
+
+    erpDeleteService: async function(id) {
+        if (!confirm('¿Eliminar este servicio del catálogo?')) return;
+        try {
+            await this.erpApiCall('services', 'delete', { id: id });
+            await this.loadErpEntity('servicios');
+        } catch (err) {
+            alert(err.message);
+        }
+    },
+
+    erpSaveProduct: async function(e) {
+        if (e) e.preventDefault();
+        try {
+            await this.erpApiCall('inventory', 'save', {
+                name: document.getElementById('erp-prod-name')?.value,
+                currentStock: document.getElementById('erp-prod-stock')?.value,
+                minStock: document.getElementById('erp-prod-min')?.value,
+                salePrice: document.getElementById('erp-prod-price')?.value
+            });
+            document.getElementById('erp-prod-name').value = '';
+            document.getElementById('erp-prod-stock').value = '';
+            document.getElementById('erp-prod-price').value = '';
+            await this.loadErpEntity('inventario');
+        } catch (err) {
+            alert(err.message || 'No se pudo guardar el producto.');
+        }
+    },
+
+    erpDeleteProduct: async function(id) {
+        if (!confirm('¿Eliminar este producto del inventario?')) return;
+        try {
+            await this.erpApiCall('inventory', 'delete', { id: id });
+            await this.loadErpEntity('inventario');
+        } catch (err) {
+            alert(err.message);
+        }
+    },
         const baseLink = this.stripePlans[planTag] || this.stripePlans.PLAN_100;
         const s = window.app.state.summary || {};
         const folio = s.folio || 'RENOVACION';

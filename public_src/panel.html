@@ -392,6 +392,7 @@
                 <button type="button" id="tab-btn-chats" onclick="window.app.panel.switchTab('chats')" class="rx-chip-btn cyan" style="padding: 9px 14px;">💬 Chats en Vivo</button>
                 <button type="button" id="tab-btn-citas" onclick="window.app.panel.switchTab('citas')" class="rx-chip-btn" style="padding: 9px 14px;">📅 Mis Citas</button>
                 <button type="button" id="tab-btn-config" onclick="window.app.panel.switchTab('config')" class="rx-chip-btn" style="padding: 9px 14px;">🤖 Configurar Info del Bot</button>
+                <button type="button" id="tab-btn-erp" onclick="window.app.panel.switchTab('erp')" class="rx-chip-btn green" style="padding: 9px 14px; font-weight: 800;">💼 Mi ERP PyME</button>
             </div>
 
             <div id="tab-panel-chats" class="rx-chat-shell">
@@ -502,6 +503,122 @@
                         <span id="cfg-save-status" style="font-size: 0.74rem; color: #4ade80;"></span>
                     </div>
                 </form>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- VISTA DEL ERP PYME (T-1 A T-6 CONECTADO DIRECTO A AWS DYNAMODB)  -->
+            <!-- ================================================================= -->
+            <div id="tab-panel-erp" style="display: none; background: #070d1a; border: 1px solid rgba(57, 255, 20, 0.35); border-radius: 14px; padding: 22px 18px; box-shadow: 0 0 40px rgba(57, 255, 20, 0.1);">
+                <!-- CANDADO DE ACCESO ERP (Visible solo si el cliente compró plan sin ERP) -->
+                <div id="erp-locked-gate" style="display: none; text-align: center; padding: 40px 20px; max-width: 580px; margin: 0 auto;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 16px;">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <span style="font-size: 0.68rem; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">MÓDULO ADICIONAL DISPONIBLE</span>
+                    <h3 style="color: #ffffff; font-size: 1.25rem; margin: 6px 0 10px; font-weight: 800; text-transform: uppercase;">Activa tu ERP PyME</h3>
+                    <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.6; margin: 0 0 22px;">
+                        Tu plan actual cubre Web y Bot de WhatsApp. Activa el <strong>ERP PyME</strong> para habilitar en tu negocio: <strong>T-1 Clientes Frecuentes, T-2 Catálogo de Servicios, T-3 Citas con estados, T-4 Registro de Ventas/Cobros, T-5 Control de Inventario y T-6 Corte de Caja automático cada noche a las 8:00 PM directo a tu WhatsApp.</strong>
+                    </p>
+                    <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100_ERP')" style="display: inline-block; background: #39ff14; color: #020617; font-weight: 900; font-size: 0.82rem; padding: 14px 28px; border-radius: 8px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 25px rgba(57, 255, 20, 0.35);">
+                        ACTIVAR ERP PYME POR SOLO +$200 MXN ➔
+                    </button>
+                </div>
+
+                <!-- CONTENIDO OPERATIVO DEL ERP (Visible si erpActive === true) -->
+                <div id="erp-unlocked-content">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 18px; border-bottom: 1px solid rgba(148,163,184,0.18); pb: 14px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #39ff14; box-shadow: 0 0 8px #39ff14;"></span>
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #ffffff; text-transform: uppercase;">💼 Sistema ERP PyME // Centro Operativo</h3>
+                        </div>
+                        <p style="margin: 4px 0 0; font-size: 0.74rem; color: #94a3b8;">Base de datos Serverless en AWS DynamoDB • Corte automático diario a las 8:00 PM por WhatsApp.</p>
+                    </div>
+                    <button type="button" onclick="window.app.panel.refreshErpData()" class="rx-chip-btn cyan">↻ Actualizar ERP</button>
+                </div>
+
+                <!-- Sub-Navegación T-1 a T-6 -->
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;">
+                    <button type="button" id="erp-sub-btn-citas" onclick="window.app.panel.switchErpSubTab('citas')" class="rx-chip-btn cyan" style="font-size: 0.68rem;">T-3 Citas</button>
+                    <button type="button" id="erp-sub-btn-ventas" onclick="window.app.panel.switchErpSubTab('ventas')" class="rx-chip-btn" style="font-size: 0.68rem;">T-4 Ventas / Cobros</button>
+                    <button type="button" id="erp-sub-btn-clientes" onclick="window.app.panel.switchErpSubTab('clientes')" class="rx-chip-btn" style="font-size: 0.68rem;">T-1 Clientes Frecuentes</button>
+                    <button type="button" id="erp-sub-btn-servicios" onclick="window.app.panel.switchErpSubTab('servicios')" class="rx-chip-btn" style="font-size: 0.68rem;">T-2 Servicios y Precios</button>
+                    <button type="button" id="erp-sub-btn-inventario" onclick="window.app.panel.switchErpSubTab('inventario')" class="rx-chip-btn" style="font-size: 0.68rem;">T-5 Inventario / Stock</button>
+                    <button type="button" id="erp-sub-btn-cortes" onclick="window.app.panel.switchErpSubTab('cortes')" class="rx-chip-btn green" style="font-size: 0.68rem;">T-6 Cortes 8:00 PM</button>
+                </div>
+
+                <!-- SECCIÓN T-3: CITAS COMPLETAS -->
+                <div id="erp-sub-panel-citas">
+                    <form onsubmit="window.app.panel.erpSaveAppointment(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 16px; background: #040914; padding: 12px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.16);">
+                        <input id="erp-appt-date" type="date" class="rx-input" required>
+                        <input id="erp-appt-time" type="time" class="rx-input" value="10:00" required>
+                        <input id="erp-appt-name" type="text" class="rx-input" placeholder="Nombre cliente" required>
+                        <input id="erp-appt-phone" type="tel" class="rx-input" placeholder="Teléfono" required>
+                        <input id="erp-appt-service" type="text" class="rx-input" placeholder="Servicio" required>
+                        <input id="erp-appt-price" type="number" step="0.5" class="rx-input" placeholder="Precio $" required>
+                        <input id="erp-appt-staff" type="text" class="rx-input" placeholder="Atiende (Staff)">
+                        <button type="submit" class="rx-chip-btn green" style="padding: 10px; font-weight: 800;">+ Agendar Cita</button>
+                    </form>
+                    <div id="erp-list-citas" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="padding: 20px; text-align: center; color: #64748b; font-size: 0.76rem;">Cargando citas desde DynamoDB...</div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN T-4: VENTAS Y COBROS -->
+                <div id="erp-sub-panel-ventas" style="display: none;">
+                    <form onsubmit="window.app.panel.erpSaveSale(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 16px; background: #040914; padding: 12px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.16);">
+                        <input id="erp-sale-concept" type="text" class="rx-input" placeholder="Concepto (Servicio o Producto)" required>
+                        <input id="erp-sale-amount" type="number" step="0.5" class="rx-input" placeholder="Monto Total $" required>
+                        <select id="erp-sale-method" class="rx-input">
+                            <option value="EFECTIVO">💵 Efectivo</option>
+                            <option value="TARJETA">💳 Tarjeta</option>
+                            <option value="TRANSFERENCIA">📱 Transferencia</option>
+                        </select>
+                        <input id="erp-sale-client" type="text" class="rx-input" placeholder="Nombre cliente">
+                        <input id="erp-sale-phone" type="tel" class="rx-input" placeholder="Teléfono cliente">
+                        <input id="erp-sale-staff" type="text" class="rx-input" placeholder="Vendedor / Cajero">
+                        <button type="submit" class="rx-chip-btn green" style="padding: 10px; font-weight: 800;">+ Registrar Venta</button>
+                    </form>
+                    <div id="erp-list-ventas" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- SECCIÓN T-1: CLIENTES FRECUENTES -->
+                <div id="erp-sub-panel-clientes" style="display: none;">
+                    <div id="erp-list-clientes" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- SECCIÓN T-2: SERVICIOS Y PRECIOS -->
+                <div id="erp-sub-panel-servicios" style="display: none;">
+                    <form onsubmit="window.app.panel.erpSaveService(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; margin-bottom: 16px; background: #040914; padding: 12px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.16);">
+                        <input id="erp-srv-name" type="text" class="rx-input" placeholder="Nombre del Servicio" required>
+                        <input id="erp-srv-price" type="number" step="0.5" class="rx-input" placeholder="Precio al público $" required>
+                        <input id="erp-srv-duration" type="number" class="rx-input" placeholder="Duración (minutos)" value="45" required>
+                        <input id="erp-srv-desc" type="text" class="rx-input" placeholder="Descripción breve">
+                        <button type="submit" class="rx-chip-btn green" style="padding: 10px; font-weight: 800;">+ Agregar Servicio</button>
+                    </form>
+                    <div id="erp-list-servicios" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- SECCIÓN T-5: INVENTARIO -->
+                <div id="erp-sub-panel-inventario" style="display: none;">
+                    <form onsubmit="window.app.panel.erpSaveProduct(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 16px; background: #040914; padding: 12px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.16);">
+                        <input id="erp-prod-name" type="text" class="rx-input" placeholder="Nombre producto" required>
+                        <input id="erp-prod-stock" type="number" class="rx-input" placeholder="Stock actual" required>
+                        <input id="erp-prod-min" type="number" class="rx-input" placeholder="Stock mínimo alerta" value="3" required>
+                        <input id="erp-prod-price" type="number" step="0.5" class="rx-input" placeholder="Precio venta $" required>
+                        <button type="submit" class="rx-chip-btn green" style="padding: 10px; font-weight: 800;">+ Agregar Producto</button>
+                    </form>
+                    <div id="erp-list-inventario" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+
+                <!-- SECCIÓN T-6: HISTORIAL DE CORTES DIARIOS DE LAS 8:00 PM -->
+                <div id="erp-sub-panel-cortes" style="display: none;">
+                    <div id="erp-list-cortes" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+            </div>
+
+            </div>
+                <!-- CIERRE DE erp-unlocked-content -->
             </div>
 
             <section id="planes-upgrade" class="rx-plans-section">
