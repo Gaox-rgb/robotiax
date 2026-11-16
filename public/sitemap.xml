@@ -12,7 +12,12 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://robotiax.shop/conect.html</loc>
+    <loc>https://robotiax.shop/catalogo-24.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robotiax.shop/conectar.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

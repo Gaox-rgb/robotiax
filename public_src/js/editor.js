@@ -85,12 +85,36 @@ window.app.editor = {
     /**
      * Inicializa el panel de edición para una plantilla específica.
      */
-   init: function(templateId, templateName) {
+    init: function(templateId, templateName) {
         if (!window.app.editor.validateSession()) return;
+        this.currentTemplateId = templateId || 'cfg-salud-bot-promo';
+        this.currentProductName = templateName || 'Suite Digital Robotiax';
         const panel = document.getElementById('editor-panel');
-        if (panel) panel.classList.add('active');
-        document.getElementById('display-suite-title').textContent = templateName;
+        if (panel) {
+            panel.style.removeProperty('display');
+            panel.classList.add('active');
+        }
+        const titleEl = document.getElementById('display-suite-title');
+        if (titleEl) {
+            titleEl.textContent = String(this.currentProductName).toUpperCase();
+        }
+    this.updatePayButtonLabel();
     },
+    updatePayButtonLabel: function() {
+        const tag = localStorage.getItem('pending_plan_tag') || 'PLAN_100';
+        const labels = {
+            PLAN_100: '$255.00 MXN',
+            PLAN_300: '$500.00 MXN',
+            PLAN_UNLIMITED: '$599.00 MXN',
+            PLAN_100_ERP: '$455.00 MXN (Con ERP)',
+            PLAN_300_ERP: '$800.00 MXN (Con ERP)',
+            PLAN_UNLIMITED_ERP: '$1,598.00 MXN (Con ERP)'
+        };
+        const priceLabel = labels[tag] || '$255.00 MXN';
+        const btn = document.getElementById('editor-submit-pay-btn');
+        if (btn) btn.textContent = 'CONTINUAR AL PAGO (' + priceLabel + ')';
+    },
+
     validateSession: function() {
         const user = localStorage.getItem('robotiax_user');
         if (!user) { alert("Inicia sesión primero"); return false; }
@@ -211,7 +235,11 @@ window.app.editor = {
         localStorage.setItem('pending_draft_folio', folio);
         localStorage.setItem('pending_purchase_id', this.currentTemplateId);
 
-        const clientReference = `${folio}__${encodeURIComponent(details.email)}__${encodeURIComponent(details.negocio)}`;
+        const activePlanTag = localStorage.getItem('pending_plan_tag') || 'PLAN_100';
+        localStorage.setItem('pending_product_name', this.currentProductName || 'Suite Digital Robotiax');
+        localStorage.setItem('pending_plan_tag', activePlanTag);
+
+        const clientReference = `${folio}__${encodeURIComponent(details.email)}__${encodeURIComponent(details.negocio)}__${activePlanTag}`;
 
         const draftPayload = JSON.stringify({
             template: this.currentTemplateId,
@@ -237,7 +265,15 @@ window.app.editor = {
         }
 
         // ENLACE DIRECTO A STRIPE CON TRIPLE PARÁMETRO EMBEBIDO
-        const stripeBaseLink = 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f';
+        const planLinksMap = {
+            PLAN_100: 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u',
+            PLAN_300: 'https://buy.stripe.com/dRmcN6gtuc4O6Q66t94gg0v',
+            PLAN_UNLIMITED: 'https://buy.stripe.com/aFa00k2CEecWfmC5p54gg0x',
+            PLAN_100_ERP: 'https://buy.stripe.com/cNi5kE2CEfh0deu9Fl4gg0y',
+            PLAN_300_ERP: 'https://buy.stripe.com/9B628sa56d8S4HY3gX4gg0z',
+            PLAN_UNLIMITED_ERP: 'https://buy.stripe.com/cNi14o4KM1qa3DU2cT4gg0A'
+        };
+        const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
         const checkoutUrl = `${stripeBaseLink}?allow_promotion_codes=true&prefilled_email=${encodeURIComponent(details.email)}&client_reference_id=${encodeURIComponent(clientReference)}`;
 
         // Apertura en pestaña nueva para conservar la ventana de control con X, Impresión y Volver en Robotiax

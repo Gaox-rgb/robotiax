@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suite Digital de IA & Desarrollo Web | ROBOTIAX</title>
-    <meta name="description" content="Tu Suite de Inteligencia Artificial por $200 MXN + IVA. Incluye Página Web Profesional de marca blanca, Bot de WhatsApp AI 24/7 y Sala de Espera interactiva. Despliegue en 24h.">
+    <meta name="description" content="Tu Suite de Inteligencia Artificial por $255.00 MXN (IVA incluido). Incluye Página Web Profesional de marca blanca, Bot de WhatsApp 24/7 y Sala de Espera interactiva. Despliegue en 24h.">
     <meta name="keywords" content="ROBOTIAX, Desarrollo Web, Bot WhatsApp, Inteligencia Artificial, Suite Digital, Paginas Web Mexico">
     <meta name="robots" content="index, follow">
 
@@ -12,14 +12,14 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://robotiax.shop/desarrollo-web.html">
     <meta property="og:title" content="Suite Digital de IA & Desarrollo Web | ROBOTIAX">
-    <meta property="og:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp AI 24/7 + Centro de Entretenimiento de Sala de Espera por $200 MXN + IVA. Despliegue en 24h.">
+    <meta property="og:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp 24/7 + Centro de Entretenimiento de Sala de Espera por $255.00 MXN (IVA incluido). Despliegue en 24h.">
     <meta property="og:image" content="https://robotiax.shop/assets/favicon.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://robotiax.shop/desarrollo-web.html">
     <meta name="twitter:title" content="Suite Digital de IA & Desarrollo Web | ROBOTIAX">
-    <meta name="twitter:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp AI 24/7 + Centro de Entretenimiento de Sala de Espera por $200 MXN + IVA. Despliegue en 24h.">
+    <meta name="twitter:description" content="Página Web Profesional de Marca Blanca + Bot de WhatsApp 24/7 + Centro de Entretenimiento de Sala de Espera por $255.00 MXN (IVA incluido). Despliegue en 24h.">
     <meta name="twitter:image" content="https://robotiax.shop/assets/favicon.png">
 
     <!-- Favicon & Touch Icons -->
@@ -47,7 +47,7 @@
       "offers": {
         "@type": "Offer",
         "priceCurrency": "MXN",
-        "price": "200.00",
+        "price": "255.00",
         "priceValidUntil": "2026-12-31",
         "availability": "https://schema.org/InStock"
       }
@@ -558,6 +558,9 @@ window.rxSubmitPerfeccionamiento = function(e) {
             CERRAR SESIÓN
         </button>
 
+        <a href="panel.html" style="width: 100%; background: #00f2ff; border: none; color: #020617; font-weight: 800; font-size: 0.72rem; padding: 10px; border-radius: 6px; text-decoration: none; display: block; text-align: center; text-transform: uppercase; box-sizing: border-box; margin-bottom: 8px;">
+            ABRIR PANEL DE CHATS Y QR ➔
+        </a>
         <a href="index.html" style="width: 100%; background: transparent; border: 1px solid #334155; color: #cbd5e1; font-weight: 600; font-size: 0.70rem; padding: 9px; border-radius: 6px; text-decoration: none; display: block; text-align: center; text-transform: uppercase; box-sizing: border-box;">
             VOLVER AL INICIO
         </a>
@@ -707,10 +710,120 @@ window.rxSubmitPerfeccionamiento = function(e) {
     }
 </style>
 
-   <section class="intro-section">
-         <h1>TU SUITE DE INTELIGENCIA ARTIFICIAL.<br>HOY. $255 MXN.</h1>
-        <p>Elige tu giro de especialidad favorito de nuestro catálogo inteligente. Obtén un ecosistema digital responsivo de alta gama configurado y listo para operar en menos de 24h: <strong>Página Web Profesional de Marca Blanca + Hosting por 30 días + Bot de WhatsApp preconfigurado para agendar citas e informar precios + Portal de Entretenimiento de sala de espera.</strong></p>
-    </section>
+   <div style="padding: 66px 16px 8px; text-align: center; max-width: 900px; margin: 0 auto;">
+        <div style="display: inline-flex; background: rgba(15,23,42,0.9); border: 1px solid rgba(148,163,184,0.3); border-radius: 10px; padding: 4px; gap: 6px; flex-wrap: wrap; justify-content: center;">
+            <button id="btn-seg-pyme" type="button" onclick="window.app.ui.switchSegment('pyme')" style="padding: 10px 18px; border-radius: 7px; border: none; background: #00f2ff; color: #020617; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; cursor: pointer;">
+                🚀 PYMES Y PROFESIONISTAS (DESDE $255 MXN)
+            </button>
+            <button id="btn-seg-enterprise" type="button" onclick="window.app.ui.switchSegment('enterprise')" style="padding: 10px 18px; border-radius: 7px; border: none; background: rgba(15,23,42,0.85); color: #ffd700; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; cursor: pointer;">
+                🏛️ GRANDES EMPRESAS (PREVIO ESTUDIO)
+            </button>
+        </div>
+    </div>
+
+    <div id="segment-pyme">
+        <section class="intro-section" style="padding-top: 18px !important;">
+            <h1>BLINDA Y ESCALA TU PYME.<br>DESDE $255 MXN/MES.</h1>
+            <p>Las PyMEs mueren por falta de clientes y altos gastos fijos en nómina. Nosotros resolvemos ambos problemas en un solo sistema: <strong>1) Te conseguimos clientes con Web + Bot WhatsApp 24/7</strong> y <strong>2) Automatizamos tus citas, ventas, inventario y corte de caja diario sin pagar secretaria ni auxiliar</strong>.</p>
+        </section>
+
+        <section style="width: 100%; max-width: 1040px; margin: 0 auto 28px; padding: 0 16px;">
+            <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 14px; padding: 20px; overflow-x: auto;">
+                <h3 style="margin: 0 0 12px; text-align: center; color: #00f2ff !important; font-size: 0.95rem; text-transform: uppercase;">Comparativa Real: ¿Cuánto cuesta armar esto por separado vs. ROBOTIAX?</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 560px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(148,163,184,0.25); color: #94a3b8; text-align: left;">
+                            <th style="padding: 8px;">Herramienta / Gasto Mensual</th>
+                            <th style="padding: 8px;">Por Separado en el Mercado</th>
+                            <th style="padding: 8px; color: #39ff14;">En ROBOTIAX</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Página Web Profesional + Hosting</td><td style="padding: 8px; color: #fda4af;">$3,500 setup + $400/mes</td><td style="padding: 8px; color: #4ade80;">✓ Incluido desde $255/mes</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Bot WhatsApp 24/7 + Bandeja Chats</td><td style="padding: 8px; color: #fda4af;">$1,500 – $2,800/mes</td><td style="padding: 8px; color: #4ade80;">✓ Incluido + Hand-off 2 min</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Agenda Citas + CRM Clientes + Ventas + Inventario + Corte 8 PM</td><td style="padding: 8px; color: #fda4af;">$1,800 – $3,500/mes</td><td style="padding: 8px; color: #4ade80;">✓ Solo +$200 o +$300 con ERP</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 8px;">Secretaria / Auxiliar de Captura</td><td style="padding: 8px; color: #fda4af;">$7,500 – $10,000/mes</td><td style="padding: 8px; color: #4ade80;">✓ Automatizado $0 nómina</td></tr>
+                        <tr><td style="padding: 10px 8px; font-weight: 800; color: #ffffff;">TOTAL MENSUAL REAL</td><td style="padding: 10px 8px; font-weight: 800; color: #ff003c;">+$11,200 a $16,700 MXN/mes</td><td style="padding: 10px 8px; font-weight: 900; color: #39ff14;">Desde $255.00 MXN/mes ($455 con ERP)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="planes-desarrollo" style="width: 100%; max-width: 1100px; margin: 10px auto 30px; padding: 0 16px; box-sizing: border-box;">
+            <style>
+                .rx-dw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; align-items: stretch; }
+                .rx-dw-plan-card { background: rgba(8, 16, 36, 0.85); border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 12px; padding: 22px 18px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: 0.25s; }
+                .rx-dw-plan-card.featured { border: 2px solid #00f2ff; box-shadow: 0 0 32px rgba(0, 242, 255, 0.25); background: linear-gradient(180deg, rgba(0, 242, 255, 0.1) 0%, rgba(8, 16, 36, 0.92) 100%); }
+                .rx-dw-plan-card.rx-dw-selected { border-color: #39ff14 !important; box-shadow: 0 0 28px rgba(57, 255, 20, 0.35) !important; }
+                .rx-dw-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: #00f2ff; color: #020617 !important; font-size: 0.62rem; font-weight: 800 !important; padding: 3px 12px; border-radius: 999px; text-transform: uppercase; white-space: nowrap; }
+            </style>
+
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div style="display: inline-flex; background: #040914; border: 1px solid rgba(148,163,184,0.3); border-radius: 10px; padding: 4px; gap: 4px; flex-wrap: wrap; justify-content: center;">
+                    <button id="btn-erp-off" type="button" onclick="window.app.ui.toggleErpPricing(false)" style="padding: 9px 14px; border-radius: 7px; border: none; background: #00f2ff; color: #020617; font-size: 0.74rem; font-weight: 800; cursor: pointer;">⚡ Solo Web + Bot WhatsApp</button>
+                    <button id="btn-erp-on" type="button" onclick="window.app.ui.toggleErpPricing(true)" style="padding: 9px 14px; border-radius: 7px; border: none; background: transparent; color: #39ff14; font-size: 0.74rem; font-weight: 800; cursor: pointer;">💼 Con ERP PyME (Clientes, Ventas, Stock + Corte 8 PM)</button>
+                </div>
+            </div>
+
+            <div class="rx-dw-grid">
+                <div id="dw-card-PLAN_100" class="rx-dw-plan-card">
+                    <div>
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Plan Básico</div>
+                        <div id="dw-price-100" style="font-size: 1.8rem; font-weight: 800; color: #ffffff; margin: 8px 0 2px;">$255.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span></div>
+                        <div id="dw-iva-100" style="font-size: 0.68rem; color: #94a3b8; margin-bottom: 12px;">Subtotal: $219.83 + IVA (16%): $35.17 MXN</div>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 18px; font-size: 0.75rem; display: flex; flex-direction: column; gap: 7px;">
+                            <li>✓ Hasta <strong>100 mensajes/mes</strong> (entrantes + salientes)</li>
+                            <li>✓ Web en ikai.info + Sala de Espera (30 días)</li>
+                            <li>✓ Bot WhatsApp 24/7 + Hand-off 2 min</li>
+                            <li>✓ Alertas automáticas en mensajes 80, 90 y 97</li>
+                            <li id="dw-erp-feat-100" style="display: none; color: #4ade80 !important;">✓ <strong>ERP PyME (+$200):</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
+                        </ul>
+                    </div>
+                    <button id="dw-btn-100" type="button" onclick="window.app.ui.selectPlan('PLAN_100')" style="width: 100%; padding: 12px; border-radius: 6px; border: 1px solid rgba(148,163,184,0.4); background: rgba(148,163,184,0.14); color: #ffffff; font-weight: 700; font-size: 0.74rem; text-transform: uppercase; cursor: pointer;">
+                        ELEGIR PLAN BÁSICO ($255 MXN)
+                    </button>
+                </div>
+
+                <div id="dw-card-PLAN_300" class="rx-dw-plan-card">
+                    <div>
+                        <div style="font-size: 0.75rem; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Plan Crecimiento</div>
+                        <div id="dw-price-300" style="font-size: 1.8rem; font-weight: 800; color: #ffffff; margin: 8px 0 2px;">$500.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span></div>
+                        <div id="dw-iva-300" style="font-size: 0.68rem; color: #94a3b8; margin-bottom: 12px;">Subtotal: $431.03 + IVA (16%): $68.97 MXN</div>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 18px; font-size: 0.75rem; display: flex; flex-direction: column; gap: 7px;">
+                            <li>✓ Hasta <strong>300 mensajes/mes</strong> (entrantes + salientes)</li>
+                            <li>✓ Web en ikai.info + Sala de Espera (30 días)</li>
+                            <li>✓ Bot WhatsApp 24/7 + Hand-off 2 min</li>
+                            <li>✓ Chat en vivo + Agenda de Citas</li>
+                            <li id="dw-erp-feat-300" style="display: none; color: #4ade80 !important;">✓ <strong>ERP PyME (+$300):</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
+                        </ul>
+                    </div>
+                    <button id="dw-btn-300" type="button" onclick="window.app.ui.selectPlan('PLAN_300')" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #38bdf8; color: #020617; font-weight: 800; font-size: 0.74rem; text-transform: uppercase; cursor: pointer;">
+                        ELEGIR PLAN 300 ($500 MXN)
+                    </button>
+                </div>
+
+                <div id="dw-card-PLAN_UNLIMITED" class="rx-dw-plan-card featured">
+                    <span class="rx-dw-badge">⭐ Más Popular • Recomendado</span>
+                    <div>
+                        <div style="font-size: 0.78rem; font-weight: 800; color: #00f2ff; text-transform: uppercase;">Plan Élite Ilimitado</div>
+                        <div id="dw-price-unl" style="font-size: 1.85rem; font-weight: 900; color: #00f2ff; margin: 8px 0 2px;">$599.00 <span style="font-size: 0.78rem; color: #cbd5e1;">MXN/mes</span></div>
+                        <div id="dw-iva-unl" style="font-size: 0.68rem; color: #cbd5e1; margin-bottom: 12px;">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 18px; font-size: 0.75rem; display: flex; flex-direction: column; gap: 7px;">
+                            <li>✓ <strong>MENSAJES ILIMITADOS</strong> (entrantes + salientes)</li>
+                            <li>✓ Web en ikai.info + Sala de Espera (30 días)</li>
+                            <li>✓ Bot WhatsApp 24/7 + Hand-off 2 min</li>
+                            <li>✓ Sin cortes por volumen todo el mes</li>
+                            <li id="dw-erp-feat-unl" style="display: none; color: #4ade80 !important;">✓ <strong>ERP Full (+$999):</strong> Clientes, Servicios, Citas, Ventas, Inventario + Corte 8 PM</li>
+                        </ul>
+                    </div>
+                    <button id="dw-btn-unl" type="button" onclick="window.app.ui.selectPlan('PLAN_UNLIMITED')" style="width: 100%; padding: 12px; border-radius: 6px; border: none; background: #00f2ff; color: #020617; font-weight: 800; font-size: 0.76rem; text-transform: uppercase; cursor: pointer;">
+                        ELEGIR PLAN ILIMITADO ($599 MXN) ➔
+                    </button>
+                </div>
+            </div>
+
+            <div id="dw-selected-plan-banner" style="display: none; margin-top: 16px; padding: 10px 14px; border-radius: 8px; background: rgba(57, 255, 20, 0.12); border: 1px solid #39ff14; color: #4ade80; text-align: center; font-size: 0.78rem; font-weight: 700;"></div>
+        </section>
 
     <!-- CONTROLADOR GENERAL DE LAS 24 ESPECIALIDADES DINÁMICAS -->
     <section class="pricing-container" id="tablas" style="background: transparent; display: flex; flex-direction: column; align-items: center; width: 100%; padding-top: 20px;">
@@ -786,446 +899,7 @@ window.rxSubmitPerfeccionamiento = function(e) {
                 </div>
             </div>
 
-            <!-- 4. CONTABILIDAD -->
-            <div class="glow-card-cyber" style="--theme-color: #a855f7; --theme-glow: rgba(168, 85, 247, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-calculator" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite de Impuestos SAT</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Buzón de facturas automatizado por WhatsApp que clasifica PDFs/XMLs en Drive y responde consultas de ISR.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: SAT_SYNC</span><span>port: 8080</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('contable')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-contable-bot-promo', 'Suite Contable')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 5. BOUTIQUE -->
-            <div class="glow-card-cyber" style="--theme-color: #ffaa00; --theme-glow: rgba(255, 170, 0, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-shirt" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Boutique y Apartados</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Reserva de prendas en talla idónea por 24 horas y recomendador de outfit "Personal Shopper" con IA.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: STYLE_ACTIVE</span><span>port: 3000</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('boutique')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-boutique-bot-promo', 'Suite de Boutique')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. FERRETERÍA -->
-            <div class="glow-card-cyber" style="--theme-color: #2563eb; --theme-glow: rgba(37, 99, 235, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-wrench" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Ferretera e Inventario</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Buscador automático de existencias de material y cotizador de fletes por tonelada de cemento.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: STOCK_ONLINE</span><span>port: 3306</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('ferreteria')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-ferreteria-bot-promo', 'Suite de Ferretería')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 7. GOURMET -->
-            <div class="glow-card-cyber" style="--theme-color: #00f2ff; --theme-glow: rgba(0, 242, 255, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-utensils" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Gourmet y Catering</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Cotizador inteligente de banquetes por cubierto e inyección de mixología de autor para eventos.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: FOOD_ACTIVE</span><span>port: 9000</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('gourmet')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-gourmet-bot-promo', 'Suite Gourmet')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 8. ABASTOS -->
-            <div class="glow-card-cyber" style="--theme-color: #39ff14; --theme-glow: rgba(57, 255, 20, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-basket-shopping" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Abastos Exprés</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Toma de pedidos de perecederos y despensa básica desordenada por audios de voz mediante IA.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: EXPRES_ONLINE</span><span>port: 27017</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('abarrotes')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-abarrotes-bot-promo', 'Suite de Abarrotes')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 9. CAFETERÍA -->
-            <div class="glow-card-cyber" style="--theme-color: #ff007f; --theme-glow: rgba(255, 0, 127, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-mug-hot" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite de Café y Barismo</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Monedero y cupones digitales basados en QR para barra de barismo y cafeterías de especialidad.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: COFFEE_ACTIVE</span><span>port: 6379</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('cafeteria')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-cafeteria-bot-promo', 'Suite de Cafetería')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 10. FLORERÍA -->
-            <div class="glow-card-cyber" style="--theme-color: #a855f7; --theme-glow: rgba(168, 85, 247, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-leaf" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Florería y Detalles</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Cotizador inmediato de fletes locales según código postal y sugerencias de regalos con IA.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: FLOW_OK</span><span>port: 5000</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('floreria')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-floreria-bot-promo', 'Suite de Florería')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 11. TALLERES -->
-            <div class="glow-card-cyber" style="--theme-color: #ffaa00; --theme-glow: rgba(255, 170, 0, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-car-battery" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite de Taller Mecánico</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Consulta del estatus de reparación mediante ingreso de placa en WhatsApp y cotizador de afinaciones.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: MOTORS_ONLINE</span><span>port: 3001</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('talleres')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-talleres-bot-promo', 'Suite de Talleres')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 12. EVENTOS -->
-            <div class="glow-card-cyber" style="--theme-color: #2563eb; --theme-glow: rgba(37, 99, 235, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-champagne-glasses" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Organizador Salón</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Cotizador dinámico multivariante de paquetes de fiestas con mesas, banquetes y horas adicionales.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: EVENTS_OK</span><span>port: 3002</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('eventos')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-eventos-bot-promo', 'Suite de Eventos')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 13. IDIOMAS -->
-            <div class="glow-card-cyber" style="--theme-color: #00f2ff; --theme-glow: rgba(0, 242, 255, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-language" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Escolar e Idiomas</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Examen conversacional de nivelación en el chat en 1 minuto, calendarios de admisión y costos.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: LANG_SYNC</span><span>port: 3003</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('idiomas')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-idiomas-bot-promo', 'Suite de Idiomas')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 14. FUMIGACIÓN -->
-            <div class="glow-card-cyber" style="--theme-color: #39ff14; --theme-glow: rgba(57, 255, 20, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-spray-can" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Fumiga y Control</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Cotizador de paquetes de fumigación por metros cuadrados y recomendaciones preventivas de plagas.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: PEST_CLEAN</span><span>port: 3004</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('fumigacion')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-fumigacion-bot-promo', 'Suite de Fumigación')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 15. LIMPIEZA -->
-            <div class="glow-card-cyber" style="--theme-color: #ff007f; --theme-glow: rgba(255, 0, 127, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-soap" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Clean y Tapicería</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Cotización instantánea por número de cojines de salas y colchones, y tracking de técnicos en ruta.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: CLEAN_RUN</span><span>port: 3005</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('limpieza')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-limpieza-bot-promo', 'Suite de Limpieza')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 16. VIAJES -->
-            <div class="glow-card-cyber" style="--theme-color: #a855f7; --theme-glow: rgba(168, 85, 247, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-plane-departure" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Turística y Viajes</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Generación de itinerarios turísticos en PDF y resolución de dudas de equipaje de aerolíneas.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: TRAVEL_OK</span><span>port: 3006</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('viajes')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-viajes-bot-promo', 'Suite de Viajes')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 17. PROSPECCIÓN -->
-            <div class="glow-card-cyber" style="--theme-color: #ffaa00; --theme-glow: rgba(255, 170, 0, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-bullseye" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Lead Outbound</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Rastreador masivo de prospectos locales en Google Maps y envío automatizado de propuestas.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: SCRAPE_RUN</span><span>port: 3007</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('prospeccion')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-prospeccion-bot-promo', 'Suite de Prospección')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 18. WEBS -->
-            <div class="glow-card-cyber" style="--theme-color: #2563eb; --theme-glow: rgba(37, 99, 235, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-code" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Creador Web</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Generador de landing pages por formulario que inyecta datos y despliega en R2 de forma autónoma.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: DEPLOY_OK</span><span>port: 3008</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('webs')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-webs-bot-promo', 'Suite de Desarrolladores')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 19. RECURSOS HUMANOS -->
-            <div class="glow-card-cyber" style="--theme-color: #00f2ff; --theme-glow: rgba(0, 242, 255, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-users-gear" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Quiosco de RH</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Pre-entrevistas masivas automáticas por WhatsApp, calificación de perfil y entrega de reporte analítico.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: RECRUIT_RUN</span><span>port: 3009</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('rh')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-rh-bot-promo', 'Suite de RH')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 20. INSTAGRAM -->
-            <div class="glow-card-cyber" style="--theme-color: #39ff14; --theme-glow: rgba(57, 255, 20, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-brands fa-instagram" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Instagram Creator</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Auto-respuesta certificada en DMs de Instagram y desvío de tráfico de Leads directo a WhatsApp.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: META_API_OK</span><span>port: 3010</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('instagram')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-instagram-bot-promo', 'Suite de Instagram')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 21. FACEBOOK -->
-            <div class="glow-card-cyber" style="--theme-color: #ff007f; --theme-glow: rgba(255, 0, 127, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-brands fa-facebook" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Meta Social Seller</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Modera comentarios con respuestas humanas contextuales individuales y vende directo por Messenger.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: FB_FLOW_OK</span><span>port: 3011</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('facebook')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-facebook-bot-promo', 'Suite de Facebook')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 22. YOUTUBE -->
-            <div class="glow-card-cyber" style="--theme-color: #a855f7; --theme-glow: rgba(168, 85, 247, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-brands fa-youtube" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite YouTube Cash Cow</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Canales de video automatizados sin rostro. Genera guiones, locución realista y renderiza Shorts.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: YT_RENDER</span><span>port: 3012</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('youtube')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-youtube-bot-promo', 'Suite de YouTube')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 23. TWITTER -->
-            <div class="glow-card-cyber" style="--theme-color: #ffaa00; --theme-glow: rgba(255, 170, 0, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-brands fa-x-twitter" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Growth X-Twitter</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Growth Hacker autónomo que monitorea tendencias en tiempo real, redacta hilos virales e interactúa.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: X_STREAM</span><span>port: 3013</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('twitter')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-twitter-bot-promo', 'Suite de Twitter')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 24. CIBERSEGURIDAD -->
-            <div class="glow-card-cyber" style="--theme-color: #2563eb; --theme-glow: rgba(37, 99, 235, 0.45); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px;">
-                <span class="hud-corner top-left"></span><span class="hud-corner top-right"></span><span class="hud-corner bottom-left"></span><span class="hud-corner bottom-right"></span>
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; color: var(--theme-color);">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 1.25rem; text-shadow: 0 0 10px var(--theme-glow);"></i>
-                        <h4 style="font-family: 'Poppins', sans-serif; font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: #fff; margin: 0; letter-spacing: 0.5px;">Suite Consultoría Ciber</h4>
-                    </div>
-                    <p style="font-family: 'Poppins', sans-serif; font-size: 0.80rem; color: #94a3b8; line-height: 1.5; margin-top: 12px; margin-bottom: 0;">
-                        Escáner de vulnerabilidades de router perimetrales y traducción legal de fallas a multas LFPDPPP.
-                    </p>
-                </div>
-                <div>
-                    <div class="hud-telemetry"><span>SYS.SYS: SEC_AUDIT</span><span>port: 3014</span></div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button class="btn-choose" onclick="window.app.ui.openDemoVisor('ciber')" style="width: 50%; font-size: 0.72rem; border: 1px solid rgba(255,255,255,0.15) !important; color: #fff; background: transparent; padding: 10px 0;">VER DEMO</button>
-                        <button class="btn-choose" onclick="window.app.ui.requestPurchase('cfg-ciber-bot-promo', 'Suite Ciberseguridad')" style="width: 50%; font-size: 0.72rem; background: linear-gradient(135deg, #ff6600, #ff3300) !important; color: #fff !important; font-weight: 800; border: none; padding: 10px 0; text-shadow: none; box-shadow: 0 0 15px rgba(255,102,0,0.4);">COMPRAR</button>
-                    </div>
-                </div>
-            </div>
+            
 
         </div> <!-- CIERRE DE gallery-grid -->
 
@@ -1242,21 +916,34 @@ window.rxSubmitPerfeccionamiento = function(e) {
 
     <!-- VENTANA INFORMATIVA DE ÉXITO AUTOMÁTICO POST-STRIPE -->
     <div id="post-payment-modal" style="display:none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 999999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
-        <div style="background: #070d1a; border: 1px solid #00f2ff; border-radius: 12px; max-width: 440px; width: 100%; padding: 35px 25px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.25); box-sizing: border-box;">
-            <div style="width: 55px; height: 55px; background: rgba(46, 204, 113, 0.15); border: 2px solid #2ecc71; color: #2ecc71; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; font-size: 1.5rem; font-weight: bold;">✓</div>
-            <h2 style="color: #ffffff; font-size: 1.3rem; font-weight: 600; margin: 0 0 10px 0;">¡ORDEN CONFIRMADA!</h2>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin: 0 0 15px 0; line-height: 1.5;">
-                Tu pago de <span style="color: #ffd700; font-weight: 600;">$255.00 MXN</span> por la <span style="color: #00f2ff; font-weight: 500;">Suite Digital Robotiax</span> ha sido procesado con éxito.
+        <div style="background: #070d1a; border: 1px solid #00f2ff; border-radius: 12px; max-width: 460px; width: 100%; padding: 28px 22px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.25); box-sizing: border-box;">
+            <div style="width: 52px; height: 52px; background: rgba(46, 204, 113, 0.15); border: 2px solid #2ecc71; color: #2ecc71; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 1.4rem; font-weight: bold;">✓</div>
+            <h2 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin: 0 0 8px 0;">¡ORDEN CONFIRMADA!</h2>
+            <p style="color: #cbd5e1; font-size: 0.8rem; margin: 0 0 12px 0; line-height: 1.45;">
+                Adquiriste: <strong id="success-product-name" style="color: #00f2ff;">Suite Digital Robotiax (100 Mensajes)</strong>
             </p>
-            <div style="background: rgba(0, 242, 255, 0.04); border: 1px dashed rgba(0, 242, 255, 0.3); border-radius: 8px; padding: 16px; margin-bottom: 22px; text-align: left;">
-                <p style="color: #cbd5e1; font-size: 0.78rem; margin: 0; line-height: 1.5;">
-                    📩 <strong>Tu instructivo técnico y accesos han sido enviados automáticamente</strong> al correo electrónico que ingresaste durante tu pago en Stripe.<br><br>
-                    <span style="color: #e11d48; font-weight: 500;">⚠️ IMPORTANTE:</span> Si no lo ves en tu bandeja principal en los próximos minutos, revisa tu carpeta de <strong>SPAM o Correo no deseado</strong>.
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; text-align: left; font-size: 0.76rem; color: #cbd5e1; line-height: 1.65;">
+                <div style="display:flex; justify-content:space-between;"><span>Folio:</span><strong id="success-folio" style="color:#ffffff;">ORD-CONFIRMADA</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><strong id="success-subtotal" style="color:#ffffff;">$219.83 MXN</strong></div>
+                <div style="display:flex; justify-content:space-between;"><span>IVA (16%):</span><strong id="success-iva" style="color:#ffffff;">$35.17 MXN</strong></div>
+                <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(148,163,184,0.3); margin-top:4px; padding-top:4px;"><span>Total Pagado (IVA incl.):</span><strong id="success-total" style="color:#ffd700;">$255.00 MXN</strong></div>
+            </div>
+            <div style="background: rgba(0, 242, 255, 0.04); border: 1px dashed rgba(0, 242, 255, 0.3); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; text-align: left;">
+                <p style="color: #cbd5e1; font-size: 0.74rem; margin: 0; line-height: 1.5;">
+                    📩 <strong>Tu instructivo técnico y Token de Seguridad han sido enviados</strong> al correo que ingresaste en tu compra (revisa también <strong>SPAM</strong>).
                 </p>
             </div>
-            <button onclick="window.app.payments.closePostPaymentModal()" style="width: 100%; background: #00f2ff; color: #020617; border: none; padding: 14px; font-weight: 600; font-size: 0.82rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.2s;">
-                ENTENDIDO
-            </button>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <a href="conectar.html" style="width: 100%; display:block; background: #25d366; color: #020617; border: none; padding: 12px; font-weight: 800; font-size: 0.78rem; border-radius: 6px; text-decoration: none; text-transform: uppercase;">
+                    VINCULAR WHATSAPP CON QR AHORA ➔
+                </a>
+                <a href="panel.html" style="width: 100%; display:block; background: #00f2ff; color: #020617; border: none; padding: 12px; font-weight: 800; font-size: 0.78rem; border-radius: 6px; text-decoration: none; text-transform: uppercase;">
+                    IR A MI PANEL DE CHATS EN VIVO
+                </a>
+                <button onclick="window.app.payments.closePostPaymentModal()" style="width: 100%; background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 10px; font-weight: 600; font-size: 0.74rem; border-radius: 6px; cursor: pointer; text-transform: uppercase;">
+                    CERRAR AVISO
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1266,7 +953,7 @@ window.rxSubmitPerfeccionamiento = function(e) {
         </h2>
         <div style="width: 100%; max-width: 650px; margin: 0 auto; background: rgba(10, 25, 47, 0.4); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 10px; padding: 20px; box-sizing: border-box; text-align: left;">
             <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 400; line-height: 1.4;">
-                Por tu pago de <span style="color: #ffd700; font-weight: 500;">$200 MXN + IVA ($255.00 MXN Final)</span> obtienes:
+                Por tu pago de <span style="color: #ffd700; font-weight: 500;">$255.00 MXN Finales (Subtotal $219.83 + IVA 16% $35.17)</span> obtienes:
             </p>
             <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
                 <li style="font-size: 0.78rem; color: #94a3b8; line-height: 1.4; font-weight: 300;">
@@ -1356,7 +1043,7 @@ window.rxSubmitPerfeccionamiento = function(e) {
         <div class="modal-content">
             <h2 style="font-family: 'Orbitron', sans-serif; color: #FFD700; margin-bottom: 10px; font-size: 1.2rem;">MAKUMOTO & ROBOTIAX PAY</h2>
             <p style="font-family: 'Rajdhani', sans-serif; color: #fff; margin-bottom: 20px;">
-                <span id="modal-template-name">Suite Digital</span> | $200 MXN + IVA ($255.00 Final)
+                <span id="modal-template-name">Suite Digital</span> | Subtotal $219.83 + IVA $35.17 ($255.00 MXN Total)
             </p>
 
             <div id="paypal-actual-button" style="width: 100%;"></div>
@@ -1421,8 +1108,8 @@ window.rxSubmitPerfeccionamiento = function(e) {
                 <button type="button" onclick="window.app.editor.close()" style="flex: 1; padding: 12px 8px; background: transparent; border: 1px solid #64748b; color: #cbd5e1; font-weight: 600; font-size: 0.70rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; white-space: nowrap;">
                     CANCELAR
                 </button>
-                <button type="button" onclick="window.app.editor.submitOrder()" style="flex: 2.2; padding: 12px 8px; background: #00f2ff; border: none; color: #020617; font-weight: 800; font-size: 0.68rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.2px; white-space: nowrap;">
-                    CONTINUAR AL PAGO ($255 MXN)
+                <button id="editor-submit-pay-btn" type="button" onclick="window.app.editor.submitOrder()" style="flex: 2.2; padding: 12px 8px; background: #00f2ff; border: none; color: #020617; font-weight: 800; font-size: 0.68rem; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.2px; white-space: nowrap;">
+                    CONTINUAR AL PAGO ($255.00 MXN)
                 </button>
             </div>
         </div>

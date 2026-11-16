@@ -1061,16 +1061,16 @@ window.app.demo = {
                     Tu bot de agendamiento automatizado está aprovisionado en tu VPS privado. Sigue estos pasos para activarlo en tu teléfono:
                 </p>
                 <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl text-left text-[11px] text-slate-600 space-y-2 mb-6">
-                    <div><strong>1.</strong> Ve a la consola de control: <a href="https://bot.ikai.info" target="_blank" class="text-blue-600 font-bold underline">bot.ikai.info</a>.</div>
-                    <div><strong>2.</strong> Inicia sesión con el token enviado a tu correo de confirmación.</div>
+                    <div><strong>1.</strong> Ve a la consola de control: <a href="https://robotiax.shop/conectar.html" target="_blank" class="text-blue-600 font-bold underline">robotiax.shop/conectar.html</a>.</div>
+                    <div><strong>2.</strong> Inicia sesión con tu correo y el token enviado en tu confirmación.</div>
                     <div><strong>3.</strong> Escanea el código QR desde Dispositivos Vinculados en tu app de WhatsApp.</div>
                 </div>
                 <div class="flex flex-col gap-3">
                     <button onclick="window.open('${waUrl}', '_blank')" class="bg-[#25d366] hover:bg-[#20ba56] text-white font-['Inter'] font-black text-xs py-3.5 rounded-xl transition-all shadow-md shadow-[#25d366]/10 uppercase tracking-wider">
                         💬 CHATEAR CON TU BOT ACTIVO
                     </button>
-                    <button onclick="window.open('https://bot.ikai.info', '_blank')" class="text-xs text-blue-600 font-bold hover:text-blue-800 hover:underline">
-                        Ir a Consola de Vinculación (bot.ikai.info)
+                    <button onclick="window.open('https://robotiax.shop/conectar.html', '_blank')" class="text-xs text-blue-600 font-bold hover:text-blue-800 hover:underline">
+                        Ir a Consola de Vinculación QR
                     </button>
                 </div>
             </div>
@@ -1086,7 +1086,7 @@ window.app.demo = {
         const phoneRaw = data.telefono || document.getElementById('meta-val-3')?.textContent || '';
         const cleanPhone = phoneRaw.replace(/\D/g, '');
         const businessName = encodeURIComponent(data.negocio || 'su negocio');
-        const waTarget = cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20una%20cita%20con%20${businessName}.` : 'https://bot.ikai.info';
+        const waTarget = cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20una%20cita%20con%20${businessName}.` : 'https://robotiax.shop/conectar.html';
         window.open(waTarget, '_blank');
     },
 
@@ -1119,8 +1119,8 @@ window.app.demo = {
                         </div>
                     </div>
                     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
-                        <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
-                        <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
+                        <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://robotiax.shop/conectar.html" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">robotiax.shop/conectar.html</a></p>
+                        <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa tu correo y token provisional enviado a tu buzón.</p>
                         <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:8px;">
@@ -1668,7 +1668,7 @@ window.app.demo = {
             } else {
                 this._showToast("CONECTANDO CON MAKUMOTO & ROBOTIAX PAY (STRIPE)...");
                 localStorage.setItem('pending_purchase_id', productId);
-                const stripeUrl = 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f?allow_promotion_codes=true';
+                const stripeUrl = 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u?allow_promotion_codes=true';
                 if (window.top && window.top !== window) {
                     window.top.location.href = stripeUrl;
                 } else {

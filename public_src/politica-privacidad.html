@@ -100,7 +100,7 @@
             <!-- 02 -->
             <div class="data-shield gold">
                 <h2><i class="fas fa-credit-card"></i> 02. PROCESAMIENTO FINANCIERO DELEGADO: MAKUMOTO & ROBOTIAX PAY EN STRIPE</h2>
-                <p>Para la adquisición de plantillas web ($99 MXN), suites digitales completas ($200 MXN + IVA = $255 MXN), unidades tácticas de IA y escudos de seguridad en USD, <strong>ROBOTIAX y MAKUMOTO delegan íntegra y formalmente el procesamiento bancario en STRIPE</strong> (Stripe Payments Mexico S. de R.L. de C.V. / Stripe Inc.) bajo el consorcio operativo <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>.</p>
+                <p>Para la adquisición de suites digitales completas y planes de mensajería con precios totales IVA incluido —<strong>Plan Básico 100 mensajes: $255.00 MXN</strong> (Subtotal $219.83 + IVA $35.17), <strong>Plan Crecimiento 300 mensajes: $500.00 MXN</strong> (Subtotal $431.03 + IVA $68.97) y <strong>Plan Élite Ilimitado: $599.00 MXN</strong> (Subtotal $516.38 + IVA $82.62)—, servicios adicionales ($89.00 MXN) y unidades de catálogo, <strong>ROBOTIAX y MAKUMOTO delegan íntegra y formalmente el procesamiento bancario en STRIPE</strong> (Stripe Payments Mexico S. de R.L. de C.V. / Stripe Inc.) bajo el consorcio operativo <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>.</p>
                 <p>• <span class="highlight-gold">Inmunidad Bancaria en Servidores Locales:</span> ROBOTIAX <strong>no almacena, no procesa ni tiene acceso a números de tarjetas de crédito o débito completas, fechas de expiración ni códigos de seguridad CVC/CVV</strong>. Todo el cobro bancario se ejecuta bajo cifrado militar TLS/SSL de 256 bits y certificación PCI-DSS Nivel 1 en los servidores seguros de Stripe.</p>
             </div>
 
@@ -117,24 +117,27 @@
 
             <!-- 04 -->
             <div class="data-shield green">
-                <h2><i class="fas fa-cloud-upload-alt"></i> 04. COMPILACIÓN ESTÁTICA Y ALMACENAMIENTO EN CLOUDFLARE R2 Y DOMINIOS IKAI.INFO</h2>
-                <p>Una vez confirmada la orden, la información proporcionada es compilada dinámicamente mediante el motor de plantillas de Robotiax y alojada como archivo HTML estático independiente en el servicio de almacenamiento distribuido <span class="highlight-green">Cloudflare R2</span> bajo la ruta <code>sitios/{slug}.html</code>, asociándose de forma inmediata al subdominio asignado de cortesía bajo la estructura <code>https://{negocio_slug}.ikai.info</code>.</p>
-                <p>• Los sitios web desplegados son públicos en internet conforme al propósito comercial contratado por el cliente para proyectar su presencia en línea.</p>
+                <h2><i class="fas fa-cloud-upload-alt"></i> 04. COMPILACIÓN ESTÁTICA EN AWS S3, CLOUDFLARE Y SUBDOMINIOS IKAI.INFO</h2>
+                <p>Una vez confirmada la orden, la información comercial proporcionada se compila dinámicamente y se aloja como archivo HTML estático independiente en infraestructura de <span class="highlight-green">Amazon Web Services (AWS S3)</span> y entrega perimetral de Cloudflare bajo la ruta <code>sitios/{slug}.html</code>, asociándose al subdominio bajo la estructura <code>https://{negocio_slug}.ikai.info</code>.</p>
+                <p>• Los sitios web desplegados son públicos en internet conforme al propósito comercial contratado por el cliente para proyectar su negocio en línea.</p>
             </div>
 
             <!-- 05 -->
             <div class="data-shield">
-                <h2><i class="fas fa-robot"></i> 05. PRIVACIDAD EN MOTORES DE IA (GOOGLE VERTEX AI / GEMINI 2.5 FLASH)</h2>
-                <p>Los módulos de inteligencia artificial del catálogo (IA Contable, Legal, Proyecciones, etc.) y el asistente comercial *Sales Architect* (`agente.html`) procesan solicitudes a través de la infraestructura empresarial de <span class="highlight-cyan">Google Vertex AI</span> utilizando el modelo <code>gemini-2.5-flash</code>.</p>
-                <p>• <span class="highlight-cyan">Garantía de No Reentrenamiento:</span> Los datos operativos, consultas técnicas o prompts ingresados por los clientes se procesan de forma estrictamente transitoria y encriptada. <strong>No se utilizan para entrenar modelos públicos de lenguaje de terceros ni se comercializan con intermediarios de datos</strong>.</p>
+                <h2><i class="fas fa-robot"></i> 05. PRIVACIDAD EN RESPUESTAS AUTOMATIZADAS NATIVAS</h2>
+                <p>El Bot de WhatsApp opera mediante un <strong>motor conversacional determinista propietario de ROBOTIAX</strong> que utiliza exclusivamente los parámetros comerciales registrados por el comprador (horarios, dirección, servicios y tarifas).</p>
+                <p>• <span class="highlight-cyan">Cero Envío a Terceros de IA:</span> Las conversaciones de WhatsApp procesadas por el bot estándar <strong>no se envían ni se utilizan para entrenar modelos públicos de inteligencia artificial externos</strong> ni se comercializan con intermediarios de datos.</p>
             </div>
 
             <!-- 06 -->
             <div class="data-shield punk">
-                <h2><i class="fab fa-whatsapp"></i> 06. PRIVACIDAD EN EL GATEWAY DE WHATSAPP (BOT.IKAI.INFO)</h2>
-                <p>Para la activación del Bot autónomo de WhatsApp de agendamiento, se aprovisiona una instancia técnica dedicada en nuestro servidor gateway accesible en <code>bot.ikai.info</code>.</p>
-                <p>• La vinculación se ejecuta mediante el escaneo voluntario de un código QR temporal generado con un token de seguridad único enviado al correo del comprador.</p>
-                <p>• ROBOTIAX actúa exclusivamente como puente de software para la ejecución del flujo automático. <strong>No almacenamos en bases de datos los mensajes personales, audios, fotos o conversaciones privadas que los clientes finales sostengan con el número de WhatsApp del comprador</strong>.</p>
+                <h2><i class="fab fa-whatsapp"></i> 06. PRIVACIDAD EN WHATSAPP (AWS BOT.IKAI.INFO), CHATS EN VIVO Y PROHIBICIÓN DE VIDEO</h2>
+                <p>Para operar el Bot autónomo de WhatsApp y su bandeja de Chats en Vivo, se aprovisiona una instancia dedicada en nuestro servidor en <span class="highlight-punk">Amazon Web Services (AWS EC2)</span> bajo <code>bot.ikai.info</code>, vinculada únicamente cuando el comprador ingresa su Token de Seguridad en <code>robotiax.shop/conectar.html</code> y escanea voluntariamente el código QR desde su teléfono.</p>
+                <ul>
+                    <li><span class="highlight-cyan">Registro de Mensajes para Panel en Vivo:</span> Para que el comprador pueda visualizar sus conversaciones en vivo en <code>robotiax.shop/panel.html</code>, contabilizar su cuota mensual y ejecutar la pausa automática de 2 minutos (<em>Hand-off</em> humano), ROBOTIAX almacena de forma aislada y cifrada en Cloud Firestore únicamente el <strong>historial de texto</strong> de los chats vinculados a su instancia mientras su membresía esté activa.</li>
+                    <li><span class="highlight-punk">No Procesamiento de Videos:</span> Por seguridad e integridad de red, ROBOTIAX <strong>prohíbe el envío de videos</strong> y <strong>no descarga, almacena ni reproduce archivos de video</strong> entrantes; si un tercero envía un video, únicamente se registra una nota textual de aviso.</li>
+                    <li><span class="highlight-gold">Roles Legales (Responsable vs. Encargado):</span> Respecto a los datos de terceros/pacientes que escriban al número de WhatsApp del comprador, <strong>EL COMPRADOR actúa como único Responsable del Tratamiento</strong> y está obligado a contar con su propio Aviso de Privacidad frente a sus clientes; ROBOTIAX actúa exclusivamente como <strong>Encargado del Tratamiento</strong> técnico bajo instrucciones automatizadas del comprador.</li>
+                </ul>
             </div>
 
             <!-- 07 -->
@@ -162,10 +165,10 @@
                 <h2><i class="fas fa-user-lock"></i> 10. PROVEEDORES DE INFRAESTRUCTURA Y SERVICIOS EN LA NUBE</h2>
                 <p>Para garantizar una disponibilidad del 99.9% y velocidad en tiempo real, los datos técnicos se gestionan a través de proveedores certificados con los más altos estándares globales de seguridad:</p>
                 <ul>
-                    <li><strong>Google Cloud Platform & Firebase:</strong> Bases de datos Firestore, Cloud Functions y computación de Vertex AI.</li>
-                    <li><strong>Cloudflare R2:</strong> Alojamiento distribuido de sitios estáticos de alta velocidad.</li>
-                    <li><strong>IONOS / Infraestructura VPS:</strong> Alojamiento de la pasarela y contenedores del bot de WhatsApp.</li>
-                    <li><strong>Stripe Payments:</strong> Procesamiento financiero, validación antifraude y timbrado fiscal automatizado.</li>
+                    <li><strong>Amazon Web Services (AWS EC2 & S3):</strong> Alojamiento del motor gateway de WhatsApp (<code>bot.ikai.info</code>) y almacenamiento estático de sitios web.</li>
+                    <li><strong>Google Cloud Platform & Firebase:</strong> Hosting de <code>robotiax.shop</code>, Cloud Functions y base de datos cifrada Firestore.</li>
+                    <li><strong>Cloudflare & Route 53:</strong> Resolución DNS, proxy perimetral y protección contra ataques DDoS.</li>
+                    <li><strong>Stripe Payments:</strong> Procesamiento financiero certificado PCI-DSS Nivel 1, validación antifraude y facturación.</li>
                 </ul>
             </div>
 
@@ -225,7 +228,7 @@
                 <p>Para dar cumplimiento riguroso a la ley y evitar la dispersión de solicitudes, los canales de atención quedan divididos de forma obligatoria:</p>
                 <ul>
                     <li><span class="highlight-gold">Canal Jurídico Exclusivo (Derechos A.R.C.O. y Asuntos Legales):</span> Para ejercer sus derechos de Acceso, Rectificación, Cancelación u Oposición respecto de sus datos personales, el titular deberá dirigir su solicitud exclusivamente a: <strong class="highlight-gold" style="font-family:'Share Tech Mono';">legal@robotiax.shop</strong>.</li>
-                    <li><span class="highlight-cyan">Canal Operativo y de Soporte:</span> Para cualquier duda de configuración técnica, vinculación de WhatsApp, facturación ordinaria o dudas comerciales, comuníquese a: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong> o <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong>.</li>
+                    <li><span class="highlight-cyan">Canal Operativo y de Soporte:</span> Para cualquier duda de configuración técnica, vinculación de WhatsApp, facturación ordinaria o dudas comerciales, comuníquese a: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong>.</li>
                 </ul>
                 <p>• <span class="highlight-punk">Plazo de Auditoría Técnica de Cancelación:</span> Toda solicitud de cancelación de expedientes o depuración definitiva de datos estará sujeta a una auditoría técnica y financiera interna en un plazo de <span class="highlight-cyan">30 a 90 días hábiles</span> para certificar que no existan controversias fiscales, pasivos de servicio o requerimientos de autoridad pendientes.</p>
             </div>
@@ -245,8 +248,8 @@
             <!-- 02 -->
             <div class="data-shield gold">
                 <h2><i class="fas fa-credit-card"></i> 02. DELEGATED FINANCIAL PROCESSING: MAKUMOTO & ROBOTIAX PAY ON STRIPE</h2>
-                <p>For the acquisition of web templates ($99 MXN), full digital suites ($200 MXN + VAT), AI tactical units, and cybersecurity shields in USD, <strong>ROBOTIAX and MAKUMOTO formally delegate all payment and checkout processing to STRIPE</strong> (Stripe Payments Mexico / Stripe Inc.) under the official operating consortium <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>.</p>
-                <p>• <span class="highlight-gold">Banking Immunity on Local Servers:</span> ROBOTIAX <strong>never captures, processes, logs, or stores full credit/debit card numbers (PAN), expiration dates, or CVC/CVV security codes on its servers</strong>. All banking workflows execute under 256-bit military-grade TLS/SSL encryption and PCI-DSS Level 1 certification directly within Stripe's secured cloud.</p>
+                <p>For the acquisition of digital suites and messaging plans with VAT-inclusive final pricing —<strong>Basic Plan 100 messages: $255.00 MXN</strong> (Subtotal $219.83 + VAT $35.17), <strong>Growth Plan 300 messages: $500.00 MXN</strong> (Subtotal $431.03 + VAT $68.97), and <strong>Unlimited Elite Plan: $599.00 MXN</strong> (Subtotal $516.38 + VAT $82.62)—, add-ons ($89.00 MXN), and catalog units, <strong>ROBOTIAX and MAKUMOTO formally delegate all payment processing to STRIPE</strong> under <span class="highlight-cyan">"MAKUMOTO & ROBOTIAX PAY"</span>.</p>
+                <p>• <span class="highlight-gold">Banking Immunity on Local Servers:</span> ROBOTIAX <strong>never captures, processes, logs, or stores full credit/debit card numbers (PAN), expiration dates, or CVC/CVV security codes on its servers</strong>. All banking workflows execute under 256-bit TLS/SSL encryption and PCI-DSS Level 1 certification directly within Stripe's secured cloud.</p>
             </div>
 
             <!-- 03 -->
@@ -262,24 +265,27 @@
 
             <!-- 04 -->
             <div class="data-shield green">
-                <h2><i class="fas fa-cloud-upload-alt"></i> 04. STATIC COMPILATION & HOSTING ON CLOUDFLARE R2 AND IKAI.INFO</h2>
-                <p>Upon order confirmation, user-supplied data is dynamically compiled via Robotiax's engine and deployed as a standalone static HTML file in the distributed storage service <span class="highlight-green">Cloudflare R2</span> under the path <code>sitios/{slug}.html</code>, immediately bound to the courtesy subdomain structure <code>https://{negocio_slug}.ikai.info</code>.</p>
-                <p>• Deployed websites are publicly accessible on the internet in accordance with the commercial purpose contracted by the client to project their brand online.</p>
+                <h2><i class="fas fa-cloud-upload-alt"></i> 04. STATIC COMPILATION ON AWS S3, CLOUDFLARE & IKAI.INFO</h2>
+                <p>Upon order confirmation, commercial business data is dynamically compiled and deployed as a standalone static HTML file on <span class="highlight-green">Amazon Web Services (AWS S3)</span> with Cloudflare edge delivery under <code>sitios/{slug}.html</code>, immediately bound to <code>https://{negocio_slug}.ikai.info</code>.</p>
+                <p>• Deployed websites are publicly accessible on the internet in accordance with the commercial purpose contracted by the client.</p>
             </div>
 
             <!-- 05 -->
             <div class="data-shield">
-                <h2><i class="fas fa-robot"></i> 05. PRIVACY ON AI ENGINES (GOOGLE VERTEX AI / GEMINI 2.5 FLASH)</h2>
-                <p>Tactical AI catalog modules (Accounting AI, Legal, Projections, etc.) and the *Sales Architect* assistant (`agente.html`) process natural language requests through enterprise <span class="highlight-cyan">Google Vertex AI</span> infrastructure powered by the <code>gemini-2.5-flash</code> model.</p>
-                <p>• <span class="highlight-cyan">Zero Retraining Guarantee:</span> Operational data, technical queries, and prompts provided by clients are processed in a transient and encrypted manner. <strong>They are never used to train public third-party foundational models, nor are they brokered to data aggregators</strong>.</p>
+                <h2><i class="fas fa-robot"></i> 05. PRIVACY ON NATIVE AUTOMATED RESPONSES</h2>
+                <p>The WhatsApp Bot operates via a <strong>proprietary deterministic conversational engine owned by ROBOTIAX</strong> that uses exclusively the business parameters registered by the buyer (hours, address, services, and fees).</p>
+                <p>• <span class="highlight-cyan">Zero External AI Training:</span> Standard WhatsApp conversations processed by the bot <strong>are never transmitted to or used to train external public AI models</strong> and are never brokered to data aggregators.</p>
             </div>
 
             <!-- 06 -->
             <div class="data-shield punk">
-                <h2><i class="fab fa-whatsapp"></i> 06. PRIVACY ON THE WHATSAPP GATEWAY (BOT.IKAI.INFO)</h2>
-                <p>To activate the autonomous WhatsApp scheduling bot, a dedicated technical instance is provisioned on our gateway server hosted at <code>bot.ikai.info</code>.</p>
-                <p>• Linking is performed through voluntary scanning of a temporary QR code generated with a unique security token dispatched to the buyer's email.</p>
-                <p>• ROBOTIAX acts strictly as software infrastructure. <strong>We do not store in databases private messages, audios, photos, or confidential conversations exchanged between end clients and the buyer's WhatsApp business line</strong>.</p>
+                <h2><i class="fab fa-whatsapp"></i> 06. PRIVACY ON WHATSAPP (AWS BOT.IKAI.INFO), LIVE CHATS & VIDEO BAN</h2>
+                <p>To operate the autonomous WhatsApp bot and Live Chat inbox, a dedicated technical instance is provisioned on <span class="highlight-punk">Amazon Web Services (AWS EC2)</span> at <code>bot.ikai.info</code>, linked only when the buyer enters their Security Token at <code>robotiax.shop/conectar.html</code> and voluntarily scans the QR code from their phone.</p>
+                <ul>
+                    <li><span class="highlight-cyan">Live Chat Text Storage:</span> To display live conversations inside <code>robotiax.shop/panel.html</code>, enforce monthly message quotas, and execute the 2-minute human <em>Hand-off</em> cooldown, ROBOTIAX stores encrypted <strong>text message history</strong> inside Cloud Firestore strictly while the subscription remains active.</li>
+                    <li><span class="highlight-punk">No Video Processing:</span> For security and network stability, ROBOTIAX <strong>prohibits video uploads/sending</strong> and <strong>never downloads, stores, or plays incoming video files</strong>; incoming videos only log a lightweight text notice.</li>
+                    <li><span class="highlight-gold">Data Controller vs. Processor:</span> Regarding third-party end users who message the buyer's WhatsApp number, <strong>THE BUYER acts as sole Data Controller</strong> and must maintain their own Privacy Notice; ROBOTIAX acts solely as a technical <strong>Data Processor</strong>.</li>
+                </ul>
             </div>
 
             <!-- 07 -->
@@ -307,10 +313,10 @@
                 <h2><i class="fas fa-user-lock"></i> 10. CLOUD INFRASTRUCTURE & CERTIFIED PROCESSORS</h2>
                 <p>To ensure 99.9% uptime and real-time execution, data is managed through certified cloud infrastructure partners adhering to rigorous global security standards:</p>
                 <ul>
-                    <li><strong>Google Cloud Platform & Firebase:</strong> Firestore real-time databases, Cloud Functions, and Vertex AI models.</li>
-                    <li><strong>Cloudflare R2:</strong> High-speed distributed static hosting with zero latency.</li>
-                    <li><strong>IONOS / VPS Infrastructure:</strong> Gateway hosting for WhatsApp containers.</li>
-                    <li><strong>Stripe Payments:</strong> Bank-grade transactional processing and automated tax compliance.</li>
+                    <li><strong>Amazon Web Services (AWS EC2 & S3):</strong> WhatsApp gateway hosting (<code>bot.ikai.info</code>) and static site storage.</li>
+                    <li><strong>Google Cloud Platform & Firebase:</strong> <code>robotiax.shop</code> hosting, Cloud Functions, and encrypted Firestore.</li>
+                    <li><strong>Cloudflare & Route 53:</strong> DNS resolution, edge proxy, and DDoS mitigation.</li>
+                    <li><strong>Stripe Payments:</strong> PCI-DSS Level 1 financial processing, fraud screening, and automated invoicing.</li>
                 </ul>
             </div>
 
@@ -342,8 +348,8 @@
 
             <!-- 14 -->
             <div class="data-shield">
-                <h2><i class="fas fa-history"></i> 14. DATA RETENTION & STATUTORY AUDIT SCHEDULE</h2>
-                <p>Digital orders and purchase records are maintained in our systems while the service remains active and throughout statutory periods required by commercial and tax laws (up to 5 years for corporate transactions).</p>
+                <h2><i class="fas fa-history"></i> 14. DATA RETENTION & 30-DAY DECOMMISSIONING</h2>
+                <p>Websites, WhatsApp containers, and live chat records remain active during the 30-day paid period. Upon expiration without renewal, <span class="highlight-punk">the subdomain website, live chat history, and WhatsApp bot instance are permanently decommissioned</span> without liability for ROBOTIAX, retaining only minimal billing records required by tax laws.</p>
             </div>
 
             <!-- 15 -->
@@ -370,7 +376,7 @@
                 <p>To ensure strict legal compliance and prevent inquiry dilution, communication channels are segregated:</p>
                 <ul>
                     <li><span class="highlight-gold">Exclusive Legal Channel (A.R.C.O. & Compliance):</span> To exercise rights of Access, Rectification, Cancellation, or Opposition, please direct formal written requests exclusively to: <strong class="highlight-gold" style="font-family:'Share Tech Mono';">legal@robotiax.shop</strong>.</li>
-                    <li><span class="highlight-cyan">Operations & Technical Support Channel:</span> For technical configuration, WhatsApp bot onboarding, standard billing, or presale questions, contact: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong> or <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong>.</li>
+                    <li><span class="highlight-cyan">Operations & Technical Support Channel:</span> For technical configuration, WhatsApp bot onboarding, standard billing, or presale questions, contact: <strong class="highlight-cyan" style="font-family:'Share Tech Mono';">contacto@robotiax.shop</strong>.</li>
                 </ul>
                 <p>• <span class="highlight-punk">Technical Audit Period for Account Purging:</span> Any request for permanent account cancellation and record deletion is subject to an internal technical and compliance audit lasting between <span class="highlight-cyan">30 to 90 business days</span> to verify that no pending tax liabilities or contractual disputes remain open.</p>
             </div>

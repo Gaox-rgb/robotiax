@@ -67,6 +67,180 @@ window.app.ui = {
         if (modal) modal.classList.remove('visible');
     },
 
+    erpModeEnabled: false,
+
+    switchSegment: function(segment) {
+        const pymeView = document.getElementById('segment-pyme');
+        const entView = document.getElementById('segment-enterprise');
+        const btnPyme = document.getElementById('btn-seg-pyme');
+        const btnEnt = document.getElementById('btn-seg-enterprise');
+
+        const isEnt = segment === 'enterprise';
+        if (pymeView) pymeView.style.display = isEnt ? 'none' : 'block';
+        if (entView) entView.style.display = isEnt ? 'block' : 'none';
+
+        if (btnPyme) {
+            btnPyme.style.background = isEnt ? 'rgba(15,23,42,0.85)' : '#00f2ff';
+            btnPyme.style.color = isEnt ? '#cbd5e1' : '#020617';
+        }
+        if (btnEnt) {
+            btnEnt.style.background = isEnt ? '#ffd700' : 'rgba(15,23,42,0.85)';
+            btnEnt.style.color = isEnt ? '#020617' : '#ffd700';
+        }
+    },
+
+    toggleErpPricing: function(withErp) {
+        this.erpModeEnabled = Boolean(withErp);
+        const btnNo = document.getElementById('btn-erp-off');
+        const btnYes = document.getElementById('btn-erp-on');
+        if (btnNo) {
+            btnNo.style.background = withErp ? 'transparent' : '#00f2ff';
+            btnNo.style.color = withErp ? '#cbd5e1' : '#020617';
+        }
+        if (btnYes) {
+            btnYes.style.background = withErp ? '#39ff14' : 'transparent';
+            btnYes.style.color = withErp ? '#020617' : '#39ff14';
+        }
+
+        const p100Price = document.getElementById('dw-price-100');
+        const p100Iva = document.getElementById('dw-iva-100');
+        const p100ErpRow = document.getElementById('dw-erp-feat-100');
+        const p100Btn = document.getElementById('dw-btn-100');
+
+        const p300Price = document.getElementById('dw-price-300');
+        const p300Iva = document.getElementById('dw-iva-300');
+        const p300ErpRow = document.getElementById('dw-erp-feat-300');
+        const p300Btn = document.getElementById('dw-btn-300');
+
+        const pUnlPrice = document.getElementById('dw-price-unl');
+        const pUnlIva = document.getElementById('dw-iva-unl');
+        const pUnlErpRow = document.getElementById('dw-erp-feat-unl');
+        const pUnlBtn = document.getElementById('dw-btn-unl');
+
+        if (withErp) {
+            if (p100Price) p100Price.innerHTML = '$455.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span>';
+            if (p100Iva) p100Iva.textContent = 'Subtotal: $392.24 + IVA (16%): $62.76 MXN (Incluye ERP +$200)';
+            if (p100ErpRow) p100ErpRow.style.display = 'block';
+            if (p100Btn) p100Btn.textContent = 'ELEGIR BÁSICO + ERP ($455 MXN)';
+
+            if (p300Price) p300Price.innerHTML = '$800.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span>';
+            if (p300Iva) p300Iva.textContent = 'Subtotal: $689.66 + IVA (16%): $110.34 MXN (Incluye ERP +$300)';
+            if (p300ErpRow) p300ErpRow.style.display = 'block';
+            if (p300Btn) p300Btn.textContent = 'ELEGIR 300 + ERP ($800 MXN)';
+
+            if (pUnlPrice) pUnlPrice.innerHTML = '$1,598.00 <span style="font-size: 0.78rem; color: #cbd5e1;">MXN/mes</span>';
+            if (pUnlIva) pUnlIva.textContent = 'Subtotal: $1,377.59 + IVA (16%): $220.41 MXN (Incluye ERP +$999)';
+            if (pUnlErpRow) pUnlErpRow.style.display = 'block';
+            if (pUnlBtn) pUnlBtn.textContent = 'ELEGIR ILIMITADO + ERP ($1,598 MXN) ➔';
+        } else {
+            if (p100Price) p100Price.innerHTML = '$255.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span>';
+            if (p100Iva) p100Iva.textContent = 'Subtotal: $219.83 + IVA (16%): $35.17 MXN';
+            if (p100ErpRow) p100ErpRow.style.display = 'none';
+            if (p100Btn) p100Btn.textContent = 'ELEGIR PLAN BÁSICO ($255 MXN)';
+
+            if (p300Price) p300Price.innerHTML = '$500.00 <span style="font-size: 0.78rem; color: #94a3b8;">MXN/mes</span>';
+            if (p300Iva) p300Iva.textContent = 'Subtotal: $431.03 + IVA (16%): $68.97 MXN';
+            if (p300ErpRow) p300ErpRow.style.display = 'none';
+            if (p300Btn) p300Btn.textContent = 'ELEGIR PLAN 300 ($500 MXN)';
+
+            if (pUnlPrice) pUnlPrice.innerHTML = '$599.00 <span style="font-size: 0.78rem; color: #cbd5e1;">MXN/mes</span>';
+            if (pUnlIva) pUnlIva.textContent = 'Subtotal: $516.38 + IVA (16%): $82.62 MXN';
+            if (pUnlErpRow) pUnlErpRow.style.display = 'none';
+            if (pUnlBtn) pUnlBtn.textContent = 'ELEGIR PLAN ILIMITADO ($599 MXN) ➔';
+        }
+    },
+
+    selectPlan: function(baseTag) {
+        const suffix = this.erpModeEnabled ? '_ERP' : '';
+        const finalTag = ((baseTag === 'PLAN_300' || baseTag === 'PLAN_UNLIMITED') ? baseTag : 'PLAN_100') + suffix;
+        localStorage.setItem('pending_plan_tag', finalTag);
+
+        document.querySelectorAll('.rx-dw-plan-card').forEach(card => {
+            card.classList.remove('rx-dw-selected');
+        });
+        const cardKey = (baseTag === 'PLAN_300' || baseTag === 'PLAN_UNLIMITED') ? baseTag : 'PLAN_100';
+        const selectedCard = document.getElementById('dw-card-' + cardKey);
+        if (selectedCard) selectedCard.classList.add('rx-dw-selected');
+
+        const badgeEl = document.getElementById('dw-selected-plan-banner');
+        const names = {
+            PLAN_100: 'Plan Básico (100 Mensajes — $255.00 MXN IVA incl.)',
+            PLAN_300: 'Plan Crecimiento (300 Mensajes — $500.00 MXN IVA incl.)',
+            PLAN_UNLIMITED: 'Plan Élite Ilimitado (Mensajes Ilimitados — $599.00 MXN IVA incl.)',
+            PLAN_100_ERP: 'Plan Básico + ERP PyME (100 Mensajes — $455.00 MXN IVA incl.)',
+            PLAN_300_ERP: 'Plan Crecimiento + ERP PyME (300 Mensajes — $800.00 MXN IVA incl.)',
+            PLAN_UNLIMITED_ERP: 'Plan Élite Ilimitado + ERP (Mensajes Ilimitados — $1,598.00 MXN IVA incl.)'
+        };
+        if (badgeEl) {
+            badgeEl.textContent = '✓ Plan seleccionado: ' + names[finalTag] + ' — Ahora elige tu plantilla abajo:';
+            badgeEl.style.display = 'block';
+        }
+        const tables = document.getElementById('tablas');
+        if (tables) tables.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    submitB2BLead: async function(e, leadType) {
+        if (e) e.preventDefault();
+        const isAdvisor = leadType === 'advisor';
+        const prefix = isAdvisor ? 'adv-' : 'ent-';
+        const biz = (document.getElementById(prefix + 'company')?.value || '').trim();
+        const phone = (document.getElementById(prefix + 'phone')?.value || '').trim();
+        const email = (document.getElementById(prefix + 'email')?.value || '').trim();
+        const need = (document.getElementById(prefix + 'need')?.value || '').trim();
+        const budget = (document.getElementById(prefix + 'budget')?.value || '').trim();
+        const statusEl = document.getElementById(prefix + 'status');
+
+        if (!biz || !phone || !email) {
+            alert('Por favor completa empresa, WhatsApp y correo.');
+            return;
+        }
+
+        if (statusEl) {
+            statusEl.textContent = 'Enviando solicitud de estudio...';
+            statusEl.style.color = '#00f2ff';
+            statusEl.style.display = 'block';
+        }
+
+        const endpoint = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
+            : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder';
+
+        const folio = 'LEAD-' + (isAdvisor ? 'ASESOR' : 'CORP') + '-' + Date.now().toString().slice(-6);
+        try {
+            await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025'
+                },
+                body: JSON.stringify({
+                    template: isAdvisor ? 'lead-asesor-pyme' : 'lead-gran-empresa',
+                    details: {
+                        folio: folio,
+                        negocio: biz,
+                        telefono: phone,
+                        email: email,
+                        servicios: need,
+                        fee: budget || 'Previo Estudio',
+                        isDraft: true,
+                        leadType: leadType,
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+            if (statusEl) {
+                statusEl.textContent = '✓ Solicitud registrada (' + folio + '). Un especialista de Robotiax te contactará por WhatsApp/Correo en menos de 24h.';
+                statusEl.style.color = '#4ade80';
+            }
+            e.target.reset();
+        } catch (err) {
+            if (statusEl) {
+                statusEl.textContent = 'Error enviando solicitud. Escríbenos directo a contacto@robotiax.shop.';
+                statusEl.style.color = '#fda4af';
+            }
+        }
+    },
+
     requestPurchase: function(templateId, templateName) {
         console.log("Abriendo panel de personalización para:", templateId);
         this.selectedTemplate.id = templateId;

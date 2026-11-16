@@ -134,88 +134,8 @@ exports.generateDemo = onRequest({
             const requestedTemplate = req.query.template || 'demo_salud.html';
             const originalHost = req.query.originalHost || req.headers['x-original-host'] || req.headers.host || '';
 
-            // INTERCEPTOR SOBERANO: Consola Oficial de Vinculación de WhatsApp en bot.ikai.info
             if (originalHost.includes('bot.ikai.info') || req.headers.host === 'bot.ikai.info') {
-                const botConsoleHtml = `
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Robotiax | Consola de Vinculación de WhatsApp</title>
-                    <script src="https://cdn.tailwindcss.com"></script>
-                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                </head>
-                <body class="bg-slate-950 text-white font-['Poppins'] min-h-screen flex flex-col justify-between p-4">
-                    <header class="w-full max-w-xl mx-auto flex items-center justify-between border-b border-slate-800 pb-4 pt-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="font-['Orbitron'] font-black text-xs text-emerald-400 tracking-wider">ROBOTIAX // BOT MANAGER</span>
-                        </div>
-                        <span class="text-[10px] text-slate-500 font-mono">GATEWAY v2.5</span>
-                    </header>
-
-                    <main class="w-full max-w-md mx-auto my-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center">
-                        <div class="w-14 h-14 bg-emerald-500/10 border border-emerald-500/30 text-[#25d366] rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-lg shadow-emerald-500/10">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </div>
-
-                        <div>
-                            <h1 class="text-base sm:text-lg font-black uppercase text-white font-['Orbitron'] tracking-wide">Vincular tu Asistente</h1>
-                            <p class="text-xs text-slate-400 mt-1">Conecta tu número oficial de WhatsApp con tu inteligencia artificial en 3 pasos.</p>
-                        </div>
-
-                        <!-- Formulario de Validación de Token -->
-                        <div id="step-token-box" class="space-y-3 text-left">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Token de Seguridad (Enviado a tu correo):</label>
-                            <input type="text" id="token-input" placeholder="Ej: A8X9K2" class="w-full p-3.5 bg-slate-950 border border-slate-700 rounded-xl text-center font-mono text-sm tracking-widest text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 uppercase">
-                            <button onclick="verificarYGenerarQR()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20">
-                                Validar y Generar Código QR
-                            </button>
-                        </div>
-
-                        <!-- Panel de QR Dinámico -->
-                        <div id="step-qr-box" class="hidden space-y-4 pt-2">
-                            <div class="bg-white p-4 rounded-2xl inline-block mx-auto shadow-xl">
-                                <img id="qr-display-img" src="" alt="Código QR WhatsApp" class="w-48 h-48 mx-auto">
-                            </div>
-                            <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-xl text-left text-[11px] text-slate-300 space-y-1.5">
-                                <p class="text-emerald-400 font-bold text-xs uppercase mb-1">Pasos en tu teléfono:</p>
-                                <p><strong>1.</strong> Abre WhatsApp en tu celular.</p>
-                                <p><strong>2.</strong> Toca <em>Ajustes</em> o <em>Menú (tres puntos)</em> ➔ <strong>Dispositivos vinculados</strong>.</p>
-                                <p><strong>3.</strong> Toca <strong>Vincular un dispositivo</strong> y apunta tu cámara a este código QR.</p>
-                            </div>
-                            <span id="qr-status-indicator" class="text-[11px] text-emerald-400 font-bold flex items-center justify-center gap-2">
-                                <i class="fas fa-circle-notch fa-spin"></i> Esperando escaneo desde tu WhatsApp...
-                            </span>
-                        </div>
-                    </main>
-
-                    <footer class="text-center text-[10px] text-slate-600 pb-2">
-                        Robotiax Intelligence Infrastructure &copy; 2026. Soporte: contacto@robotiax.shop
-                    </footer>
-
-                    <script>
-                        function verificarYGenerarQR() {
-                            const token = document.getElementById('token-input').value.trim();
-                            if (!token) {
-                                alert('Por favor introduce tu token de seguridad de 6 dígitos.');
-                                return;
-                            }
-                            document.getElementById('step-token-box').classList.add('hidden');
-                            document.getElementById('step-qr-box').classList.remove('hidden');
-
-                            // Generación del código QR de autenticación para vincular WhatsApp
-                            const qrImg = document.getElementById('qr-display-img');
-                            const seed = encodeURIComponent('2@' + token + ',' + Date.now());
-                            qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + seed;
-                        }
-                    </script>
-                </body>
-                </html>
-                `;
-                return res.set('Content-Type', 'text/html').status(200).send(botConsoleHtml);
+                return res.redirect(302, 'https://robotiax.shop/conectar.html');
             }
 
            // Servir el diseño nativo demo_salud.html con hidratación automática en el cliente
@@ -610,6 +530,29 @@ await getDb().collection('orders_to_fulfill').doc(folio).set({
 }, { merge: true });
 console.log(`📝 [BUSINESS_SAVED]: Negocio "${details.negocio}" grabado bajo folio ${folio} (slug: ${negocioSlug}).`);
 
+if (template === 'lead-asesor-pyme' || template === 'lead-gran-empresa') {
+    const isCorp = template === 'lead-gran-empresa';
+    const mailerLead = getTransporter();
+    await mailerLead.sendMail({
+        from: '"Robotiax B2B Leads" <contacto@robotiax.shop>',
+        to: ['contacto@robotiax.shop', 'klvenoticias@gmail.com'],
+        replyTo: clientEmail || 'contacto@robotiax.shop',
+        subject: isCorp ? `🏛️ ESTUDIO GRAN EMPRESA: ${details.negocio} (${folio})` : `💼 LEAD ASESOR PYME: ${details.negocio} (${folio})`,
+        html: `
+            <div style="font-family: Arial, sans-serif; background: #020617; color: #e2e8f0; padding: 24px; border: 2px solid #ffd700; border-radius: 10px;">
+                <h2 style="color: #ffd700; margin-top: 0;">${isCorp ? '🏛️ SOLICITUD DE ESTUDIO CORPORATIVO' : '💼 SOLICITUD DE CONTADOR / ABOGADO PYME'}</h2>
+                <p><strong>Folio:</strong> ${folio}</p>
+                <p><strong>Empresa / PyME:</strong> ${details.negocio || '-'}</p>
+                <p><strong>WhatsApp:</strong> ${details.telefono || '-'}</p>
+                <p><strong>Correo:</strong> ${clientEmail || '-'}</p>
+                <p><strong>Requerimiento:</strong> ${details.servicios || '-'}</p>
+                <p><strong>Presupuesto / Tamaño:</strong> ${details.fee || '-'}</p>
+            </div>
+        `
+    }).catch(e => console.error('❌ Lead email falló:', e.message));
+    return res.status(200).json({ status: 'lead_registered', folio: folio });
+}
+
 // BLOQUEO DE SEGURIDAD: Ningún producto web envía correos al cliente antes de pagar en Stripe
 if (isWebProduct || template.startsWith('cfg-')) {
     return res.status(200).json({ status: 'awaiting_payment', folio: folio, negocioSlug: negocioSlug });
@@ -663,10 +606,10 @@ const adminMailHtml = `
                     <td style="padding: 8px; color: #666; font-size: 12px; width: 35%;">ENLACE WEB ACTIVO:</td>
                     <td style="padding: 8px;"><a href="https://${negocioSlug}.ikai.info" target="_blank" style="color: #00f2ff; font-weight: bold; text-decoration: none;">https://${negocioSlug}.ikai.info</a></td>
                 </tr>
-                ${isConfigurator ? `
+               ${isConfigurator ? `
                 <tr>
-                    <td style="padding: 8px; color: #666; font-size: 12px;">BOT DE WHATSAPP (VPS):</td>
-                    <td style="padding: 8px;"><a href="https://bot.ikai.info" target="_blank" style="color: #2ecc71; font-weight: bold; text-decoration: none;">Instancia: ${negocioSlug} (Token: ${tempPassword})</a></td>
+                    <td style="padding: 8px; color: #666; font-size: 12px;">CONSOLA WHATSAPP (QR):</td>
+                    <td style="padding: 8px;"><a href="https://robotiax.shop/conectar.html?token=${tempPassword}&email=${encodeURIComponent(clientEmail || '')}" target="_blank" style="color: #2ecc71; font-weight: bold; text-decoration: none;">Instancia: ${negocioSlug} (Token: ${tempPassword})</a></td>
                 </tr>` : ''}
             </table>
         </div>
@@ -777,16 +720,7 @@ const adminMailHtml = `
                 .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')");
         }
 
-        const putCommand = new PutObjectCommand({
-            Bucket: r2BucketName.value(),
-            Key: `sitios/${negocioSlug}.html`,
-            Body: htmlContent,
-            ContentType: "text/html; charset=utf-8"
-        });
-
-        await getS3().send(putCommand);
-        console.log(`✅ [R2_STATIC_SUCCESS]: Archivo estático cargado exitosamente en sitios/${negocioSlug}.html`);
-    const putCommandStatic = new PutObjectCommand({
+       const putCommandStatic = new PutObjectCommand({
             Bucket: awsBucketName.value(),
             Key: `sitios/${negocioSlug}.html`,
             Body: htmlContent,
@@ -799,45 +733,10 @@ const adminMailHtml = `
         console.error("❌ [S3_STATIC_ERROR]: Error compilando u hospedando sitio estático:", errStatic.message);
     }
 
-      // -------------------------------------------------------------------------
-    // APROVISIONAMIENTO AUTOMÁTICO DE INSTANCIA DE WHATSAPP (GATEWAY SAAS)
-    // -------------------------------------------------------------------------
-    // SOLICITUD DE INSTANCIA ACUÑADA EXCLUSIVAMENTE PARA CONFIGURACIONES DYNAMIC-BOT (SE CONDICIONA PARA EVITAR CARGAS EXTRAS EN $99)
     if (isConfigurator && !isWebProduct) {
-        const payloadGateway = { instanceName: negocioSlug, token: tempPassword, qrcode: true };
-        try {
-            console.log(`📡 [GATEWAY]: Solicitando creación automática de instancia de WhatsApp para: ${negocioSlug}...`);
-            
-            const gatewayUrl = 'https://bot.ikai.info/instance/create';
-            const gatewayToken = 'RBX-GATEWAY-MASTER-SECRET-2025'; 
-            
-            fetch(gatewayUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': gatewayToken
-                },
-                body: JSON.stringify(payloadGateway)
-            })
-            .then(async (gatewayRes) => {
-                if (gatewayRes.ok) {
-                    console.log(`✅ [GATEWAY_SUCCESS]: Instancia de WhatsApp "${negocioSlug}" aprovisionada.`);
-                } else {
-                    const errTxt = await gatewayRes.text();
-                    console.warn(`⚠️ [GATEWAY_WARN]: El Gateway de WhatsApp rechazó la creación: ${errTxt}`);
-                    // Registro preventivo de error controlado
-                    await logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `API rechazó creación: ${errTxt}`);
-                }
-            })
-            .catch(async (err) => {
-                console.error("❌ [GATEWAY_ERROR]: Fallo de red con IONOS:", err.message);
-                await logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `Fallo de conexión física: ${err.message}`);
-            });
-
-        } catch (gatewayError) {
-            console.error("❌ [GATEWAY_ERROR_FATAL]: Error fatal en llamada a Gateway:", gatewayError.message);
-            logFailedProvision(folio, 'IONOS_WHATSAPP_GATEWAY', payloadGateway, `Excepción en hilo: ${gatewayError.message}`);
-        }
+        provisionWhatsAppGateway(negocioSlug, tempPassword).catch(async (err) => {
+            await logFailedProvision(folio, 'AWS_WHATSAPP_GATEWAY', { instanceName: negocioSlug }, err.message);
+        });
     }
 
     const isPromoBot = template.endsWith('-promo');
@@ -896,13 +795,12 @@ const adminMailHtml = `
         const ivaNum = parseFloat((basePriceNum * 0.16).toFixed(2));
         const totalNum = parseFloat((basePriceNum * 1.16).toFixed(2));
 
-        // 5. SEGREGACIÓN DE EMAILS BASADO EN TIPO DE PRODUCTO (WEB ESTÁTICO $99 vs DYNAMIC CAMPAIGN $200)
         let clientReceiptHtml = "";
 
         if (isWebProduct) {
-            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #3b82f6; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡PEDIDO RECIBIDO! TU PLANTILLA ESTÁ EN PRODUCCIÓN</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos registrado la adquisición de tu plantilla web estática.</p></div>`;
+            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #3b82f6; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡PEDIDO RECIBIDO! TU PLANTILLA ESTÁ EN PRODUCCIÓN</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, hemos registrado la adquisición de tu plantilla web estática por <strong>$${totalNum.toFixed(2)} ${pData.currency}</strong> (Subtotal $${basePriceNum.toFixed(2)} + IVA $${ivaNum.toFixed(2)}).</p></div>`;
         } else {
-            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU SUITE ESTÁ ACTIVADA</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, confirmamos que tu orden de <strong>$${amountTotal} ${currency}</strong> ha sido procesada.</p></div>`;
+            clientReceiptHtml = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; color: #334155;"><h2 style="color: #16a34a; text-align: center; text-transform: uppercase; margin-bottom: 30px;">¡TODO LISTO! TU SUITE ESTÁ ACTIVADA</h2><p>Hola <strong>${details.negocio || 'Cliente Robotiax'}</strong>, confirmamos que tu orden de <strong>$255.00 MXN</strong> (Subtotal $219.83 MXN + IVA 16% $35.17 MXN) ha sido procesada.</p></div>`;
         }
 
         const mailer = getTransporter();
@@ -975,18 +873,818 @@ async function deployStaticToR2(negocioSlug, htmlContent, r2BucketName) {
     } catch (e) { return false; }
 }
 
-async function provisionWhatsAppGateway(negocioSlug, tempPassword) {
-    const gatewayUrl = 'https://bot.ikai.info/instance/create';
-    const gatewayToken = 'RBX-GATEWAY-MASTER-SECRET-2025';
-    try {
-        await fetch(gatewayUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': gatewayToken },
-            body: JSON.stringify({ instanceName: negocioSlug, token: tempPassword, qrcode: true })
-        });
-        return true;
-    } catch (e) { return false; }
+const EVOLUTION_API_URL = 'https://bot.ikai.info';
+const EVOLUTION_MASTER_KEY = 'RBX-GATEWAY-MASTER-SECRET-2025';
+const WHATSAPP_WEBHOOK_URL = 'https://us-central1-robotiax.cloudfunctions.net/whatsappWebhook';
+const HANDOFF_PAUSE_MS = 2 * 60 * 1000;
+
+async function evolutionRequest(endpoint, method = 'GET', bodyObj = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': EVOLUTION_MASTER_KEY
+        }
+    };
+    if (bodyObj) {
+        options.body = JSON.stringify(bodyObj);
+    }
+    const resp = await fetch(`${EVOLUTION_API_URL}${endpoint}`, options);
+    const rawText = await resp.text();
+    let parsed = {};
+    try { parsed = rawText ? JSON.parse(rawText) : {}; } catch (e) { parsed = { raw: rawText }; }
+    return { ok: resp.ok, status: resp.status, data: parsed };
 }
+
+async function ensureInstanceWebhook(instanceName) {
+    if (!instanceName) return false;
+    try {
+        const payload = {
+            webhook: {
+                enabled: true,
+                url: WHATSAPP_WEBHOOK_URL,
+                byEvents: false,
+                base64: false,
+                events: [
+                    'MESSAGES_UPSERT',
+                    'CONNECTION_UPDATE',
+                    'QRCODE_UPDATED'
+                ]
+            }
+        };
+        const resSet = await evolutionRequest(`/webhook/set/${encodeURIComponent(instanceName)}`, 'POST', payload);
+        return resSet.ok;
+    } catch (e) {
+        console.warn('⚠️ Error configurando webhook en Evolution:', e.message);
+        return false;
+    }
+}
+
+async function provisionWhatsAppGateway(negocioSlug, tempPassword) {
+    if (!negocioSlug) return false;
+    try {
+        const createPayload = {
+            instanceName: negocioSlug,
+            token: tempPassword || '',
+            qrcode: true,
+            integration: 'WHATSAPP-BAILEYS',
+            webhook: {
+                url: WHATSAPP_WEBHOOK_URL,
+                byEvents: false,
+                base64: false,
+                events: [
+                    'MESSAGES_UPSERT',
+                    'CONNECTION_UPDATE',
+                    'QRCODE_UPDATED'
+                ]
+            }
+        };
+        const resCreate = await evolutionRequest('/instance/create', 'POST', createPayload);
+        if (!resCreate.ok) {
+            await ensureInstanceWebhook(negocioSlug);
+        }
+        return true;
+    } catch (e) {
+        console.warn('⚠️ Error en provisionWhatsAppGateway:', e.message);
+        return false;
+    }
+}
+
+async function sendEvolutionText(instanceName, remoteJid, text) {
+    const cleanNumber = String(remoteJid || '').replace('@s.whatsapp.net', '');
+    const resSend = await evolutionRequest(`/message/sendText/${encodeURIComponent(instanceName)}`, 'POST', {
+        number: cleanNumber,
+        text: text
+    });
+    const sentId = resSend.data?.key?.id || resSend.data?.data?.key?.id || '';
+    return { ok: resSend.ok, sentId: sentId, data: resSend.data };
+}
+
+function normalizeTextForIntent(str) {
+    return String(str || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+}
+
+function detectAppointmentIntent(incomingText) {
+    const q = normalizeTextForIntent(incomingText);
+    const hasBookingWord = /\b(cita|agendar|agenda|reservar|reserva|apartar|programar|turno|consulta)\b/.test(q);
+    const hasDayOrTime = /\b(manana|hoy|lunes|martes|miercoles|jueves|viernes|sabado|domingo)\b/.test(q)
+        || /\b\d{1,2}(:\d{2})?\s?(am|pm|hrs|horas)\b/.test(q)
+        || /\b\d{1,2}\/\d{1,2}\b/.test(q);
+    return hasBookingWord || hasDayOrTime;
+}
+
+function generateFreeBotReply(orderData, incomingText, isVideo) {
+    const bizName = cleanVal(orderData.negocio, 'Nuestro Negocio');
+    if (isVideo) {
+        return `Hola 👋 En *${bizName}* no procesamos archivos de video por este medio. Por favor escríbenos tu consulta en texto y con gusto te atendemos.`;
+    }
+
+    const botCfg = orderData.botConfig || {};
+    const q = normalizeTextForIntent(incomingText);
+    const fee = cleanVal(botCfg.fee || orderData.fee, 'Consulta personalizada según tu requerimiento');
+    const hours = cleanVal(botCfg.horarios || orderData.horarios, 'Lunes a Viernes en horario comercial');
+    const address = cleanVal(botCfg.direccion || orderData.direccion, 'Atención directa y digital');
+    const phone = cleanVal(botCfg.telefono || orderData.telefono, '');
+    const services = cleanVal(botCfg.servicios || orderData.servicios || orderData.specialty, 'Atención y asesoría especializada');
+    const tagline = cleanVal(orderData.tagline || orderData.slogan, 'Gracias por contactarnos');
+    const extraInfo = cleanVal(botCfg.extraInfo, '');
+    const customWelcome = cleanVal(botCfg.welcomeMessage, '');
+
+    const faqs = Array.isArray(botCfg.faqs) ? botCfg.faqs : [];
+    for (const rule of faqs) {
+        const rawKeys = String(rule?.keywords || '').split(/[,;|]+/).map(k => normalizeTextForIntent(k)).filter(Boolean);
+        const answer = String(rule?.answer || '').trim();
+        if (answer && rawKeys.some(k => q.includes(k))) {
+            return answer;
+        }
+    }
+
+    if (/^(1|precio|precios|costo|costos|cuanto|tarifa|cobra|vale|cotiz|presupuesto)/.test(q) || /\b(precio|costo|cuanto|tarifa|cotizacion|presupuesto|vale)\b/.test(q)) {
+        return `💲 *Información de Costos — ${bizName}*\n\nEl costo base es: *${fee}*.\n*Servicios:* ${services}\n\nSi deseas apartar tu cita, indícanos tu nombre y el día/horario que prefieres.`;
+    }
+
+    if (/^(2|horario|horarios|hora|horas|abierto|abren|cierran|cuando)/.test(q) || /\b(horario|horarios|abierto|abren|cierran|atencion|sabado|domingo)\b/.test(q)) {
+        return `🕒 *Horarios de Atención — ${bizName}*\n\nTe atendemos en: *${hours}*.\n${phone ? `Teléfono directo: ${phone}\n` : ''}\n¿Te gustaría agendar una cita o consulta?`;
+    }
+
+    if (/^(3|ubicacion|direccion|donde|mapa|llegar|sucursal)/.test(q) || /\b(ubicacion|direccion|donde|estan|domicilio|calle|llegar)\b/.test(q)) {
+        return `📍 *Ubicación — ${bizName}*\n\nNos encontramos en: *${address}*.\nHorario: ${hours}.\n\n¿Deseas que te ayudemos a programar tu visita?`;
+    }
+
+    if (/^(4|cita|citas|agendar|reservar|servicio|servicios|especialidad|consulta)/.test(q) || /\b(cita|agendar|reservar|servicio|servicios|especialidades|informacion)\b/.test(q)) {
+        return `📅 *Servicios y Citas — ${bizName}*\n\nServicios: *${services}*.\nCosto base: *${fee}*\nHorarios: *${hours}*\n\nTu solicitud quedó registrada para nuestro equipo. Por favor confírmanos tu *nombre completo*, *servicio* y *día/hora* deseados.`;
+    }
+
+    if (/^(5|humano|asesor|persona|agente|ayuda)/.test(q) || /\b(humano|asesor|persona|alguien|operador)\b/.test(q)) {
+        return `👤 Entendido. He notificado a nuestro equipo de *${bizName}*. Un asesor humano revisará tu mensaje y te responderá por este mismo chat.`;
+    }
+
+    if (/^(hola|buenas|buen dia|buenos dias|buenas tardes|buenas noches|hi|hello|menu|inicio|info)/.test(q)) {
+        if (customWelcome) {
+            return `${customWelcome}\n\n*1.* 💲 Precios\n*2.* 🕒 Horarios\n*3.* 📍 Ubicación\n*4.* 📅 Servicios / Agendar cita\n*5.* 👤 Hablar con asesor`;
+        }
+        return `¡Hola! 👋 Bienvenido a *${bizName}* (_${tagline}_).\n\nSoy tu asistente virtual 24/7. Escribe el número o tu pregunta sobre lo que necesitas:\n\n*1.* 💲 Precios y costos\n*2.* 🕒 Horarios de atención\n*3.* 📍 Ubicación\n*4.* 📅 Servicios o agendar cita\n*5.* 👤 Hablar con un asesor`;
+    }
+
+    return `Gracias por escribir a *${bizName}* 🙌\n\n• *Servicios:* ${services}\n• *Costo base:* ${fee}\n• *Horario:* ${hours}\n• *Dirección:* ${address}${extraInfo ? `\n• *Info adicional:* ${extraInfo}` : ''}\n\nResponde con *1* (Precios), *2* (Horarios), *3* (Ubicación), *4* (Agendar cita) o *5* (Asesor humano).`;
+}
+
+async function findOrderByTokenOrEmail(tokenInput, emailInput) {
+    const cleanToken = String(tokenInput || '').trim().toUpperCase();
+    const cleanEmail = String(emailInput || '').trim().toLowerCase();
+    if (!cleanToken) return null;
+
+    const snap = await getDb().collection('orders_to_fulfill')
+        .where('provisionalPassword', '==', cleanToken)
+        .limit(10)
+        .get();
+
+    if (snap.empty) return null;
+
+    let selectedDoc = null;
+    for (const docSnap of snap.docs) {
+        const d = docSnap.data() || {};
+        const docEmail = String(d.email || '').trim().toLowerCase();
+        if (cleanEmail && docEmail === cleanEmail) {
+            selectedDoc = docSnap;
+            break;
+        }
+        if (!selectedDoc && d.status === 'paid_active') {
+            selectedDoc = docSnap;
+        }
+    }
+    if (!selectedDoc) {
+        if (cleanEmail) return null;
+        selectedDoc = snap.docs[0];
+    }
+    return selectedDoc;
+}
+
+async function checkAndTriggerQuotaMilestones(orderRef, orderData, newCount) {
+    const isUnlimited = Boolean(orderData.isUnlimited || orderData.planTier === 'unlimited');
+    if (isUnlimited) return;
+
+    const limit = Number(orderData.messageLimit || 100);
+    const alertsSent = orderData.alertsSent || {};
+    const updates = {};
+    const targetEmail = String(orderData.email || '').trim();
+    const bizName = cleanVal(orderData.negocio, 'Tu Negocio');
+    const folio = orderData.orderNumber || orderRef.id;
+    const panelLink = 'https://robotiax.shop/panel.html';
+
+    const pct = Math.round((newCount / limit) * 100);
+    let subjectToSend = '';
+    let bodyHighlight = '';
+
+    if (newCount > limit) {
+        updates.subscriptionActive = false;
+        updates.status = 'suspended_limit';
+        if (!alertsSent.suspended) {
+            updates['alertsSent.suspended'] = true;
+            subjectToSend = `⛔ SERVICIO SUSPENDIDO (${newCount > limit ? `${limit + 1}/${limit}` : `${newCount}/${limit}`}): Renueva tu Bot de WhatsApp (${bizName})`;
+            bodyHighlight = `Has alcanzado el límite de <strong>${limit} mensajes mensuales</strong> (entrantes + salientes). A partir del mensaje <strong>${limit + 1}</strong> tu bot de WhatsApp ha sido suspendido temporalmente.`;
+        }
+    } else if (newCount >= Math.floor(limit * 0.97) && !alertsSent.p97) {
+        updates['alertsSent.p97'] = true;
+        subjectToSend = `🚨 ÚLTIMO AVISO (${newCount}/${limit} mensajes - 97%): Tu Bot está por suspenderse`;
+        bodyHighlight = `Ya utilizaste <strong>${newCount} de ${limit} mensajes</strong> (${pct}%). Te quedan muy pocos mensajes antes de la suspensión automática en el mensaje ${limit + 1}.`;
+    } else if (newCount >= Math.floor(limit * 0.90) && !alertsSent.p90) {
+        updates['alertsSent.p90'] = true;
+        subjectToSend = `⚠️ Alerta 90% de Cuota (${newCount}/${limit} mensajes): Renueva o sube a Ilimitado`;
+        bodyHighlight = `Llevas <strong>${newCount} de ${limit} mensajes</strong> consumidos este mes (90%). Evita perder prospectos renovando a tiempo.`;
+    } else if (newCount >= Math.floor(limit * 0.80) && !alertsSent.p80) {
+        updates['alertsSent.p80'] = true;
+        subjectToSend = `📊 Aviso 80% de Cuota (${newCount}/${limit} mensajes) — ${bizName}`;
+        bodyHighlight = `Has alcanzado el <strong>80% de tu cuota mensual</strong> (${newCount} de ${limit} mensajes entre entrantes y salientes).`;
+    }
+
+    if (Object.keys(updates).length > 0) {
+        await orderRef.update(updates);
+    }
+
+    if (subjectToSend && targetEmail) {
+        try {
+            const mailer = getTransporter();
+            await mailer.sendMail({
+                from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
+                to: targetEmail,
+                subject: subjectToSend,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 540px; margin: auto; border: 1px solid #cbd5e1; border-radius: 10px; padding: 24px; color: #1e293b; background: #ffffff;">
+                        <h2 style="margin: 0 0 12px 0; color: #0f172a; font-size: 18px;">AVISO DE CUOTA — ${bizName}</h2>
+                        <p style="font-size: 13px; line-height: 1.6; color: #334155;">${bodyHighlight}</p>
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin: 16px 0; font-size: 12px;">
+                            <p style="margin: 0 0 8px 0; font-weight: bold; color: #0f172a;">Opciones de Renovación / Ampliación (Precios Totales IVA Incluido):</p>
+                            <ul style="margin: 0; padding-left: 18px; line-height: 1.7;">
+                                <li><strong>Plan Básico (100 mensajes / 30 días):</strong> $255.00 MXN (Subtotal $219.83 + IVA $35.17)</li>
+                                <li><strong>Plan Crecimiento (300 mensajes / 30 días):</strong> $500.00 MXN (Subtotal $431.03 + IVA $68.97)</li>
+                                <li><strong>⭐ Plan Élite Ilimitado (Mensajes Ilimitados / 30 días):</strong> $599.00 MXN (Subtotal $516.38 + IVA $82.62)</li>
+                            </ul>
+                        </div>
+                        <a href="${panelLink}" target="_blank" style="display: block; text-align: center; background: #00f2ff; color: #020617; font-weight: 800; padding: 12px 16px; border-radius: 8px; text-decoration: none; text-transform: uppercase; font-size: 12px;">
+                            IR A MI PANEL PARA RENOVAR O SUBIR A ILIMITADO ➔
+                        </a>
+                        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 14px;">Folio: ${folio} • ROBOTIAX Engine</p>
+                    </div>
+                `
+            });
+        } catch (mailErr) {
+            console.error('❌ Error enviando correo de alerta de cuota:', mailErr.message);
+        }
+    }
+}
+
+exports.whatsappWebhook = onRequest({
+    cors: true,
+    timeoutSeconds: 60,
+    memory: "512MiB"
+}, async (req, res) => {
+    if (req.method === 'GET') {
+        return res.status(200).json({ ok: true, service: 'robotiax-whatsapp-webhook' });
+    }
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
+
+    try {
+        const body = req.body || {};
+        const rawEvent = String(body.event || '').toUpperCase().replace(/\./g, '_');
+        const instanceName = String(body.instance || body.instanceName || body.data?.instance || '').trim();
+
+        if (!instanceName) {
+            return res.status(200).json({ ignored: true, reason: 'missing_instance' });
+        }
+
+        const orderSnap = await getDb().collection('orders_to_fulfill')
+            .where('negocio_slug', '==', instanceName)
+            .limit(5)
+            .get();
+
+        if (orderSnap.empty) {
+            return res.status(200).json({ ignored: true, reason: 'order_not_found' });
+        }
+
+        let orderDoc = orderSnap.docs.find(d => d.data()?.status === 'paid_active') || orderSnap.docs[0];
+        const orderRef = orderDoc.ref;
+        const orderData = orderDoc.data() || {};
+
+        if (rawEvent === 'CONNECTION_UPDATE') {
+            const state = body.data?.state || body.data?.status || '';
+            if (state) {
+                await orderRef.set({
+                    whatsappStatus: state,
+                    whatsappUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            }
+            return res.status(200).json({ ok: true, event: rawEvent, state });
+        }
+
+        if (rawEvent === 'QRCODE_UPDATED') {
+            await orderRef.set({
+                whatsappStatus: 'connecting',
+                whatsappUpdatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            return res.status(200).json({ ok: true, event: rawEvent });
+        }
+
+        if (rawEvent !== 'MESSAGES_UPSERT') {
+            return res.status(200).json({ ok: true, ignored: rawEvent });
+        }
+
+        const msgObj = Array.isArray(body.data) ? body.data[0] : (body.data?.messages?.[0] || body.data);
+        if (!msgObj || !msgObj.key) {
+            return res.status(200).json({ ignored: true, reason: 'no_message_key' });
+        }
+
+        const remoteJid = String(msgObj.key.remoteJid || '');
+        if (!remoteJid || remoteJid === 'status@broadcast' || remoteJid.endsWith('@g.us')) {
+            return res.status(200).json({ ignored: true, reason: 'group_or_status' });
+        }
+
+        const fromMe = Boolean(msgObj.key.fromMe);
+        const msgId = String(msgObj.key.id || `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`);
+        const pushName = String(msgObj.pushName || remoteJid.split('@')[0]);
+        const msgContent = msgObj.message || {};
+
+        if (msgContent.protocolMessage || msgContent.senderKeyDistributionMessage) {
+            return res.status(200).json({ ignored: true, reason: 'protocol_message' });
+        }
+
+        const isVideo = Boolean(msgContent.videoMessage || msgContent.ptvMessage);
+        let text = '';
+        if (isVideo) {
+            text = '[Video recibido - formato no permitido por el plan]';
+        } else {
+            text = msgContent.conversation
+                || msgContent.extendedTextMessage?.text
+                || msgContent.imageMessage?.caption
+                || msgContent.documentMessage?.caption
+                || msgContent.buttonsResponseMessage?.selectedDisplayText
+                || msgContent.listResponseMessage?.title
+                || (msgContent.audioMessage ? '[Nota de voz recibida]' : '')
+                || (msgContent.imageMessage ? '[Imagen recibida]' : '')
+                || '[Mensaje recibido]';
+        }
+
+        const chatId = remoteJid.replace(/[^a-zA-Z0-9@._-]/g, '_');
+        const chatRef = orderRef.collection('chats').doc(chatId);
+        const msgDocRef = chatRef.collection('messages').doc(msgId);
+
+        const existingMsgSnap = await msgDocRef.get();
+        if (existingMsgSnap.exists) {
+            return res.status(200).json({ ok: true, deduplicated: true });
+        }
+
+        const chatSnap = await chatRef.get();
+        const chatData = chatSnap.exists ? (chatSnap.data() || {}) : {};
+        const nowMs = Date.now();
+
+        if (fromMe) {
+            const botSentMarker = await orderRef.collection('bot_sent_ids').doc(msgId).get();
+            const isRecentBotEcho = Boolean(
+                chatData.lastBotReplyText
+                && chatData.lastBotReplyAt
+                && (nowMs - Number(chatData.lastBotReplyAt) < 15000)
+                && chatData.lastBotReplyText === text
+            );
+
+            if (botSentMarker.exists || isRecentBotEcho) {
+                return res.status(200).json({ ok: true, botEchoSkipped: true });
+            }
+
+            await msgDocRef.set({
+                id: msgId,
+                sender: 'human',
+                text: text,
+                fromMe: true,
+                timestampMs: nowMs,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            await chatRef.set({
+                chatId: chatId,
+                remoteJid: remoteJid,
+                contactName: chatData.contactName || remoteJid.split('@')[0],
+                lastMessage: text,
+                lastSender: 'human',
+                lastMessageAt: nowMs,
+                lastHumanReplyAt: nowMs,
+                botPausedUntil: nowMs + HANDOFF_PAUSE_MS
+            }, { merge: true });
+
+            await orderRef.update({
+                messageCount: admin.firestore.FieldValue.increment(1)
+            });
+            const nextHumanCount = Number(orderData.messageCount || 0) + 1;
+            await checkAndTriggerQuotaMilestones(orderRef, orderData, nextHumanCount);
+
+            return res.status(200).json({ ok: true, humanHandoffActivated: true });
+        }
+
+        const isUnlimited = Boolean(orderData.isUnlimited || orderData.planTier === 'unlimited');
+        const limit = Number(orderData.messageLimit || 100);
+        const currentCount = Number(orderData.messageCount || 0);
+        const isExpired = Boolean(orderData.expiresAt && nowMs > Date.parse(orderData.expiresAt));
+        const isAlreadySuspended = Boolean(orderData.subscriptionActive === false || orderData.status === 'suspended_limit');
+
+        const writePromises = [
+            msgDocRef.set({
+                id: msgId,
+                sender: 'customer',
+                text: text,
+                fromMe: false,
+                isVideo: isVideo,
+                timestampMs: nowMs,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            }),
+            chatRef.set({
+                chatId: chatId,
+                remoteJid: remoteJid,
+                contactName: pushName,
+                lastMessage: text,
+                lastSender: 'customer',
+                lastMessageAt: nowMs
+            }, { merge: true }),
+            orderRef.update({
+                messageCount: admin.firestore.FieldValue.increment(1)
+            })
+        ];
+
+        if (!isVideo && detectAppointmentIntent(text)) {
+            const cleanPhone = remoteJid.replace('@s.whatsapp.net', '');
+            writePromises.push(
+                orderRef.collection('appointments').doc(chatId).set({
+                    id: chatId,
+                    contactName: pushName,
+                    phone: cleanPhone,
+                    note: text.slice(0, 300),
+                    status: 'pendiente',
+                    source: 'whatsapp_auto',
+                    createdAtMs: nowMs,
+                    updatedAtMs: nowMs
+                }, { merge: true })
+            );
+        }
+
+        await Promise.all(writePromises);
+        const afterIncomingCount = currentCount + 1;
+
+        await checkAndTriggerQuotaMilestones(orderRef, orderData, afterIncomingCount);
+
+        if (isAlreadySuspended || isExpired || (!isUnlimited && afterIncomingCount >= limit)) {
+            if (!isUnlimited && afterIncomingCount >= limit && !isAlreadySuspended) {
+                await checkAndTriggerQuotaMilestones(orderRef, orderData, limit + 1);
+            }
+            return res.status(200).json({ ok: true, botSkipped: 'suspended_or_limit_reached' });
+        }
+
+        const isManualPaused = Boolean(chatData.manualBotPaused === true);
+        const isHandoffActive = Boolean(chatData.botPausedUntil && nowMs < Number(chatData.botPausedUntil));
+
+        if (isManualPaused || isHandoffActive) {
+            return res.status(200).json({ ok: true, botSilent: true, reason: isManualPaused ? 'manual_pause' : 'handoff_2min' });
+        }
+
+        const replyText = generateFreeBotReply(orderData, text, isVideo);
+        const replyTs = Date.now();
+
+        await chatRef.set({
+            lastBotReplyText: replyText,
+            lastBotReplyAt: replyTs
+        }, { merge: true });
+
+        const sendResult = await sendEvolutionText(instanceName, remoteJid, replyText);
+        if (sendResult.ok) {
+            const botMsgId = sendResult.sentId || `bot_${replyTs}_${Math.random().toString(36).slice(2, 6)}`;
+            await Promise.all([
+                orderRef.collection('bot_sent_ids').doc(botMsgId).set({ createdAt: replyTs }),
+                chatRef.collection('messages').doc(botMsgId).set({
+                    id: botMsgId,
+                    sender: 'bot',
+                    text: replyText,
+                    fromMe: true,
+                    timestampMs: replyTs,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp()
+                }),
+                chatRef.set({
+                    lastMessage: replyText,
+                    lastSender: 'bot',
+                    lastMessageAt: replyTs
+                }, { merge: true }),
+                orderRef.update({
+                    messageCount: admin.firestore.FieldValue.increment(1)
+                })
+            ]);
+            const afterBotCount = afterIncomingCount + 1;
+            await checkAndTriggerQuotaMilestones(orderRef, orderData, afterBotCount);
+        }
+
+        return res.status(200).json({ ok: true, replied: sendResult.ok });
+    } catch (err) {
+        console.error('❌ ERROR en whatsappWebhook:', err);
+        return res.status(200).json({ error: err.message });
+    }
+});
+
+exports.whatsappClientApi = onRequest({
+    cors: true,
+    timeoutSeconds: 60,
+    memory: "512MiB"
+}, async (req, res) => {
+    setCorsHeaders(req, res);
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send('');
+    }
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
+    }
+
+    try {
+        const { action, token, email, chatId, text, paused } = req.body || {};
+        if (!token) {
+            return res.status(401).json({ error: 'Falta tu Token de Seguridad.' });
+        }
+
+        const orderDoc = await findOrderByTokenOrEmail(token, email);
+        if (!orderDoc) {
+            return res.status(403).json({ error: 'Token o correo no válidos. Revisa tu correo de bienvenida.' });
+        }
+
+        const orderRef = orderDoc.ref;
+        const orderData = orderDoc.data() || {};
+        const instanceName = orderData.negocio_slug;
+        const limit = Number(orderData.messageLimit || 100);
+        const count = Number(orderData.messageCount || 0);
+        const isUnlimited = Boolean(orderData.isUnlimited || orderData.planTier === 'unlimited');
+        const isExpired = Boolean(orderData.expiresAt && Date.now() > Date.parse(orderData.expiresAt));
+        const isSuspended = Boolean(orderData.subscriptionActive === false || orderData.status === 'suspended_limit' || (!isUnlimited && count > limit) || isExpired);
+
+        const botCfg = orderData.botConfig || {};
+        const safeSummary = {
+            folio: orderData.orderNumber || orderDoc.id,
+            negocio: orderData.negocio || 'Mi Negocio',
+            negocio_slug: instanceName,
+            email: orderData.email || '',
+            siteUrl: instanceName ? `https://${instanceName}.ikai.info` : 'https://robotiax.shop',
+            whatsappStatus: orderData.whatsappStatus || 'close',
+            planTier: orderData.planTier || (isUnlimited ? 'unlimited' : (limit >= 300 ? 'pro_300' : 'basic_100')),
+            planName: orderData.planName || (isUnlimited ? 'Plan Élite Ilimitado' : `Plan ${limit} Mensajes`),
+            messageCount: count,
+            messageLimit: limit,
+            isUnlimited: isUnlimited,
+            subscriptionActive: !isSuspended,
+            status: isSuspended ? 'suspended_limit' : (orderData.status || 'paid_active'),
+            expiresAt: orderData.expiresAt || null,
+            botProfile: {
+                horarios: botCfg.horarios || orderData.horarios || '',
+                direccion: botCfg.direccion || orderData.direccion || '',
+                telefono: botCfg.telefono || orderData.telefono || '',
+                fee: botCfg.fee || orderData.fee || '',
+                servicios: botCfg.servicios || orderData.servicios || orderData.specialty || '',
+                welcomeMessage: botCfg.welcomeMessage || '',
+                extraInfo: botCfg.extraInfo || '',
+                faqs: Array.isArray(botCfg.faqs) ? botCfg.faqs : []
+            }
+        };
+
+        if (action === 'verify_and_qr' || action === 'connection_state') {
+            if (!instanceName) {
+                return res.status(400).json({ error: 'Instancia no asignada a esta orden.' });
+            }
+
+            let stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
+            if (!stateRes.ok && stateRes.status === 404) {
+                await provisionWhatsAppGateway(instanceName, orderData.provisionalPassword);
+                stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
+            } else {
+                await ensureInstanceWebhook(instanceName);
+            }
+
+            const connState = stateRes.data?.instance?.state || stateRes.data?.state || 'close';
+            let qrBase64 = null;
+            let qrCodeRaw = null;
+
+            if (action === 'verify_and_qr' && connState !== 'open') {
+                const qrRes = await evolutionRequest(`/instance/connect/${encodeURIComponent(instanceName)}`, 'GET');
+                qrBase64 = qrRes.data?.base64 || qrRes.data?.qrcode?.base64 || null;
+                qrCodeRaw = qrRes.data?.code || qrRes.data?.qrcode?.code || null;
+                if (qrBase64 && !qrBase64.startsWith('data:image')) {
+                    qrBase64 = `data:image/png;base64,${qrBase64}`;
+                }
+            }
+
+            return res.status(200).json({
+                ok: true,
+                state: connState,
+                qrBase64: qrBase64,
+                qrCode: qrCodeRaw,
+                summary: safeSummary
+            });
+        }
+
+        if (action === 'logout_instance') {
+            await evolutionRequest(`/instance/logout/${encodeURIComponent(instanceName)}`, 'DELETE');
+            return res.status(200).json({ ok: true, state: 'close', summary: safeSummary });
+        }
+
+        if (action === 'get_chats') {
+            const chatsSnap = await orderRef.collection('chats')
+                .orderBy('lastMessageAt', 'desc')
+                .limit(50)
+                .get();
+            const nowMs = Date.now();
+            const chats = chatsSnap.docs.map(d => {
+                const c = d.data() || {};
+                const handoffRemainingSec = (c.botPausedUntil && nowMs < Number(c.botPausedUntil))
+                    ? Math.ceil((Number(c.botPausedUntil) - nowMs) / 1000)
+                    : 0;
+                return {
+                    chatId: d.id,
+                    remoteJid: c.remoteJid || d.id,
+                    contactName: c.contactName || d.id.split('@')[0],
+                    lastMessage: c.lastMessage || '',
+                    lastSender: c.lastSender || 'customer',
+                    lastMessageAt: c.lastMessageAt || 0,
+                    manualBotPaused: Boolean(c.manualBotPaused),
+                    handoffRemainingSec: handoffRemainingSec
+                };
+            });
+            return res.status(200).json({ ok: true, state: safeSummary.whatsappStatus, chats: chats, summary: safeSummary });
+        }
+
+        if (action === 'get_messages') {
+            if (!chatId) return res.status(400).json({ error: 'Falta chatId' });
+            const msgsSnap = await orderRef.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestampMs', 'asc')
+                .limit(100)
+                .get();
+            const messages = msgsSnap.docs.map(d => d.data());
+            const chatDoc = await orderRef.collection('chats').doc(chatId).get();
+            const c = chatDoc.exists ? (chatDoc.data() || {}) : {};
+            const nowMs = Date.now();
+            const handoffRemainingSec = (c.botPausedUntil && nowMs < Number(c.botPausedUntil))
+                ? Math.ceil((Number(c.botPausedUntil) - nowMs) / 1000)
+                : 0;
+            return res.status(200).json({
+                ok: true,
+                messages: messages,
+                chatMeta: {
+                    manualBotPaused: Boolean(c.manualBotPaused),
+                    handoffRemainingSec: handoffRemainingSec
+                },
+                summary: safeSummary
+            });
+        }
+
+        if (action === 'send_manual_reply') {
+            const cleanText = String(text || '').trim();
+            if (!cleanText) {
+                return res.status(400).json({ error: 'El mensaje no puede estar vacío.' });
+            }
+            if (/\.(mp4|mov|avi|mkv|webm)(\?|$)/i.test(cleanText)) {
+                return res.status(400).json({ error: 'El envío de videos está prohibido en este plan.' });
+            }
+            if (isSuspended || (!isUnlimited && count >= limit)) {
+                return res.status(403).json({ error: 'Servicio suspendido por límite de mensajes o vigencia. Renueva o sube a Ilimitado.' });
+            }
+
+            const chatRef = orderRef.collection('chats').doc(chatId);
+            const chatSnap = await chatRef.get();
+            const remoteJid = chatSnap.exists ? (chatSnap.data().remoteJid || chatId) : chatId;
+            const nowMs = Date.now();
+
+            const sendRes = await sendEvolutionText(instanceName, remoteJid, cleanText);
+            if (!sendRes.ok) {
+                return res.status(502).json({ error: 'No se pudo enviar el mensaje. Verifica que tu WhatsApp esté conectado.' });
+            }
+
+            const msgId = sendRes.sentId || `human_${nowMs}_${Math.random().toString(36).slice(2, 6)}`;
+            await orderRef.collection('bot_sent_ids').doc(msgId).set({ createdAt: nowMs });
+            await chatRef.collection('messages').doc(msgId).set({
+                id: msgId,
+                sender: 'human',
+                text: cleanText,
+                fromMe: true,
+                timestampMs: nowMs,
+                timestamp: admin.firestore.FieldValue.serverTimestamp()
+            });
+
+            await chatRef.set({
+                chatId: chatId,
+                remoteJid: remoteJid,
+                lastMessage: cleanText,
+                lastSender: 'human',
+                lastMessageAt: nowMs,
+                lastHumanReplyAt: nowMs,
+                botPausedUntil: nowMs + HANDOFF_PAUSE_MS
+            }, { merge: true });
+
+            await orderRef.update({
+                messageCount: admin.firestore.FieldValue.increment(1)
+            });
+            const updatedData = (await orderRef.get()).data() || {};
+            const updatedCount = Number(updatedData.messageCount || (count + 1));
+            await checkAndTriggerQuotaMilestones(orderRef, updatedData, updatedCount);
+
+            safeSummary.messageCount = updatedCount;
+            safeSummary.subscriptionActive = !(!isUnlimited && updatedCount > limit);
+
+            return res.status(200).json({
+                ok: true,
+                msgId: msgId,
+                handoffRemainingSec: 120,
+                summary: safeSummary
+            });
+        }
+
+        if (action === 'toggle_chat_bot') {
+            if (!chatId) return res.status(400).json({ error: 'Falta chatId' });
+            const shouldPause = Boolean(paused);
+            await orderRef.collection('chats').doc(chatId).set({
+                manualBotPaused: shouldPause,
+                botPausedUntil: shouldPause ? (Date.now() + 24 * 60 * 60 * 1000) : 0
+            }, { merge: true });
+            return res.status(200).json({ ok: true, manualBotPaused: shouldPause, summary: safeSummary });
+        }
+
+        if (action === 'save_bot_config') {
+            const cfg = req.body?.botConfig || {};
+            const sanitizedFaqs = Array.isArray(cfg.faqs)
+                ? cfg.faqs.slice(0, 30).map(item => ({
+                    keywords: String(item?.keywords || '').trim().slice(0, 120),
+                    answer: String(item?.answer || '').trim().slice(0, 800)
+                })).filter(item => item.keywords && item.answer)
+                : [];
+
+            const cleanBotConfig = {
+                horarios: String(cfg.horarios || '').trim().slice(0, 200),
+                direccion: String(cfg.direccion || '').trim().slice(0, 300),
+                telefono: String(cfg.telefono || '').trim().slice(0, 60),
+                fee: String(cfg.fee || '').trim().slice(0, 120),
+                servicios: String(cfg.servicios || '').trim().slice(0, 500),
+                welcomeMessage: String(cfg.welcomeMessage || '').trim().slice(0, 500),
+                extraInfo: String(cfg.extraInfo || '').trim().slice(0, 700),
+                faqs: sanitizedFaqs,
+                updatedAtMs: Date.now()
+            };
+
+            await orderRef.set({
+                horarios: cleanBotConfig.horarios || orderData.horarios || '',
+                direccion: cleanBotConfig.direccion || orderData.direccion || '',
+                telefono: cleanBotConfig.telefono || orderData.telefono || '',
+                fee: cleanBotConfig.fee || orderData.fee || '',
+                servicios: cleanBotConfig.servicios || orderData.servicios || '',
+                botConfig: cleanBotConfig
+            }, { merge: true });
+
+            safeSummary.botProfile = cleanBotConfig;
+            return res.status(200).json({ ok: true, summary: safeSummary });
+        }
+
+        if (action === 'get_appointments') {
+            const apptsSnap = await orderRef.collection('appointments')
+                .orderBy('createdAtMs', 'desc')
+                .limit(50)
+                .get();
+            const appointments = apptsSnap.docs.map(d => ({ id: d.id, ...(d.data() || {}) }));
+            return res.status(200).json({ ok: true, appointments: appointments, summary: safeSummary });
+        }
+
+        if (action === 'save_appointment') {
+            const appt = req.body?.appointment || {};
+            const nowMs = Date.now();
+            const docId = String(appt.id || `appt_${nowMs}_${Math.random().toString(36).slice(2, 6)}`);
+            const validStatuses = ['pendiente', 'confirmada', 'completada', 'cancelada'];
+            const nextStatus = validStatuses.includes(appt.status) ? appt.status : 'pendiente';
+
+            const payload = {
+                id: docId,
+                status: nextStatus,
+                updatedAtMs: nowMs
+            };
+            if (appt.contactName) payload.contactName = String(appt.contactName).trim().slice(0, 120);
+            if (appt.phone) payload.phone = String(appt.phone).trim().slice(0, 40);
+            if (appt.dateText !== undefined) payload.dateText = String(appt.dateText).trim().slice(0, 120);
+            if (appt.note !== undefined) payload.note = String(appt.note).trim().slice(0, 300);
+            if (!appt.id) {
+                payload.createdAtMs = nowMs;
+                payload.source = 'manual';
+            }
+
+            await orderRef.collection('appointments').doc(docId).set(payload, { merge: true });
+            return res.status(200).json({ ok: true, appointment: payload, summary: safeSummary });
+        }
+
+        return res.status(400).json({ error: 'Acción no reconocida.' });
+    } catch (err) {
+        console.error('❌ ERROR en whatsappClientApi:', err);
+        return res.status(500).json({ error: err.message });
+    }
+});
 
 exports.activateAgentWithVertex = onRequest({ cors: true, timeoutSeconds: 120, memory: "1GiB" }, async (req, res) => {
     // ... (mantiene lógica original)
@@ -1060,20 +1758,107 @@ exports.stripeWebhook = onRequest({
         const clientEmail = (session.customer_details?.email || session.customer_email || '').trim();
         const clientName = (session.customer_details?.name || '').trim();
         const clientPhone = session.customer_details?.phone || 'No registrado';
-        const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '233.00';
+         const rawAmountCents = Number(session.amount_total || 25500);
+        const amountTotal = (rawAmountCents / 100).toFixed(2);
         const currency = (session.currency || 'mxn').toUpperCase();
 
-        // DESCOMPOSICIÓN TÁCTICA DEL CLIENT_REFERENCE_ID (FOLIO + EMAIL + NEGOCIO)
         const rawRef = (session.client_reference_id || '').trim();
         let clientRefFolio = rawRef;
         let embeddedEmail = '';
         let embeddedBusinessName = '';
+        let embeddedPlanTag = '';
 
         if (rawRef.includes('__')) {
             const refParts = rawRef.split('__');
             clientRefFolio = refParts[0] ? refParts[0].trim() : rawRef;
             embeddedEmail = refParts[1] ? decodeURIComponent(refParts[1]).trim() : '';
             embeddedBusinessName = refParts[2] ? decodeURIComponent(refParts[2]).trim() : '';
+            embeddedPlanTag = refParts[3] ? refParts[3].trim() : '';
+        }
+
+        let planMeta = {
+            type: 'subscription',
+            planTier: 'basic_100',
+            planName: 'Plan Básico (Web + Sala + Bot 100 Mensajes)',
+            messageLimit: 100,
+            isUnlimited: false,
+            subtotal: '219.83',
+            iva: '35.17',
+            total: '255.00'
+        };
+
+        if (embeddedPlanTag === 'UPGRADE_89' || (rawAmountCents >= 8500 && rawAmountCents <= 9500)) {
+            planMeta = {
+                type: 'web_perfection',
+                planTier: 'perfection_89',
+                planName: 'Perfecciona Tu Web (3 Fotos + 5 Ajustes)',
+                messageLimit: 100,
+                isUnlimited: false,
+                erpActive: false,
+                subtotal: '76.72',
+                iva: '12.28',
+                total: '89.00'
+            };
+        } else if (embeddedPlanTag === 'PLAN_UNLIMITED_ERP' || (rawAmountCents >= 159000 && rawAmountCents <= 160500)) {
+            planMeta = {
+                type: 'subscription',
+                planTier: 'unlimited',
+                planName: 'Plan Élite Ilimitado + ERP PyME (30 días)',
+                messageLimit: 999999,
+                isUnlimited: true,
+                erpActive: true,
+                subtotal: '1377.59',
+                iva: '220.41',
+                total: '1598.00'
+            };
+        } else if (embeddedPlanTag === 'PLAN_300_ERP' || (rawAmountCents >= 79500 && rawAmountCents <= 80500)) {
+            planMeta = {
+                type: 'subscription',
+                planTier: 'pro_300',
+                planName: 'Plan Crecimiento + ERP PyME (300 Mensajes / 30 días)',
+                messageLimit: 300,
+                isUnlimited: false,
+                erpActive: true,
+                subtotal: '689.66',
+                iva: '110.34',
+                total: '800.00'
+            };
+        } else if (embeddedPlanTag === 'PLAN_100_ERP' || (rawAmountCents >= 45000 && rawAmountCents <= 46000)) {
+            planMeta = {
+                type: 'subscription',
+                planTier: 'basic_100',
+                planName: 'Plan Básico + ERP PyME (100 Mensajes / 30 días)',
+                messageLimit: 100,
+                isUnlimited: false,
+                erpActive: true,
+                subtotal: '392.24',
+                iva: '62.76',
+                total: '455.00'
+            };
+        } else if (embeddedPlanTag === 'PLAN_UNLIMITED' || (rawAmountCents >= 59000 && rawAmountCents <= 60500)) {
+            planMeta = {
+                type: 'subscription',
+                planTier: 'unlimited',
+                planName: 'Plan Élite Ilimitado (Mensajes Ilimitados / 30 días)',
+                messageLimit: 999999,
+                isUnlimited: true,
+                erpActive: false,
+                subtotal: '516.38',
+                iva: '82.62',
+                total: '599.00'
+            };
+        } else if (embeddedPlanTag === 'PLAN_300' || (rawAmountCents >= 49500 && rawAmountCents <= 50500)) {
+            planMeta = {
+                type: 'subscription',
+                planTier: 'pro_300',
+                planName: 'Plan Crecimiento (300 Mensajes / 30 días)',
+                messageLimit: 300,
+                isUnlimited: false,
+                erpActive: false,
+                subtotal: '431.03',
+                iva: '68.97',
+                total: '500.00'
+            };
         }
 
         const rawEmail = (
@@ -1086,7 +1871,6 @@ exports.stripeWebhook = onRequest({
         const searchEmail = (embeddedEmail || rawEmail || clientEmail).toLowerCase().trim();
         let draftData = {};
 
-        // 1. BÚSQUEDA POR FOLIO DIRECTO
         if (clientRefFolio) {
             try {
                 const draftDoc = await getDb().collection('orders_to_fulfill').doc(clientRefFolio).get();
@@ -1101,7 +1885,6 @@ exports.stripeWebhook = onRequest({
             }
         }
 
-        // 2. BÚSQUEDA AGNOSTICA DE MAYÚSCULAS/MINÚSCULAS POR EMAIL
         if (!draftData.negocio && searchEmail) {
             try {
                 const snapEmail = await getDb().collection('orders_to_fulfill')
@@ -1123,7 +1906,6 @@ exports.stripeWebhook = onRequest({
             }
         }
 
-        // RESOLUCIÓN DEL CORREO FINAL DEL COMPRADOR
         const targetEmail = (
             draftData.email || 
             rawEmail || 
@@ -1132,7 +1914,6 @@ exports.stripeWebhook = onRequest({
             ''
         ).trim();
 
-        // PRIORIDAD ESTRICTA A LA RAZÓN SOCIAL DEL FORMULARIO (NUNCA EL NOMBRE DE LA TARJETA)
         const effectiveBusinessName = (
             draftData.negocio || 
             draftData.business_name || 
@@ -1147,11 +1928,11 @@ exports.stripeWebhook = onRequest({
         ).trim();
 
         const now = new Date();
-        const folio = clientRefFolio || draftData.orderNumber || `ORD-STRIPE-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const folio = draftData.orderNumber || clientRefFolio || `ORD-STRIPE-${now.getFullYear().toString().slice(-2)}${(now.getMonth() + 1).toString().padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
         const convenioCode = draftData.convenioCode || `MAK-AURA-${Math.floor(1000 + Math.random() * 9000)}`;
         const tempPassword = draftData.provisionalPassword || Math.random().toString(36).substring(2, 8).toUpperCase();
+        const isRenewalOrUpgrade = Boolean(draftData.status === 'paid_active' || draftData.status === 'suspended_limit');
 
-        // CONSTRUCCIÓN DEL SLUG BASADO EXCLUSIVAMENTE EN LA RAZÓN SOCIAL
         const rawSlugBase = (draftData.negocio_slug || effectiveBusinessName);
         const negocioSlug = rawSlugBase
             .toLowerCase()
@@ -1161,123 +1942,82 @@ exports.stripeWebhook = onRequest({
             .replace(/(^-|-$)+/g, "") || `sitio-${Math.floor(1000 + Math.random() * 9000)}`;
 
         const siteUrl = `https://${negocioSlug}.ikai.info`;
-        console.log(`🚀 [DESPACHO INMEDIATO]: Enviando correos para ${effectiveBusinessName} a destinatario: "${targetEmail}"`);
-
-        // =========================================================================
-        // PRIORIDAD 1: ENVÍO DE CORREOS (SOPORTE Y COMPRADOR)
-        // =========================================================================
+        const connectUrl = `https://robotiax.shop/conectar.html?token=${encodeURIComponent(tempPassword)}&email=${encodeURIComponent(targetEmail)}`;
+        const panelUrl = `https://robotiax.shop/panel.html?token=${encodeURIComponent(tempPassword)}&email=${encodeURIComponent(targetEmail)}`;
         const mailer = getTransporter();
 
-        // 1. Notificación a Soporte (Makumoto + Respaldo)
         try {
             await mailer.sendMail({
                 from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
                 to: ['contacto@robotiax.shop', 'klvenoticias@gmail.com'],
                 replyTo: targetEmail || 'contacto@robotiax.shop',
-                subject: `🚨 NUEVO PAGO STRIPE: ${clientName || effectiveBusinessName} (${folio})`,
+                subject: `🚨 PAGO STRIPE [${planMeta.total} MXN]: ${effectiveBusinessName} (${folio})`,
                 html: `
                     <div style="font-family: Arial, sans-serif; background: #000; color: #00f2ff; padding: 30px; border: 2px solid #2ecc71;">
-                        <h2 style="color: #2ecc71; margin-top: 0;">✅ NUEVA ORDEN RECIBIDA (STRIPE)</h2>
+                        <h2 style="color: #2ecc71; margin-top: 0;">✅ PAGO CONFIRMADO EN STRIPE (${isRenewalOrUpgrade ? 'RENOVACIÓN / UPGRADE' : 'NUEVA ORDEN'})</h2>
                         <p><strong>Folio:</strong> ${folio}</p>
+                        <p><strong>Plan Adquirido:</strong> ${planMeta.planName}</p>
                         <p><strong>Empresa / Razón Social:</strong> ${effectiveBusinessName}</p>
-                        <p><strong>Cliente:</strong> ${clientName || 'No especificado'}</p>
+                        <p><strong>Cliente Stripe:</strong> ${clientName || 'No especificado'}</p>
                         <p><strong>Email Comprador:</strong> ${targetEmail || 'No registrado'}</p>
                         <p><strong>Teléfono:</strong> ${effectivePhone}</p>
-                        <p><strong>Total Cobrado:</strong> $${amountTotal} ${currency}</p>
+                        <p><strong>Subtotal:</strong> $${planMeta.subtotal} MXN | <strong>IVA (16%):</strong> $${planMeta.iva} MXN | <strong>Total Cobrado:</strong> $${planMeta.total} ${currency}</p>
                         <hr style="border-color: #333;">
                         <p><strong>URL Web:</strong> <a href="${siteUrl}" style="color: #00f2ff;" target="_blank">${siteUrl}</a></p>
-                        <p><strong>Convenio Makumoto:</strong> ${convenioCode}</p>
-                        <p><strong>Token Bot:</strong> ${tempPassword}</p>
+                        <p><strong>Consola QR:</strong> <a href="${connectUrl}" style="color: #2ecc71;" target="_blank">${connectUrl}</a></p>
+                        <p><strong>Panel Chats:</strong> <a href="${panelUrl}" style="color: #2ecc71;" target="_blank">${panelUrl}</a></p>
+                        <p><strong>Instancia:</strong> ${negocioSlug} | <strong>Token Bot:</strong> ${tempPassword}</p>
                     </div>
                 `
             });
-            console.log("✅ [CORREO ADMINISTRACIÓN]: Entregado a contacto@robotiax.shop y klvenoticias@gmail.com");
+            console.log("✅ [CORREO ADMINISTRACIÓN]: Entregado.");
         } catch (mailAdminErr) {
             console.error("❌ ERROR AL ENVIAR CORREO A ADMINISTRACIÓN:", mailAdminErr.message);
         }
 
-        // CASO A: VALE OXXO GENERADO (EL CLIENTE AÚN NO HA PAGADO EN TIENDA)
         if (isOxxoPending) {
-            console.log(`⏳ [OXXO PENDIENTE]: Vale emitido para ${effectiveBusinessName}. Esperando confirmación bancaria.`);
-            
             if (targetEmail) {
                 try {
                     await mailer.sendMail({
                         from: '"Robotiax Intelligence" <contacto@robotiax.shop>',
                         to: targetEmail,
-                        subject: `⏳ Vale OXXO Generado: Tu Suite se activará al pagar en tienda (${folio})`,
+                        subject: `⏳ Vale OXXO Generado (${planMeta.total} MXN): Tu Suite se activará al pagar (${folio})`,
                         html: `
-                            <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 18px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; word-break: break-word; background: #ffffff; color: #1a1a1a; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 18px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; color: #1a1a1a; border: 1px solid #cbd5e1; border-radius: 8px;">
                                 <div style="text-align: center; border-bottom: 2px solid #e11d48; padding-bottom: 12px; margin-bottom: 16px;">
-                                    <h1 style="color: #e11d48; margin: 0; font-size: 17px; line-height: 1.3; font-weight: 800; text-transform: uppercase;">VALE DE PAGO OXXO GENERADO</h1>
+                                    <h1 style="color: #e11d48; margin: 0; font-size: 17px; font-weight: 800; text-transform: uppercase;">VALE DE PAGO OXXO GENERADO</h1>
                                     <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Esperando Confirmación de Caja</p>
                                 </div>
-
                                 <p style="font-size: 13px; line-height: 1.5; color: #334155; margin: 0 0 14px 0;">
-                                    Hola <strong>${effectiveBusinessName}</strong>, hemos registrado la generación de tu vale para pagar en efectivo en OXXO por <strong>$${amountTotal} ${currency}</strong>.
+                                    Hola <strong>${effectiveBusinessName}</strong>, hemos registrado tu vale para pagar en efectivo en OXXO por <strong>$${planMeta.total} MXN</strong> (IVA incluido).
                                 </p>
-
-                                <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 14px; margin: 14px 0;">
-                                    <p style="margin: 0; font-weight: 800; font-size: 12px; color: #9f1239; text-transform: uppercase;">⚠️ INSTRUCCIONES PARA TU PAGO EN CAJA:</p>
-                                    <ol style="margin: 8px 0 0 0; padding-left: 18px; font-size: 12px; color: #881337; line-height: 1.5;">
-                                        <li>Muestra al cajero el código de barras que generaste en Stripe (o indícale tu número de referencia).</li>
-                                        <li>Realiza tu pago en efectivo en cualquier tienda OXXO.</li>
-                                        <li>En el instante en que OXXO reporte tu pago a Stripe, <strong>activaremos tu página web con el nombre ${effectiveBusinessName} y tu Bot de WhatsApp</strong>, y te llegará el manual a este buzón.</li>
-                                    </ol>
-                                </div>
-
                                 <table style="width: 100%; font-size: 12px; line-height: 1.6; color: #334155; border-collapse: collapse; margin-bottom: 15px;">
-                                    <tr>
-                                        <td style="padding: 3px 0; width: 45%;"><strong>Empresa Registrada:</strong></td>
-                                        <td style="padding: 3px 0; font-weight: bold; color: #0f172a;">${effectiveBusinessName}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 3px 0;"><strong>Folio de Pedido:</strong></td>
-                                        <td style="padding: 3px 0; font-weight: bold; color: #2563eb;">${folio}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 3px 0;"><strong>Total a Pagar en Caja:</strong></td>
-                                        <td style="padding: 3px 0; font-weight: bold; color: #16a34a;">$${amountTotal} ${currency}</td>
-                                    </tr>
+                                    <tr><td><strong>Plan:</strong></td><td style="font-weight: bold;">${planMeta.planName}</td></tr>
+                                    <tr><td><strong>Folio:</strong></td><td style="font-weight: bold; color: #2563eb;">${folio}</td></tr>
+                                    <tr><td><strong>Subtotal:</strong></td><td>$${planMeta.subtotal} MXN</td></tr>
+                                    <tr><td><strong>IVA (16%):</strong></td><td>$${planMeta.iva} MXN</td></tr>
+                                    <tr><td><strong>Total a Pagar en Caja:</strong></td><td style="font-weight: bold; color: #16a34a;">$${planMeta.total} MXN</td></tr>
                                 </table>
-
-                                <!-- VALE VISUAL DIRECTO EN EL CORREO -->
                                 <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 16px 0; text-align: center;">
                                     <img src="https://upload.wikimedia.org/wikipedia/commons/6/66/Oxxo_Logo.svg" alt="OXXO" style="width: 70px; margin-bottom: 8px;">
-                                    
                                     ${voucherNumber ? `
                                     <div style="margin: 10px 0;">
-                                        <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=${voucherNumber.replace(/\\s+/g, '')}&scale=2&height=12" alt="Código de Barras" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                                        <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=${voucherNumber.replace(/\s+/g, '')}&scale=2&height=12" alt="Código de Barras" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
                                         <p style="font-family: monospace; font-size: 14px; font-weight: bold; color: #0f172a; letter-spacing: 2px; margin: 6px 0 0 0;">${voucherNumber}</p>
                                     </div>
-                                    ` : `
-                                    <p style="font-size: 12px; color: #64748b; margin: 8px 0;">Presenta el vale oficial generado en Stripe directamente en caja.</p>
-                                    `}
+                                    ` : `<p style="font-size: 12px; color: #64748b; margin: 8px 0;">Presenta el vale oficial generado en Stripe directamente en caja.</p>`}
                                 </div>
-
-                                <!-- ACCIONES DIRECTAS DEL CORREO -->
-                                <div style="display: flex; flex-direction: column; gap: 8px; text-align: center; margin-top: 15px;">
-                                    <a href="${voucherUrl || 'https://buy.stripe.com/3cIcN6dhi9WG0rIdVB4gg0f'}" target="_blank" style="display: block; background: #00f2ff; color: #020617; padding: 12px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        🖨️ VER E IMPRIMIR VALE OFICIAL EN STRIPE ➔
-                                    </a>
-                                    <a href="https://robotiax.shop" target="_blank" style="display: block; background: #0f172a; color: #cbd5e1; border: 1px solid #334155; padding: 10px; font-weight: 700; font-size: 11px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">
-                                        ❮ VOLVER A robotiax.shop
-                                    </a>
-                                </div>
-
-                                <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 16px 0 0 0;">
-                                    ROBOTIAX Engine & Makumoto Platform — Soporte: soporte@makumoto.com
-                                </p>
+                                <a href="${voucherUrl || 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u'}" target="_blank" style="display: block; background: #00f2ff; color: #020617; padding: 12px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase; text-align: center;">
+                                    🖨️ VER E IMPRIMIR VALE OFICIAL EN STRIPE ➔
+                                </a>
                             </div>
                         `
                     });
-                    console.log("[CORREO OXXO PENDIENTE]: Enviado con exito a " + targetEmail);
                 } catch (oxxoMailErr) {
                     console.error("Error enviando correo de espera OXXO:", oxxoMailErr.message);
                 }
             }
 
-            // Guardar en Firestore como pendiente de pago en efectivo
             await getDb().collection('orders_to_fulfill').doc(folio).set({
                 ...draftData,
                 orderNumber: folio,
@@ -1291,139 +2031,81 @@ exports.stripeWebhook = onRequest({
             return res.status(200).json({ status: 'oxxo_pending_registered', folio: folio });
         }
 
-        // CASO B: PAGO CONFIRMADO REAL (TARJETA INMEDIATA O NOTIFICACIÓN OXXO PAGADA)
         if (targetEmail && isPaid) {
             try {
-                console.log(`📧 [INTENTO DE ENVÍO AL CLIENTE]: Disparando hacia ${targetEmail}...`);
                 const isHookArsenal = Boolean(draftData.template === 'rs-hook-arsenal' || (draftData.productName && draftData.productName.includes('Hook Arsenal')));
-                let emailSubject = `✅ ¡Tu Suite Digital está Activa! Enlace y Manual (${folio})`;
+                let emailSubject = isRenewalOrUpgrade
+                    ? `🔄 ¡Plan Actualizado (${planMeta.planName})! Folio ${folio}`
+                    : `✅ ¡Tu Suite Digital y Bot están Activos! Accesos y Manual (${folio})`;
                 let clientEmailHtml = "";
 
-                if (isHookArsenal) {
+                if (planMeta.type === 'web_perfection') {
+                    emailSubject = `⚡ Perfeccionamiento Confirmado ($89.00 MXN IVA inc.) — ${folio}`;
+                    clientEmailHtml = `
+                        <div style="max-width: 540px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 8px;">
+                            <h2 style="color: #0f172a; margin-top: 0;">⚡ PERFECCIONAMIENTO DE WEB CONFIRMADO</h2>
+                            <p>Hola <strong>${effectiveBusinessName}</strong>, recibimos tu pago por <strong>$${planMeta.total} MXN</strong> (Subtotal $${planMeta.subtotal} + IVA 16% $${planMeta.iva}).</p>
+                            <p>Ingresa a tu panel para enviar tus 3 fotografías y hasta 5 modificaciones:</p>
+                            <a href="https://robotiax.shop/desarrollo-web.html?upgrade=success" target="_blank" style="display: block; text-align: center; background: #00f2ff; color: #020617; font-weight: 800; padding: 12px; border-radius: 6px; text-decoration: none;">SUBIR MIS 3 FOTOS Y CAMBIOS ➔</a>
+                        </div>
+                    `;
+                } else if (isHookArsenal) {
                     emailSubject = `⚡ Acceso Inmediato: Software Hook Arsenal Pro (${folio})`;
                     clientEmailHtml = `
-                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #000000; color: #ffffff; border: 2px solid #00f2ff; border-radius: 12px;">
-                            <div style="text-align: center; border-bottom: 2px solid #ff00ff; padding-bottom: 15px; margin-bottom: 20px;">
-                                <h1 style="color: #00f2ff; margin: 0; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">HOOK ARSENAL PRO ACTIVADO</h1>
-                                <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">Entrega Oficial de Software Táctico</p>
-                            </div>
-
-                            <p style="font-size: 13px; line-height: 1.5; color: #e2e8f0;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos tu pago de <strong>$${amountTotal} ${currency}</strong>. Tu copia de <strong>Hook Arsenal Pro</strong> está lista para operar.</p>
-
-                            <div style="background: rgba(0, 242, 255, 0.08); border: 1px solid #00f2ff; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center;">
-                                <p style="margin: 0 0 10px 0; font-size: 12px; color: #00f2ff; font-weight: bold; text-transform: uppercase;">🚀 ACCESO DIRECTO AL SOFTWARE:</p>
-                                <a href="https://robotiax.shop/downloads/hook-arsenal.html" target="_blank" style="display: block; background: #39ff14; color: #000000; padding: 14px 20px; font-weight: 900; font-size: 13px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px;">
-                                    ABRIR Y DESCARGAR SOFTWARE AHORA ➔
-                                </a>
-                                <p style="margin: 8px 0 0 0; font-size: 10px; color: #94a3b8;">* Puedes guardar el archivo directamente en tu computadora o celular para usarlo 100% offline.</p>
-                            </div>
-
-                            <div style="background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; font-size: 12px; line-height: 1.6; color: #cbd5e1;">
-                                <p style="margin: 0 0 8px 0; color: #ff00ff; font-weight: bold; text-transform: uppercase;">📋 CÓMO USAR TU ARSENAL:</p>
-                                <ol style="margin: 0; padding-left: 18px;">
-                                    <li>Abre el archivo en cualquier navegador (Chrome, Safari, Edge).</li>
-                                    <li>Elige una de las 5 categorías de ganchos tácticos.</li>
-                                    <li>Adapta las áreas en cian a tu negocio y fíjalo en tu calendario semanal.</li>
-                                </ol>
-                            </div>
-
-                            <p style="font-size: 10px; color: #64748b; text-align: center; margin: 25px 0 0 0;">
-                                Folio de Transacción: ${folio} • ROBOTIAX ENGINE
-                            </p>
+                        <div style="width: 100%; max-width: 540px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; background: #000000; color: #ffffff; border: 2px solid #00f2ff; border-radius: 12px;">
+                            <h1 style="color: #00f2ff; font-size: 18px; text-align: center;">HOOK ARSENAL PRO ACTIVADO</h1>
+                            <p style="font-size: 13px;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos tu pago de <strong>$${amountTotal} ${currency}</strong>.</p>
+                            <a href="https://robotiax.shop/downloads/hook-arsenal.html" target="_blank" style="display: block; background: #39ff14; color: #000000; padding: 14px; font-weight: 900; text-align: center; text-decoration: none; border-radius: 6px;">ABRIR Y DESCARGAR SOFTWARE AHORA ➔</a>
                         </div>
                     `;
                 } else {
                     clientEmailHtml = `
-                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 16px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; word-wrap: break-word; word-break: break-word; background: #ffffff; color: #1a1a1a; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            
-                            <!-- ENCABEZADO PRINCIPAL -->
+                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 16px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; color: #1a1a1a; border: 1px solid #e2e8f0; border-radius: 8px;">
                             <div style="text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 16px;">
-                                <h1 style="color: #0f172a; margin: 0; font-size: 17px; line-height: 1.3; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;">¡SUITE DIGITAL Y BOT ACTIVADOS!</h1>
-                                <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Entrega Oficial de Servicios y Puesta en Marcha</p>
+                                <h1 style="color: #0f172a; margin: 0; font-size: 17px; font-weight: 800; text-transform: uppercase;">${isRenewalOrUpgrade ? '¡PLAN RENOVADO Y ACTIVO!' : '¡SUITE DIGITAL Y BOT ACTIVADOS!'}</h1>
+                                <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Comprobante Oficial y Guía de Puesta en Marcha</p>
                             </div>
 
-                            <p style="font-size: 12px; line-height: 1.5; margin: 0 0 14px 0; color: #334155;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos que tu orden de <strong>$${amountTotal} ${currency}</strong> ha sido procesada con éxito.</p>
+                            <p style="font-size: 12px; line-height: 1.5; margin: 0 0 14px 0; color: #334155;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos tu compra por <strong>$${planMeta.total} MXN</strong> (IVA incluido).</p>
 
-                            <!-- RESUMEN DE BENEFICIOS INCLUIDOS -->
-                            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
-                                <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 12px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">📦 LO QUE INCLUYE TU COMPRA:</h3>
-                                <ul style="margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.6; color: #334155;">
-                                    <li><strong>Página Web Profesional:</strong> Operando bajo el dominio <span style="color: #2563eb; font-weight: bold;">ikai.info</span>.</li>
-                                    <li><strong>Hosting de Cortesía:</strong> 1 mes incluido (o mientras dure tu membresía).</li>
-                                    <li><strong>Bot de WhatsApp Autónomo:</strong> Asistente 24/7 en tu servidor privado.</li>
-                                    <li><strong>Centro de Entretenimiento:</strong> Sala de espera con videos, trivias y juegos.</li>
-                                </ul>
-                                <div style="margin-top: 8px; font-size: 11px; color: #dc2626; font-weight: bold; line-height: 1.4;">
-                                    ⚠️ Todos los servicios son solo por 30 días (o mientras dure tu membresía activa).
-                                </div>
-                            </div>
-
-                            <!-- BLOQUE 1: TU SITIO WEB ACTIVO -->
-                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
-                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB YA ESTÁ EN LÍNEA usando el dominio ikai.info:</p>
-                                <p style="margin: 6px 0 0 0; font-size: 13px; line-height: 1.4; word-break: break-all;">
-                                    <a href="${siteUrl}" target="_blank" style="color: #16a34a; font-weight: 800; text-decoration: underline; word-break: break-all;">${siteUrl}</a>
-                                </p>
-                                <p style="margin: 4px 0 0 0; font-size: 10px; color: #166534; line-height: 1.4;">* Activo por 30 días o mientras se mantenga vigente tu membresía.</p>
-                            </div>
-
-                            <!-- BLOQUE 2: FACTURA Y COMPROBANTE EXPEDIDA POR STRIPE (SIN CÓDIGO DE CONVENIO) -->
-                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin: 14px 0; box-sizing: border-box;">
-                                <h3 style="margin: 0 0 6px 0; color: #1e3a8a; font-size: 11px; font-weight: 700; text-transform: uppercase;">🧾 FACTURA Y RECIBO DE PEDIDO (EXPEDIDA POR STRIPE)</h3>
-                                <p style="font-size: 11px; color: #1e40af; margin: 0 0 6px 0; line-height: 1.4;">
-                                    Tu <strong>factura y recibo oficial de pago ha sido expedida directamente por Stripe</strong> y enviada a tu correo (${targetEmail}).
-                                </p>
-                                <table style="width: 100%; font-size: 11px; line-height: 1.5; color: #1e3a8a; border-collapse: collapse;">
-                                    <tr>
-                                        <td style="padding: 2px 0; width: 45%;"><strong>Folio de Pedido:</strong></td>
-                                        <td style="padding: 2px 0; font-weight: bold; word-break: break-all;">${folio}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 2px 0;"><strong>Importe Total:</strong></td>
-                                        <td style="padding: 2px 0; color: #16a34a; font-weight: bold;">$${amountTotal} ${currency}</td>
-                                    </tr>
+                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin: 14px 0;">
+                                <h3 style="margin: 0 0 6px 0; color: #1e3a8a; font-size: 11px; font-weight: 700; text-transform: uppercase;">🧾 DETALLE DE TU COMPRA (IVA DESGLOSADO)</h3>
+                                <table style="width: 100%; font-size: 11px; line-height: 1.6; color: #1e3a8a; border-collapse: collapse;">
+                                    <tr><td><strong>Folio:</strong></td><td style="font-weight: bold;">${folio}</td></tr>
+                                    <tr><td><strong>Producto / Plan:</strong></td><td style="font-weight: bold;">${planMeta.planName}</td></tr>
+                                    <tr><td><strong>Subtotal:</strong></td><td>$${planMeta.subtotal} MXN</td></tr>
+                                    <tr><td><strong>IVA (16%):</strong></td><td>$${planMeta.iva} MXN</td></tr>
+                                    <tr><td><strong>Total Pagado:</strong></td><td style="color: #16a34a; font-weight: bold;">$${planMeta.total} MXN</td></tr>
                                 </table>
                             </div>
 
-                            <!-- BLOQUE 3: INSTRUCTIVO CLARO DEL BOT DE WHATSAPP -->
-                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px 12px; margin: 16px 0; box-sizing: border-box;">
-                                <h3 style="color: #065f46; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">
-                                    🤖 CÓMO VINCULAR TU BOT DE WHATSAPP (3 PASOS)
-                                </h3>
-                                <p style="font-size: 12px; color: #047857; margin: 0 0 10px 0; line-height: 1.4;">Instancia aprovisionada con el identificador: <strong>${negocioSlug}</strong>.</p>
-                                
-                                <ol style="font-size: 12px; line-height: 1.6; color: #065f46; margin: 0; padding-left: 18px;">
-                                    <li style="margin-bottom: 4px;">Ingresa a la consola: <a href="https://bot.ikai.info" target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">https://bot.ikai.info</a></li>
-                                    <li style="margin-bottom: 4px;">Ingresa tu Token de Seguridad: <strong style="background: #ffffff; border: 1px solid #059669; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px;">${tempPassword}</strong></li>
-                                    <li>En WhatsApp ➔ Menú ➔ <strong>Dispositivos Vinculados</strong> ➔ Escanea el código QR que se mostrará en pantalla.</li>
-                                </ol>
-                            </div>
-
-                            <!-- BLOQUE 4: PERFECCIONA TU WEB ($89 MXN) CON ENLACE OFICIAL DE STRIPE -->
-                            <div style="background: #0f172a; color: #ffffff; border-radius: 8px; padding: 16px 12px; margin: 16px 0; box-sizing: border-box; text-align: center; border: 1px solid #00f2ff;">
-                                <div style="border-bottom: 1px solid rgba(0, 242, 255, 0.4); padding-bottom: 8px; margin-bottom: 12px;">
-                                    <h2 style="color: #00f2ff; font-size: 15px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        ⚡ PERFECCIONA TU WEB ($89 MXN)
-                                    </h2>
-                                    <span style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">Ajustes de Marca y Fotografía Profesional</span>
-                                </div>
-                                <p style="font-size: 12px; color: #e2e8f0; line-height: 1.5; margin: 0 0 12px 0; text-align: left;">
-                                    Si deseas personalizar al máximo tu plataforma, adquiere <strong>PERFECCIONA TU WEB por solo $89 MXN</strong> para añadir:
+                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0;">
+                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB EN LÍNEA:</p>
+                                <p style="margin: 6px 0 0 0; font-size: 13px; word-break: break-all;">
+                                    <a href="${siteUrl}" target="_blank" style="color: #16a34a; font-weight: 800; text-decoration: underline;">${siteUrl}</a>
                                 </p>
-                                <ul style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin: 0 0 14px 0; padding-left: 18px; text-align: left;">
-                                    <li><strong>3 Fotografías Oficiales:</strong> En formato horizontal 16:9 (PNG o JPG &lt; 2 MB).</li>
-                                    <li><strong>Hasta 5 Modificaciones o Adiciones:</strong> Nuevos servicios, horarios específicos o datos de tu negocio.</li>
-                                </ul>
-                                
-                                <a href="https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g?prefilled_email=${encodeURIComponent(targetEmail)}" target="_blank" style="display: block; width: 100%; max-width: 280px; margin: 12px auto; background: #00f2ff; color: #020617; text-align: center; padding: 12px 16px; font-weight: 800; font-size: 13px; text-decoration: none; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    PERFECCIONAR MI WEB ($89 MXN) ➔
-                                </a>
-                                <p style="font-size: 10px; color: #94a3b8; margin: 6px 0 0 0;">Al completar tu pago se abrirá la consola para subir tus 3 fotos y tus 5 adiciones.</p>
                             </div>
 
-                            <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 20px 0 0 0;">
-                                ROBOTIAX Engine & Makumoto Platform — Infraestructura Digital
-                            </p>
+                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px 12px; margin: 16px 0;">
+                                <h3 style="color: #065f46; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">🤖 VINCULA TU WHATSAPP Y VER CHATS EN VIVO</h3>
+                                <p style="font-size: 12px; color: #047857; margin: 0 0 8px 0;">Instancia: <strong>${negocioSlug}</strong> | Token de Seguridad: <strong style="background: #ffffff; border: 1px solid #059669; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${tempPassword}</strong></p>
+                                <ol style="font-size: 12px; line-height: 1.6; color: #065f46; margin: 0 0 12px 0; padding-left: 18px;">
+                                    <li>Abre tu pantalla de conexión QR: <a href="${connectUrl}" target="_blank" style="color: #059669; font-weight: bold;">Conectar WhatsApp</a></li>
+                                    <li>En tu celular ve a WhatsApp ➔ <strong>Dispositivos vinculados</strong> y escanea el QR.</li>
+                                    <li>Administra tus chats en vivo y consumo mensual desde tu <a href="${panelUrl}" target="_blank" style="color: #059669; font-weight: bold;">Panel de Control</a>.</li>
+                                </ol>
+                                <a href="${connectUrl}" target="_blank" style="display: block; text-align: center; background: #16a34a; color: #ffffff; padding: 10px; border-radius: 6px; font-weight: 800; font-size: 12px; text-decoration: none; text-transform: uppercase;">VINCULAR WHATSAPP CON QR AHORA ➔</a>
+                            </div>
+
+                            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin: 14px 0; font-size: 11px; color: #334155;">
+                                <strong>📌 Vigencia y Cuotas:</strong> Todos los servicios tienen vigencia de 30 días. El plan básico incluye 100 mensajes (entrantes + salientes) con avisos automáticos al 80, 90 y 97. Cuando requieras ampliar o renovar, elige desde tu <a href="${panelUrl}" target="_blank" style="color: #2563eb; font-weight: bold;">Panel de Control</a>: 100 msgs ($255.00 MXN), 300 msgs ($500.00 MXN) o <strong>Ilimitado ($599.00 MXN IVA incl.)</strong>.
+                            </div>
+
+                            <div style="background: #0f172a; color: #ffffff; border-radius: 8px; padding: 16px 12px; margin: 16px 0; text-align: center; border: 1px solid #00f2ff;">
+                                <h2 style="color: #00f2ff; font-size: 14px; font-weight: 800; margin: 0 0 8px 0; text-transform: uppercase;">⚡ PERFECCIONA TU WEB ($89.00 MXN IVA incl.)</h2>
+                                <p style="font-size: 11px; color: #e2e8f0; margin: 0 0 12px 0;">Añade 3 fotografías profesionales 16:9 y hasta 5 modificaciones personalizadas.</p>
+                                <a href="https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g?prefilled_email=${encodeURIComponent(targetEmail)}&client_reference_id=${encodeURIComponent(`${folio}__${targetEmail}__${effectiveBusinessName}__UPGRADE_89`)}" target="_blank" style="display: block; max-width: 280px; margin: 0 auto; background: #00f2ff; color: #020617; padding: 11px 16px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">PERFECCIONAR MI WEB ($89 MXN) ➔</a>
+                            </div>
                         </div>
                     `;
                 }
@@ -1434,22 +2116,25 @@ exports.stripeWebhook = onRequest({
                     subject: emailSubject,
                     html: clientEmailHtml
                 });
-                console.log(`✅ [CORREO CLIENTE]: Entregado exitosamente al comprador (${targetEmail})`);
             } catch (mailClientErr) {
                 console.error(`❌ ERROR AL ENVIAR AL CLIENTE (${targetEmail}):`, mailClientErr.message);
             }
-        } else {
-            console.error("🚨 [ALERTA CRÍTICA]: No se pudo determinar el correo del comprador ni desde Stripe ni desde el borrador.");
         }
 
-        // =========================================================================
-        // PRIORIDAD 2: REGISTRO EN BASE DE DATOS (FIRESTORE)
-        // =========================================================================
+        if (planMeta.type === 'web_perfection') {
+            await getDb().collection('orders_to_fulfill').doc(folio).set({
+                perfectionPaid: true,
+                perfectionPaidAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+            return res.status(200).json({ received: true, folio: folio, upgrade: 'perfection_89' });
+        }
+
+        const newExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
         try {
             await getDb().collection('orders_to_fulfill').doc(folio).set({
                 ...draftData,
                 orderNumber: folio,
-                productName: draftData.productName || 'Suite Digital Robotiax (Web + Bot + Sala de Espera)',
+                productName: draftData.productName || planMeta.planName,
                 isWeb: true,
                 negocio: effectiveBusinessName,
                 negocio_slug: negocioSlug,
@@ -1459,126 +2144,100 @@ exports.stripeWebhook = onRequest({
                 convenioCode: convenioCode,
                 provisionalPassword: tempPassword,
                 stripeSessionId: session.id,
+                planTier: planMeta.planTier,
+                planName: planMeta.planName,
+                messageLimit: planMeta.messageLimit,
+                isUnlimited: planMeta.isUnlimited,
+                erpActive: Boolean(planMeta.erpActive),
+                messageCount: 0,
+                alertsSent: { p80: false, p90: false, p97: false, suspended: false },
+                subscriptionActive: true,
+                expiresAt: newExpiresAt,
                 status: 'paid_active',
                 timestamp: admin.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
-            console.log(`✅ [FIRESTORE]: Orden consolidada bajo folio ${folio} para ${targetEmail}.`);
         } catch (dbErr) {
             console.error("⚠️ Error guardando en Firestore:", dbErr.message);
         }
 
-        // =========================================================================
-        // PRIORIDAD 3: PROVISIÓN DE INFRAESTRUCTURA EN SEGUNDO PLANO
-        // =========================================================================
-        provisionFirebaseSubdomain(negocioSlug).catch(err => console.warn("Subdominio error:", err.message));
+        if (!isRenewalOrUpgrade) {
+            provisionFirebaseSubdomain(negocioSlug).catch(err => console.warn("Subdominio error:", err.message));
 
-        try {
-            const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
-            const rawTemplate = await fs.readFile(templatePath, 'utf8');
-            const cacheBuster = Date.now();
-            const resolvedNiche = (draftData.template || 'salud')
-                .replace(/^cfg-/, '')
-                .replace(/-bot(-promo)?$/, '')
-                .replace(/-01$/, '');
+            try {
+                const templatePath = path.join(__dirname, 'templates', 'demo_salud.html');
+                const rawTemplate = await fs.readFile(templatePath, 'utf8');
+                const cacheBuster = Date.now();
+                const resolvedNiche = (draftData.template || 'salud')
+                    .replace(/^cfg-/, '')
+                    .replace(/-bot(-promo)?$/, '')
+                    .replace(/-01$/, '');
 
-            const clientData = {
-                negocio: effectiveBusinessName,
-                badge: cleanVal(draftData.badge, 'ESPECIALISTA CERTIFICADO'),
-                specialty: cleanVal(draftData.specialty, 'Giro Comercial'),
-                tagline: cleanVal(draftData.tagline || draftData.slogan, 'Evolución y Precisión'),
-                direccion: cleanVal(draftData.direccion, 'Atención Profesional'),
-                horarios: cleanVal(draftData.horarios, 'Horarios Flexibles'),
-                telefono: effectivePhone || '+52 55 1234 5678',
-                fee: cleanVal(draftData.fee, '$800 MXN'),
-                nicheId: resolvedNiche,
-                isProductionSite: true
-            };
+                const clientData = {
+                    negocio: effectiveBusinessName,
+                    badge: cleanVal(draftData.badge, 'ESPECIALISTA CERTIFICADO'),
+                    specialty: cleanVal(draftData.specialty, 'Giro Comercial'),
+                    tagline: cleanVal(draftData.tagline || draftData.slogan, 'Evolución y Precisión'),
+                    direccion: cleanVal(draftData.direccion, 'Atención Profesional'),
+                    horarios: cleanVal(draftData.horarios, 'Horarios Flexibles'),
+                    telefono: effectivePhone || '+52 55 1234 5678',
+                    fee: cleanVal(draftData.fee, '$800 MXN'),
+                    nicheId: resolvedNiche,
+                    isProductionSite: true
+                };
 
-            const clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
+                const clientDataScript = `<script>window.app = window.app || {}; window.app.clientData = ${JSON.stringify(clientData)};</script>`;
 
-            let compiledHtml = rawTemplate
-                .replace('</head>', `${clientDataScript}</head>`)
-                .replace(/<title>.*?<\/title>/g, `<title>${effectiveBusinessName} | Portal Oficial</title>`)
-                .replace(/<span id="header-brand-title".*?<\/span>/gs, `<span id="header-brand-title" class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight">${effectiveBusinessName}</span>`)
-                .replace(/<div id="header-theme-picker".*?<\/div>/gs, '')
-                .replace(/<button[^>]*onclick="[^"]*openCloserModal[^"]*"[^>]*>.*?<\/button>/gis, '')
-                .replace(/<button[^>]*>.*?COMPRAR WEB.*?<\/button>/gis, '')
-                .replace(/<button[^>]*id="btn-return-catalog"[^>]*>.*?<\/button>/gis, '')
-                .replace(/<!-- MODAL DE CIERRE DE VENTA -->.*?<!-- SCRIPTS CORE -->/gs, '<!-- SCRIPTS CORE -->')
-                .replace(/Dr\. Alejandro Morales/g, effectiveBusinessName)
-                .replace(/ESPECIALISTA CERTIFICADO/g, clientData.badge)
-                .replace(/Nutrición Estética & Neurología Preventiva/g, clientData.specialty)
-                .replace(/"Tu bienestar es nuestra ciencia"/g, `"${clientData.tagline}"`)
-                .replace(/Torre Médica, Cons\. 402/g, clientData.direccion)
-                .replace(/Lun - Vie 9am a 6pm/g, clientData.horarios)
-                .replace(/\+52 55 1234 5678/g, clientData.telefono)
-                .replace(/\$800 MXN/g, clientData.fee)
-                .replace(/✦ PILAR 1: RETOS EN SALA DE ESPERA \(CONSOLA CRT\) ✦/g, '✦ ZONA INTERACTIVA: RETOS Y TRIVIAS ✦')
-                .replace(/Gamificación del Tiempo Percibido/g, 'Entrena tu Mente Mientras Esperas')
-                .replace(/Manten a tus clientes totalmente entretenidos y <strong>reduce la percepción de espera física hasta en un 80%<\/strong>\. Retos dinámicos interactivos que estimulan la mente de tus usuarios y premian su paciencia con valiosos puntos de lealtad \(XP\) canjeables\./g, 'Aprovecha tu tiempo en nuestra sala interactiva. Responde trivias de salud y bienestar, acumula puntos de lealtad (XP) y descubre consejos prácticos preparados para ti.')
-                .replace(/✦ PILAR 2: ORBE DE BIENESTAR Y LEALTAD ✦/g, '✦ COMUNIDAD Y BIENESTAR EN VIVO ✦')
-                .replace(/Tu Red de Beneficios Exclusivos/g, 'Tu Espacio de Salud y Hábitos')
-                .replace(/<strong>El epicentro de tu comunidad de pacientes\.<\/strong> Un feed social cerrado de marca blanca donde tus clientes interactúan, completan misiones de salud asignadas por ti, compiten en el ranking y monitorean sus beneficios de forma inmediata\./g, '<strong>Tu bienestar al centro de todo.</strong> Conecta con nuestra comunidad privada, descubre hábitos diarios saludables, participa en dinámicas grupales y consulta tus avances en cualquier momento.')
-                .replace(/EXPLORAR RECOMENDACIONES EN VIVO/g, 'EXPLORAR COMUNIDAD')
-                .replace(/✦ PILAR 3: VIDEOTECA DE ALTO IMPACTO \(TV\) ✦/g, '✦ CANAL DE SALUD Y VIDEOS CORTOS ✦')
-                .replace(/Televisión Digital Interactiva/g, 'Cápsulas Visuales de Bienestar')
-                .replace(/<strong>La revolución del video corto en tu sucursal\.<\/strong> Tu propia estación de televisión digital adaptada\. Ofrece contenidos de sintonía biológica y entrenamientos visuales fluidos que capturan y retienen la atención en formato vertical de alta fidelidad\./g, '<strong>Aprende en segundos.</strong> Contenidos en video corto de alta fidelidad con recomendaciones fisiológicas, respiración consciente y cápsulas prácticas para tu vida diaria.')
-                .replace(/Módulos Adicionales \(Up-Sells\)/g, 'Servicios y Herramientas Digitales')
-                .replace(/<section[^>]*id="upsell-ads-section"[^>]*>.*?<\/section>/gis, '')
-                .replace(/PROBAR SIMULACIÓN/g, 'CONSULTAR SERVICIO')
-                .replace(/src="[^"]*assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
-                .replace(/src="assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
-                .replace(/css\/demo_salud\.css/g, `https://robotiax.shop/css/demo_salud.css?v=${cacheBuster}`)
-                .replace(/js\/demo_salud\.js/g, `https://robotiax.shop/js/demo_salud.js?v=${cacheBuster}`)
-                .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
-                .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.shop/css/$2"')
-                .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.shop/js/$2"')
-                .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')");
+                let compiledHtml = rawTemplate
+                    .replace('</head>', `${clientDataScript}</head>`)
+                    .replace(/<title>.*?<\/title>/g, `<title>${effectiveBusinessName} | Portal Oficial</title>`)
+                    .replace(/<span id="header-brand-title".*?<\/span>/gs, `<span id="header-brand-title" class="font-['Inter'] text-[9px] font-black text-slate-800 uppercase tracking-tight">${effectiveBusinessName}</span>`)
+                    .replace(/<div id="header-theme-picker".*?<\/div>/gs, '')
+                    .replace(/<button[^>]*onclick="[^"]*openCloserModal[^"]*"[^>]*>.*?<\/button>/gis, '')
+                    .replace(/<button[^>]*>.*?COMPRAR WEB.*?<\/button>/gis, '')
+                    .replace(/<button[^>]*id="btn-return-catalog"[^>]*>.*?<\/button>/gis, '')
+                    .replace(/<!-- MODAL DE CIERRE DE VENTA -->.*?<!-- SCRIPTS CORE -->/gs, '<!-- SCRIPTS CORE -->')
+                    .replace(/Dr\. Alejandro Morales/g, effectiveBusinessName)
+                    .replace(/ESPECIALISTA CERTIFICADO/g, clientData.badge)
+                    .replace(/Nutrición Estética & Neurología Preventiva/g, clientData.specialty)
+                    .replace(/"Tu bienestar es nuestra ciencia"/g, `"${clientData.tagline}"`)
+                    .replace(/Torre Médica, Cons\. 402/g, clientData.direccion)
+                    .replace(/Lun - Vie 9am a 6pm/g, clientData.horarios)
+                    .replace(/\+52 55 1234 5678/g, clientData.telefono)
+                    .replace(/\$800 MXN/g, clientData.fee)
+                    .replace(/<section[^>]*id="upsell-ads-section"[^>]*>.*?<\/section>/gis, '')
+                    .replace(/src="[^"]*assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
+                    .replace(/src="assets\/webs\/salud1\.webp"/g, resolvedNiche === 'contable' ? 'src="https://robotiax.shop/assets/webs/contador1.webp"' : `src="https://robotiax.shop/assets/webs/${resolvedNiche}1.webp"`)
+                    .replace(/css\/demo_salud\.css/g, `https://robotiax.shop/css/demo_salud.css?v=${cacheBuster}`)
+                    .replace(/js\/demo_salud\.js/g, `https://robotiax.shop/js/demo_salud.js?v=${cacheBuster}`)
+                    .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, '$1="https://robotiax.shop/assets/$2"')
+                    .replace(/(src|href)=['"]\/?css\/([^'"]+)['"]/g, '$1="https://robotiax.shop/css/$2"')
+                    .replace(/(src|href)=['"]\/?js\/([^'"]+)['"]/g, '$1="https://robotiax.shop/js/$2"')
+                    .replace(/url\(['"]?\/?assets\/([^'")]+)['"]?\)/g, "url('https://robotiax.shop/assets/$1')");
 
-            const waModalHtml = `
-            <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
-                <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                        <div style="width:38px; height:38px; background:#25d366; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#ffffff; font-size:20px; flex-shrink:0;">
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </div>
-                        <div>
-                            <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0; text-transform:uppercase; letter-spacing:0.5px;">VINCULAR ASISTENTE</h3>
-                            <span style="font-size:10px; color:#64748b; font-weight:600;">PASOS PARA ACTIVACIÓN</span>
-                        </div>
+                const waModalHtml = `
+                <div id="wa-setup-alert-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); z-index:999999; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
+                    <div style="background:#ffffff; border-radius:20px; max-width:380px; width:100%; padding:22px 20px; text-align:left; box-shadow:0 20px 40px rgba(0,0,0,0.35); font-family:'Poppins', sans-serif; box-sizing:border-box;">
+                        <h3 style="font-size:13px; font-weight:800; color:#0f172a; margin:0 0 10px 0; text-transform:uppercase;">VINCULAR ASISTENTE</h3>
+                        <p style="font-size:11px; color:#334155; margin:0 0 14px 0;">Ingresa a <strong>robotiax.shop/conectar.html</strong> con tu token enviado por correo para escanear tu código QR.</p>
+                        <button type="button" onclick="window.open('https://robotiax.shop/conectar.html', '_blank')" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase;">IR A CONECTAR QR</button>
                     </div>
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:12px 14px; margin-bottom:16px; font-size:11px; line-height:1.5; color:#334155;">
-                        <p style="margin:0 0 8px 0;"><strong>1.</strong> Entra a: <a href="https://bot.ikai.info" target="_blank" style="color:#2563eb; font-weight:bold; text-decoration:underline;">bot.ikai.info</a></p>
-                        <p style="margin:0 0 8px 0;"><strong>2.</strong> Ingresa el token provisional enviado a tu correo.</p>
-                        <p style="margin:0;"><strong>3.</strong> En WhatsApp ve a <em>Dispositivos vinculados</em> y escanea el código QR en pantalla.</p>
-                    </div>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <button type="button" onclick="window.app.demo.launchWhatsAppNow()" style="width:100%; background:#25d366; color:#ffffff; border:none; padding:12px; font-size:11px; font-weight:800; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 4px 12px rgba(37,211,102,0.25);">
-                            CONFIGURAR AHORA
-                        </button>
-                        <button type="button" onclick="document.getElementById('wa-setup-alert-modal').style.setProperty('display', 'none', 'important')" style="width:100%; background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:10px; font-size:11px; font-weight:700; border-radius:10px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">
-                            CONFIGURAR DESPUÉS
-                        </button>
-                    </div>
-                    <div style="font-size:9px; color:#94a3b8; text-align:center; margin-top:12px; letter-spacing:0.5px; font-family:'Roboto Mono', monospace;">
-                        tech@robotiax.shop
-                    </div>
-                </div>
-            </div>
-            `;
-            if (compiledHtml.includes('<div id="wa-setup-alert-modal"')) {
-                compiledHtml = compiledHtml.replace(/<div id="wa-setup-alert-modal"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g, waModalHtml);
-            } else {
-                compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
+                </div>`;
+                if (compiledHtml.includes('<div id="wa-setup-alert-modal"')) {
+                    compiledHtml = compiledHtml.replace(/<div id="wa-setup-alert-modal"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g, waModalHtml);
+                } else {
+                    compiledHtml = compiledHtml.replace('</body>', `${waModalHtml}</body>`);
+                }
+
+                await deployStaticToR2(negocioSlug, compiledHtml, awsBucketName.value());
+                console.log(`✅ [S3]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
+            } catch (s3Err) {
+                console.warn("⚠️ Advertencia S3:", s3Err.message);
             }
 
-            await deployStaticToR2(negocioSlug, compiledHtml, r2BucketName.value());
-            console.log(`✅ [R2]: Sitio limpio compilado y desplegado para: ${negocioSlug}.html`);
-        } catch (r2Err) {
-            console.warn("⚠️ Advertencia R2:", r2Err.message);
+            await provisionWhatsAppGateway(negocioSlug, tempPassword).catch(err => console.warn("Gateway error:", err.message));
+        } else {
+            await ensureInstanceWebhook(negocioSlug).catch(err => console.warn("Webhook refresh error:", err.message));
         }
-
-        await provisionWhatsAppGateway(negocioSlug, tempPassword).catch(err => console.warn("Gateway error:", err.message));
 
         return res.status(200).json({ received: true, folio: folio });
 
