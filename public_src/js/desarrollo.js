@@ -178,24 +178,44 @@ window.app.ui = {
         if (tables) tables.scrollIntoView({ behavior: 'smooth' });
     },
 
-    submitB2BLead: async function(e, leadType) {
-        if (e) e.preventDefault();
-        const isAdvisor = leadType === 'advisor';
-        const prefix = isAdvisor ? 'adv-' : 'ent-';
-        const biz = (document.getElementById(prefix + 'company')?.value || '').trim();
-        const phone = (document.getElementById(prefix + 'phone')?.value || '').trim();
-        const email = (document.getElementById(prefix + 'email')?.value || '').trim();
-        const need = (document.getElementById(prefix + 'need')?.value || '').trim();
-        const budget = (document.getElementById(prefix + 'budget')?.value || '').trim();
-        const statusEl = document.getElementById(prefix + 'status');
+    togglePymeDiagnosisForm: function() {
+        const formDiv = document.getElementById('form-pyme-diagnosis');
+        if (formDiv) {
+            formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+            if (formDiv.style.display === 'block') {
+                formDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    },
 
-        if (!biz || !phone || !email) {
-            alert('Por favor completa empresa, WhatsApp y correo.');
+    toggleLegalAdvisorForm: function() {
+        const formDiv = document.getElementById('form-legal-advisor');
+        if (formDiv) {
+            formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+            if (formDiv.style.display === 'block') {
+                formDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    },
+
+    submitPymeDiagnosis: async function(e) {
+        if (e) e.preventDefault();
+        const biz = (document.getElementById('pyme-diag-biz')?.value || '').trim();
+        const staff = (document.getElementById('pyme-diag-staff')?.value || '').trim();
+        const name = (document.getElementById('pyme-diag-name')?.value || '').trim();
+        const role = (document.getElementById('pyme-diag-role')?.value || '').trim();
+        const phone = (document.getElementById('pyme-diag-phone')?.value || '').trim();
+        const email = (document.getElementById('pyme-diag-email')?.value || '').trim();
+        const pain = (document.getElementById('pyme-diag-pain')?.value || '').trim();
+        const statusEl = document.getElementById('pyme-diag-status');
+
+        if (!biz || !phone || !email || !pain) {
+            alert('Por favor completa todos los campos requeridos.');
             return;
         }
 
         if (statusEl) {
-            statusEl.textContent = 'Enviando solicitud de estudio...';
+            statusEl.textContent = 'Enviando diagnóstico a ingeniería...';
             statusEl.style.color = '#00f2ff';
             statusEl.style.display = 'block';
         }
@@ -204,16 +224,134 @@ window.app.ui = {
             ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
             : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder';
 
-        const folio = 'LEAD-' + (isAdvisor ? 'ASESOR' : 'CORP') + '-' + Date.now().toString().slice(-6);
+        const folio = 'DIAG-PYME-' + Date.now().toString().slice(-6);
         try {
             await fetch(endpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025'
-                },
+                headers: { 'Content-Type': 'application/json', 'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025' },
                 body: JSON.stringify({
-                    template: isAdvisor ? 'lead-asesor-pyme' : 'lead-gran-empresa',
+                    template: 'lead-diagnostico-pyme',
+                    details: {
+                        folio: folio,
+                        negocio: biz,
+                        staffCount: staff,
+                        contactName: name,
+                        role: role,
+                        telefono: phone,
+                        email: email,
+                        servicios: pain,
+                        fee: 'Diagnóstico Automatización y Ventas',
+                        isDraft: true,
+                        leadType: 'pyme_automation_pain',
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+            if (statusEl) {
+                statusEl.textContent = '✓ Diagnóstico recibido (' + folio + '). Nuestro equipo analizará tu caso y te responderá con una propuesta en un plazo de 24 a 72 horas hábiles.';
+                statusEl.style.color = '#4ade80';
+            }
+            e.target.reset();
+        } catch (err) {
+            if (statusEl) {
+                statusEl.textContent = 'Error enviando diagnóstico. Escríbenos a contacto@robotiax.shop.';
+                statusEl.style.color = '#fda4af';
+            }
+        }
+    },
+
+    submitLegalAdvisorRequest: async function(e) {
+        if (e) e.preventDefault();
+        const name = (document.getElementById('legal-req-name')?.value || '').trim();
+        const biz = (document.getElementById('legal-req-biz')?.value || '').trim();
+        const matter = (document.getElementById('legal-req-matter')?.value || '').trim();
+        const phone = (document.getElementById('legal-req-phone')?.value || '').trim();
+        const email = (document.getElementById('legal-req-email')?.value || '').trim();
+        const budget = (document.getElementById('legal-req-budget')?.value || '').trim();
+        const details = (document.getElementById('legal-req-details')?.value || '').trim();
+        const statusEl = document.getElementById('legal-req-status');
+
+        if (!name || !phone || !email || !details) {
+            alert('Por favor completa los datos obligatorios de tu solicitud.');
+            return;
+        }
+
+        if (statusEl) {
+            statusEl.textContent = 'Conectando con la red de aliados...';
+            statusEl.style.color = '#ffd700';
+            statusEl.style.display = 'block';
+        }
+
+        const endpoint = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
+            : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder';
+
+        const folio = 'LEGAL-' + matter.split('_')[0] + '-' + Date.now().toString().slice(-6);
+        try {
+            await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025' },
+                body: JSON.stringify({
+                    template: 'lead-red-legal-fiscal',
+                    details: {
+                        folio: folio,
+                        negocio: biz || name,
+                        contactName: name,
+                        legalMatter: matter,
+                        telefono: phone,
+                        email: email,
+                        servicios: details,
+                        fee: budget,
+                        isDraft: true,
+                        leadType: 'legal_fiscal_network',
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+            if (statusEl) {
+                statusEl.textContent = '✓ Solicitud canalizada (' + folio + '). Un profesionista afín a tu presupuesto te contactará en un plazo de 24 a 72 horas hábiles.';
+                statusEl.style.color = '#4ade80';
+            }
+            e.target.reset();
+        } catch (err) {
+            if (statusEl) {
+                statusEl.textContent = 'Error enviando solicitud. Escríbenos a contacto@robotiax.shop.';
+                statusEl.style.color = '#fda4af';
+            }
+        }
+    },
+
+    submitB2BLead: async function(e, leadType) {
+        if (e) e.preventDefault();
+        const biz = (document.getElementById('ent-company')?.value || '').trim();
+        const phone = (document.getElementById('ent-phone')?.value || '').trim();
+        const email = (document.getElementById('ent-email')?.value || '').trim();
+        const need = (document.getElementById('ent-need')?.value || '').trim();
+        const budget = (document.getElementById('ent-budget')?.value || '').trim();
+        const statusEl = document.getElementById('ent-status');
+
+        if (!biz || !phone || !email) {
+            alert('Por favor completa empresa, WhatsApp y correo.');
+            return;
+        }
+
+        if (statusEl) {
+            statusEl.textContent = 'Enviando solicitud de estudio corporativo...';
+            statusEl.style.color = '#ffd700';
+            statusEl.style.display = 'block';
+        }
+
+        const endpoint = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
+            : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder';
+
+        const folio = 'CORP-ESTUDIO-' + Date.now().toString().slice(-6);
+        try {
+            await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025' },
+                body: JSON.stringify({
+                    template: 'lead-gran-empresa',
                     details: {
                         folio: folio,
                         negocio: biz,
@@ -222,19 +360,19 @@ window.app.ui = {
                         servicios: need,
                         fee: budget || 'Previo Estudio',
                         isDraft: true,
-                        leadType: leadType,
+                        leadType: 'enterprise_evaluation',
                         timestamp: new Date().toISOString()
                     }
                 })
             });
             if (statusEl) {
-                statusEl.textContent = '✓ Solicitud registrada (' + folio + '). Un especialista de Robotiax te contactará por WhatsApp/Correo en menos de 24h.';
+                statusEl.textContent = '✓ Solicitud corporativa registrada (' + folio + '). Nuestro equipo de arquitectura te presentará propuesta técnica en menos de 24h hábiles.';
                 statusEl.style.color = '#4ade80';
             }
             e.target.reset();
         } catch (err) {
             if (statusEl) {
-                statusEl.textContent = 'Error enviando solicitud. Escríbenos directo a contacto@robotiax.shop.';
+                statusEl.textContent = 'Error enviando solicitud. Escríbenos a contacto@robotiax.shop.';
                 statusEl.style.color = '#fda4af';
             }
         }

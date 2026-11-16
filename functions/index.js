@@ -530,23 +530,49 @@ await getDb().collection('orders_to_fulfill').doc(folio).set({
 }, { merge: true });
 console.log(`📝 [BUSINESS_SAVED]: Negocio "${details.negocio}" grabado bajo folio ${folio} (slug: ${negocioSlug}).`);
 
-if (template === 'lead-asesor-pyme' || template === 'lead-gran-empresa') {
+if (template === 'lead-diagnostico-pyme' || template === 'lead-red-legal-fiscal' || template === 'lead-gran-empresa' || template === 'lead-asesor-pyme') {
     const isCorp = template === 'lead-gran-empresa';
+    const isLegal = template === 'lead-red-legal-fiscal';
+    const isPymeDiag = template === 'lead-diagnostico-pyme';
     const mailerLead = getTransporter();
+
+    let subject = `🚨 NUEVO LEAD PYME (${folio})`;
+    let titleHeader = 'SOLICITUD RECIBIDA';
+    let borderClr = '#00f2ff';
+
+    if (isCorp) {
+        subject = `🏛️ ESTUDIO CORPORATIVO: ${details.negocio} (${folio})`;
+        titleHeader = '🏛️ SOLICITUD DE ESTUDIO TÉCNICO (GRAN EMPRESA)';
+        borderClr = '#ffd700';
+    } else if (isLegal) {
+        subject = `⚖️ ASESORÍA ${details.legalMatter || 'LEGAL/FISCAL'}: ${details.contactName || details.negocio} (${folio})`;
+        titleHeader = '⚖️ SOLICITUD DE CONEXIÓN CON ABOGADO / CONTADOR';
+        borderClr = '#ffd700';
+    } else if (isPymeDiag) {
+        subject = `⚡ DIAGNÓSTICO AUTOMATIZACIÓN/VENTAS: ${details.negocio} (${folio})`;
+        titleHeader = '⚡ SOLICITUD DE ACELERACIÓN COMERCIAL & AUTOMATIZACIÓN PYME';
+        borderClr = '#00f2ff';
+    }
+
     await mailerLead.sendMail({
         from: '"Robotiax B2B Leads" <contacto@robotiax.shop>',
         to: ['contacto@robotiax.shop', 'klvenoticias@gmail.com'],
         replyTo: clientEmail || 'contacto@robotiax.shop',
-        subject: isCorp ? `🏛️ ESTUDIO GRAN EMPRESA: ${details.negocio} (${folio})` : `💼 LEAD ASESOR PYME: ${details.negocio} (${folio})`,
+        subject: subject,
         html: `
-            <div style="font-family: Arial, sans-serif; background: #020617; color: #e2e8f0; padding: 24px; border: 2px solid #ffd700; border-radius: 10px;">
-                <h2 style="color: #ffd700; margin-top: 0;">${isCorp ? '🏛️ SOLICITUD DE ESTUDIO CORPORATIVO' : '💼 SOLICITUD DE CONTADOR / ABOGADO PYME'}</h2>
+            <div style="font-family: Arial, sans-serif; background: #020617; color: #e2e8f0; padding: 24px; border: 2px solid ${borderClr}; border-radius: 10px;">
+                <h2 style="color: ${borderClr}; margin-top: 0; text-transform: uppercase;">${titleHeader}</h2>
                 <p><strong>Folio:</strong> ${folio}</p>
-                <p><strong>Empresa / PyME:</strong> ${details.negocio || '-'}</p>
-                <p><strong>WhatsApp:</strong> ${details.telefono || '-'}</p>
+                <p><strong>Empresa / Solicitante:</strong> ${details.negocio || '-'}</p>
+                ${details.contactName ? `<p><strong>Contacto:</strong> ${details.contactName} (${details.role || 'Titular'})</p>` : ''}
+                ${details.staffCount ? `<p><strong>Empleados:</strong> ${details.staffCount}</p>` : ''}
+                ${details.legalMatter ? `<p><strong>Materia Legal/Fiscal:</strong> <strong style="color: #ff003c;">${details.legalMatter}</strong></p>` : ''}
+                <p><strong>WhatsApp:</strong> <a href="https://wa.me/${String(details.telefono || '').replace(/\D/g, '')}" target="_blank" style="color: #25d366; font-weight: bold;">${details.telefono || '-'}</a></p>
                 <p><strong>Correo:</strong> ${clientEmail || '-'}</p>
-                <p><strong>Requerimiento:</strong> ${details.servicios || '-'}</p>
-                <p><strong>Presupuesto / Tamaño:</strong> ${details.fee || '-'}</p>
+                <p><strong>Detalle del Problema / Dolor:</strong> ${details.servicios || '-'}</p>
+                <p><strong>Presupuesto / Alcance:</strong> ${details.fee || '-'}</p>
+                <hr style="border-color: #334155; margin: 16px 0;">
+                <p style="font-size: 11px; color: #94a3b8; margin: 0;">Compromiso de respuesta al usuario: 24 a 72 horas hábiles.</p>
             </div>
         `
     }).catch(e => console.error('❌ Lead email falló:', e.message));
