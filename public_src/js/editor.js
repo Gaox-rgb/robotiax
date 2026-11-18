@@ -214,10 +214,7 @@ window.app.editor = {
         const inputs = document.querySelectorAll('#editor-panel input, #editor-panel textarea');
         for (let input of inputs) {
             if (!input.value.trim()) {
-                this.notify("CAMPOS INCOMPLETOS. Si no deseas incluir algún dato, escribe 'NO' en ese campo y será omitido automáticamente de tu web.", "error");
-                input.style.borderColor = "#ff003c";
-                input.focus();
-                return;
+                input.value = "No especificado";
             }
         }
 

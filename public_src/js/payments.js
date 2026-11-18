@@ -22,10 +22,10 @@ window.app.payments = {
     },
 
     executePurchase: function(productId, price, currency) {
-        if (!window.app.editor.validateSession()) return;
-        localStorage.setItem('pending_purchase_id', productId);
+        const planTag = localStorage.getItem('pending_plan_tag') || 'PLAN_100';
+        const targetLink = this.stripeLinks[planTag] || this.stripeLinks.PLAN_100;
         
-        const targetLink = this.stripeLinks.web_suite || this.stripeLinks.default;
+        localStorage.setItem('pending_purchase_id', productId);
         
         if (window.top && window.top !== window) {
             window.top.location.href = targetLink;

@@ -382,7 +382,7 @@ window.app.ui = {
         console.log("Abriendo panel de personalización para:", templateId);
         this.selectedTemplate.id = templateId;
 
-        let resolvedTitle = templateName;
+        let resolvedTitle = templateName || 'Suite Digital Robotiax';
         const btn = document.querySelector(`button[onclick*="'${templateId}'"]`);
         if (btn) {
             const card = btn.closest('.glow-card-cyber');
@@ -401,7 +401,7 @@ window.app.ui = {
         if (window.app.editor && typeof window.app.editor.init === 'function') {
             window.app.editor.init(templateId, resolvedTitle);
         } else if (window.app.payments) {
-            window.app.payments.openModal(templateId, resolvedTitle, 200, 'MXN');
+            window.app.payments.openModal(templateId, resolvedTitle, 255, 'MXN');
         }
     },
 
