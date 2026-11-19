@@ -1105,11 +1105,17 @@ window.app.demo = {
     },
 
     toggleWhatsAppWidget: function() {
-        const isClientSite = (window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) || 
-                             (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.'));
+        const data = window.app.clientData || {};
+        const isProduction = Boolean((window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) || 
+                             (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.')));
 
-        if (isClientSite) {
-            this.launchWhatsAppNow();
+        if (isProduction) {
+            const mModal = document.getElementById('robotiax-maintenance-modal');
+            if (mModal) {
+                mModal.style.setProperty('display', 'flex', 'important');
+            } else {
+                alert("⚠️ Este asistente de WhatsApp se encuentra temporalmente en mantenimiento técnico. Escríbenos a: clientes@robotiax.com");
+            }
             return;
         }
 
