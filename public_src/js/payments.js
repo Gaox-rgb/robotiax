@@ -93,14 +93,26 @@ window.app.payments = {
                     iva: '$82.62 MXN',
                     total: '$599.00 MXN'
                 };
-            }
-
             } else if (planTag === 'PLAN_100_ERP') {
                 breakdown = {
                     name: savedProdName + ' — Plan Básico + ERP PyME (100 Mensajes / 30 días)',
                     subtotal: '$392.24 MXN',
                     iva: '$62.76 MXN',
                     total: '$455.00 MXN'
+                };
+            } else if (planTag === 'PLAN_300_ERP') {
+                breakdown = {
+                    name: savedProdName + ' — Plan Crecimiento + ERP PyME (300 Mensajes / 30 días)',
+                    subtotal: '$689.66 MXN',
+                    iva: '$110.34 MXN',
+                    total: '$800.00 MXN'
+                };
+            } else if (planTag === 'PLAN_UNLIMITED_ERP') {
+                breakdown = {
+                    name: savedProdName + ' — Plan Élite Ilimitado + ERP (Ilimitado / 30 días)',
+                    subtotal: '$1,377.59 MXN',
+                    iva: '$220.41 MXN',
+                    total: '$1,598.00 MXN'
                 };
             } else if (planTag === 'PLAN_300_ERP') {
                 breakdown = {
@@ -136,9 +148,40 @@ window.app.payments = {
             if (ivaEl) ivaEl.textContent = breakdown.iva;
             if (totEl) totEl.textContent = breakdown.total;
 
-            const modal = document.getElementById('post-payment-modal');
-            if (modal) {
+            let modal = document.getElementById('post-payment-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'post-payment-modal';
+                modal.innerHTML = `
+                    <div style="background: #070d1a; border: 1px solid #00f2ff; border-radius: 12px; max-width: 460px; width: 100%; padding: 28px 22px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.25); box-sizing: border-box;">
+                        <div style="width: 52px; height: 52px; background: rgba(46, 204, 113, 0.15); border: 2px solid #2ecc71; color: #2ecc71; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 1.4rem; font-weight: bold;">✓</div>
+                        <h2 style="color: #ffffff; font-size: 1.25rem; font-weight: 700; margin: 0 0 8px 0;">¡ORDEN CONFIRMADA!</h2>
+                        <p style="color: #cbd5e1; font-size: 0.8rem; margin: 0 0 12px 0; line-height: 1.45;">Adquiriste: <strong id="success-product-name" style="color: #00f2ff;">${breakdown.name}</strong></p>
+                        <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; text-align: left; font-size: 0.76rem; color: #cbd5e1; line-height: 1.65;">
+                            <div style="display:flex; justify-content:space-between;"><span>Folio:</span><strong id="success-folio" style="color:#ffffff;">${folio}</strong></div>
+                            <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span><strong id="success-subtotal" style="color:#ffffff;">${breakdown.subtotal}</strong></div>
+                            <div style="display:flex; justify-content:space-between;"><span>IVA (16%):</span><strong id="success-iva" style="color:#ffffff;">${breakdown.iva}</strong></div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(148,163,184,0.3); margin-top:4px; padding-top:4px;"><span>Total Pagado:</span><strong id="success-total" style="color:#ffd700;">${breakdown.total}</strong></div>
+                        </div>
+                        <a href="conectar.html" style="width: 100%; display:block; background: #25d366; color: #020617; border: none; padding: 12px; font-weight: 800; font-size: 0.78rem; border-radius: 6px; text-decoration: none; text-transform: uppercase; margin-bottom: 8px;">VINCULAR WHATSAPP CON QR ➔</a>
+                        <button onclick="window.app.payments.closePostPaymentModal()" style="width: 100%; background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 10px; font-weight: 600; font-size: 0.74rem; border-radius: 6px; cursor: pointer; text-transform: uppercase;">CERRAR AVISO</button>
+                    </div>
+                `;
+                Object.assign(modal.style, {
+                    display: 'flex',
+                    position: 'fixed',
+                    inset: '0',
+                    background: 'rgba(2, 6, 23, 0.95)',
+                    zIndex: '9999999',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    boxSizing: 'border-box'
+                });
+                document.body.appendChild(modal);
+            } else {
                 modal.style.setProperty('display', 'flex', 'important');
+                modal.style.zIndex = '9999999';
             }
         }
     },
@@ -147,8 +190,8 @@ window.app.payments = {
         const modal = document.getElementById('post-payment-modal');
         if (modal) {
             modal.style.display = 'none';
+            modal.style.setProperty('display', 'none', 'important');
         }
-        // Limpiar parámetros de URL silenciosamente
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
         localStorage.removeItem('pending_purchase_id');
