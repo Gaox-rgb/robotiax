@@ -309,6 +309,11 @@
             overflow-x: hidden !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        html::-webkit-scrollbar {
+            display: none !important;
         }
 
         body {
@@ -318,9 +323,14 @@
             min-height: 100% !important;
             height: auto !important;
             overflow-x: hidden !important;
-            overflow-y: visible !important;
+            overflow-y: auto !important;
             position: relative !important;
             touch-action: pan-y !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        body::-webkit-scrollbar {
+            display: none !important;
         }
     </style>
     <script>

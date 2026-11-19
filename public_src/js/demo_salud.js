@@ -1083,6 +1083,15 @@ window.app.demo = {
         if (modal) modal.style.setProperty('display', 'none', 'important');
         
         const data = window.app.clientData || {};
+        const isProduction = Boolean(data && data.isProductionSite);
+        
+        // INTERCEPCIÓN ABSOLUTA: Si es un sitio de producción recién comprado y el usuario final pulsa el botón, 
+        // se bloquea la redirección a wa.me y se emite el aviso estricto de mantenimiento/soporte a clientes@robotiax.com.
+        if (isProduction) {
+            alert("⚠️ ASISTENTE EN PROCESO DE CONFIGURACIÓN\n\nEste asistente de WhatsApp se encuentra temporalmente en mantenimiento técnico por sincronización de instancia.\n\nPara atención directa con nuestros asesores, por favor envíe un correo a: clientes@robotiax.com");
+            return;
+        }
+
         const phoneRaw = data.telefono || document.getElementById('meta-val-3')?.textContent || '';
         const cleanPhone = phoneRaw.replace(/\D/g, '');
         const businessName = encodeURIComponent(data.negocio || 'su negocio');
