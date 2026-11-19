@@ -167,6 +167,13 @@ window.app.demo = {
             id = window.app.clientData.nicheId;
         }
 
+        const isProductionSite = Boolean((window.app && window.app.clientData && (window.app.clientData.isProductionSite || window.app.clientData.negocio)) || 
+                                       (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.')));
+        if (isProductionSite) {
+            const floatingCard = document.getElementById('floating-benefits-card');
+            if (floatingCard) floatingCard.remove();
+        }
+
         if (!id || !window.app.catalog || !window.app.catalog.demoTemplates || !window.app.catalog.demoTemplates[id]) {
             id = "salud";
         }
@@ -1110,14 +1117,31 @@ window.app.demo = {
                              (window.location.hostname.includes('.ikai.info') && !window.location.hostname.startsWith('www.')));
 
         if (isProduction) {
-            const mModal = document.getElementById('robotiax-maintenance-modal');
+            let mModal = document.getElementById('robotiax-maintenance-modal');
+            if (!mModal) {
+                const modalHtml = `
+                <div id="robotiax-maintenance-modal" style="display:none; position:fixed; inset:0; background:rgba(2,6,23,0.85); backdrop-filter:blur(8px); z-index:999999; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; font-family:'Poppins',sans-serif;">
+                    <div style="background:#0f172a; border:1px solid rgba(56,189,248,0.2); border-radius:24px; max-width:420px; width:100%; padding:32px 28px; text-align:center; box-shadow:0 25px 50px -12px rgba(0,0,0,0.7); position:relative; box-sizing:border-box;">
+                        <button type="button" onclick="document.getElementById('robotiax-maintenance-modal').style.display='none'" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.05); color:#94a3b8; border:none; border-radius:50%; width:32px; height:32px; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">&times;</button>
+                        <div style="width:56px; height:56px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; color:#38bdf8; font-size:24px;">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <span style="font-family:'Inter',sans-serif; font-size:10px; font-weight:800; color:#38bdf8; letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:8px;">SOPORTE TÉCNICO OFICIAL</span>
+                        <h3 style="font-family:'Inter',sans-serif; font-size:18px; font-weight:900; color:#ffffff; margin:0 0 12px 0; line-height:1.3;">Asistente en Mantenimiento</h3>
+                        <p style="font-size:13px; color:#94a3b8; line-height:1.6; margin:0 0 24px 0;">Este asistente de WhatsApp se encuentra temporalmente en mantenimiento técnico por actualización de instancia. Escríbenos directamente a:</p>
+                        <a href="mailto:clientes@robotiax.com" style="display:block; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; font-family:'Inter',sans-serif; font-weight:800; font-size:13px; padding:12px; border-radius:12px; text-decoration:none; margin-bottom:16px; transition:all 0.2s;">clientes@robotiax.com</a>
+                        <button type="button" onclick="document.getElementById('robotiax-maintenance-modal').style.display='none'" style="width:100%; background:#38bdf8; color:#020617; border:none; padding:14px; font-family:'Inter',sans-serif; font-weight:900; font-size:12px; border-radius:12px; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow:0 10px 20px rgba(56,189,248,0.2);">ENTENDIDO</button>
+                    </div>
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                mModal = document.getElementById('robotiax-maintenance-modal');
+            }
             if (mModal) {
                 mModal.style.setProperty('display', 'flex', 'important');
-            } else {
-                alert("⚠️ Este asistente de WhatsApp se encuentra temporalmente en mantenimiento técnico. Escríbenos a: clientes@robotiax.com");
             }
             return;
         }
+
 
         const oldModal = document.getElementById('wa-setup-alert-modal');
         if (oldModal) oldModal.remove();

@@ -201,14 +201,14 @@ exports.generateDemo = onRequest({
                         }
 
                         // Eliminación total de elementos de venta y ajuste estricto de header en producción
-                        if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
+                         if (originalHost && originalHost.includes('.ikai.info') && !originalHost.startsWith('www.')) {
                             finalHtmlWithFix = finalHtmlWithFix
                                 .replace(/<button[^>]*>.*?COMPRAR WEB.*?<\/button>/gis, '')
                                 .replace(/<button id="header-whatsapp-btn".*?<\/button>/gis, '')
                                 .replace(/<button id="btn-return-catalog".*?<\/button>/gis, '')
+                                .replace(/<div id="floating-benefits-card"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gis, '')
                                 .replace(/<div class="absolute inset-0 bg-gradient-to-r from-white via-white\/95 to-transparent z-10 pointer-events-none"><\/div>/g, '');
                         }
-
                         finalHtmlWithFix = finalHtmlWithFix
                             // Protocolo de Inyección de Assets Absolutos (Versión Reforzada Adaptativa)
                             .replace(/(src|href)=['"]\/?assets\/([^'"]+)['"]/g, `$1="${domainBase}/assets/$2"`)
