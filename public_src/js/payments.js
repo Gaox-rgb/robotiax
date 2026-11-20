@@ -163,8 +163,7 @@ window.app.payments = {
                             <div style="display:flex; justify-content:space-between;"><span>IVA (16%):</span><strong id="success-iva" style="color:#ffffff;">${breakdown.iva}</strong></div>
                             <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(148,163,184,0.3); margin-top:4px; padding-top:4px;"><span>Total Pagado:</span><strong id="success-total" style="color:#ffd700;">${breakdown.total}</strong></div>
                         </div>
-                        <a href="conectar.html" style="width: 100%; display:block; background: #25d366; color: #020617; border: none; padding: 12px; font-weight: 800; font-size: 0.78rem; border-radius: 6px; text-decoration: none; text-transform: uppercase; margin-bottom: 8px;">VINCULAR WHATSAPP CON QR ➔</a>
-                        <button onclick="window.app.payments.closePostPaymentModal()" style="width: 100%; background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 10px; font-weight: 600; font-size: 0.74rem; border-radius: 6px; cursor: pointer; text-transform: uppercase;">CERRAR AVISO</button>
+                       <button onclick="window.app.payments.closePostPaymentModal()" style="width: 100%; background: transparent; color: #94a3b8; border: 1px solid #334155; padding: 10px; font-weight: 600; font-size: 0.74rem; border-radius: 6px; cursor: pointer; text-transform: uppercase;">CERRAR AVISO</button>
                     </div>
                 `;
                 Object.assign(modal.style, {
