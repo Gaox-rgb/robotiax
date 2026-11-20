@@ -273,21 +273,24 @@ window.app.editor = {
         const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
         const checkoutUrl = `${stripeBaseLink}?allow_promotion_codes=true&prefilled_email=${encodeURIComponent(details.email)}&client_reference_id=${encodeURIComponent(clientReference)}`;
 
-        // Apertura en pestaña nueva para conservar la ventana de control con X, Impresión y Volver en Robotiax
+        // Apertura en pestaña nueva para Stripe
         const stripeTab = window.open(checkoutUrl, '_blank');
 
-        if (!stripeTab || stripeTab.closed || typeof stripeTab.closed === 'undefined') {
-            // Si el navegador bloqueó la ventana emergente, redirige en la misma pestaña
-            window.location.href = checkoutUrl;
-        } else {
-            // En la pestaña de Robotiax, cerramos el formulario y activamos el modal con X, Impresión y Volver
-            this.close();
-            const oxxoModal = document.getElementById('oxxo-pending-modal');
-            if (oxxoModal) {
-                oxxoModal.style.display = 'flex';
+        // Cierra de inmediato el panel de edición
+        this.close();
+
+        // Si estamos dentro de una demo/visor iframe o subdominio, redirigimos la ventana actual de forma limpia a desarrollo-web.html
+        setTimeout(() => {
+            const isVisor = window.parent && window.parent !== window;
+            if (isVisor && window.parent.app && window.parent.app.ui && window.parent.app.ui.closeDemoVisor) {
+                window.parent.app.ui.closeDemoVisor();
             } else {
-                window.location.href = 'desarrollo-web.html?status=pending_oxxo';
+                window.location.href = 'desarrollo-web.html?status=success';
             }
+        }, 500);
+
+        if (!stripeTab || stripeTab.closed || typeof stripeTab.closed === 'undefined') {
+            window.location.href = checkoutUrl;
         }
     },
 
