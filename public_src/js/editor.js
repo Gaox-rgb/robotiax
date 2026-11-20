@@ -98,6 +98,18 @@ window.app.editor = {
         if (titleEl) {
             titleEl.textContent = String(this.currentProductName).toUpperCase();
         }
+
+        // VINCULACIÓN EN TIEMPO REAL: El nombre del negocio será el título de la página web
+        const nameInput = document.getElementById('edit-name');
+        if (nameInput) {
+            nameInput.oninput = (evt) => {
+                const val = evt.target.value.trim();
+                if (val) {
+                    document.title = `${val} | Portal Oficial`;
+                }
+            };
+        }
+
     this.updatePayButtonLabel();
     },
     updatePayButtonLabel: function() {

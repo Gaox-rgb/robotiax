@@ -2059,9 +2059,8 @@ exports.stripeWebhook = onRequest({
         if (targetEmail && isPaid) {
             try {
                 const isHookArsenal = Boolean(draftData.template === 'rs-hook-arsenal' || (draftData.productName && draftData.productName.includes('Hook Arsenal')));
-                let emailSubject = isRenewalOrUpgrade
-                    ? `🔄 ¡Plan Actualizado (${planMeta.planName})! Folio ${folio}`
-                    : `✅ ¡Tu Suite Digital y Bot están Activos! Accesos y Manual (${folio})`;
+                // ASUNTO ESTRICTO UNIFICADO TAL COMO LO SOLICITASTE
+                let emailSubject = `¡Tu Suite Digital y Bot están Activos! Accesos y Manual (${folio})`;
                 let clientEmailHtml = "";
 
                 if (planMeta.type === 'web_perfection') {
@@ -2104,8 +2103,8 @@ exports.stripeWebhook = onRequest({
                                 </table>
                             </div>
 
-                            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0;">
-                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB EN LÍNEA:</p>
+                           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0;">
+                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB EN LÍNEA Y ACCESOS:</p>
                                 <p style="margin: 6px 0 0 0; font-size: 13px; word-break: break-all;">
                                     <a href="${siteUrl}" target="_blank" style="color: #16a34a; font-weight: 800; text-decoration: underline;">${siteUrl}</a>
                                 </p>
