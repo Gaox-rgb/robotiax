@@ -21,9 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 // 1.5. Verificar Plantillas Compradas (Reforzado)
     const updateOwnedButtons = () => {
-        const owned = JSON.parse(localStorage.getItem('makumoto_owned') || '[]');
+        // LIMPIEZA RADICAL: Eliminamos la llave global vieja de pruebas para evitar falsos positivos
+        if (localStorage.getItem('makumoto_owned')) {
+            localStorage.removeItem('makumoto_owned');
+        }
+
+        // Verificamos si hay un usuario autenticado y con compras reales verificadas en su sesión
+        const userJson = localStorage.getItem('robotiax_user');
+        if (!userJson) return; // Sin sesión, nadie tiene nada adquirido
+
+        let user;
+        try {
+            user = JSON.parse(userJson);
+        } catch(e) {
+            return;
+        }
+
+        // Solo si el usuario tiene una lista de compras explícita en su objeto de sesión
+        const owned = Array.isArray(user.ownedTemplates) ? user.ownedTemplates : [];
+        
         owned.forEach(templateId => {
-            // Buscamos botones que contengan el ID en su atributo onclick
             const buttons = document.querySelectorAll(`button[onclick*="${templateId}"]`);
             buttons.forEach(btn => {
                 btn.innerHTML = '✔️ ADQUIRIDA';
@@ -34,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.disabled = true;
                 btn.onclick = null; 
 
-                const card = btn.closest('.template-card');
+                const card = btn.closest('.glow-card-cyber');
                 if (card) card.style.borderColor = '#2ecc71';
             });
         });
