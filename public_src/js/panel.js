@@ -973,6 +973,8 @@ window.app.panel = {
             alert(err.message);
         }
     },
+
+    openStripeCheckout: function(planTag) {
         const baseLink = this.stripePlans[planTag] || this.stripePlans.PLAN_100;
         const s = window.app.state.summary || {};
         const folio = s.folio || 'RENOVACION';

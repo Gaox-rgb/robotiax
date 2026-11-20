@@ -15,20 +15,20 @@ const OBFUSCATOR_OPTIONS = {
     disableConsoleOutput: false,
     identifierNamesGenerator: 'hexadecimal',
     log: false,
-    numbersToExpressions: true,
+    numbersToExpressions: false,
     renameGlobals: false,
     selfDefending: false,
     simplify: true,
-    splitStrings: true,
+    splitStrings: false,
     stringArray: true,
     stringArrayCallsTransform: true,
-    stringArrayEncoding: ['base64'],
-    stringArrayIndexShift: true,
-    stringArrayRotate: true,
-    stringArrayShuffle: true,
-    stringArrayThreshold: 0.8,
+    stringArrayEncoding: [],
+    stringArrayIndexShift: false,
+    stringArrayRotate: false,
+    stringArrayShuffle: false,
+    stringArrayThreshold: 0.5,
     transformObjectKeys: false,
-    unicodeEscapeSequence: true
+    unicodeEscapeSequence: false
 };
 
 function deleteFolderRecursive(directoryPath) {
@@ -130,6 +130,17 @@ async function processFile(srcPath, distPath) {
             });
             safeWriteFile(distPath, minified);
             console.log(`[HTML] Minificado: ${path.relative(SRC_DIR, srcPath)}`);
+
+            // Sincronización adicional: Si es demo_salud.html, copiamos el original a functions/templates/
+            if (path.basename(srcPath).toLowerCase() === 'demo_salud.html') {
+                const templateTargetDir = path.join(__dirname, 'functions', 'templates');
+                if (!fs.existsSync(templateTargetDir)) {
+                    fs.mkdirSync(templateTargetDir, { recursive: true });
+                }
+                const templateTargetPath = path.join(templateTargetDir, 'demo_salud.html');
+                safeCopyFile(srcPath, templateTargetPath);
+                console.log(`[TEMPLATE] Espejo actualizado en backend: functions/templates/demo_salud.html`);
+            }
         } catch (err) {
             console.error(`[HTML] Fallo al minificar ${path.basename(srcPath)}:`, err);
             safeCopyFile(srcPath, distPath);
@@ -201,19 +212,34 @@ function generateSitemap() {
     const DOMAIN = 'https://robotiax.shop';
     if (!fs.existsSync(DIST_DIR)) return;
 
-    const files = fs.readdirSync(DIST_DIR);
-    const htmlFiles = files.filter(file => file.endsWith('.html'));
+    function getHtmlFilesRecursive(dir, fileList = []) {
+        const files = fs.readdirSync(dir);
+        files.forEach(file => {
+            const filePath = path.join(dir, file);
+            if (fs.statSync(filePath).isDirectory()) {
+                getHtmlFilesRecursive(filePath, fileList);
+            } else if (file.endsWith('.html')) {
+                fileList.push(filePath);
+            }
+        });
+        return fileList;
+    }
+
+    const htmlFiles = getHtmlFilesRecursive(DIST_DIR);
 
     let urls = '';
-    htmlFiles.forEach(file => {
-        if (file === '404.html') return;
+    htmlFiles.forEach(filePath => {
+        const relativePath = path.relative(DIST_DIR, filePath).replace(/\\/g, '/');
+        if (relativePath === '404.html') return;
 
-        const pageUrl = file === 'index.html' ? `${DOMAIN}/` : `${DOMAIN}/${file}`;
+        const pageUrl = relativePath === 'index.html' ? `${DOMAIN}/` : `${DOMAIN}/${relativePath.replace(/\/index\.html$/, '')}`;
+        const isRootIndex = relativePath === 'index.html';
+        
         urls += `
   <url>
     <loc>${pageUrl}</loc>
     <changefreq>weekly</changefreq>
-    <priority>${file === 'index.html' ? '1.0' : '0.8'}</priority>
+    <priority>${isRootIndex ? '1.0' : '0.8'}</priority>
   </url>`;
     });
 
@@ -223,7 +249,7 @@ ${urls}
 </urlset>`;
 
     safeWriteFile(path.join(DIST_DIR, 'sitemap.xml'), sitemapContent.trim());
-    console.log(`[SEO] Sitemap.xml generado automáticamente (${htmlFiles.length} páginas indexadas).`);
+    console.log(`[SEO] Sitemap.xml generado automáticamente (${htmlFiles.length} páginas indexadas de forma recursiva).`);
 }
 
 run();
