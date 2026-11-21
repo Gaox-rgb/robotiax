@@ -289,28 +289,13 @@ window.app.editor = {
             PLAN_300_ERP: 'https://buy.stripe.com/9B628sa56d8S4HY3gX4gg0z',
             PLAN_UNLIMITED_ERP: 'https://buy.stripe.com/cNi14o4KM1qa3DU2cT4gg0A'
         };
-        const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
+       const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
         const checkoutUrl = `${stripeBaseLink}?allow_promotion_codes=true&prefilled_email=${encodeURIComponent(details.email)}&client_reference_id=${encodeURIComponent(clientReference)}`;
 
-        // Apertura en pestaña nueva para Stripe
-        const stripeTab = window.open(checkoutUrl, '_blank');
-
-        // Cierra de inmediato el panel de edición
         this.close();
 
-        // Si estamos dentro de una demo/visor iframe o subdominio, redirigimos la ventana actual de forma limpia a desarrollo-web.html
-        setTimeout(() => {
-            const isVisor = window.parent && window.parent !== window;
-            if (isVisor && window.parent.app && window.parent.app.ui && window.parent.app.ui.closeDemoVisor) {
-                window.parent.app.ui.closeDemoVisor();
-            } else {
-                window.location.href = 'desarrollo-web.html?status=success';
-            }
-        }, 500);
-
-        if (!stripeTab || stripeTab.closed || typeof stripeTab.closed === 'undefined') {
-            window.location.href = checkoutUrl;
-        }
+        // Redirección nativa en la misma ventana para mantener compatibilidad total de pagos locales
+        window.location.href = checkoutUrl;
     },
 
     /**

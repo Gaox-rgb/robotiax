@@ -997,7 +997,7 @@ window.app.panel = {
         const ref = folio + '__' + encodeURIComponent(this.email) + '__' + encodeURIComponent(negocio) + '__' + planTag;
         const sep = baseLink.includes('?') ? '&' : '?';
         const finalUrl = baseLink + sep + 'prefilled_email=' + encodeURIComponent(this.email) + '&client_reference_id=' + encodeURIComponent(ref);
-        window.open(finalUrl, '_blank');
+        window.location.href = finalUrl;
     },
 
     logout: function() {

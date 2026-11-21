@@ -6,9 +6,9 @@ window.app = window.app || {};
 window.app.payments = {
     // ENLACES OFICIALES DE STRIPE: MAKUMOTO & ROBOTIAX PAY
     stripeLinks: {
-        PLAN_100: 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u?allow_promotion_codes=true',
-        PLAN_300: 'https://buy.stripe.com/dRmcN6gtuc4O6Q66t94gg0v?allow_promotion_codes=true',
-        PLAN_UNLIMITED: 'https://buy.stripe.com/aFa00k2CEecWfmC5p54gg0x?allow_promotion_codes=true',
+        PLAN_100: 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u?allow_promotion_codes=true&locale=es-MX',
+        PLAN_300: 'https://buy.stripe.com/dRmcN6gtuc4O6Q66t94gg0v?allow_promotion_codes=true&locale=es-MX',
+        PLAN_UNLIMITED: 'https://buy.stripe.com/aFa00k2CEecWfmC5p54gg0x?allow_promotion_codes=true&locale=es-MX',
         PLAN_100_ERP: 'https://buy.stripe.com/cNi5kE2CEfh0deu9Fl4gg0y?allow_promotion_codes=true',
         PLAN_300_ERP: 'https://buy.stripe.com/9B628sa56d8S4HY3gX4gg0z?allow_promotion_codes=true',
         PLAN_UNLIMITED_ERP: 'https://buy.stripe.com/cNi14o4KM1qa3DU2cT4gg0A?allow_promotion_codes=true',
@@ -27,8 +27,9 @@ window.app.payments = {
         
         localStorage.setItem('pending_purchase_id', productId);
         
-        if (window.top && window.top !== window) {
-            window.top.location.href = targetLink;
+        // Redirección única en la misma ventana para garantizar flujo nativo de Stripe
+        if (window.parent && window.parent !== window) {
+            window.parent.location.href = targetLink;
         } else {
             window.location.href = targetLink;
         }
