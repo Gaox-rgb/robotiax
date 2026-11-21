@@ -128,9 +128,16 @@ window.app.editor = {
     },
 
     validateSession: function() {
-        const user = localStorage.getItem('robotiax_user');
-        if (!user) { alert("Inicia sesión primero"); return false; }
-        return JSON.parse(user);
+        let userJson = localStorage.getItem('robotiax_user');
+        if (!userJson) {
+            // Si el usuario no ha iniciado sesión, generamos una sesión temporal basada en el correo del formulario o por defecto
+            const defaultEmail = document.getElementById('edit-email')?.value.trim() || 'cliente@robotiax.shop';
+            const defaultName = document.getElementById('edit-name')?.value.trim() || 'Cliente Robotiax';
+            const tempUser = { name: defaultName, email: defaultEmail };
+            localStorage.setItem('robotiax_user', JSON.stringify(tempUser));
+            return tempUser;
+        }
+        return JSON.parse(userJson);
     },
 
     /**
@@ -235,9 +242,9 @@ window.app.editor = {
         details.orderNumber = folio;
 
         const activeUser = {
-            name: details.negocio,
-            email: details.email,
-            phone: details.telefono
+            name: details.negocio || 'Cliente Robotiax',
+            email: details.email || 'cliente@robotiax.shop',
+            phone: details.telefono || ''
         };
         localStorage.setItem('robotiax_user', JSON.stringify(activeUser));
         localStorage.setItem('pending_draft_details', JSON.stringify(details));
