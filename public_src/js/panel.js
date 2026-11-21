@@ -148,8 +148,23 @@ window.app.panel = {
     enterDashboard: function() {
         const loginBox = document.getElementById('panel-login-box');
         const dash = document.getElementById('panel-dashboard');
-        if (loginBox) loginBox.style.display = 'none';
-        if (dash) dash.style.display = 'flex';
+        
+        // BLOQUEO ESTRICTO DE VISTA: Ocultamos la caja de login y mostramos el panel y los botones de control superior
+        if (loginBox) {
+            loginBox.style.setProperty('display', 'none', 'important');
+        }
+        if (dash) {
+            dash.style.setProperty('display', 'flex', 'important');
+        }
+        const topActions = document.getElementById('panel-top-actions');
+        const topInner = document.querySelector('.rx-top-inner');
+        if (topActions) {
+            topActions.style.setProperty('display', 'flex', 'important');
+        }
+        if (topInner) {
+            topInner.style.justifyContent = 'space-between';
+            topInner.style.textAlign = 'left';
+        }
 
         if (window.app.state.summary) {
             this.renderSummary(window.app.state.summary);

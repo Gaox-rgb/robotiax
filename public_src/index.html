@@ -65,15 +65,11 @@
             <!-- LADO DERECHO: MICRO-BARRA DE IDENTIDAD (TITANIO MATE) -->
             <div id="rx-auth-dock" style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; padding: 2px 8px; font-family: 'Poppins', sans-serif;">
                 
-                <!-- Estado Visitante (Sin Sesión) -->
+                <!-- Estado Visitante (Sin Sesión - Acceso exclusivo por Llave Maestra en Correo) -->
                 <div id="rx-dock-guest" style="display: flex; align-items: center; gap: 6px;">
-                    <button onclick="window.rxAuth.openModal('login')" style="background: none; border: none; color: #94a3b8; font-size: 0.58rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 4px; transition: 0.2s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#94a3b8'">
-                        Ingresar
-                    </button>
-                    <span style="color: rgba(148, 163, 184, 0.3); font-size: 0.6rem;">•</span>
-                    <button onclick="window.rxAuth.openModal('register')" style="background: rgba(248, 250, 252, 0.12); border: 1px solid rgba(248, 250, 252, 0.25); color: #f8fafc; font-size: 0.58rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; transition: 0.2s;" onmouseover="this.style.background='#ffffff'; this.style.color='#000000'" onmouseout="this.style.background='rgba(248, 250, 252, 0.12)'; this.style.color='#f8fafc'">
-                        Registro
-                    </button>
+                    <a href="panel.html" style="background: rgba(0, 242, 255, 0.12); border: 1px solid #00f2ff; color: #00f2ff; font-size: 0.58rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 10px; border-radius: 10px; text-decoration: none; transition: 0.2s;">
+                        Mi Panel (Ingresar con Token)
+                    </a>
                 </div>
 
                 <!-- Estado Autenticado (Con Sesión Activa) -->
