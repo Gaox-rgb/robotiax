@@ -241,6 +241,29 @@
             font-size: 0.65rem;
             color: #64748b;
         }
+    @keyframes trogoGlow {
+            0% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.4), 0 0 30px rgba(57, 255, 20, 0.2); transform: scale(1); }
+            50% { box-shadow: 0 0 30px rgba(0, 242, 255, 0.8), 0 0 50px rgba(57, 255, 20, 0.5); transform: scale(1.02); }
+            100% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.4), 0 0 30px rgba(57, 255, 20, 0.2); transform: scale(1); }
+        }
+        @keyframes badgeBlink {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px #ffd700); }
+            50% { opacity: 0.75; filter: drop-shadow(0 0 2px #ffd700); }
+        }
+        .trogo-active-btn {
+            animation: trogoGlow 2s infinite ease-in-out;
+            background: linear-gradient(135deg, #00f2ff 0%, #25d366 100%) !important;
+            color: #020617 !important;
+            font-weight: 900 !important;
+            letter-spacing: 1px !important;
+            border: none !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .trogo-active-btn:hover {
+            filter: brightness(1.2);
+            transform: scale(1.04) !important;
+        }
     </style>
 </head>
 <body>
@@ -292,12 +315,49 @@
                     2. Ve a <strong>Menú / Ajustes ➔ Dispositivos vinculados</strong>.<br>
                     3. Toca <strong>Vincular un dispositivo</strong> y escanea este QR.
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" onclick="window.app.conectar.refreshQrNow()" class="rx-btn rx-btn-ghost" style="flex: 1;">
-                        Actualizar QR
-                    </button>
-                    <button type="button" onclick="window.app.conectar.resetCredentials()" class="rx-btn rx-btn-ghost" style="flex: 1;">
-                        Cambiar Cuenta
+                <div style="margin-top: 16px; background: linear-gradient(180deg, rgba(2, 6, 23, 0.98) 0%, rgba(15, 23, 42, 0.95) 100%); border: 2px solid #00f2ff; border-radius: 14px; padding: 20px 16px; text-align: left; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(0, 242, 255, 0.25);">
+                    <!-- ENCABEZADO CENTRADO CON JERARQUÍA LIMPIA -->
+                    <div style="text-align: center; margin-bottom: 14px;">
+                        <span style="animation: badgeBlink 1.5s infinite ease-in-out; background: #ffd700; color: #020617; font-size: 0.68rem; font-weight: 900; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.8px; display: inline-block; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">
+                            🔥 ¡PROMOCIÓN 2x1! EL DOBLE DE MENSAJES
+                        </span>
+                        <div style="font-size: 0.62rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 6px;">
+                            ✦ ARQUITECTURA COGNITIVA MAKUMOTO ✦
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                        <!-- VECTOR OFICIAL DE TROGO: EL AGENTE CONVERSACIONAL NEURAL -->
+                        <div style="width: 58px; height: 58px; min-width: 58px; background: rgba(0, 242, 255, 0.1); border: 1.5px solid #00f2ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 242, 255, 0.35);">
+                            <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="32" cy="10" r="4" fill="#00f2ff"/>
+                                <line x1="32" y1="14" x2="32" y2="20" stroke="#00f2ff" stroke-width="2.5" stroke-linecap="round"/>
+                                <rect x="14" y="20" width="36" height="28" rx="8" fill="#0f172a" stroke="#00f2ff" stroke-width="2.5"/>
+                                <circle cx="25" cy="31" r="3.5" fill="#39ff14"/>
+                                <circle cx="39" cy="31" r="3.5" fill="#39ff14"/>
+                                <path d="M24 39C26.5 42 37.5 42 40 39" stroke="#00f2ff" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="8" y1="34" x2="14" y2="34" stroke="#39ff14" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="50" y1="34" x2="56" y2="34" stroke="#39ff14" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M26 23H38" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 0.95rem; color: #ffffff; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
+                                TROGO: Tu Agente Casi Humano
+                            </h3>
+                            <div style="font-size: 0.72rem; color: #4ade80; font-weight: 700; margin-top: 2px;">
+                                200 MENSAJES/MES (En lugar de 100 de WhatsApp)
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="margin: 0 0 14px; font-size: 0.72rem; color: #cbd5e1; line-height: 1.5;">
+                        ¿Harto de escanear códigos y caídas de WhatsApp? <strong>TROGO</strong> es nuestro <strong>Agente Conversacional (NO un bot rígido)</strong>. Vive en tu sitio web, responde con fluidez casi humana, <strong>no depende de la batería de tu celular</strong> y nunca se desconecta.
+                    </p>
+
+                    <button type="button" onclick="window.app.conectar.activateTrogoMode()" class="rx-btn trogo-active-btn" style="padding: 13px 14px; font-size: 0.76rem; text-transform: uppercase; width: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>⚡ ACTIVAR A TROGO (PROMOCIÓN 2x1: 200 MENSAJES)</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </div>

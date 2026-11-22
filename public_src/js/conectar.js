@@ -200,6 +200,47 @@ window.app.conectar = {
         this.fetchQrAndState(false);
     },
 
+    activateTrogoMode: async function() {
+        this.stopPolling();
+        const btn = document.querySelector('button[onclick*="activateTrogoMode"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Activando Agente TROGO en tu web...';
+        }
+
+        try {
+            const res = await fetch(this.endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'activate_trogo_mode',
+                    email: this.currentEmail,
+                    token: this.currentToken
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                throw new Error(data.error || 'No se pudo activar TROGO.');
+            }
+
+            localStorage.setItem('rx_wa_credentials', JSON.stringify({
+                email: this.currentEmail,
+                token: this.currentToken,
+                summary: data.summary || {}
+            }));
+
+            alert('🚀 ¡AGENTE TROGO ACTIVADO CON ÉXITO!\n\nSe ha configurado TROGO en tu portal web con el doble de mensajes mensuales (200 mensajes). Te redirigimos a tu Panel de Control.');
+            window.location.href = `panel.html?token=${encodeURIComponent(this.currentToken)}&email=${encodeURIComponent(this.currentEmail)}`;
+        } catch (err) {
+            alert(err.message || 'Error activando a TROGO. Intenta de nuevo.');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'ACTIVAR A TROGO EN MI SITIO WEB (2X MENSAJES) ➔';
+            }
+        }
+    },
+
     resetCredentials: function() {
         this.stopPolling();
         localStorage.removeItem('rx_wa_credentials');

@@ -112,14 +112,10 @@ window.app.panel = {
         } catch (e) {}
 
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && this.email && this.token) {
+            if (!document.hidden && this.email && this.token && window.app.state.isLoggedIn) {
                 this.syncStateAndChats(true);
             }
         });
-
-        if (this.email && this.token) {
-            this.enterDashboard();
-        }
     },
 
     login: async function(e) {
@@ -142,6 +138,15 @@ window.app.panel = {
             }
             return;
         }
+
+        const waStatus = window.app.state.summary?.whatsappStatus || '';
+        if (waStatus !== 'open') {
+            alert('⚠️ ATENCIÓN: Aún no has vinculado tu WhatsApp. Te redirigimos a la consola QR para escanear tu código primero.');
+            window.location.href = `conectar.html?token=${encodeURIComponent(this.token)}&email=${encodeURIComponent(this.email)}`;
+            return;
+        }
+
+        window.app.state.isLoggedIn = true;
         this.enterDashboard();
     },
 
