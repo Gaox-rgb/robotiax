@@ -1787,7 +1787,15 @@ exports.stripeWebhook = onRequest({
         const amountTotal = (rawAmountCents / 100).toFixed(2);
         const currency = (session.currency || 'mxn').toUpperCase();
 
-        const rawRef = (session.client_reference_id || '').trim();
+        let rawRef = (session.client_reference_id || '').trim();
+        try {
+            while (rawRef.includes('%')) {
+                const prev = rawRef;
+                rawRef = decodeURIComponent(rawRef);
+                if (rawRef === prev) break;
+            }
+        } catch (e) {}
+
         let clientRefFolio = rawRef;
         let embeddedEmail = '';
         let embeddedBusinessName = '';
@@ -1795,10 +1803,10 @@ exports.stripeWebhook = onRequest({
 
         if (rawRef.includes('__')) {
             const refParts = rawRef.split('__');
-            clientRefFolio = refParts[0] ? refParts[0].trim() : rawRef;
-            embeddedEmail = refParts[1] ? decodeURIComponent(refParts[1]).trim() : '';
-            embeddedBusinessName = refParts[2] ? decodeURIComponent(refParts[2]).trim() : '';
-            embeddedPlanTag = refParts[3] ? refParts[3].trim() : '';
+            clientRefFolio = (refParts[0] || '').trim();
+            embeddedEmail = (refParts[1] || '').trim();
+            embeddedBusinessName = (refParts[2] || '').trim();
+            embeddedPlanTag = (refParts[3] || '').trim();
         }
 
         let planMeta = {
@@ -1902,7 +1910,10 @@ exports.stripeWebhook = onRequest({
                 if (draftDoc.exists) {
                     draftData = draftDoc.data() || {};
                 } else {
-                    const snap = await getDb().collection('orders_to_fulfill').where('orderNumber', '==', clientRefFolio).limit(1).get();
+                    const snap = await getDb().collection('orders_to_fulfill')
+                        .where('orderNumber', '==', clientRefFolio)
+                        .limit(1)
+                        .get();
                     if (!snap.empty) draftData = snap.docs[0].data() || {};
                 }
             } catch (errDoc) {
@@ -1914,12 +1925,13 @@ exports.stripeWebhook = onRequest({
             try {
                 const snapEmail = await getDb().collection('orders_to_fulfill')
                     .where('email', '==', searchEmail)
+                    .orderBy('timestamp', 'desc')
                     .limit(5)
                     .get();
                 if (!snapEmail.empty) {
                     for (const doc of snapEmail.docs) {
-                        const d = doc.data();
-                        if (d && d.negocio && d.negocio !== 'Mi Empresa' && d.negocio !== 'Cliente Robotiax') {
+                        const d = doc.data() || {};
+                        if (d.negocio && d.negocio !== 'No especificado' && d.negocio !== 'Mi Negocio') {
                             draftData = d;
                             break;
                         }
@@ -1927,7 +1939,22 @@ exports.stripeWebhook = onRequest({
                     if (!draftData.negocio) draftData = snapEmail.docs[0].data() || {};
                 }
             } catch (errEmailSearch) {
-                console.warn("Búsqueda por email omitida:", errEmailSearch.message);
+                console.warn("Búsqueda por email con orden falló, intentando simple:", errEmailSearch.message);
+                try {
+                    const snapSimple = await getDb().collection('orders_to_fulfill')
+                        .where('email', '==', searchEmail)
+                        .limit(5)
+                        .get();
+                    if (!snapSimple.empty) {
+                        for (const doc of snapSimple.docs) {
+                            const d = doc.data() || {};
+                            if (d.negocio && d.negocio !== 'No especificado') {
+                                draftData = d;
+                                break;
+                            }
+                        }
+                    }
+                } catch (e) {}
             }
         }
 
@@ -1939,12 +1966,12 @@ exports.stripeWebhook = onRequest({
             ''
         ).trim();
 
-        const effectiveBusinessName = (
-            draftData.negocio || 
-            draftData.business_name || 
-            embeddedBusinessName || 
-            "Mi Negocio"
-        ).trim();
+        let cleanBizName = (draftData.negocio || embeddedBusinessName || '').trim();
+        if (cleanBizName === 'No especificado' || cleanBizName.toLowerCase() === 'mi negocio') {
+            cleanBizName = (draftData.negocio || '').trim();
+        }
+
+        const effectiveBusinessName = cleanBizName || 'Tu Negocio';
 
         const effectivePhone = (
             draftData.telefono || 
@@ -1958,13 +1985,27 @@ exports.stripeWebhook = onRequest({
         const tempPassword = draftData.provisionalPassword || Math.random().toString(36).substring(2, 8).toUpperCase();
         const isRenewalOrUpgrade = Boolean(draftData.status === 'paid_active' || draftData.status === 'suspended_limit');
 
-        const rawSlugBase = (draftData.negocio_slug || effectiveBusinessName);
-        const negocioSlug = rawSlugBase
+        let computedSlug = (draftData.negocio_slug || '')
             .toLowerCase()
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .replace(/[^a-z0-9]+/g, "-")
-            .replace(/(^-|-$)+/g, "") || `sitio-${Math.floor(1000 + Math.random() * 9000)}`;
+            .replace(/(^-|-$)+/g, "");
+
+        if (!computedSlug && cleanBizName) {
+            computedSlug = cleanBizName
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "");
+        }
+
+        if (!computedSlug) {
+            computedSlug = folio.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        }
+
+        const negocioSlug = computedSlug;
 
         const siteUrl = `https://${negocioSlug}.ikai.info`;
         const connectUrl = `https://robotiax.shop/conectar.html?token=${encodeURIComponent(tempPassword)}&email=${encodeURIComponent(targetEmail)}`;
@@ -2083,17 +2124,56 @@ exports.stripeWebhook = onRequest({
                         </div>
                     `;
                 } else {
+                    const onboardingPdfText = `======================================================================
+MANUAL TECNICO DE PUESTA EN MARCHA — SUITE DIGITAL ROBOTIAX
+======================================================================
+Cliente / Negocio : ${effectiveBusinessName}
+Folio de Orden    : ${folio}
+Subdominio Oficial: https://${negocioSlug}.ikai.info
+Token de Seguridad: ${tempPassword}
+Consola QR        : ${connectUrl}
+Panel de Control  : ${panelUrl}
+Vigencia Inicial  : 30 dias naturales (renovable)
+----------------------------------------------------------------------
+PASO 1: VINCULAR TU WHATSAPP CON QR
+1. Abre desde tu computadora o tablet: ${connectUrl}
+2. Abre WhatsApp en tu celular principal.
+3. Ve a 'Ajustes' o 'Configuracion' > 'Dispositivos vinculados'.
+4. Pulsa 'Vincular un dispositivo' y escanea el codigo QR en pantalla.
+5. El estado cambiara inmediatamente a 'WHATSAPP CONECTADO'.
+
+PASO 2: GESTION DE CHATS EN VIVO
+1. Ingresa a tu Panel: ${panelUrl}
+2. En la pestaña 'Chats en Vivo' observaras todas las conversaciones.
+3. Si contestas manualmente, el bot entrara en modo silencioso durante
+   2 minutos para no interrumpir tu conversacion humana.
+
+PASO 3: CONFIGURAR RESPUESTAS Y ENTRENAR AL ASISTENTE
+1. En el panel ve a 'Configurar Info'.
+2. Define costos de consulta, horarios, direccion fisica y servicios.
+3. Agrega preguntas frecuentes (FAQs); tu bot respondera al instante.
+
+PASO 4: CALENDARIO DE CITAS
+1. Las citas solicitadas por clientes quedan registradas en 'Mis Citas'.
+2. Puedes marcar cada cita como Confirmada, Completada o Cancelada.
+
+GARANTIA DE SERVICIO:
+Tu subdominio (${negocioSlug}.ikai.info) y hosting cloud de alta velocidad
+quedan completamente cubiertos y activos sin cargos sorpresa durante tu plan.
+Soporte Tecnico Directo: contacto@robotiax.shop | clientes@robotiax.com
+======================================================================`;
+
                     clientEmailHtml = `
-                        <div style="width: 100%; max-width: 540px; margin: 0 auto; box-sizing: border-box; padding: 16px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; color: #1a1a1a; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <div style="text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 16px;">
-                                <h1 style="color: #0f172a; margin: 0; font-size: 17px; font-weight: 800; text-transform: uppercase;">${isRenewalOrUpgrade ? '¡PLAN RENOVADO Y ACTIVO!' : '¡SUITE DIGITAL Y BOT ACTIVADOS!'}</h1>
-                                <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Comprobante Oficial y Guía de Puesta en Marcha</p>
+                        <div style="width: 100%; max-width: 560px; margin: 0 auto; box-sizing: border-box; padding: 18px 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; color: #1a1a1a; border: 1px solid #cbd5e1; border-radius: 10px;">
+                            <div style="text-align: center; border-bottom: 2px solid #0284c7; padding-bottom: 14px; margin-bottom: 16px;">
+                                <h1 style="color: #0f172a; margin: 0; font-size: 18px; font-weight: 800; text-transform: uppercase;">${isRenewalOrUpgrade ? '¡PLAN RENOVADO Y ACTIVO!' : '¡SUITE DIGITAL Y BOT ACTIVADOS!'}</h1>
+                                <p style="color: #64748b; font-size: 11px; margin: 4px 0 0 0;">Comprobante Oficial, Garantía de Servicio y Manual de Usuario</p>
                             </div>
 
-                            <p style="font-size: 12px; line-height: 1.5; margin: 0 0 14px 0; color: #334155;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos tu compra por <strong>$${planMeta.total} MXN</strong> (IVA incluido).</p>
+                            <p style="font-size: 13px; line-height: 1.5; margin: 0 0 14px 0; color: #334155;">Hola <strong>${effectiveBusinessName}</strong>, confirmamos que tu orden por <strong>$${planMeta.total} MXN</strong> (IVA incluido) ha sido procesada con éxito.</p>
 
                             <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px; margin: 14px 0;">
-                                <h3 style="margin: 0 0 6px 0; color: #1e3a8a; font-size: 11px; font-weight: 700; text-transform: uppercase;">🧾 DETALLE DE TU COMPRA (IVA DESGLOSADO)</h3>
+                                <h3 style="margin: 0 0 6px 0; color: #1e3a8a; font-size: 11px; font-weight: 700; text-transform: uppercase;">🧾 DETALLE FISCAL DE TU COMPRA</h3>
                                 <table style="width: 100%; font-size: 11px; line-height: 1.6; color: #1e3a8a; border-collapse: collapse;">
                                     <tr><td><strong>Folio:</strong></td><td style="font-weight: bold;">${folio}</td></tr>
                                     <tr><td><strong>Producto / Plan:</strong></td><td style="font-weight: bold;">${planMeta.planName}</td></tr>
@@ -2103,32 +2183,43 @@ exports.stripeWebhook = onRequest({
                                 </table>
                             </div>
 
-                           <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 12px; margin: 14px 0;">
-                                <p style="margin: 0; font-weight: 700; font-size: 11px; color: #15803d; text-transform: uppercase;">🌐 TU PÁGINA WEB EN LÍNEA Y ACCESOS:</p>
-                                <p style="margin: 6px 0 0 0; font-size: 13px; word-break: break-all;">
-                                    <a href="${siteUrl}" target="_blank" style="color: #16a34a; font-weight: 800; text-decoration: underline;">${siteUrl}</a>
+                            <div style="background: #f0fdf4; border: 2px solid #22c55e; border-radius: 8px; padding: 14px; margin: 16px 0;">
+                                <p style="margin: 0; font-weight: 800; font-size: 12px; color: #15803d; text-transform: uppercase;">🌟 BENEFICIO EXCLUSIVO DE TU MEMBRESÍA: HOSTING Y SUBDOMINIO INCLUIDOS</p>
+                                <p style="font-size: 12px; color: #166534; line-height: 1.5; margin: 6px 0 8px 0;">
+                                    Tu plan incluye <strong>30 días de Hosting Cloud de alta velocidad</strong> y tu <strong>Subdominio Comercial propio</strong> asignado bajo el nombre de tu negocio, activo durante la vigencia de tu plan.
+                                </p>
+                                <p style="margin: 0; font-size: 13px; word-break: break-all;">
+                                    <strong>Tu Sitio Web en Línea:</strong> <a href="${siteUrl}" target="_blank" style="color: #15803d; font-weight: 800; text-decoration: underline;">${siteUrl}</a>
                                 </p>
                             </div>
 
                             <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px 12px; margin: 16px 0;">
-                                <h3 style="color: #065f46; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">🤖 VINCULA TU WHATSAPP Y VER CHATS EN VIVO</h3>
-                                <p style="font-size: 12px; color: #047857; margin: 0 0 8px 0;">Instancia: <strong>${negocioSlug}</strong> | Token de Seguridad: <strong style="background: #ffffff; border: 1px solid #059669; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${tempPassword}</strong></p>
+                                <h3 style="color: #065f46; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">🤖 CONEXIÓN DE TU ASISTENTE DE WHATSAPP</h3>
+                                <p style="font-size: 12px; color: #047857; margin: 0 0 8px 0;">Instancia Asignada: <strong>${negocioSlug}</strong> | Token de Seguridad: <strong style="background: #ffffff; border: 1px solid #059669; padding: 2px 6px; border-radius: 4px; font-family: monospace;">${tempPassword}</strong></p>
                                 <ol style="font-size: 12px; line-height: 1.6; color: #065f46; margin: 0 0 12px 0; padding-left: 18px;">
-                                    <li>Abre tu pantalla de conexión QR: <a href="${connectUrl}" target="_blank" style="color: #059669; font-weight: bold;">Conectar WhatsApp</a></li>
-                                    <li>En tu celular ve a WhatsApp ➔ <strong>Dispositivos vinculados</strong> y escanea el QR.</li>
-                                    <li>Administra tus chats en vivo y consumo mensual desde tu <a href="${panelUrl}" target="_blank" style="color: #059669; font-weight: bold;">Panel de Control</a>.</li>
+                                    <li>Abre tu pantalla de enlace QR: <a href="${connectUrl}" target="_blank" style="color: #059669; font-weight: bold;">Conectar WhatsApp</a></li>
+                                    <li>En tu celular abre WhatsApp ➔ <strong>Dispositivos vinculados</strong> y escanea el código en pantalla.</li>
+                                    <li>Monitorea tus chats en vivo y citas desde tu <a href="${panelUrl}" target="_blank" style="color: #059669; font-weight: bold;">Panel de Control</a>.</li>
                                 </ol>
-                                <a href="${connectUrl}" target="_blank" style="display: block; text-align: center; background: #16a34a; color: #ffffff; padding: 10px; border-radius: 6px; font-weight: 800; font-size: 12px; text-decoration: none; text-transform: uppercase;">VINCULAR WHATSAPP CON QR AHORA ➔</a>
+                                <a href="${connectUrl}" target="_blank" style="display: block; text-align: center; background: #16a34a; color: #ffffff; padding: 11px; border-radius: 6px; font-weight: 800; font-size: 12px; text-decoration: none; text-transform: uppercase;">ESCANEAR CÓDIGO QR AHORA ➔</a>
+                            </div>
+
+                            <div style="background: #0f172a; color: #ffffff; border-radius: 8px; padding: 16px 14px; margin: 16px 0; border: 1px solid #38bdf8;">
+                                <h3 style="color: #38bdf8; font-size: 13px; font-weight: 800; margin: 0 0 8px 0; text-transform: uppercase;">📘 MANUAL TÉCNICO Y PUESTA EN MARCHA</h3>
+                                <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin: 0 0 10px 0;">
+                                    Hemos adjuntado tu manual operativo completo en este correo (<strong>Manual_Puesta_en_Marcha.txt</strong>). Puedes consultar la guía en cualquier momento y compartirla con tu equipo de trabajo.
+                                </p>
+                                <a href="${panelUrl}" target="_blank" style="display: block; text-align: center; background: #0284c7; color: #ffffff; padding: 10px; border-radius: 6px; font-weight: 800; font-size: 12px; text-decoration: none; text-transform: uppercase;">ENTRAR AL PANEL DE CONTROL ➔</a>
                             </div>
 
                             <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin: 14px 0; font-size: 11px; color: #334155;">
-                                <strong>📌 Vigencia y Cuotas:</strong> Todos los servicios tienen vigencia de 30 días. El plan básico incluye 100 mensajes (entrantes + salientes) con avisos automáticos al 80, 90 y 97. Cuando requieras ampliar o renovar, elige desde tu <a href="${panelUrl}" target="_blank" style="color: #2563eb; font-weight: bold;">Panel de Control</a>: 100 msgs ($255.00 MXN), 300 msgs ($500.00 MXN) o <strong>Ilimitado ($599.00 MXN IVA incl.)</strong>.
+                                <strong>📌 Vigencia y Cuotas:</strong> Cobertura de 30 días naturales. El plan básico incluye 100 mensajes (entrantes + salientes) con notificaciones preventivas al 80%, 90% y 97%. Puedes ampliar o renovar tu cuota en cualquier momento desde tu <a href="${panelUrl}" target="_blank" style="color: #2563eb; font-weight: bold;">Panel de Control</a>.
                             </div>
 
-                            <div style="background: #0f172a; color: #ffffff; border-radius: 8px; padding: 16px 12px; margin: 16px 0; text-align: center; border: 1px solid #00f2ff;">
-                                <h2 style="color: #00f2ff; font-size: 14px; font-weight: 800; margin: 0 0 8px 0; text-transform: uppercase;">⚡ PERFECCIONA TU WEB ($89.00 MXN IVA incl.)</h2>
-                                <p style="font-size: 11px; color: #e2e8f0; margin: 0 0 12px 0;">Añade 3 fotografías profesionales 16:9 y hasta 5 modificaciones personalizadas.</p>
-                                <a href="https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g?prefilled_email=${encodeURIComponent(targetEmail)}&client_reference_id=${encodeURIComponent(`${folio}__${targetEmail}__${effectiveBusinessName}__UPGRADE_89`)}" target="_blank" style="display: block; max-width: 280px; margin: 0 auto; background: #00f2ff; color: #020617; padding: 11px 16px; font-weight: 800; font-size: 12px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">PERFECCIONAR MI WEB ($89 MXN) ➔</a>
+                            <div style="background: #ffffff; color: #0f172a; border-radius: 8px; padding: 14px; margin: 16px 0; text-align: center; border: 1px solid #e2e8f0;">
+                                <h4 style="color: #0f172a; font-size: 12px; font-weight: 800; margin: 0 0 6px 0; text-transform: uppercase;">⚡ OPCIONAL: PERFECCIONA TU WEB ($89.00 MXN)</h4>
+                                <p style="font-size: 11px; color: #64748b; margin: 0 0 10px 0;">Sube 3 fotografías personalizadas y solicita hasta 5 cambios de contenido.</p>
+                                <a href="https://buy.stripe.com/bJe8wQ9128SC7UacRx4gg0g?prefilled_email=${encodeURIComponent(targetEmail)}&client_reference_id=${encodeURIComponent(`${folio}__${targetEmail}__${effectiveBusinessName}__UPGRADE_89`)}" target="_blank" style="display: inline-block; background: #0f172a; color: #ffffff; padding: 9px 16px; font-weight: 700; font-size: 11px; text-decoration: none; border-radius: 6px; text-transform: uppercase;">MEJORAR MI WEB ➔</a>
                             </div>
                         </div>
                     `;
@@ -2138,7 +2229,14 @@ exports.stripeWebhook = onRequest({
                     from: '"Robotiax Intelligence" <geniosdeltalento@gmail.com>',
                     to: targetEmail,
                     subject: emailSubject,
-                    html: clientEmailHtml
+                    html: clientEmailHtml,
+                    attachments: [
+                        {
+                            filename: `Manual_Puesta_en_Marcha_${negocioSlug}.txt`,
+                            content: `======================================================================\nMANUAL TECNICO DE PUESTA EN MARCHA — SUITE DIGITAL ROBOTIAX\n======================================================================\nNegocio: ${effectiveBusinessName}\nFolio: ${folio}\nWeb: ${siteUrl}\nToken de Seguridad: ${tempPassword}\nConsola QR: ${connectUrl}\nPanel de Control: ${panelUrl}\n\n1. CONECTAR WHATSAPP:\n   Ingresa a ${connectUrl} y escanea el QR desde WhatsApp > Dispositivos Vinculados.\n\n2. PANEL DE CONTROL:\n   Entra a ${panelUrl} para monitorear conversaciones, modificar precios, horarios y responder mensajes.\n\n3. GARANTIA DE SERVICIO:\n   Hosting de alta velocidad y subdominio ${negocioSlug}.ikai.info incluidos durante tu plan.\n======================================================================`,
+                            contentType: 'text/plain'
+                        }
+                    ]
                 });
             } catch (mailClientErr) {
                 console.error(`❌ ERROR AL ENVIAR AL CLIENTE (${targetEmail}):`, mailClientErr.message);

@@ -255,16 +255,15 @@ window.app.editor = {
         localStorage.setItem('pending_product_name', this.currentProductName || 'Suite Digital Robotiax');
         localStorage.setItem('pending_plan_tag', activePlanTag);
 
-        const clientReference = `${folio}__${encodeURIComponent(details.email)}__${encodeURIComponent(details.negocio)}__${activePlanTag}`;
+        const clientReference = folio;
 
         const draftPayload = JSON.stringify({
             template: this.currentTemplateId,
             details: details
         });
 
-        // ESPERA SÍNCRONA GARANTIZADA: Se graba la Razón Social en Firestore antes de abrir Stripe
         try {
-            await fetch(this.endpoints.submitOrder, {
+            const saveRes = await fetch(this.endpoints.submitOrder, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -272,15 +271,21 @@ window.app.editor = {
                 },
                 body: draftPayload
             });
+            if (!saveRes.ok) {
+                console.warn("Respuesta no satisfactoria guardando borrador, activando sendBeacon.");
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([draftPayload], { type: 'application/json' });
+                    navigator.sendBeacon(this.endpoints.submitOrder, blob);
+                }
+            }
         } catch (e) {
-            console.warn("Respaldo por sendBeacon activado:", e.message);
+            console.warn("Error enviando borrador:", e.message);
             if (navigator.sendBeacon) {
                 const blob = new Blob([draftPayload], { type: 'application/json' });
                 navigator.sendBeacon(this.endpoints.submitOrder, blob);
             }
         }
 
-        // ENLACE DIRECTO A STRIPE CON TRIPLE PARÁMETRO EMBEBIDO
         const planLinksMap = {
             PLAN_100: 'https://buy.stripe.com/cNicN6dhi8SC5M27xd4gg0u',
             PLAN_300: 'https://buy.stripe.com/dRmcN6gtuc4O6Q66t94gg0v',
@@ -289,7 +294,7 @@ window.app.editor = {
             PLAN_300_ERP: 'https://buy.stripe.com/9B628sa56d8S4HY3gX4gg0z',
             PLAN_UNLIMITED_ERP: 'https://buy.stripe.com/cNi14o4KM1qa3DU2cT4gg0A'
         };
-       const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
+        const stripeBaseLink = planLinksMap[activePlanTag] || planLinksMap.PLAN_100;
         const checkoutUrl = `${stripeBaseLink}?allow_promotion_codes=true&prefilled_email=${encodeURIComponent(details.email)}&client_reference_id=${encodeURIComponent(clientReference)}`;
 
         this.close();
