@@ -250,6 +250,24 @@
             0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px #ffd700); }
             50% { opacity: 0.75; filter: drop-shadow(0 0 2px #ffd700); }
         }
+        @keyframes sloganNeon {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 242, 255, 0.8), 0 0 20px rgba(0, 242, 255, 0.5), 0 0 30px rgba(57, 255, 20, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(0, 242, 255, 1), 0 0 35px rgba(0, 242, 255, 0.8), 0 0 45px rgba(57, 255, 20, 0.6); }
+        }
+        .trogo-slogan-glow {
+            animation: sloganNeon 2.5s infinite ease-in-out;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+        .trogo-slogan-glow span {
+            color: #00f2ff;
+        }
         .trogo-active-btn {
             animation: trogoGlow 2s infinite ease-in-out;
             background: linear-gradient(135deg, #00f2ff 0%, #25d366 100%) !important;
@@ -316,8 +334,11 @@
                     3. Toca <strong>Vincular un dispositivo</strong> y escanea este QR.
                 </div>
                 <div style="margin-top: 16px; background: linear-gradient(180deg, rgba(2, 6, 23, 0.98) 0%, rgba(15, 23, 42, 0.95) 100%); border: 2px solid #00f2ff; border-radius: 14px; padding: 20px 16px; text-align: left; position: relative; overflow: hidden; box-shadow: 0 0 30px rgba(0, 242, 255, 0.25);">
-                    <!-- ENCABEZADO CENTRADO CON JERARQUÍA LIMPIA -->
+                    <!-- ENCABEZADO CENTRADO CON ESLOGAN LUMINOSO -->
                     <div style="text-align: center; margin-bottom: 14px;">
+                        <div class="trogo-slogan-glow">
+                            TROGO es <span>EVOLUCIÓN</span>
+                        </div>
                         <span style="animation: badgeBlink 1.5s infinite ease-in-out; background: #ffd700; color: #020617; font-size: 0.68rem; font-weight: 900; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.8px; display: inline-block; box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);">
                             🔥 ¡PROMOCIÓN 2x1! EL DOBLE DE MENSAJES
                         </span>
