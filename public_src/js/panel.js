@@ -245,7 +245,9 @@ window.app.panel = {
         }
 
         if (pChats) pChats.style.display = tab === 'chats' ? 'flex' : 'none';
-        if (pErp) pErp.style.display = tab === 'erp' ? 'block' : 'none';
+        if (pErp) {
+            pErp.style.setProperty('display', tab === 'erp' ? 'block' : 'none', 'important');
+        }
         if (pTrogo) pTrogo.style.display = tab === 'trogo' ? 'block' : 'none';
         if (pWeb) pWeb.style.display = tab === 'web' ? 'block' : 'none';
         if (pPlanes) pPlanes.style.display = tab === 'planes' ? 'block' : 'none';
