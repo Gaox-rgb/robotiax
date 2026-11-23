@@ -388,23 +388,27 @@
                 <button type="button" onclick="window.app.panel.switchTab('planes')" class="rx-chip-btn cyan" style="background: #00f2ff; color: #020617;">Renovar / Subir Plan</button>
             </div>
 
-            <!-- TARJETAS HORIZONTALES SIN NEGRITAS Y CENTRADAS (CAJA ROJA) -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; text-align: center;">
-                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
-                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Negocio Activo</div>
-                    <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="stat-biz-name">-</div>
-                    <div style="font-size: 0.55rem; color: #64748b;" id="stat-folio">-</div>
-                </div>
-                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
-                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Plan y Vigencia</div>
-                    <div style="font-size: 0.82rem; font-weight: 400; color: #00f2ff; margin-top: 2px;" id="stat-plan-name">-</div>
-                    <div style="font-size: 0.55rem; color: #94a3b8;" id="stat-expires">-</div>
-                </div>
-                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
-                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Consumo Mensual</div>
-                    <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px;" id="stat-quota-text">0 / 100</div>
-                    <div style="width: 100%; height: 4px; background: #0f172a; border-radius: 999px; overflow: hidden; margin-top: 4px;">
-                        <div class="rx-progress-fill" id="stat-quota-bar" style="height: 100%; background: #00f2ff; width: 0%;"></div>
+            <!-- BLOQUE SUPERIOR COLAPSABLE (NEGOCIO, PLAN, CONSUMO) CON FLECHA TÁCTICA -->
+            <div style="position: relative;">
+                <button type="button" onclick="window.app.panel.toggleTopHeaderCollapse()" id="top-collapse-btn" style="position: absolute; top: -6px; right: 4px; background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148,163,184,0.3); color: #00f2ff; width: 22px; height: 22px; border-radius: 50%; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Colapsar cabecera">▲</button>
+                
+                <div id="top-collapsible-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px; text-align: center; transition: all 0.3s ease; overflow: hidden;">
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Negocio Activo</div>
+                        <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="stat-biz-name">-</div>
+                        <div style="font-size: 0.55rem; color: #64748b;" id="stat-folio">-</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Plan y Vigencia</div>
+                        <div style="font-size: 0.82rem; font-weight: 400; color: #00f2ff; margin-top: 2px;" id="stat-plan-name">-</div>
+                        <div style="font-size: 0.55rem; color: #94a3b8;" id="stat-expires">-</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Consumo Mensual</div>
+                        <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px;" id="stat-quota-text">0 / 100</div>
+                        <div style="width: 100%; height: 4px; background: #0f172a; border-radius: 999px; overflow: hidden; margin-top: 4px;">
+                            <div class="rx-progress-fill" id="stat-quota-bar" style="height: 100%; background: #00f2ff; width: 0%;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -764,20 +768,54 @@
             </div>
 
             <!-- ================================================================= -->
-            <!-- VISTA DEL ERP PYME (T-1 A T-6 CONECTADO DIRECTO A AWS DYNAMODB)  -->
+            <!-- PESTAÑA 2: ERP PYME (EDUCACIÓN, MÉTRICAS Y CENTRO OPERATIVO)       -->
             <!-- ================================================================= -->
             <div id="tab-panel-erp" style="display: none; background: #070d1a; border: 1px solid rgba(57, 255, 20, 0.35); border-radius: 14px; padding: 22px 18px; box-shadow: 0 0 40px rgba(57, 255, 20, 0.1);">
+                
+                <!-- SECCIÓN EDUCATIVA & LA MÁXIMA (MANIFIESTO ERP) -->
+                <div style="text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px dashed rgba(57,255,20,0.25);">
+                    <span style="font-size: 0.62rem; font-weight: 800; color: #39ff14; text-transform: uppercase; letter-spacing: 1.5px;">SISTEMA NERVIOSO EMPRESARIAL</span>
+                    <h2 style="font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 900; color: #ffffff !important; margin: 6px 0 10px; text-transform: uppercase; line-height: 1.3;">
+                        AUTOMATIZA TU NEGOCIO ANTES DE QUE LA AUTOMATIZACIÓN TE AUTOMATICE A TI
+                    </h2>
+                    <p style="max-width: 720px; margin: 0 auto; font-size: 0.76rem; color: #94a3b8; line-height: 1.6; font-weight: 300;">
+                        El ERP PyME no es solo un software de registros; es el motor que elimina el trabajo manual, blindando tus ingresos y dándote el control absoluto de tu operación sin depender de auxiliares ni secretarias.
+                    </p>
+                </div>
+
+                <!-- TARJETAS DE PREGUNTAS CLAVE & GRÁFICOS DE PRODUCTIVIDAD Y AHORRO -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 28px;">
+                    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(57, 255, 20, 0.25); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 0.75rem; font-weight: 800; color: #39ff14; text-transform: uppercase; margin-bottom: 6px;">🧠 ¿Qué es y Para Qué Sirve?</div>
+                        <p style="font-size: 0.72rem; color: #cbd5e1; line-height: 1.5; margin: 0;">Es tu base de datos centralizada en la nube (AWS DynamoDB) que sincroniza tus citas de WhatsApp, controla tu inventario, registra cobros y emite cortes nocturnos automáticos.</p>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 0.75rem; font-weight: 800; color: #00f2ff; text-transform: uppercase; margin-bottom: 6px;">📈 Gráfico de Ahorro Real</div>
+                        <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 6px;">Reducción de carga administrativa manual:</div>
+                        <div style="width: 100%; height: 8px; background: #020617; border-radius: 999px; overflow: hidden; margin-bottom: 4px;">
+                            <div style="width: 85%; height: 100%; background: #00f2ff; border-radius: 999px;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: #64748b;"><span>Manual (Tradicional)</span><strong style="color: #4ade80;">85% Más Rápido con ERP</strong></div>
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 215, 0, 0.25); border-radius: 12px; padding: 16px;">
+                        <div style="font-size: 0.75rem; font-weight: 800; color: #ffd700; text-transform: uppercase; margin-bottom: 6px;">⚡ ¿Por qué es vital hoy?</div>
+                        <p style="font-size: 0.72rem; color: #cbd5e1; line-height: 1.5; margin: 0;">Porque en la era actual, el cliente exige inmediatez. Quien responde y organiza primero, se queda con el dinero. El ERP te otorga velocidad corporativa.</p>
+                    </div>
+                </div>
+
                 <!-- CANDADO DE ACCESO ERP (Visible solo si el cliente compró plan sin ERP) -->
-                <div id="erp-locked-gate" style="display: none; text-align: center; padding: 40px 20px; max-width: 580px; margin: 0 auto;">
-                    <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 16px;">
+                <div id="erp-locked-gate" style="display: none; text-align: center; padding: 20px 10px; max-width: 580px; margin: 0 auto; margin-bottom: 25px;">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255, 215, 0, 0.15); border: 2px solid #ffd700; color: #ffd700; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin: 0 auto 12px;">
                         <i class="fa-solid fa-lock"></i>
                     </div>
-                    <span style="font-size: 0.68rem; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">MÓDULO ADICIONAL DISPONIBLE</span>
-                    <h3 style="color: #ffffff; font-size: 1.25rem; margin: 6px 0 10px; font-weight: 800; text-transform: uppercase;">Activa tu ERP PyME</h3>
-                    <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.6; margin: 0 0 22px;">
-                        Tu plan actual cubre Web y Bot de WhatsApp. Activa el <strong>ERP PyME</strong> para habilitar en tu negocio: <strong>T-1 Clientes Frecuentes, T-2 Catálogo de Servicios, T-3 Citas con estados, T-4 Registro de Ventas/Cobros, T-5 Control de Inventario y T-6 Corte de Caja automático cada noche a las 8:00 PM directo a tu WhatsApp.</strong>
+                    <span style="font-size: 0.65rem; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">MÓDULO ADICIONAL DISPONIBLE</span>
+                    <h3 style="color: #ffffff; font-size: 1.15rem; margin: 4px 0 8px; font-weight: 800; text-transform: uppercase;">Activa tu ERP PyME</h3>
+                    <p style="color: #94a3b8; font-size: 0.76rem; line-height: 1.5; margin: 0 0 18px;">
+                        Tu plan actual cubre Web y Bot de WhatsApp. Activa el <strong>ERP PyME</strong> para desbloquear las tablas operativas: Clientes, Servicios, Citas, Ventas, Inventario y el Corte de Caja nocturno a las 8:00 PM.
                     </p>
-                    <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100_ERP')" style="display: inline-block; background: #39ff14; color: #020617; font-weight: 900; font-size: 0.82rem; padding: 14px 28px; border-radius: 8px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 25px rgba(57, 255, 20, 0.35);">
+                    <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100_ERP')" style="display: inline-block; background: #39ff14; color: #020617; font-weight: 900; font-size: 0.78rem; padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 25px rgba(57, 255, 20, 0.35);">
                         ACTIVAR ERP PYME POR SOLO +$200 MXN ➔
                     </button>
                 </div>

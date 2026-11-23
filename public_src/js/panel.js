@@ -143,6 +143,24 @@ window.app.panel = {
         this.syncStateAndChats(true);
     },
 
+    toggleTopHeaderCollapse: function() {
+        const cards = document.getElementById('top-collapsible-cards');
+        const btn = document.getElementById('top-collapse-btn');
+        if (!cards || !btn) return;
+        const isHidden = cards.style.display === 'none';
+        cards.style.display = isHidden ? 'grid' : 'none';
+        btn.textContent = isHidden ? '▲' : '▼';
+    },
+
+    toggleTopHeaderCollapse: function() {
+        const cards = document.getElementById('top-collapsible-cards');
+        const btn = document.getElementById('top-collapse-btn');
+        if (!cards || !btn) return;
+        const isHidden = cards.style.display === 'none';
+        cards.style.display = isHidden ? 'grid' : 'none';
+        btn.textContent = isHidden ? '▲' : '▼';
+    },
+
     apiCall: async function(payload) {
         const res = await fetch(this.endpoint, {
             method: 'POST',
@@ -209,6 +227,22 @@ window.app.panel = {
         const bTrogo = document.getElementById('tab-btn-trogo');
         const bWeb = document.getElementById('tab-btn-web');
         const bPlanes = document.getElementById('tab-btn-planes');
+
+        // Ocultar o mostrar el bloque superior de negocio/plan según la pestaña (Solo visible en 'chats')
+        const topCards = document.getElementById('top-collapsible-cards');
+        const topCollapseBtn = document.getElementById('top-collapse-btn');
+        if (topCards) {
+            topCards.style.display = (tab === 'chats') ? 'grid' : 'none';
+        }
+        if (topCollapseBtn) {
+            topCollapseBtn.style.display = (tab === 'chats') ? 'flex' : 'none';
+        }
+        if (topCards) {
+            topCards.style.display = (tab === 'chats') ? 'grid' : 'none';
+        }
+        if (topCollapseBtn) {
+            topCollapseBtn.style.display = (tab === 'chats') ? 'flex' : 'none';
+        }
 
         if (pChats) pChats.style.display = tab === 'chats' ? 'flex' : 'none';
         if (pErp) pErp.style.display = tab === 'erp' ? 'block' : 'none';
