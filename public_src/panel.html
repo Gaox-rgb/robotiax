@@ -361,19 +361,12 @@
 </head>
 <body>
     <header class="rx-top">
-        <div class="rx-top-inner" style="justify-content: center; text-align: center;">
-            <a href="index.html" class="rx-brand" style="font-size: 0.85rem; letter-spacing: 1px;">ROBOTIAX // PANEL DE CONTROL</a>
-            <div id="panel-top-actions" class="rx-top-right" style="display: none !important;">
-                <a id="panel-btn-conectar" href="conectar.html" class="rx-chip-btn green">Vincular QR</a>
-                <a id="panel-btn-myweb" href="#" target="_blank" class="rx-chip-btn cyan" style="display: none;">Ver Mi Web</a>
-                <a href="https://makumoto.com/?affiliate=true&convenio=MAK-AURA-DEMO&demo=true&step=5" target="_blank" class="rx-chip-btn">Sala Entretenimiento</a>
-                <button type="button" onclick="window.app.panel.refreshNow()" class="rx-chip-btn cyan" title="Actualizar ahora">↻ Actualizar</button>
-                <button type="button" onclick="window.app.panel.logout()" class="rx-chip-btn">Salir</button>
-            </div>
+        <div class="rx-top-inner" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 8px 0; width: 100%;">
+            <a href="index.html" class="rx-brand" style="font-size: 0.8rem; letter-spacing: 1px; margin: 0 auto; display: inline-block;">ROBOTIAX // PANEL DE CONTROL</a>
         </div>
     </header>
 
-    <div class="rx-wrap">
+    <div class="rx-wrap" style="padding-top: 10px;">
         <!-- FORMULARIO DE ACCESO (Visible unicamente cuando NO hay sesión) -->
         <div id="panel-login-box" class="rx-login-box" style="text-align: center;">
             <h2 style="margin: 0 0 6px; font-size: 1.1rem; color: #ffffff; text-transform: uppercase;">Acceder a tu Panel</h2>
@@ -386,12 +379,184 @@
             </form>
         </div>
 
-        <!-- PANEL DE CONTROL Y PLANES (Oculto por defecto hasta iniciar sesión) -->
-        <div id="panel-dashboard" class="rx-dashboard">
+        <!-- PANEL DE CONTROL UNIFICADO Y LIMPIO (4 PESTAÑAS MAESTRAS) -->
+        <div id="panel-dashboard" class="rx-dashboard" style="gap: 8px;">
+            
+            <!-- ALERTA DE CUOTA -->
             <div id="panel-quota-banner" class="rx-alert-banner">
                 <span id="panel-quota-banner-text"></span>
-                <a href="#planes-upgrade" class="rx-chip-btn cyan" style="background: #00f2ff; color: #020617;">Renovar / Subir Plan</a>
+                <button type="button" onclick="window.app.panel.switchTab('planes')" class="rx-chip-btn cyan" style="background: #00f2ff; color: #020617;">Renovar / Subir Plan</button>
             </div>
+
+            <!-- TARJETAS HORIZONTALES SIN NEGRITAS Y CENTRADAS (CAJA ROJA) -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 6px; text-align: center;">
+                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Negocio Activo</div>
+                    <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="stat-biz-name">-</div>
+                    <div style="font-size: 0.55rem; color: #64748b;" id="stat-folio">-</div>
+                </div>
+                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Plan y Vigencia</div>
+                    <div style="font-size: 0.82rem; font-weight: 400; color: #00f2ff; margin-top: 2px;" id="stat-plan-name">-</div>
+                    <div style="font-size: 0.55rem; color: #94a3b8;" id="stat-expires">-</div>
+                </div>
+                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 12px;">
+                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Consumo Mensual</div>
+                    <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px;" id="stat-quota-text">0 / 100</div>
+                    <div style="width: 100%; height: 4px; background: #0f172a; border-radius: 999px; overflow: hidden; margin-top: 4px;">
+                        <div class="rx-progress-fill" id="stat-quota-bar" style="height: 100%; background: #00f2ff; width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAVEGACIÓN DE LAS 4 PESTAÑAS (VÍNCULOS CON LETRA MÍNIMA Y SUBRAYADO LUMINOSO) -->
+            <div style="display: flex; justify-content: center; align-items: center; gap: 24px; padding: 4px 0 10px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.12); margin-bottom: 4px;">
+                <style>
+                    .rx-nav-link-tab {
+                        background: transparent;
+                        border: none;
+                        color: #64748b; /* Apagado en gris */
+                        padding: 6px 4px;
+                        font-size: 0.62rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        text-decoration: none;
+                        cursor: pointer;
+                        transition: all 0.25s ease;
+                        position: relative;
+                        letter-spacing: 0.5px;
+                    }
+                    .rx-nav-link-tab:hover {
+                        color: #ffffff;
+                    }
+                    .rx-nav-link-tab.active {
+                        color: #ffffff; /* Prendido en blanco */
+                    }
+                    .rx-nav-link-tab.active::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -2px;
+                        left: 0;
+                        width: 100%;
+                        height: 2px;
+                        background: #00f2ff; /* Subrayado luminoso */
+                        box-shadow: 0 0 8px #00f2ff;
+                        border-radius: 999px;
+                    }
+                </style>
+                <button type="button" id="tab-btn-chats" onclick="window.app.panel.switchTab('chats')" class="rx-nav-link-tab active">📱 WhatsApp</button>
+                <button type="button" id="tab-btn-erp" onclick="window.app.panel.switchTab('erp')" class="rx-nav-link-tab">💼 ERP PyME</button>
+                <button type="button" id="tab-btn-trogo" onclick="window.app.panel.switchTab('trogo')" class="rx-nav-link-tab">🤖 Trogo AI</button>
+                <button type="button" id="tab-btn-web" onclick="window.app.panel.switchTab('web')" class="rx-nav-link-tab">🌐 Mi Web</button>
+                <button type="button" id="tab-btn-planes" onclick="window.app.panel.switchTab('planes')" class="rx-nav-link-tab">💳 Planes</button>
+            </div>
+            
+            <!-- ================================================= -->
+            <!-- PESTAÑA 1: WHATSAPP & OPERACIÓN                   -->
+            <!-- ================================================= -->
+            <div id="tab-panel-chats" style="display: flex; flex-direction: column; gap: 10px;">
+                
+                <!-- TARJETA MAESTRA DE ESTADO DE WHATSAPP (SIN NEGRITAS, CENTRADA, TEXTO MÍNIMO) -->
+                <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 12px; text-align: center;">
+                    <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Estado del Canal</div>
+                    <div id="panel-wa-status-text" style="font-size: 0.78rem; font-weight: 400; color: #4ade80; text-transform: uppercase; margin-bottom: 2px;">WHATSAPP DESCONECTADO (REQUIERE QR)</div>
+                    <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 10px;">El bot opera de forma autónoma con reglas de atención.</div>
+                    <div>
+                        <a id="panel-btn-conectar-qr" href="conectar.html" class="rx-chip-btn green" style="padding: 6px 14px; font-size: 0.62rem; font-weight: 400; text-transform: uppercase;">
+                            🔗 VINCULAR / VER QR
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ESTADÍSTICAS RÁPIDAS (SIN NEGRITAS, CENTRADAS, TEXTO MÍNIMO) -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 6px; text-align: center;">
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 10px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Mensajes Usados</div>
+                        <div style="font-size: 0.82rem; font-weight: 400; color: #ffffff; margin-top: 2px;" id="stat-simple-quota">0 / 100</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 10px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Citas Registradas Hoy</div>
+                        <div style="font-size: 0.82rem; font-weight: 400; color: #38bdf8; margin-top: 2px;" id="stat-simple-appointments">0 Citas</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 8px; padding: 8px 10px;">
+                        <div style="font-size: 0.58rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Informe Diario 8:00 PM</div>
+                        <div style="font-size: 0.72rem; font-weight: 400; color: #4ade80; margin-top: 3px;">🟢 Programado en WhatsApp</div>
+                    </div>
+                </div>
+
+                <!-- SHELL DE CHATS EN VIVO -->
+                <div class="rx-chat-shell" style="max-height: 520px;">
+                    <div class="rx-chat-list" id="panel-chat-list">
+                        <div style="padding: 20px; text-align: center; font-size: 0.76rem; color: #64748b;">Cargando conversaciones...</div>
+                    </div>
+
+                    <div class="rx-chat-thread">
+                        <div class="rx-thread-head">
+                            <div>
+                                <div style="font-size: 0.86rem; font-weight: 700; color: #ffffff;" id="active-chat-name">Selecciona un chat</div>
+                                <div style="font-size: 0.66rem; color: #38bdf8;" id="active-chat-handoff">El bot responde 24/7 automáticamente si no contestas en 2 min.</div>
+                            </div>
+                            <button type="button" id="btn-toggle-chat-bot" onclick="window.app.panel.toggleChatBot()" class="rx-chip-btn" style="display: none;">
+                                Pausar Bot
+                            </button>
+                        </div>
+
+                        <div class="rx-thread-body" id="active-chat-messages">
+                            <div style="margin: auto; text-align: center; color: #64748b; font-size: 0.78rem;">
+                                Elige una conversación a la izquierda para ver los mensajes en vivo.
+                            </div>
+                        </div>
+
+                        <form class="rx-composer" onsubmit="window.app.panel.sendManualReply(event)">
+                            <input type="text" id="panel-reply-input" class="rx-input" placeholder="Escribe tu respuesta (solo texto; videos bloqueados)..." disabled>
+                            <button type="submit" id="panel-reply-send" class="rx-chip-btn green" style="padding: 10px 14px;" disabled>
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================= -->
+            <!-- PESTAÑA 3: TROGO AI (AGENTE INTELIGENTE)          -->
+            <!-- ================================================= -->
+            <div id="tab-panel-trogo" style="display: none; background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 14px; padding: 22px 18px; box-shadow: 0 0 40px rgba(0,242,255,0.1);">
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+                    <img src="assets/Trogo.webp" alt="Trogo" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid #00f2ff; object-fit: cover;">
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1rem; color: #ffffff; text-transform: uppercase;">🤖 Agente Cuántico TROGO</h3>
+                        <p style="margin: 2px 0 0; font-size: 0.74rem; color: #94a3b8;">Potenciado por Claude Haiku (AWS Bedrock). Razonamiento casi humano para tu negocio.</p>
+                    </div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px; padding: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+                    <div>
+                        <div style="font-size: 0.78rem; font-weight: 800; color: #00f2ff; text-transform: uppercase;">Estado del Motor Inteligente</div>
+                        <div style="font-size: 0.72rem; color: #cbd5e1; margin-top: 4px;">Activa a Trogo para que reemplace el viejo WhatsApp y atienda con IA cuántica tu web y canal.</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 0.7rem; font-weight: 700; color: #94a3b8;" id="trogo-tab-label">WHATSAPP TRADICIONAL</span>
+                        <label style="position: relative; display: inline-block; width: 48px; height: 26px; margin: 0;">
+                            <input type="checkbox" id="trogo-engine-toggle" onchange="window.app.panel.toggleEngineMode(this)" style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; cursor: pointer; inset: 0; background-color: #1e293b; border: 1px solid #334155; transition: .3s; border-radius: 34px;" id="trogo-switch-bg"></span>
+                            <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 3px; bottom: 2px; background-color: #00f2ff; transition: .3s; border-radius: 50%; box-shadow: 0 0 10px #00f2ff;" id="trogo-switch-knob"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================================================= -->
+            <!-- PESTAÑA 4: MI PÁGINA WEB                          -->
+            <!-- ================================================= -->
+            <div id="tab-panel-web" style="display: none; background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 14px; padding: 24px;">
+                
+                <div style="background: #040914; border: 1px solid rgba(0,242,255,0.3); border-radius: 12px; padding: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;">
+                    <div>
+                        <div style="font-size: 0.68rem; font-weight: 700; color: #00f2ff; text-transform: uppercase;">Tu Enlace Oficial (.ikai.info)</div>
+                        <a id="myweb-preview-link" href="#" target="_blank" style="font-size: 1rem; font-weight: 900; color: #ffffff; text-decoration: underline; margin-top: 4px; display: inline-block;">Cargando enlace...</a>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <a id="myweb-btn-open" href="#" tar
 
             <div class="rx-status-grid">
                 <div class="rx-stat-card">
@@ -420,35 +585,103 @@
                 <button type="button" id="tab-btn-erp" onclick="window.app.panel.switchTab('erp')" class="rx-chip-btn green" style="padding: 9px 14px; font-weight: 800;">💼 Mi ERP PyME</button>
             </div>
 
-            <div id="tab-panel-chats" class="rx-chat-shell">
-                <div class="rx-chat-list" id="panel-chat-list">
-                    <div style="padding: 20px; text-align: center; font-size: 0.76rem; color: #64748b;">Cargando conversaciones...</div>
-                </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;">
+                <button type="button" id="tab-btn-chats" onclick="window.app.panel.switchTab('chats')" class="rx-chip-btn cyan" style="padding: 10px 18px; font-weight: 800;">📱 WhatsApp & Operación</button>
+                <button type="button" id="tab-btn-citas" onclick="window.app.panel.switchTab('citas')" class="rx-chip-btn" style="padding: 10px 18px;">📅 Mis Citas</button>
+                <button type="button" id="tab-btn-config" onclick="window.app.panel.switchTab('config')" class="rx-chip-btn" style="padding: 10px 18px;">🤖 Info del Bot</button>
+                <button type="button" id="tab-btn-erp" onclick="window.app.panel.switchTab('erp')" class="rx-chip-btn green" style="padding: 10px 18px; font-weight: 800;">💼 ERP & IA Trogo</button>
+            </div>
 
-                <div class="rx-chat-thread">
-                    <div class="rx-thread-head">
+            <!-- PESTAÑA 1: WHATSAPP & OPERACIÓN (SIMPLIFICADA AL MÁXIMO) -->
+            <div id="tab-panel-chats" style="display: flex; flex-direction: column; gap: 16px; margin-top: 14px;">
+                
+                <!-- TARJETA MAESTRA DE ESTADO E INTERRUPTOR TROGO -->
+                <div style="background: rgba(7, 13, 26, 0.95); border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 14px; padding: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; box-shadow: 0 0 30px rgba(0,242,255,0.08);">
+                    
+                    <!-- ESTADO DEL VÍNCULO -->
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div id="panel-wa-avatar-box" style="width: 48px; height: 48px; border-radius: 50%; background: rgba(37, 211, 102, 0.15); border: 2px solid #25d366; display: flex; align-items: center; justify-content: center; color: #25d366; font-size: 22px; overflow: hidden;">
+                            <i class="fa-brands fa-whatsapp" id="panel-wa-avatar-icon"></i>
+                        </div>
                         <div>
-                            <div style="font-size: 0.86rem; font-weight: 700; color: #ffffff;" id="active-chat-name">Selecciona un chat</div>
-                            <div style="font-size: 0.66rem; color: #38bdf8;" id="active-chat-handoff">El bot responde 24/7 automáticamente si no contestas en 2 min.</div>
-                        </div>
-                        <button type="button" id="btn-toggle-chat-bot" onclick="window.app.panel.toggleChatBot()" class="rx-chip-btn" style="display: none;">
-                            Pausar Bot
-                        </button>
-                    </div>
-
-                    <div class="rx-thread-body" id="active-chat-messages">
-                        <div style="margin: auto; text-align: center; color: #64748b; font-size: 0.78rem;">
-                            Elige una conversación a la izquierda para ver los mensajes en vivo.
+                            <div style="font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Estado del Canal</div>
+                            <div id="panel-wa-status-text" style="font-size: 0.95rem; font-weight: 900; color: #4ade80; text-transform: uppercase; margin-top: 2px;">WHATSAPP CONECTADO 24/7</div>
+                            <div style="font-size: 0.68rem; color: #cbd5e1; margin-top: 2px;">El bot opera de forma autónoma con reglas de atención.</div>
                         </div>
                     </div>
 
-                    <form class="rx-composer" onsubmit="window.app.panel.sendManualReply(event)">
-                        <input type="text" id="panel-reply-input" class="rx-input" placeholder="Escribe tu respuesta (solo texto; videos bloqueados)..." disabled>
-                        <button type="submit" id="panel-reply-send" class="rx-chip-btn green" style="padding: 10px 14px;" disabled>
-                            Enviar
-                        </button>
-                    </form>
+                    <!-- INTERRUPTOR MAESTRO: WHATSAPP vs TROGO -->
+                    <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 14px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="assets/Trogo.webp" alt="Trogo" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid #00f2ff; object-fit: cover;">
+                            <div>
+                                <div style="font-size: 0.72rem; font-weight: 800; color: #00f2ff; text-transform: uppercase;">Motor IA: <span id="current-engine-label">WhatsApp Tradicional</span></div>
+                                <div style="font-size: 0.62rem; color: #94a3b8;" id="engine-cooldown-text">Cambio disponible (1 al día)</div>
+                            </div>
+                        </div>
+                        <label style="position: relative; display: inline-block; width: 48px; height: 26px; margin: 0;">
+                            <input type="checkbox" id="engine-toggle-switch" onchange="window.app.panel.toggleEngineMode(this)" style="opacity: 0; width: 0; height: 0;">
+                            <span style="position: absolute; cursor: pointer; inset: 0; background-color: #1e293b; border: 1px solid #334155; transition: .3s; border-radius: 34px;" id="switch-slider-bg"></span>
+                            <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 3px; bottom: 2px; background-color: #00f2ff; transition: .3s; border-radius: 50%; box-shadow: 0 0 10px #00f2ff;" id="switch-slider-knob"></span>
+                        </label>
+                    </div>
+
+                    <!-- ACCIÓN RÁPIDA VINCULAR QR -->
+                    <div>
+                        <a id="panel-btn-conectar-qr" href="conectar.html" class="rx-chip-btn green" style="padding: 10px 16px; font-weight: 800;">
+                            <i class="fa-solid fa-qrcode"></i> Vincular / Ver QR
+                        </a>
+                    </div>
                 </div>
+
+                <!-- ESTADÍSTICAS RÁPIDAS (RIDÍCULAMENTE SENCILLAS) -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 12px 16px;">
+                        <div style="font-size: 0.62rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Mensajes Usados</div>
+                        <div style="font-size: 1.1rem; font-weight: 900; color: #ffffff; margin-top: 2px;" id="stat-simple-quota">0 / 100</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 12px 16px;">
+                        <div style="font-size: 0.62rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Citas Registradas Hoy</div>
+                        <div style="font-size: 1.1rem; font-weight: 900; color: #38bdf8; margin-top: 2px;" id="stat-simple-appointments">0 Citas</div>
+                    </div>
+                    <div style="background: #070d1a; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; padding: 12px 16px;">
+                        <div style="font-size: 0.62rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Informe Diario 8:00 PM</div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: #4ade80; margin-top: 4px;">🟢 Programado en WhatsApp</div>
+                    </div>
+                </div>
+
+                <!-- SHELL DE CHATS EN VIVO -->
+                <div class="rx-chat-shell" style="max-height: 520px;">
+                    <div class="rx-chat-list" id="panel-chat-list">
+                        <div style="padding: 20px; text-align: center; font-size: 0.76rem; color: #64748b;">Cargando conversaciones...</div>
+                    </div>
+
+                    <div class="rx-chat-thread">
+                        <div class="rx-thread-head">
+                            <div>
+                                <div style="font-size: 0.86rem; font-weight: 700; color: #ffffff;" id="active-chat-name">Selecciona un chat</div>
+                                <div style="font-size: 0.66rem; color: #38bdf8;" id="active-chat-handoff">El bot responde 24/7 automáticamente si no contestas en 2 min.</div>
+                            </div>
+                            <button type="button" id="btn-toggle-chat-bot" onclick="window.app.panel.toggleChatBot()" class="rx-chip-btn" style="display: none;">
+                                Pausar Bot
+                            </button>
+                        </div>
+
+                        <div class="rx-thread-body" id="active-chat-messages">
+                            <div style="margin: auto; text-align: center; color: #64748b; font-size: 0.78rem;">
+                                Elige una conversación a la izquierda para ver los mensajes en vivo.
+                            </div>
+                        </div>
+
+                        <form class="rx-composer" onsubmit="window.app.panel.sendManualReply(event)">
+                            <input type="text" id="panel-reply-input" class="rx-input" placeholder="Escribe tu respuesta (solo texto; videos bloqueados)..." disabled>
+                            <button type="submit" id="panel-reply-send" class="rx-chip-btn green" style="padding: 10px 14px;" disabled>
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
             </div>
 
             <div id="tab-panel-citas" style="display: none; background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.25); border-radius: 14px; padding: 20px;">
@@ -689,18 +922,17 @@
                     <div class="rx-plan-card featured">
                         <span class="rx-popular-badge">⭐ Más Popular • Mejor Valor</span>
                         <div>
-                            <div style="font-size: 0.78rem; font-weight: 900; color: #00f2ff; text-transform: uppercase;">Plan Élite Ilimitado</div>
+                            <div style="font-size: 0.78rem; font-weight: 900; color: #00f2ff; text-transform: uppercase;">Plan Élite 1,000 Mensajes</div>
                             <div class="rx-plan-price" style="color: #00f2ff;">$599.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
                             <div class="rx-plan-iva">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
                             <ul class="rx-plan-list">
-                                <li>✓ <strong>MENSAJES ILIMITADOS</strong> (entrantes + salientes)</li>
-                                <li>✓ Cero cortes por volumen durante todo tu mes</li>
+                                <li>✓ Hasta <strong>1,000 mensajes/mes</strong> (entrantes + salientes)</li>
                                 <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
                                 <li>✓ Chat en vivo 24/7 + Hand-off de 2 minutos</li>
                             </ul>
                         </div>
                         <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED')" class="rx-plan-btn" style="background: #00f2ff; color: #020617;">
-                            Activar Plan Ilimitado ($599 MXN) ➔
+                            Activar Plan Élite ($599 MXN) ➔
                         </button>
                     </div>
                 </div>
@@ -744,22 +976,38 @@
                     <div class="rx-plan-card featured" style="border-color: #ffd700;">
                         <span class="rx-popular-badge" style="background: #ffd700;">👑 Máxima Potencia PyME</span>
                         <div>
-                            <div style="font-size: 0.78rem; font-weight: 900; color: #ffd700; text-transform: uppercase;">Plan Élite Ilimitado + ERP</div>
+                            <div style="font-size: 0.78rem; font-weight: 900; color: #ffd700; text-transform: uppercase;">Plan Élite 1,000 Mensajes + ERP</div>
                             <div class="rx-plan-price" style="color: #ffd700;">$1,598.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
                             <div class="rx-plan-iva">Subtotal: $1,377.59 + IVA (16%): $220.41 MXN</div>
                             <ul class="rx-plan-list">
-                                <li>✓ Web + Sala + Bot <strong>MENSAJES ILIMITADOS</strong></li>
+                                <li>✓ Web + Sala + Bot hasta <strong>1,000 mensajes/mes</strong></li>
                                 <li>✓ <strong>ERP PyME:</strong> Clientes, Servicios, Citas y Ventas</li>
                                 <li>✓ <strong>Inventario</strong> + Reportes de quién vendió más</li>
                                 <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
                             </ul>
                         </div>
                         <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED_ERP')" class="rx-plan-btn" style="background: #ffd700; color: #020617;">
-                            Activar Ilimitado + ERP ($1,598 MXN) ➔
+                            Activar Élite + ERP ($1,598 MXN) ➔
                         </button>
                     </div>
                 </div>
-            </section>
+           </section>
+        </div>
+    </div>
+
+    <!-- BURBUJA FLOTANTE SIMPÁTICA Y CÁLIDA (ÚNICA Y SIN CÍRCULO ESTORBOSO) -->
+    <div id="trogo-hologram-widget" style="position: fixed; bottom: 24px; right: 24px; z-index: 99999; font-family: 'Poppins', sans-serif; pointer-events: none;">
+        <div id="trogo-bubble-box" style="background: linear-gradient(135deg, rgba(7, 13, 26, 0.98), rgba(15, 23, 42, 0.98)); border: 2px solid #00f2ff; border-radius: 16px; padding: 16px 18px; max-width: 310px; box-shadow: 0 10px 40px rgba(0,242,255,0.35); backdrop-filter: blur(12px); pointer-events: auto; display: none; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(15px);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 0.68rem; font-weight: 900; color: #00f2ff; text-transform: uppercase; letter-spacing: 1px;">🤖 TROTIPS // ASISTENTE IA</span>
+                <button type="button" onclick="window.app.panel.closeTrogoBubble()" style="background: transparent; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; padding: 0;">✕</button>
+            </div>
+            <p id="trogo-bubble-text" style="font-size: 0.78rem; color: #f8fafc; line-height: 1.5; margin: 0 0 12px 0; font-weight: 400;"></p>
+            <div style="text-align: right;">
+                <a href="#planes-upgrade" onclick="window.app.panel.switchTab('planes'); window.app.panel.closeTrogoBubble();" style="display: inline-block; background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.68rem; padding: 6px 12px; border-radius: 6px; text-decoration: none; text-transform: uppercase; box-shadow: 0 0 15px rgba(0,242,255,0.4);">
+                    🚀 DAR EL SALTO AHORA ➔
+                </a>
+            </div>
         </div>
     </div>
 

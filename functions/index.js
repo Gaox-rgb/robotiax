@@ -1924,7 +1924,7 @@ exports.stripeWebhook = onRequest({
                 iva: '12.28',
                 total: '89.00'
             };
-        } else if (embeddedPlanTag === 'PLAN_UNLIMITED_ERP' || (rawAmountCents >= 159000 && rawAmountCents <= 160500)) {
+        } else if (embeddedPlanTag === 'PLAN_UNLIMITED_ERP' || embeddedPlanTag === 'PLAN_ELITE_1000_ERP' || (rawAmountCents >= 159000 && rawAmountCents <= 160500)) {
             planMeta = {
                 type: 'subscription',
                 planTier: 'elite_1000',
@@ -1960,7 +1960,7 @@ exports.stripeWebhook = onRequest({
                 iva: '62.76',
                 total: '455.00'
             };
-        } else if (embeddedPlanTag === 'PLAN_UNLIMITED' || (rawAmountCents >= 59000 && rawAmountCents <= 60500)) {
+        } else if (embeddedPlanTag === 'PLAN_UNLIMITED' || embeddedPlanTag === 'PLAN_ELITE_1000' || (rawAmountCents >= 59000 && rawAmountCents <= 60500)) {
             planMeta = {
                 type: 'subscription',
                 planTier: 'elite_1000',
