@@ -143,6 +143,14 @@ window.app.panel = {
         this.syncStateAndChats(true);
     },
 
+    handleGlobalBack: function() {
+        if (this.activeTab !== 'chats') {
+            this.switchTab('chats');
+        } else {
+            window.location.href = 'index.html';
+        }
+    },
+
     toggleTopHeaderCollapse: function() {
         const cards = document.getElementById('top-collapsible-cards');
         const btn = document.getElementById('top-collapse-btn');
@@ -258,6 +266,9 @@ window.app.panel = {
         if (bWeb) bWeb.className = 'rx-nav-link-tab' + (tab === 'web' ? ' active' : '');
         if (bPlanes) bPlanes.className = 'rx-nav-link-tab' + (tab === 'planes' ? ' active' : '');
 
+        if (tab === 'trogo') {
+            this.startTrogoMatrixRain();
+        }
         if (tab === 'web' && window.app.state.summary) {
             const siteUrl = window.app.state.summary.siteUrl || '#';
             const previewLink = document.getElementById('myweb-preview-link');
@@ -493,6 +504,64 @@ window.app.panel = {
     },
 
     refreshErpData: function() { this.loadErpEntity(this.activeErpSubTab); },
+
+    startTrogoMatrixRain: function() {
+        const canvas = document.getElementById('trogo-matrix-canvas');
+        const hero = document.getElementById('trogo-hero-stage');
+        if (!canvas || !hero) return;
+
+        // Reiniciar estado visual
+        canvas.style.display = 'block';
+        canvas.style.opacity = '1';
+        hero.style.opacity = '0';
+
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('tab-panel-trogo');
+        canvas.width = container ? container.offsetWidth : window.innerWidth;
+        canvas.height = container ? container.offsetHeight : 460;
+
+        const letters = 'TROGO01AIQUANTUMROBOTIAXMAKUMOTO';
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        const matrixInterval = setInterval(() => {
+            ctx.fillStyle = 'rgba(2, 6, 23, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00f2ff'; // AZUL MATRIX CUÁNTICO
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters.charAt(Math.floor(Math.random() * letters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }, 40);
+
+        // Detener la lluvia exactamente a los 2 segundos y revelar a Trogo Evolution
+        setTimeout(() => {
+            canvas.style.opacity = '0';
+            hero.style.opacity = '1';
+            setTimeout(() => {
+                clearInterval(matrixInterval);
+                canvas.style.display = 'none';
+            }, 600);
+        }, 2000);
+    },
+
+    revealTrogoFuture: function() {
+        const futureDiv = document.getElementById('trogo-future-content');
+        const btn = document.getElementById('btn-trogo-enter-future');
+        if (futureDiv) {
+            futureDiv.style.display = 'block';
+            futureDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        if (btn) btn.style.display = 'none';
+    },
 
     openStripeCheckout: function(planTag) {
         const baseLink = this.stripePlans[planTag] || this.stripePlans.PLAN_100;

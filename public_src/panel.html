@@ -361,7 +361,8 @@
 </head>
 <body>
     <header class="rx-top">
-        <div class="rx-top-inner" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 8px 0; width: 100%;">
+        <div class="rx-top-inner" style="display: flex; justify-content: center; align-items: center; text-align: center; padding: 8px 0; width: 100%; position: relative;">
+            <button type="button" onclick="window.app.panel.handleGlobalBack()" title="Regresar" style="position: absolute; left: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(0,242,255,0.35); color: #00f2ff; width: 28px; height: 28px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900;">❮</button>
             <a href="index.html" class="rx-brand" style="font-size: 0.8rem; letter-spacing: 1px; margin: 0 auto; display: inline-block;">ROBOTIAX // PANEL DE CONTROL</a>
         </div>
     </header>
@@ -524,28 +525,114 @@
             <!-- ================================================= -->
             <!-- PESTAÑA 3: TROGO AI (AGENTE INTELIGENTE)          -->
             <!-- ================================================= -->
-            <div id="tab-panel-trogo" style="display: none; background: #070d1a; border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 14px; padding: 22px 18px; box-shadow: 0 0 40px rgba(0,242,255,0.1);">
-                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
-                    <img src="assets/Trogo.webp" alt="Trogo" style="width: 56px; height: 56px; border-radius: 50%; border: 2px solid #00f2ff; object-fit: cover;">
-                    <div>
-                        <h3 style="margin: 0; font-size: 1.1rem; color: #ffffff; text-transform: uppercase;">🤖 Agente Cuántico TROGO</h3>
-                        <p style="margin: 2px 0 0; font-size: 0.74rem; color: #94a3b8;">Potenciado por Claude Haiku (AWS Bedrock). Razonamiento casi humano para tu negocio.</p>
+            <div id="tab-panel-trogo" style="display: none; background: #020617; border: 1px solid rgba(0, 242, 255, 0.4); border-radius: 16px; overflow: hidden; position: relative; min-height: 460px; box-shadow: 0 0 50px rgba(0, 242, 255, 0.15);">
+                
+                <!-- CANVAS DE LLUVIA MATRIX EN AZUL CUÁNTICO (2 SEGUNDOS) -->
+                <canvas id="trogo-matrix-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; transition: opacity 0.6s ease;"></canvas>
+
+                <!-- ESCENA 1: TROGO EVOLUTION HERO (APARECE AL DISIPARSE LA LLUVIA) -->
+                <div id="trogo-hero-stage" style="padding: 36px 20px; text-align: center; opacity: 0; transition: opacity 0.8s ease; position: relative; z-index: 10;">
+                    <div style="max-width: 240px; margin: 0 auto 20px; position: relative;">
+                        <div style="position: absolute; inset: -6px; border-radius: 50%; background: radial-gradient(circle, rgba(255,0,60,0.6) 0%, rgba(0,242,255,0.2) 70%); filter: blur(12px); z-index: -1;"></div>
+                        <img src="assets/trogo_evolution.webp" alt="Trogo Evolución" style="width: 210px; height: 210px; border-radius: 50%; border: 2px solid #ff003c; object-fit: cover; box-shadow: 0 0 35px rgba(255, 0, 60, 0.5);">
                     </div>
+
+                    <span style="font-family: 'Roboto Mono', monospace; font-size: 0.65rem; color: #00f2ff; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;">ARQUITECTURA MAKUMOTO // CLAUDE HAIKU 4.5</span>
+                    <h2 style="font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 900; color: #ffffff; text-transform: uppercase; margin: 8px 0 12px; letter-spacing: 1px; text-shadow: 0 0 25px rgba(0, 242, 255, 0.4);">
+                        TROGO <span style="color: #ff003c;">ES EVOLUCIÓN</span>
+                    </h2>
+                    <p style="max-width: 580px; margin: 0 auto 24px; font-size: 0.82rem; color: #94a3b8; line-height: 1.6;">
+                        Deja atrás la etapa de las cavernas con menús rígidos y celulares dependientes. Conoce el motor conversacional neuronal diseñado para cerrar ventas con razonamiento humano.
+                    </p>
+
+                    <button type="button" id="btn-trogo-enter-future" onclick="window.app.panel.revealTrogoFuture()" style="background: linear-gradient(135deg, #00f2ff 0%, #0284c7 100%); color: #020617; font-weight: 900; font-size: 0.88rem; padding: 15px 36px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);">
+                        ⚡ ENTRA AL FUTURO ➔
+                    </button>
                 </div>
 
-                <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px; padding: 18px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
-                    <div>
-                        <div style="font-size: 0.78rem; font-weight: 800; color: #00f2ff; text-transform: uppercase;">Estado del Motor Inteligente</div>
-                        <div style="font-size: 0.72rem; color: #cbd5e1; margin-top: 4px;">Activa a Trogo para que reemplace el viejo WhatsApp y atienda con IA cuántica tu web y canal.</div>
+                <!-- ESCENA 2: CONTENIDO PROFUNDO (SUPERPODERES, COMPARATIVA Y OFERTA 50% OFF) -->
+                <div id="trogo-future-content" style="display: none; padding: 26px 20px 36px; border-top: 1px solid rgba(0, 242, 255, 0.2); background: rgba(7, 13, 26, 0.96);">
+                    
+                    <!-- ACTO 1: ¿QUÉ ES TROGO Y SUS SUPERPODERES? -->
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <h3 style="color: #00f2ff; font-size: 1.1rem; text-transform: uppercase; margin: 0 0 6px;">¿Qué es TROGO y cuáles son sus Superpoderes?</h3>
+                        <p style="font-size: 0.76rem; color: #cbd5e1; max-width: 720px; margin: 0 auto;">Es un Agente Autónomo impulsado por Claude Haiku 4.5 en la nube de AWS Bedrock. No usa reglas fijas; comprende el contexto y persuade a tus clientes.</p>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 0.7rem; font-weight: 700; color: #94a3b8;" id="trogo-tab-label">WHATSAPP TRADICIONAL</span>
-                        <label style="position: relative; display: inline-block; width: 48px; height: 26px; margin: 0;">
-                            <input type="checkbox" id="trogo-engine-toggle" onchange="window.app.panel.toggleEngineMode(this)" style="opacity: 0; width: 0; height: 0;">
-                            <span style="position: absolute; cursor: pointer; inset: 0; background-color: #1e293b; border: 1px solid #334155; transition: .3s; border-radius: 34px;" id="trogo-switch-bg"></span>
-                            <span style="position: absolute; content: ''; height: 20px; width: 20px; left: 3px; bottom: 2px; background-color: #00f2ff; transition: .3s; border-radius: 50%; box-shadow: 0 0 10px #00f2ff;" id="trogo-switch-knob"></span>
-                        </label>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 30px;">
+                        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(0, 242, 255, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="color: #00f2ff; font-weight: 800; font-size: 0.8rem; margin-bottom: 6px;">🧠 Razonamiento Casi Humano</div>
+                            <p style="font-size: 0.72rem; color: #94a3b8; margin: 0; line-height: 1.5;">Entiende audios transcritos, sarcasmo, dudas complejas y objeciones de precios sin frustrar al cliente con botones numéricos.</p>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 0, 60, 0.35); border-radius: 12px; padding: 16px;">
+                            <div style="color: #ff003c; font-weight: 800; font-size: 0.8rem; margin-bottom: 6px;">🛡️ Inmunidad Total a Baneos</div>
+                            <p style="font-size: 0.72rem; color: #94a3b8; margin: 0; line-height: 1.5;">Vive en nuestra infraestructura Cloud. Cero códigos QR que caducan, cero riesgo de que Meta bloquee tu línea telefónica.</p>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(57, 255, 20, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="color: #39ff14; font-weight: 800; font-size: 0.8rem; margin-bottom: 6px;">⚡ Cero Celulares Encendidos</div>
+                            <p style="font-size: 0.72rem; color: #94a3b8; margin: 0; line-height: 1.5;">Aunque se te apague el teléfono o estés en un vuelo, Trogo sigue vendiendo en tu web y canales digitales sin interrupción.</p>
+                        </div>
                     </div>
+
+                    <!-- ACTO 2: TABLA COMPARATIVA MORTAL (WHATSAPP VS TROGO) -->
+                    <div style="background: #040914; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 14px; padding: 20px; overflow-x: auto; margin-bottom: 30px;">
+                        <h3 style="margin: 0 0 14px; text-align: center; color: #ffffff; font-size: 0.95rem; text-transform: uppercase;">Comparativa Directa: La Caverna vs. La Evolución</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 500px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid rgba(148,163,184,0.25); color: #94a3b8; text-align: left;">
+                                    <th style="padding: 10px;">Capacidad Técnica</th>
+                                    <th style="padding: 10px; color: #fda4af;">WhatsApp Tradicional (QR)</th>
+                                    <th style="padding: 10px; color: #00f2ff;">TROGO AI (Evolución)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 10px;">Nivel de Inteligencia</td><td style="padding: 10px; color: #94a3b8;">Menús rígidos (1, 2, 3)</td><td style="padding: 10px; color: #4ade80; font-weight: 700;">✓ Neuronal (Claude Haiku 4.5)</td></tr>
+                                <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 10px;">Dependencia Física</td><td style="padding: 10px; color: #fda4af;">Requiere celular con Wi-Fi</td><td style="padding: 10px; color: #4ade80; font-weight: 700;">✓ 100% En la Nube AWS</td></tr>
+                                <tr style="border-bottom: 1px solid rgba(148,163,184,0.1);"><td style="padding: 10px;">Riesgo de Bloqueo Meta</td><td style="padding: 10px; color: #fda4af;">Latente si envías masivos</td><td style="padding: 10px; color: #4ade80; font-weight: 700;">✓ Cero Riesgo / Blindado</td></tr>
+                                <tr><td style="padding: 10px;">Cierre de Ventas</td><td style="padding: 10px; color: #94a3b8;">Solo informa datos básicos</td><td style="padding: 10px; color: #4ade80; font-weight: 700;">✓ Persuade y resuelve objeciones</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- ACTO 3: OFERTA ESPECIAL IRRESISTIBLE (50% OFF PRIMEROS 3 MESES) -->
+                    <div style="background: radial-gradient(circle at 50% 0%, rgba(255,0,60,0.18) 0%, rgba(7,13,26,0.98) 75%); border: 2px solid #ff003c; border-radius: 16px; padding: 26px 20px; text-align: center; box-shadow: 0 0 40px rgba(255,0,60,0.2);">
+                        <span style="background: #ff003c; color: #ffffff; font-size: 0.65rem; font-weight: 900; padding: 4px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 1px;">🔥 OFERTA EXCLUSIVA DE EVOLUCIÓN • 50% DE DESCUENTO</span>
+                        <h3 style="color: #ffffff; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; margin: 14px 0 6px;">INTEGRA A TROGO EN TU NEGOCIO HOY</h3>
+                        <p style="font-size: 0.76rem; color: #cbd5e1; max-width: 600px; margin: 0 auto 18px;">Activa tu Agente Neuronal con mitad de precio durante tus primeros 3 meses para que compruebes su poder de cierre.</p>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 720px; margin: 0 auto;">
+                            <!-- PLAN TROGO 200 MENSAJES -->
+                            <div style="background: rgba(2, 6, 23, 0.85); border: 1px solid rgba(0, 242, 255, 0.35); border-radius: 12px; padding: 20px;">
+                                <div style="font-size: 0.75rem; font-weight: 800; color: #00f2ff; text-transform: uppercase;">Trogo Evolución 200</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; text-decoration: line-through; margin-top: 6px;">Normal: $499.00 MXN/mes</div>
+                                <div style="font-size: 2rem; font-weight: 900; color: #ffffff; margin: 2px 0;">$249.50 <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500;">MXN/mes</span></div>
+                                <div style="font-size: 0.68rem; color: #4ade80; font-weight: 700; margin-bottom: 14px;">Primeros 3 meses (Luego $499 MXN)</div>
+                                <ul style="list-style: none; padding: 0; margin: 0 0 16px; font-size: 0.72rem; color: #cbd5e1; text-align: left; display: flex; flex-direction: column; gap: 6px;">
+                                    <li>✓ Hasta <strong>200 mensajes/mes</strong> con IA Neuronal</li>
+                                    <li>✓ Cero QR / 100% en la Nube AWS</li>
+                                </ul>
+                                <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_TROGO_200')" style="width: 100%; background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.76rem; padding: 12px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase;">
+                                    ACTIVAR 200 MENSAJES ($249.50) ➔
+                                </button>
+                            </div>
+
+                            <!-- PLAN TROGO 2,000 MENSAJES -->
+                            <div style="background: rgba(2, 6, 23, 0.85); border: 2px solid #ff003c; border-radius: 12px; padding: 20px; box-shadow: 0 0 25px rgba(255,0,60,0.2);">
+                                <div style="font-size: 0.75rem; font-weight: 800; color: #ff003c; text-transform: uppercase;">Trogo Élite 2,000</div>
+                                <div style="font-size: 0.7rem; color: #94a3b8; text-decoration: line-through; margin-top: 6px;">Normal: $999.00 MXN/mes</div>
+                                <div style="font-size: 2rem; font-weight: 900; color: #ff003c; margin: 2px 0;">$499.50 <span style="font-size: 0.8rem; color: #ffffff; font-weight: 500;">MXN/mes</span></div>
+                                <div style="font-size: 0.68rem; color: #4ade80; font-weight: 700; margin-bottom: 14px;">Primeros 3 meses (Luego $999 MXN)</div>
+                                <ul style="list-style: none; padding: 0; margin: 0 0 16px; font-size: 0.72rem; color: #cbd5e1; text-align: left; display: flex; flex-direction: column; gap: 6px;">
+                                    <li>✓ Hasta <strong>2,000 mensajes/mes</strong> con IA Neuronal</li>
+                                    <li>✓ Máxima potencia de cierre automático</li>
+                                </ul>
+                                <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_TROGO_2000')" style="width: 100%; background: #ff003c; color: #ffffff; font-weight: 900; font-size: 0.76rem; padding: 12px; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(255,0,60,0.4);">
+                                    ACTIVAR 2,000 MENSAJES ($499.50) ➔
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -710,70 +797,13 @@
                         <div id="erp-list-cortes" style="display: flex; flex-direction: column; gap: 10px;"></div>
                     </div>
                 </div>
-            </div>
 
-            <section id="planes-upgrade" class="rx-plans-section">
-                <div style="text-align: center;">
-                    <span style="font-size: 0.68rem; font-weight: 800; color: #00f2ff; text-transform: uppercase; letter-spacing: 1px;">Renovación y Ampliación de Capacidad</span>
-                    <h2 style="margin: 4px 0 6px; font-size: 1.25rem; color: #ffffff;">Elige tu Plan Mensual (Precios Totales con IVA Incluido)</h2>
-                    <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">Todos los planes incluyen tu web en ikai.info, sala de entretenimiento y Bot de WhatsApp 24/7 con Hand-off de 2 minutos. Envío de videos deshabilitado.</p>
-                </div>
-
-                <h3 style="margin: 18px 0 6px; font-size: 0.92rem; color: #00f2ff; text-transform: uppercase; text-align: center;">1. Planes Solo Web + Bot WhatsApp 24/7</h3>
-                <div class="rx-plans-grid">
-                    <div class="rx-plan-card">
-                        <div>
-                            <div style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Plan Básico</div>
-                            <div class="rx-plan-price">$255.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
-                            <div class="rx-plan-iva">Subtotal: $219.83 + IVA (16%): $35.17 MXN</div>
-                            <ul class="rx-plan-list">
-                                <li>✓ Hasta <strong>100 mensajes/mes</strong> (entrantes + salientes)</li>
-                                <li>✓ Alertas automáticas en mensajes 80, 90 y 97</li>
-                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
-                                <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
-                            </ul>
-                        </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100')" class="rx-plan-btn" style="background: rgba(148, 163, 184, 0.16); color: #ffffff; border: 1px solid rgba(148, 163, 184, 0.35);">
-                            Renovar Plan 100 ($255 MXN)
-                        </button>
-                    </div>
-
-                    <div class="rx-plan-card">
-                        <div>
-                            <div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8; text-transform: uppercase;">Plan Crecimiento</div>
-                            <div class="rx-plan-price">$500.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
-                            <div class="rx-plan-iva">Subtotal: $431.03 + IVA (16%): $68.97 MXN</div>
-                            <ul class="rx-plan-list">
-                                <li>✓ Hasta <strong>300 mensajes/mes</strong> (entrantes + salientes)</li>
-                                <li>✓ Alertas automáticas al 80%, 90% y 97%</li>
-                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
-                                <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
-                            </ul>
-                        </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_300')" class="rx-plan-btn" style="background: #38bdf8; color: #020617;">
-                            Subir a 300 Mensajes ($500 MXN)
-                        </button>
-                    </div>
-
-                    <div class="rx-plan-card featured">
-                        <span class="rx-popular-badge">⭐ Más Popular • Mejor Valor</span>
-                        <div>
-                            <div style="font-size: 0.78rem; font-weight: 900; color: #00f2ff; text-transform: uppercase;">Plan Élite 1,000 Mensajes</div>
-                            <div class="rx-plan-price" style="color: #00f2ff;">$599.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
-                            <div class="rx-plan-iva">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
-                            <ul class="rx-plan-list">
-                                <li>✓ Hasta <strong>1,000 mensajes/mes</strong> (entrantes + salientes)</li>
-                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
-                                <li>✓ Chat en vivo 24/7 + Hand-off de 2 minutos</li>
-                            </ul>
-                        </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED')" class="rx-plan-btn" style="background: #00f2ff; color: #020617;">
-                            Activar Plan Élite ($599 MXN) ➔
-                        </button>
-                    </div>
-                </div>
-
-                <h3 style="margin: 28px 0 6px; font-size: 0.92rem; color: #4ade80; text-transform: uppercase; text-align: center;">2. Planes Completos con ERP PyME + Corte de Caja Diario 8:00 PM</h3>
+            <!-- ================================================= -->
+            <!-- PRECIOS EXCLUSIVOS ERP PYME (DENTRO DE PESTAÑA ERP) -->
+            <!-- ================================================= -->
+            <div style="margin-top: 28px; padding-top: 22px; border-top: 1px dashed rgba(57,255,20,0.3);">
+                <h3 style="margin: 0 0 6px; font-size: 0.92rem; color: #4ade80; text-transform: uppercase; text-align: center;">Planes Completos con ERP PyME + Corte de Caja Diario 8:00 PM</h3>
+                <p style="margin: 0 0 16px; font-size: 0.72rem; color: #94a3b8; text-align: center;">Precios totales con IVA incluido. Activa el control operativo total de tu negocio.</p>
                 <div class="rx-plans-grid">
                     <div class="rx-plan-card" style="border-color: rgba(57, 255, 20, 0.35);">
                         <div>
@@ -787,7 +817,7 @@
                                 <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
                             </ul>
                         </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_100_ERP')" class="rx-plan-btn" style="background: rgba(57,255,20,0.14); color: #4ade80; border: 1px solid #39ff14;">
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_100_ERP')" class="rx-plan-btn" style="background: rgba(57,255,20,0.14); color: #4ade80; border: 1px solid #39ff14;">
                             Activar Básico + ERP ($455 MXN)
                         </button>
                     </div>
@@ -804,7 +834,7 @@
                                 <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
                             </ul>
                         </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_300_ERP')" class="rx-plan-btn" style="background: #39ff14; color: #020617;">
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_300_ERP')" class="rx-plan-btn" style="background: #39ff14; color: #020617;">
                             Activar 300 + ERP ($800 MXN)
                         </button>
                     </div>
@@ -822,12 +852,79 @@
                                 <li>✓ <strong>Corte de Caja 8:00 PM</strong> diario por WhatsApp</li>
                             </ul>
                         </div>
-                        <button type="button" onclick="window.app.panel.openStripePlan('PLAN_UNLIMITED_ERP')" class="rx-plan-btn" style="background: #ffd700; color: #020617;">
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_UNLIMITED_ERP')" class="rx-plan-btn" style="background: #ffd700; color: #020617;">
                             Activar Élite + ERP ($1,598 MXN) ➔
                         </button>
                     </div>
                 </div>
-           </section>
+            </div>
+        </div> <!-- FIN DE #tab-panel-erp -->
+
+        <!-- ================================================= -->
+        <!-- PESTAÑA 5: PLANES & RENOVACIÓN (SOLO WEB + BOT)   -->
+        <!-- ================================================= -->
+        <div id="tab-panel-planes" style="display: none;">
+            <section id="planes-upgrade" class="rx-plans-section" style="margin-top: 0;">
+                <div style="text-align: center;">
+                    <span style="font-size: 0.68rem; font-weight: 800; color: #00f2ff; text-transform: uppercase; letter-spacing: 1px;">Renovación y Ampliación de Capacidad</span>
+                    <h2 style="margin: 4px 0 6px; font-size: 1.25rem; color: #ffffff;">Elige tu Plan Mensual (Precios Totales con IVA Incluido)</h2>
+                    <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">Todos los planes incluyen tu web en ikai.info, sala de entretenimiento y Bot de WhatsApp 24/7 con Hand-off de 2 minutos.</p>
+                </div>
+
+                <h3 style="margin: 18px 0 6px; font-size: 0.92rem; color: #00f2ff; text-transform: uppercase; text-align: center;">Planes Web + Bot WhatsApp 24/7</h3>
+                <div class="rx-plans-grid">
+                    <div class="rx-plan-card">
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Plan Básico</div>
+                            <div class="rx-plan-price">$255.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $219.83 + IVA (16%): $35.17 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Hasta <strong>100 mensajes/mes</strong> (entrantes + salientes)</li>
+                                <li>✓ Alertas automáticas en mensajes 80, 90 y 97</li>
+                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
+                                <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_100')" class="rx-plan-btn" style="background: rgba(148, 163, 184, 0.16); color: #ffffff; border: 1px solid rgba(148, 163, 184, 0.35);">
+                            Renovar Plan 100 ($255 MXN)
+                        </button>
+                    </div>
+
+                    <div class="rx-plan-card">
+                        <div>
+                            <div style="font-size: 0.75rem; font-weight: 800; color: #38bdf8; text-transform: uppercase;">Plan Crecimiento</div>
+                            <div class="rx-plan-price">$500.00 <span style="font-size: 0.8rem; font-weight: 500; color: #94a3b8;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $431.03 + IVA (16%): $68.97 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Hasta <strong>300 mensajes/mes</strong> (entrantes + salientes)</li>
+                                <li>✓ Alertas automáticas al 80%, 90% y 97%</li>
+                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
+                                <li>✓ Chat en vivo y Hand-off automático de 2 min</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_300')" class="rx-plan-btn" style="background: #38bdf8; color: #020617;">
+                            Subir a 300 Mensajes ($500 MXN)
+                        </button>
+                    </div>
+
+                    <div class="rx-plan-card featured">
+                        <span class="rx-popular-badge">⭐ Más Popular • Mejor Valor</span>
+                        <div>
+                            <div style="font-size: 0.78rem; font-weight: 900; color: #00f2ff; text-transform: uppercase;">Plan Élite 1,000 Mensajes</div>
+                            <div class="rx-plan-price" style="color: #00f2ff;">$599.00 <span style="font-size: 0.8rem; font-weight: 500; color: #cbd5e1;">MXN/mes</span></div>
+                            <div class="rx-plan-iva">Subtotal: $516.38 + IVA (16%): $82.62 MXN</div>
+                            <ul class="rx-plan-list">
+                                <li>✓ Hasta <strong>1,000 mensajes/mes</strong> (entrantes + salientes)</li>
+                                <li>✓ Página Web + Sala de Entretenimiento (30 días)</li>
+                                <li>✓ Chat en vivo 24/7 + Hand-off de 2 minutos</li>
+                            </ul>
+                        </div>
+                        <button type="button" onclick="window.app.panel.openStripeCheckout('PLAN_UNLIMITED')" class="rx-plan-btn" style="background: #00f2ff; color: #020617;">
+                            Activar Plan Élite ($599 MXN) ➔
+                        </button>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
