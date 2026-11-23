@@ -77,6 +77,21 @@ const getTransporter = () => {
 };
 
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { BedrockRuntimeClient, InvokeModelCommand } = require("@aws-sdk/client-bedrock-runtime");
+
+let _bedrock;
+const getBedrock = () => {
+    if (!_bedrock) {
+        _bedrock = new BedrockRuntimeClient({
+            region: "us-east-1",
+            credentials: {
+                accessKeyId: (awsAccessKeyId.value() || "").trim(),
+                secretAccessKey: (awsSecretAccessKey.value() || "").trim(),
+            },
+        });
+    }
+    return _bedrock;
+};
 
 let _s3;
 const getS3 = () => {
@@ -984,6 +999,55 @@ async function sendEvolutionText(instanceName, remoteJid, text) {
     return { ok: resSend.ok, sentId: sentId, data: resSend.data };
 }
 
+async function invokeTrogoBedrock(orderData, customerMessage) {
+    const bizName = cleanVal(orderData.negocio, 'Nuestro Negocio');
+    const botCfg = orderData.botConfig || {};
+    const fee = cleanVal(botCfg.fee || orderData.fee, 'Consulta personalizada');
+    const hours = cleanVal(botCfg.horarios || orderData.horarios, 'Lunes a Viernes');
+    const address = cleanVal(botCfg.direccion || orderData.direccion, 'Atención digital y presencial');
+    const services = cleanVal(botCfg.servicios || orderData.servicios || orderData.specialty, 'Servicios profesionales');
+    const extraInfo = cleanVal(botCfg.extraInfo, '');
+
+    const systemPrompt = `Eres TROGO, un agente conversacional inteligente, empático y profesional que atiende a los clientes de "${bizName}". Respondes de forma natural, cálida y directa, casi humana, sin parecer un robot de menús rígidos.
+Información oficial del negocio:
+- Negocio: ${bizName}
+- Servicios: ${services}
+- Costo / Tarifa: ${fee}
+- Horarios: ${hours}
+- Dirección: ${address}
+${extraInfo ? `- Información adicional: ${extraInfo}` : ''}
+
+Reglas: Responde siempre en español, con claridad, ayudando al cliente a resolver sus dudas y motivándolo a agendar o contratar el servicio. No inventes precios ni datos que no estén en la información oficial.`;
+
+    try {
+        const client = getBedrock();
+        const payload = {
+            anthropic_version: "bedrock-2023-05-31",
+            max_tokens: 400,
+            system: systemPrompt,
+            messages: [
+                { role: "user", content: customerMessage }
+            ],
+            temperature: 0.5
+        };
+
+        const command = new InvokeModelCommand({
+            modelId: "anthropic.claude-haiku-4-5",
+            contentType: "application/json",
+            accept: "application/json",
+            body: JSON.stringify(payload)
+        });
+
+        const response = await client.send(command);
+        const decodedBody = JSON.parse(new TextDecoder().decode(response.body));
+        const aiText = decodedBody.content?.[0]?.text || '¡Hola! Con gusto te atendemos. ¿En qué podemos ayudarte hoy?';
+        return aiText;
+    } catch (err) {
+        console.error("❌ Error invocando Bedrock Claude Haiku:", err.message);
+        return `¡Hola! Gracias por comunicarte con ${bizName}. Recibimos tu mensaje y con gusto te atenderemos a la brevedad.`;
+    }
+}
+
 function normalizeTextForIntent(str) {
     return String(str || '')
         .toLowerCase()
@@ -1481,25 +1545,30 @@ exports.whatsappClientApi = onRequest({
                 return res.status(400).json({ error: 'Instancia no asignada a esta orden.' });
             }
 
-            let stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
-            if (!stateRes.ok && stateRes.status === 404) {
-                await provisionWhatsAppGateway(instanceName, orderData.provisionalPassword);
-                stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
-            } else {
-                await ensureInstanceWebhook(instanceName);
-            }
-
-            const connState = stateRes.data?.instance?.state || stateRes.data?.state || 'close';
+            let connState = 'close';
             let qrBase64 = null;
             let qrCodeRaw = null;
 
-            if (action === 'verify_and_qr' && connState !== 'open') {
-                const qrRes = await evolutionRequest(`/instance/connect/${encodeURIComponent(instanceName)}`, 'GET');
-                qrBase64 = qrRes.data?.base64 || qrRes.data?.qrcode?.base64 || null;
-                qrCodeRaw = qrRes.data?.code || qrRes.data?.qrcode?.code || null;
-                if (qrBase64 && !qrBase64.startsWith('data:image')) {
-                    qrBase64 = `data:image/png;base64,${qrBase64}`;
+            try {
+                let stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
+                if (!stateRes.ok && stateRes.status === 404) {
+                    await provisionWhatsAppGateway(instanceName, orderData.provisionalPassword);
+                    stateRes = await evolutionRequest(`/instance/connectionState/${encodeURIComponent(instanceName)}`, 'GET');
+                } else {
+                    await ensureInstanceWebhook(instanceName);
                 }
+                connState = stateRes.data?.instance?.state || stateRes.data?.state || 'close';
+
+                if (action === 'verify_and_qr' && connState !== 'open') {
+                    const qrRes = await evolutionRequest(`/instance/connect/${encodeURIComponent(instanceName)}`, 'GET');
+                    qrBase64 = qrRes.data?.base64 || qrRes.data?.qrcode?.base64 || null;
+                    qrCodeRaw = qrRes.data?.code || qrRes.data?.qrcode?.code || null;
+                    if (qrBase64 && !qrBase64.startsWith('data:image')) {
+                        qrBase64 = `data:image/png;base64,${qrBase64}`;
+                    }
+                }
+            } catch (evoErr) {
+                console.warn("⚠️ Advertencia conectando con Evolution Gateway (Tolerante a fallos):", evoErr.message);
             }
 
             return res.status(200).json({
@@ -1514,6 +1583,29 @@ exports.whatsappClientApi = onRequest({
         if (action === 'logout_instance') {
             await evolutionRequest(`/instance/logout/${encodeURIComponent(instanceName)}`, 'DELETE');
             return res.status(200).json({ ok: true, state: 'close', summary: safeSummary });
+        }
+
+        if (action === 'activate_trogo_mode') {
+            const newLimit = 200;
+            await orderRef.set({
+                channel: 'trogo',
+                trogoActive: true,
+                messageLimit: newLimit,
+                whatsappStatus: 'migrated_to_trogo',
+                subscriptionActive: true,
+                trogoActivatedAt: admin.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            safeSummary.messageLimit = newLimit;
+            safeSummary.subscriptionActive = true;
+            safeSummary.channel = 'trogo';
+            safeSummary.trogoActive = true;
+
+            return res.status(200).json({
+                ok: true,
+                state: 'trogo_active',
+                summary: safeSummary
+            });
         }
 
         if (action === 'get_chats') {

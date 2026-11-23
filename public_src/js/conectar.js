@@ -14,6 +14,18 @@ window.app.conectar = {
         const urlToken = (params.get('token') || '').trim().toUpperCase();
         const urlEmail = (params.get('email') || '').trim();
 
+        if (urlToken && urlEmail) {
+            localStorage.setItem('rx_wa_credentials', JSON.stringify({
+                email: urlEmail,
+                token: urlToken
+            }));
+            localStorage.setItem('robotiax_user', JSON.stringify({
+                email: urlEmail,
+                token: urlToken,
+                authenticated: true
+            }));
+        }
+
         let savedCreds = {};
         try {
             savedCreds = JSON.parse(localStorage.getItem('rx_wa_credentials') || '{}');
@@ -36,6 +48,8 @@ window.app.conectar = {
         if (tokenToFill && emailToFill) {
             this.currentEmail = emailToFill;
             this.currentToken = tokenToFill;
+            const formEl = document.getElementById('conectar-form');
+            if (formEl) formEl.style.display = 'none';
             this.fetchQrAndState(true);
         }
     },
@@ -143,7 +157,7 @@ window.app.conectar = {
             } else if (qrCode) {
                 qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(qrCode);
             } else {
-                this.showMsg('Generando nuevo QR en AWS, espera un segundo y pulsa Actualizar QR.', 'info');
+                this.showMsg('Generando nuevo QR, espera un segundo y pulsa Actualizar QR.', 'info');
             }
         }
     },
@@ -202,10 +216,30 @@ window.app.conectar = {
 
     activateTrogoMode: async function() {
         this.stopPolling();
-        const btn = document.querySelector('button[onclick*="activateTrogoMode"]');
+        const btn = document.getElementById('btn-activate-trogo') || document.querySelector('button[onclick*="activateTrogoMode"]');
         if (btn) {
             btn.disabled = true;
-            btn.textContent = 'Activando Agente TROGO en tu web...';
+            btn.innerHTML = '<span>⚡ ACTIVANDO AGENTE TROGO...</span>';
+        }
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span>⚡ ACTIVANDO AGENTE TROGO...</span>';
+        }
+
+        if (!this.currentEmail || !this.currentToken) {
+            const emailInput = document.getElementById('conectar-email');
+            const tokenInput = document.getElementById('conectar-token');
+            this.currentEmail = emailInput ? emailInput.value.trim() : '';
+            this.currentToken = tokenInput ? tokenInput.value.trim().toUpperCase() : '';
+        }
+
+        if (!this.currentEmail || !this.currentToken) {
+            this.showMsg('Por favor ingresa primero tu correo y tu token arriba.', 'error');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<span>⚡ ACTIVAR A TROGO (PROMOCIÓN 2x1: 200 MENSAJES)</span> <i class="fa-solid fa-arrow-right"></i>';
+            }
+            return;
         }
 
         try {
@@ -230,14 +264,88 @@ window.app.conectar = {
                 summary: data.summary || {}
             }));
 
-            alert('🚀 ¡AGENTE TROGO ACTIVADO CON ÉXITO!\n\nSe ha configurado TROGO en tu portal web con el doble de mensajes mensuales (200 mensajes). Te redirigimos a tu Panel de Control.');
+            localStorage.setItem('rx_wa_credentials', JSON.stringify({
+                email: this.currentEmail,
+                token: this.currentToken,
+                summary: data.summary || {}
+            }));
+
+            localStorage.setItem('robotiax_user', JSON.stringify({
+                email: this.currentEmail,
+                token: this.currentToken,
+                authenticated: true,
+                channel: 'trogo'
+            }));
+
             window.location.href = `panel.html?token=${encodeURIComponent(this.currentToken)}&email=${encodeURIComponent(this.currentEmail)}`;
+        localStorage.setItem('rx_wa_credentials', JSON.stringify({
+                email: this.currentEmail,
+                token: this.currentToken,
+                summary: data.summary || {}
+            }));
+
+            localStorage.setItem('robotiax_user', JSON.stringify({
+                email: this.currentEmail,
+                token: this.currentToken,
+                authenticated: true,
+                channel: 'trogo'
+            }));
+
+            window.location.replace(`panel.html?token=${encodeURIComponent(this.currentToken)}&email=${encodeURIComponent(this.currentEmail)}`);
         } catch (err) {
-            alert(err.message || 'Error activando a TROGO. Intenta de nuevo.');
+            this.showRxModalAlert('ERROR DE ACTIVACIÓN', err.message || 'Error activando a TROGO. Intenta de nuevo.');
             if (btn) {
                 btn.disabled = false;
-                btn.textContent = 'ACTIVAR A TROGO EN MI SITIO WEB (2X MENSAJES) ➔';
+                btn.innerHTML = '<span>⚡ ACTIVAR A TROGO (PROMOCIÓN 2x1: 200 MENSAJES)</span> <i class="fa-solid fa-arrow-right"></i>';
             }
+        }
+    },
+
+    showRxModalAlert: function(title, desc) {
+        const overlay = document.getElementById('rx-custom-modal-overlay');
+        const titleEl = document.getElementById('rx-modal-title');
+        const descEl = document.getElementById('rx-modal-desc');
+        const btnOk = document.getElementById('rx-modal-btn-ok');
+        const btnCancel = document.getElementById('rx-modal-btn-cancel');
+
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) descEl.textContent = desc;
+        if (btnCancel) btnCancel.style.display = 'none';
+        if (overlay) overlay.style.setProperty('display', 'flex', 'important');
+
+        if (btnOk) {
+            btnOk.textContent = 'ACEPTAR';
+            btnOk.onclick = () => {
+                if (overlay) overlay.style.setProperty('display', 'none', 'important');
+            };
+        }
+    },
+
+    showRxModalConfirm: function(title, desc, onConfirm) {
+        const overlay = document.getElementById('rx-custom-modal-overlay');
+        const titleEl = document.getElementById('rx-modal-title');
+        const descEl = document.getElementById('rx-modal-desc');
+        const btnOk = document.getElementById('rx-modal-btn-ok');
+        const btnCancel = document.getElementById('rx-modal-btn-cancel');
+
+        if (titleEl) titleEl.textContent = title;
+        if (descEl) descEl.textContent = desc;
+        if (btnCancel) {
+            btnCancel.style.display = 'block';
+            btnCancel.onclick = () => {
+                if (overlay) overlay.style.setProperty('display', 'none', 'important');
+                const btn = document.querySelector('button[onclick*="activateTrogoMode"]');
+                if (btn) { btn.disabled = false; btn.textContent = 'ACTIVAR A TROGO EN MI SITIO WEB (2X MENSAJES) ➔'; }
+            };
+        }
+        if (overlay) overlay.style.setProperty('display', 'flex', 'important');
+
+        if (btnOk) {
+            btnOk.textContent = 'SÍ, ACTIVAR A TROGO';
+            btnOk.onclick = () => {
+                if (overlay) overlay.style.setProperty('display', 'none', 'important');
+                if (typeof onConfirm === 'function') onConfirm();
+            };
         }
     },
 

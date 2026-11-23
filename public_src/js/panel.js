@@ -98,7 +98,27 @@ window.app.panel = {
         } catch (e) {}
 
         this.email = urlEmail || savedCreds.email || savedUser.email || '';
-        this.token = urlToken || savedCreds.token || '';
+        this.token = urlToken || savedCreds.token || savedUser.token || '';
+
+        if (urlEmail && urlToken) {
+            localStorage.setItem('rx_wa_credentials', JSON.stringify({
+                email: this.email,
+                token: this.token
+            }));
+            localStorage.setItem('robotiax_user', JSON.stringify({
+                email: this.email,
+                token: this.token,
+                authenticated: true
+            }));
+            const loginBox = document.getElementById('panel-login-box');
+            if (loginBox) loginBox.style.setProperty('display', 'none', 'important');
+        }
+
+        if (this.email && this.token) {
+            setTimeout(() => {
+                this.login();
+            }, 20);
+        }
 
         const emailField = document.getElementById('panel-login-email');
         const tokenField = document.getElementById('panel-login-token');
@@ -139,12 +159,8 @@ window.app.panel = {
             return;
         }
 
-        const waStatus = window.app.state.summary?.whatsappStatus || '';
-        if (waStatus !== 'open') {
-            alert('⚠️ ATENCIÓN: Aún no has vinculado tu WhatsApp. Te redirigimos a la consola QR para escanear tu código primero.');
-            window.location.href = `conectar.html?token=${encodeURIComponent(this.token)}&email=${encodeURIComponent(this.email)}`;
-            return;
-        }
+        const s = window.app.state.summary || {};
+        const isTrogo = Boolean(s.trogoActive || s.channel === 'trogo' || s.trogoMode);
 
         window.app.state.isLoggedIn = true;
         this.enterDashboard();

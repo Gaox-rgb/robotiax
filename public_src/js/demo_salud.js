@@ -1094,6 +1094,11 @@ window.app.demo = {
         
         // INTERCEPCIÓN ABSOLUTA: Si es un sitio de producción recién comprado y el usuario final pulsa el botón, 
         // se bloquea la redirección a wa.me y se emite el aviso estricto de mantenimiento/soporte a clientes@robotiax.com.
+        if (isProduction && data.channel === 'trogo') {
+            window.app.demo.openTrogoWebChat();
+            return;
+        }
+
         if (isProduction) {
             alert("⚠️ ASISTENTE EN PROCESO DE CONFIGURACIÓN\n\nEste asistente de WhatsApp se encuentra temporalmente en mantenimiento técnico por sincronización de instancia.\n\nPara atención directa con nuestros asesores, por favor envíe un correo a: clientes@robotiax.com");
             return;
@@ -1104,6 +1109,19 @@ window.app.demo = {
         const businessName = encodeURIComponent(data.negocio || 'su negocio');
         const waTarget = cleanPhone ? `https://wa.me/${cleanPhone}?text=Hola!%20Me%20interesa%20agendar%20una%20cita%20con%20${businessName}.` : 'https://robotiax.shop/conectar.html';
         window.open(waTarget, '_blank');
+    },
+
+    openTrogoWebChat: function() {
+        const widget = document.getElementById('whatsapp-chat-widget');
+        if (widget) {
+            widget.classList.remove('hidden');
+            const historyEl = document.getElementById('whatsapp-chat-history');
+            const titleEl = document.querySelector('#whatsapp-chat-widget h3') || document.querySelector('#whatsapp-chat-widget div span');
+            if (titleEl) titleEl.textContent = 'TROGO (Agente Cognitivo AI)';
+            if (historyEl && historyEl.children.length === 0) {
+                historyEl.innerHTML = `<div class="self-start bg-white text-slate-800 p-2.5 rounded-r-xl rounded-bl-xl max-w-[85%] leading-normal shadow-sm border border-slate-100">¡Hola! Soy <strong>TROGO</strong>, tu agente conversacional inteligente. ¿En qué puedo ayudarte hoy en nuestro negocio?</div>`;
+            }
+        }
     },
 
     closeWhatsAppModal: function() {
