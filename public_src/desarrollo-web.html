@@ -454,6 +454,117 @@
                 </form>
                 <div id="ent-status" style="display: none; margin-top: 12px; padding: 8px; border-radius: 6px; text-align: center; font-size: 0.75rem; font-weight: 700;"></div>
             </div>
+        <!-- MÓDULO ESTRATÉGICO // CONSULTORÍA CORPORATIVA -->
+            <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid #00f2ff; border-radius: 14px; padding: 24px; margin-top: 25px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <span style="font-family:'Roboto Mono',monospace; font-size:0.65rem; color:#00f2ff; letter-spacing:1px; text-transform:uppercase; background:rgba(0,242,255,0.1); padding:4px 8px; border-radius:4px; border:1px solid rgba(0,242,255,0.3);">MÓDULO ESTRATÉGICO // CONSULTORÍA A LA MEDIDA</span>
+                </div>
+                <h3 style="font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 800; color: #ffffff; text-transform: uppercase; margin: 0 0 10px; line-height: 1.4;">
+                    ¿NO TIENES CLIENTES? ¿REQUIERES MÁS VENTAS O AUTOMATIZAR TU EMPRESA AHORRÁNDOTE SUELDOS DE SECRETARIAS Y AUXILIARES?
+                </h3>
+                <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 18px;">
+                    Automatizamos tareas repetitivas, digitalizamos tu flujo de ingresos y estructuramos embudos de captación para tu giro. Dinos exactamente qué le duele hoy a tu negocio y te entregamos una propuesta ejecutiva personalizada.
+                </p>
+                <button type="button" onclick="window.app.ui.togglePymeDiagnosisForm()" style="background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.76rem; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(0,242,255,0.4);">
+                    SOLICITAR DIAGNÓSTICO PYME ➔
+                </button>
+
+                <div id="form-pyme-diagnosis" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(0,242,255,0.3);">
+                    <form onsubmit="window.app.ui.submitPymeDiagnosis(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Nombre del Negocio / Empresa:</label>
+                            <input type="text" id="pyme-diag-biz" placeholder="Ej: Clínica Dental Sonrisas" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Número de Empleados / Auxiliares:</label>
+                            <input type="text" id="pyme-diag-staff" placeholder="Ej: 3 recepcionistas, 2 vendedores" style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Tu Nombre:</label>
+                            <input type="text" id="pyme-diag-name" placeholder="Nombre completo" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Tu Puesto:</label>
+                            <input type="text" id="pyme-diag-role" placeholder="Ej: Director / Propietario" style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">WhatsApp de Contacto:</label>
+                            <input type="tel" id="pyme-diag-phone" placeholder="10 dígitos con clave lada" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Correo Electrónico:</label>
+                            <input type="email" id="pyme-diag-email" placeholder="correo@tudominio.com" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; font-size: 0.7rem; color: #00f2ff; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">¿Qué es lo que más tiempo o dinero te quita hoy en tu negocio?</label>
+                            <textarea id="pyme-diag-pain" rows="3" placeholder="Describe tus procesos manuales, llamadas perdidas, cobros lentos..." required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(0,242,255,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;"></textarea>
+                        </div>
+                        <div style="grid-column: 1 / -1; display: flex; align-items: flex-end;">
+                            <button type="submit" style="width: 100%; padding: 11px; background: #00f2ff; color: #020617; font-weight: 900; font-size: 0.76rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(0,242,255,0.4);">ENVIAR DIAGNÓSTICO A INGENIERÍA ➔</button>
+                        </div>
+                    </form>
+                    <div id="pyme-diag-status" style="display: none; margin-top: 12px; padding: 8px; border-radius: 6px; text-align: center; font-size: 0.75rem; font-weight: 700;"></div>
+                </div>
+            </div>
+
+            <!-- RED DE ALIADOS PROFESIONALES // PROTECCIÓN PATRIMONIAL -->
+            <div style="background: rgba(8, 16, 36, 0.85); border: 1px solid #ffd700; border-radius: 14px; padding: 24px; margin-top: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                    <span style="font-family:'Roboto Mono',monospace; font-size:0.65rem; color:#ffd700; letter-spacing:1px; text-transform:uppercase; background:rgba(255,215,0,0.1); padding:4px 8px; border-radius:4px; border:1px solid rgba(255,215,0,0.3);">RED DE ALIADOS PROFESIONALES // PROTECCIÓN PATRIMONIAL</span>
+                </div>
+                <h3 style="font-size: clamp(1rem, 2.5vw, 1.3rem); font-weight: 800; color: #ffffff; text-transform: uppercase; margin: 0 0 10px; line-height: 1.4;">
+                    ¿REQUIERES ASESORÍA PENAL, FISCAL, CONTABLE, LABORAL O CIVIL ACORDE A TUS RECURSOS?
+                </h3>
+                <p style="font-size: 0.80rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 18px;">
+                    El 99% de las empresas o sus familias enfrentan contingencias legales (defensa penal urgente, fraudes, controversias fiscales SAT, demandas laborales o cobranza civil). <strong>Te conectamos con el abogado o contador aliado que se ajuste exactamente a tu presupuesto real.</strong>
+                </p>
+                <button type="button" onclick="window.app.ui.toggleLegalAdvisorForm()" style="background: #ffd700; color: #020617; font-weight: 900; font-size: 0.76rem; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(255,215,0,0.4);">
+                    SOLICITAR ASESOR A TU MEDIDA ➔
+                </button>
+
+                <div id="form-legal-advisor" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(255,215,0,0.3);">
+                    <form onsubmit="window.app.ui.submitLegalAdvisorRequest(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Nombre Completo:</label>
+                            <input type="text" id="legal-req-name" placeholder="Tu nombre" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Empresa / Negocio (Opcional):</label>
+                            <input type="text" id="legal-req-biz" placeholder="Nombre de tu empresa" style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Materia de Asesoría:</label>
+                            <select id="legal-req-matter" style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                                <option value="penal">Defensa Penal / Urgente</option>
+                                <option value="fiscal_sat">Fiscal / Auditoría SAT</option>
+                                <option value="laboral">Laboral / Demandas / Conciliación</option>
+                                <option value="civil_mercantil">Civil / Mercantil / Contratos</option>
+                                <option value="contable">Contabilidad General / Estrategia</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">WhatsApp Directo:</label>
+                            <input type="tel" id="legal-req-phone" placeholder="10 dígitos con clave lada" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Correo Electrónico:</label>
+                            <input type="email" id="legal-req-email" placeholder="correo@tudominio.com" required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Presupuesto Mensual Estimado:</label>
+                            <input type="text" id="legal-req-budget" placeholder="Ej: $2,000 - $5,000 MXN / mes" style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;">
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; font-size: 0.7rem; color: #ffd700; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Detalle breve de tu situación o requerimiento:</label>
+                            <textarea id="legal-req-details" rows="3" placeholder="Explícanos brevemente qué necesitas resolver..." required style="width: 100%; padding: 10px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #fff; font-size: 0.75rem;"></textarea>
+                        </div>
+                        <div style="grid-column: 1 / -1; display: flex; align-items: flex-end;">
+                            <button type="submit" style="width: 100%; padding: 11px; background: #ffd700; color: #020617; font-weight: 900; font-size: 0.76rem; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(255,215,0,0.4);">ENVIAR SOLICITUD A RED DE ALIADOS ➔</button>
+                        </div>
+                    </form>
+                    <div id="legal-req-status" style="display: none; margin-top: 12px; padding: 8px; border-radius: 6px; text-align: center; font-size: 0.75rem; font-weight: 700;"></div>
+                </div>
+            </div>
         </div>
     </div> <!-- FIN DE SEGMENT-ENTERPRISE -->
 
