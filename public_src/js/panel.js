@@ -563,6 +563,16 @@ window.app.panel = {
         if (btn) btn.style.display = 'none';
     },
 
+    showPlanCategory: function(cat) {
+        const cats = ['wa', 'erp', 'trogo'];
+        cats.forEach(c => {
+            const panel = document.getElementById(`plan-cat-${c}`);
+            const btn = document.getElementById(`btn-cat-${c}`);
+            if (panel) panel.style.display = (c === cat) ? 'grid' : 'none';
+            if (btn) btn.className = 'rx-chip-btn' + (c === cat ? ' cyan' : '');
+        });
+    },
+
     openStripeCheckout: function(planTag) {
         const baseLink = this.stripePlans[planTag] || this.stripePlans.PLAN_100;
         const s = window.app.state.summary || {};
@@ -587,14 +597,16 @@ window.app.panel = {
     trogoBubbleTimer: null,
 
     initTrogoHologram: function() {
-        setTimeout(() => {
+        // Primera aparición tras 2 minutos reales (120,000 ms)
+        if (this.trogoInitialTimer) clearTimeout(this.trogoInitialTimer);
+        this.trogoInitialTimer = setTimeout(() => {
             this.showNextTrogoPhrase();
-        }, 6000);
+        }, 2 * 60 * 1000);
 
         if (this.trogoBubbleTimer) clearInterval(this.trogoBubbleTimer);
         this.trogoBubbleTimer = setInterval(() => {
             this.showNextTrogoPhrase();
-        }, 50000);
+        }, 15 * 60 * 1000);
     },
 
     showNextTrogoPhrase: function() {
@@ -612,7 +624,8 @@ window.app.panel = {
             bubbleBox.style.transform = 'translateY(0)';
         }, 50);
 
-        setTimeout(() => {
+        if (this.trogoAutoHideTimer) clearTimeout(this.trogoAutoHideTimer);
+        this.trogoAutoHideTimer = setTimeout(() => {
             this.closeTrogoBubble();
         }, 12000);
     },
@@ -624,7 +637,13 @@ window.app.panel = {
         bubbleBox.style.transform = 'translateY(10px)';
         setTimeout(() => {
             bubbleBox.style.display = 'none';
-        }, 4000);
+        }, 400);
+
+        // Al cerrar con la X, reiniciar el conteo completo de 15 minutos reales
+        if (this.trogoBubbleTimer) clearInterval(this.trogoBubbleTimer);
+        this.trogoBubbleTimer = setInterval(() => {
+            this.showNextTrogoPhrase();
+        }, 15 * 60 * 1000);
     },
 
     logout: function() {
