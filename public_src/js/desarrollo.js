@@ -87,22 +87,15 @@ window.app.ui = {
     erpModeEnabled: false,
 
     switchSegment: function(segment) {
-        const pymeView = document.getElementById('segment-pyme');
-        const entView = document.getElementById('segment-enterprise');
-        const btnPyme = document.getElementById('btn-seg-pyme');
-        const btnEnt = document.getElementById('btn-seg-enterprise');
-
-        const isEnt = segment === 'enterprise';
-        if (pymeView) pymeView.style.display = isEnt ? 'none' : 'block';
-        if (entView) entView.style.display = isEnt ? 'block' : 'none';
-
-        if (btnPyme) {
-            btnPyme.style.background = isEnt ? 'rgba(15,23,42,0.85)' : '#00f2ff';
-            btnPyme.style.color = isEnt ? '#cbd5e1' : '#020617';
-        }
-        if (btnEnt) {
-            btnEnt.style.background = isEnt ? '#ffd700' : 'rgba(15,23,42,0.85)';
-            btnEnt.style.color = isEnt ? '#020617' : '#ffd700';
+        const isEnt = (segment === 'enterprise');
+        if (isEnt) {
+            document.body.classList.remove('view-pyme');
+            document.body.classList.add('view-enterprise');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            document.body.classList.remove('view-enterprise');
+            document.body.classList.add('view-pyme');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     },
 
