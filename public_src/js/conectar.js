@@ -50,6 +50,12 @@ window.app.conectar = {
             this.currentToken = tokenToFill;
             const formEl = document.getElementById('conectar-form');
             if (formEl) formEl.style.display = 'none';
+            
+            const trogoLink = document.getElementById('trogo-panel-redirect-link');
+            if (trogoLink) {
+                trogoLink.href = `panel.html?token=${encodeURIComponent(tokenToFill)}&email=${encodeURIComponent(emailToFill)}`;
+            }
+
             this.fetchQrAndState(true);
         }
     },
@@ -377,6 +383,16 @@ window.app.conectar = {
         } catch (e) {
             this.showMsg('Error intentando desvincular la instancia.', 'error');
         }
+    },
+
+    openInstructivoModal: function() {
+        const modal = document.getElementById('rx-instructivo-modal-overlay');
+        if (modal) modal.style.setProperty('display', 'flex', 'important');
+    },
+
+    closeInstructivoModal: function() {
+        const modal = document.getElementById('rx-instructivo-modal-overlay');
+        if (modal) modal.style.setProperty('display', 'none', 'important');
     }
 };
 
