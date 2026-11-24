@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TROGO AI // El Intermediario Neuronal | ROBOTIAX</title>
+    <meta name="description" content="Integra a TROGO (Claude Haiku 4.5) en cualquier página web o como asesor inteligente de tu empresa y familia desde $799 MXN/mes.">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        html, body {
+            margin: 0; padding: 0;
+            background: #02040a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        /* CANVAS RED NEURONAL ACTIVA DE FONDO */
+        #neural-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        /* SCANLINES SUTILES DE TERMINAL */
+        .cyber-grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 0, 60, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .rx-header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(2, 4, 10, 0.85);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 0, 60, 0.45);
+            padding: 10px 18px;
+        }
+        .rx-header-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .rx-main {
+            position: relative; z-index: 10;
+            max-width: 1180px; margin: 0 auto;
+            padding: 85px 18px 70px;
+        }
+        /* HERO SPLIT SCREEN CON IMAGEN PROTAGONISTA */
+        .hero-split {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 65px;
+        }
+        @media (max-width: 900px) {
+            .hero-split { grid-template-columns: 1fr; text-align: center; }
+        }
+        .trogo-figure-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .trogo-aura {
+            position: absolute;
+            width: 340px; height: 480px;
+            background: radial-gradient(circle, rgba(255, 0, 60, 0.45) 0%, rgba(0, 242, 255, 0.15) 55%, transparent 75%);
+            filter: blur(35px);
+            animation: auraPulse 3.5s infinite ease-in-out;
+            z-index: -1;
+        }
+        @keyframes auraPulse {
+            0%, 100% { transform: scale(0.95); opacity: 0.75; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+        .trogo-hero-img {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 0, 60, 0.45);
+            box-shadow: 0 0 50px rgba(255, 0, 60, 0.35), inset 0 0 30px rgba(0,0,0,0.8);
+            mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+        }
+        .glitch-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'Roboto Mono', monospace; font-size: 0.68rem; font-weight: 700;
+            color: #00f2ff; border: 1px solid #00f2ff;
+            background: rgba(0, 242, 255, 0.08);
+            padding: 5px 12px; border-radius: 4px;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+        }
+        .hero-headline {
+            font-size: clamp(2.1rem, 5vw, 3.6rem);
+            font-weight: 900; color: #ffffff;
+            text-transform: uppercase; line-height: 1.05;
+            margin: 0 0 18px;
+        }
+        .hero-headline span {
+            color: #ff003c;
+            text-shadow: 0 0 30px rgba(255, 0, 60, 0.8);
+        }
+        /* TARJETAS HUD CIBERNÉTICAS */
+        .hud-card {
+            background: rgba(8, 13, 28, 0.82);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 26px 22px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .hud-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent, #ff003c);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 30px var(--glow, rgba(255,0,60,0.25));
+        }
+        .hud-corner {
+            position: absolute; width: 14px; height: 14px; border: 2px solid transparent; pointer-events: none;
+        }
+        .tl { top: 8px; left: 8px; border-top-color: var(--accent, #00f2ff); border-left-color: var(--accent, #00f2ff); }
+        .tr { top: 8px; right: 8px; border-top-color: var(--accent, #00f2ff); border-right-color: var(--accent, #00f2ff); }
+        .bl { bottom: 8px; left: 8px; border-bottom-color: var(--accent, #00f2ff); border-left-color: var(--accent, #00f2ff); }
+        .br { bottom: 8px; right: 8px; border-bottom-color: var(--accent, #00f2ff); border-right-color: var(--accent, #00f2ff); }
+
+        /* TERMINAL SIMULADOR EN VIVO */
+        .sim-terminal {
+            background: rgba(3, 7, 18, 0.92);
+            border: 1px solid #00f2ff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
+            margin-bottom: 65px;
+        }
+        .sim-btn {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(0, 242, 255, 0.35);
+            color: #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .sim-btn:hover, .sim-btn.active {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: #00f2ff;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+        .btn-action-glow {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff003c 0%, #c8002f 100%);
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 0.85rem;
+            padding: 16px 34px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255, 0, 60, 0.6);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-action-glow:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 45px rgba(255, 0, 60, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- RED NEURONAL ANIMADA DE FONDO -->
+    <canvas id="neural-canvas"></canvas>
+    <div class="cyber-grid-overlay"></div>
+
+    <header class="rx-header">
+        <div class="rx-header-inner">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="index.html" style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: rgba(255,0,60,0.15); border: 1px solid #ff003c; color: #ff003c; text-decoration: none; border-radius: 6px; font-weight: 900;">❮</a>
+                <span style="font-family: 'Roboto Mono', monospace; font-size: 0.68rem; font-weight: 700; color: #ffffff; letter-spacing: 1.5px;">ROBOTIAX // <span style="color: #ff003c;">TROGO CORE</span></span>
+            </div>
+            <a href="panel.html" style="font-size: 0.65rem; font-weight: 800; color: #00f2ff; text-decoration: none; border: 1px solid #00f2ff; padding: 6px 14px; border-radius: 6px; text-transform: uppercase; background: rgba(0,242,255,0.08);">Acceder al Panel</a>
+        </div>
+    </header>
+
+    <main class="rx-main">
+        <!-- HERO SPLIT SCREEN IMPACTANTE -->
+        <section class="hero-split">
+            <div>
+                <div class="glitch-badge">
+                    <span style="display:inline-block; width:8px; height:8px; background:#ff003c; border-radius:50%; box-shadow:0 0 8px #ff003c;"></span>
+                    CLAUDE HAIKU 4.5 // AWS BEDROCK ENGINE
+                </div>
+                <h1 class="hero-headline">
+                    NO ES UN BOT.<br>ES UN <span>SOCIO NEURONAL</span> 24/7.
+                </h1>
+                <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.65; margin: 0 0 24px;">
+                    Incrusta a <strong>TROGO</strong> en tu sitio web actual (WordPress, Shopify, Wix o código propio) o despliégalo como el intermediario inteligente que protege a tu empresa y familia. Analiza necesidades complejas, cotiza servicios al instante y cierra ventas con razonamiento humano.
+                </p>
+
+                <!-- MÉTRICAS EN VIVO -->
+                <div style="display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 28px; justify-content: flex-start;">
+                    <div style="border-left: 2px solid #00f2ff; padding-left: 12px;">
+                        <div style="font-size: 1.3rem; font-weight: 900; color: #ffffff;">0.4s</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Velocidad de Respuesta</div>
+                    </div>
+                    <div style="border-left: 2px solid #ff003c; padding-left: 12px;">
+                        <div style="font-size: 1.3rem; font-weight: 900; color: #ff003c;">100%</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Inmune a Baneos Meta</div>
+                    </div>
+                    <div style="border-left: 2px solid #39ff14; padding-left: 12px;">
+                        <div style="font-size: 1.3rem; font-weight: 900; color: #39ff14;">1 Línea</div>
+                        <div style="font-size: 0.65rem; color: #94a3b8; text-transform: uppercase;">Instalación en tu Web</div>
+                    </div>
+                </div>
+
+                <a href="#ediciones-trogo" class="btn-action-glow">
+                    ⚡ VER EDICIONES Y ACTIVAR AHORA ➔
+                </a>
+            </div>
+
+            <!-- LA IMAGEN PROTAGONISTA DE CUERPO COMPLETO -->
+            <div class="trogo-figure-wrap">
+                <div class="trogo-aura"></div>
+                <img src="assets/Trogo_robotiax.webp" alt="TROGO Robotiax AI" class="trogo-hero-img">
+            </div>
+        </section>
+
+        <!-- SIMULADOR INTERACTIVO EN VIVO (DEMO NEURAL) -->
+        <section class="sim-terminal">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-bottom: 1px solid rgba(0,242,255,0.2); padding-bottom: 14px; margin-bottom: 18px;">
+                <div>
+                    <span style="font-family: 'Roboto Mono', monospace; font-size: 0.65rem; color: #00f2ff; font-weight: 700; text-transform: uppercase;">● TERMINAL DE PRUEBA NEURONAL</span>
+                    <h2 style="margin: 2px 0 0; font-size: 1.1rem; color: #ffffff; text-transform: uppercase;">Mira cómo razona TROGO en tiempo real</h2>
+                </div>
+                <span style="font-size: 0.68rem; color: #4ade80; font-family: 'Roboto Mono', monospace;">MODO: INTERMEDIARIO ACTIVO</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px;">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">Selecciona un escenario real para probarlo:</div>
+                    <button type="button" class="sim-btn active" onclick="window.app.trogo.runSim('ciber', this)">
+                        🛡️ "Necesito ciberseguridad para mi empresa de 15 empleados..."
+                    </button>
+                    <button type="button" class="sim-btn" onclick="window.app.trogo.runSim('web', this)">
+                        🌐 "Ya tengo web en WordPress pero pierdo ventas de noche..."
+                    </button>
+                    <button type="button" class="sim-btn" onclick="window.app.trogo.runSim('familia', this)">
+                        🏠 "Quiero proteger a mi familia de fraudes y extorsiones..."
+                    </button>
+                </div>
+
+                <div style="background: #020617; border: 1px solid rgba(255, 0, 60, 0.35); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 170px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+                            <img src="assets/trogo_evolution.webp" alt="Trogo" style="width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ff003c;">
+                            <span style="font-family: 'Roboto Mono', monospace; font-size: 0.68rem; color: #ff003c; font-weight: 800;">TROGO // RESPUESTA GENERADA:</span>
+                        </div>
+                        <p id="sim-output" style="font-family: 'Roboto Mono', monospace; font-size: 0.75rem; color: #e2e8f0; line-height: 1.6; margin: 0;">
+                            Analizando infraestructura de 15 nodos... Te recomiendo blindar tus terminales POS, auditar tu red local y activar respaldo Zero-Knowledge. He estructurado el paquete "PyME Blindada" acorde a tu escala. ¿Agendamos despliegue hoy mismo?
+                        </p>
+                    </div>
+                    <div style="font-size: 0.6rem; color: #64748b; text-align: right; margin-top: 10px;">Procesado con Claude Haiku 4.5 en 0.42s</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAS 3 EDICIONES ESPECIALES DE TROGO -->
+        <section id="ediciones-trogo">
+            <div style="text-align: center; margin-bottom: 32px;">
+                <span style="font-family: 'Roboto Mono', monospace; font-size: 0.68rem; color: #ff003c; letter-spacing: 2px; text-transform: uppercase; font-weight: 800;">ARMAMENTO COMERCIAL // 3 EDICIONES</span>
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 900; color: #ffffff; text-transform: uppercase; margin: 6px 0;">Despliega a TROGO en tu Negocio o Hogar</h2>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Precios mensuales en MXN (IVA incluido). Instalación garantizada en menos de 24 horas.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 22px; align-items: stretch;">
+                
+                <!-- EDICIÓN 1: $799 -->
+                <div class="hud-card" style="--accent: #00f2ff; --glow: rgba(0,242,255,0.25); display: flex; flex-direction: column; justify-content: space-between;">
+                    <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 800; color: #00f2ff; text-transform: uppercase; letter-spacing: 1px;">Edición 01 • Universal Web</div>
+                        <h3 style="font-size: 1.2rem; font-weight: 900; color: #ffffff; margin: 6px 0 10px;">TROGO AGENTE WEB</h3>
+                        <div style="font-size: 2.2rem; font-weight: 900; color: #ffffff; margin-bottom: 4px;">$799.00 <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;">MXN/mes</span></div>
+                        <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 18px;">Incrústalo en cualquier página web externa ya existente (WordPress, Shopify, Wix).</p>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.75rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px;">
+                            <li>✓ Widget oficial con el rostro de Trogo</li>
+                            <li>✓ Inteligencia <strong>Claude Haiku 4.5</strong></li>
+                            <li>✓ Entrenado con tu catálogo y precios</li>
+                            <li>✓ Hasta <strong>500 charlas neuronales/mes</strong></li>
+                        </ul>
+                    </div>
+                    <button type="button" onclick="window.app.trogo.selectEdition('TROGO_WEB_799', 'Trogo Agente Web ($799 MXN)')" class="btn-action-glow" style="width: 100%; background: #00f2ff; color: #020617; box-shadow: 0 0 20px rgba(0,242,255,0.4);">
+                        INTEGRAR EN MI WEB ($799) ➔
+                    </button>
+                </div>
+
+                <!-- EDICIÓN 2: $1,499 -->
+                <div class="hud-card" style="--accent: #ff003c; --glow: rgba(255,0,60,0.4); border: 2px solid #ff003c; display: flex; flex-direction: column; justify-content: space-between;">
+                    <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
+                    <div>
+                        <span style="display: inline-block; background: #ff003c; color: #ffffff; font-size: 0.62rem; font-weight: 900; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; margin-bottom: 8px;">🔥 Más Solicitada • Empresas y Familias</span>
+                        <div style="font-size: 0.7rem; font-weight: 800; color: #ff003c; text-transform: uppercase; letter-spacing: 1px;">Edición 02 • Protección & Ventas</div>
+                        <h3 style="font-size: 1.2rem; font-weight: 900; color: #ffffff; margin: 6px 0 10px;">TROGO NÚCLEO PRO</h3>
+                        <div style="font-size: 2.2rem; font-weight: 900; color: #ff003c; margin-bottom: 4px;">$1,499.00 <span style="font-size: 0.8rem; font-weight: 400; color: #ffffff;">MXN/mes</span></div>
+                        <p style="font-size: 0.74rem; color: #cbd5e1; margin: 0 0 18px;">El intermediario perfecto para PyMEs y escudo de ciberseguridad familiar.</p>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.75rem; color: #e2e8f0; display: flex; flex-direction: column; gap: 8px;">
+                            <li>✓ Todo lo de Web + <strong>Módulo Ciberseguridad</strong></li>
+                            <li>✓ Hasta <strong>2,000 charlas neuronales/mes</strong></li>
+                            <li>✓ Arma paquetes y cotizaciones dinámicas</li>
+                            <li>✓ Reportes ejecutivos de actividad diaria</li>
+                        </ul>
+                    </div>
+                    <button type="button" onclick="window.app.trogo.selectEdition('TROGO_PRO_1499', 'Trogo Núcleo Pro ($1,499 MXN)')" class="btn-action-glow" style="width: 100%;">
+                        ACTIVAR NÚCLEO PRO ($1,499) ➔
+                    </button>
+                </div>
+
+                <!-- EDICIÓN 3: $2,999 -->
+                <div class="hud-card" style="--accent: #ffd700; --glow: rgba(255,215,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+                    <span class="hud-corner tl"></span><span class="hud-corner tr"></span><span class="hud-corner bl"></span><span class="hud-corner br"></span>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 800; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">Edición 03 • Escala Corporativa</div>
+                        <h3 style="font-size: 1.2rem; font-weight: 900; color: #ffffff; margin: 6px 0 10px;">TROGO INTERMEDIARIO ELITE</h3>
+                        <div style="font-size: 2.2rem; font-weight: 900; color: #ffd700; margin-bottom: 4px;">$2,999.00 <span style="font-size: 0.8rem; font-weight: 400; color: #94a3b8;">MXN/mes</span></div>
+                        <p style="font-size: 0.74rem; color: #94a3b8; margin: 0 0 18px;">Para corporativos, franquicias y redes de servicios multi-sucursal.</p>
+                        <ul style="list-style: none; padding: 0; margin: 0 0 24px; font-size: 0.75rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px;">
+                            <li>✓ Conexión API con tu ERP / Bases de Datos</li>
+                            <li>✓ Hasta <strong>5,000 charlas neuronales/mes</strong></li>
+                            <li>✓ Calificación inteligente y envío a cierre</li>
+                            <li>✓ Arquitectura dedicada Robotiax Cloud</li>
+                        </ul>
+                    </div>
+                    <button type="button" onclick="window.app.trogo.selectEdition('TROGO_ELITE_2999', 'Trogo Intermediario Elite ($2,999 MXN)')" class="btn-action-glow" style="width: 100%; background: #ffd700; color: #020617; box-shadow: 0 0 20px rgba(255,215,0,0.4);">
+                        DESPLEGAR ELITE ($2,999) ➔
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MODAL DE SOLICITUD / ACTIVACIÓN -->
+        <div id="trogo-checkout-modal" style="display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.92); backdrop-filter: blur(10px); z-index: 99999; align-items: center; justify-content: center; padding: 16px;">
+            <div style="background: #070d1a; border: 2px solid #ff003c; border-radius: 16px; max-width: 440px; width: 100%; padding: 28px 24px; position: relative; box-shadow: 0 0 50px rgba(255, 0, 60, 0.35);">
+                <button type="button" onclick="document.getElementById('trogo-checkout-modal').style.display='none'" style="position: absolute; top: 14px; right: 14px; background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">✕</button>
+                <span style="font-family: 'Roboto Mono', monospace; font-size: 0.65rem; color: #ff003c; font-weight: 800; text-transform: uppercase;">DESPLIEGUE INMEDIATO</span>
+                <h3 id="trogo-modal-edition-name" style="margin: 4px 0 14px; font-size: 1.15rem; color: #ffffff; font-weight: 900;">Trogo AI</h3>
+                <form onsubmit="window.app.trogo.submitRequest(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                    <input type="text" id="tr-biz" placeholder="Nombre de tu Negocio / Familia" required style="padding: 12px; background: #0f172a; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 0.8rem;">
+                    <input type="url" id="tr-url" placeholder="URL de tu Web actual (Opcional)" style="padding: 12px; background: #0f172a; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 0.8rem;">
+                    <input type="tel" id="tr-phone" placeholder="WhatsApp de contacto (10 dígitos)" required style="padding: 12px; background: #0f172a; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 0.8rem;">
+                    <input type="email" id="tr-email" placeholder="Correo para recibir tu script de integración" required style="padding: 12px; background: #0f172a; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 0.8rem;">
+                    <button type="submit" id="tr-submit-btn" class="btn-action-glow" style="width: 100%; margin-top: 6px;">CONTINUAR A ACTIVACIÓN ➔</button>
+                    <div id="tr-status" style="display: none; font-size: 0.74rem; text-align: center; margin-top: 6px;"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer style="position: relative; z-index: 10; text-align: center; padding: 30px 16px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 0.65rem; color: #64748b;">
+        ROBOTIAX &copy; 2026 • División de Inteligencia Artificial TROGO • contacto@robotiax.shop
+    </footer>
+
+    <script>
+        // MOTOR VISUAL DE RED NEURONAL INTERACTIVA DE FONDO
+        (function() {
+            const canvas = document.getElementById('neural-canvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [];
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const count = Math.min(65, Math.floor((w * h) / 18000));
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.7,
+                    vy: (Math.random() - 0.5) * 0.7,
+                    color: i % 2 === 0 ? 'rgba(255, 0, 60, 0.7)' : 'rgba(0, 242, 255, 0.7)'
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > w) p.vx *= -1;
+                    if (p.y < 0 || p.y > h) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p2 = particles[j];
+                        const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(255, 0, 60, ${0.18 * (1 - dist / 130)})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+
+        // CONTROLADOR DE SIMULACIÓN Y ACTIVACIÓN DE TROGO
+        window.app = window.app || {};
+        window.app.trogo = {
+            selectedPlanId: '',
+            selectedPlanName: '',
+            simResponses: {
+                ciber: "Analizando infraestructura de 15 nodos... Te recomiendo blindar tus terminales POS, auditar tu red local y activar respaldo Zero-Knowledge. He estructurado el paquete 'PyME Blindada' acorde a tu escala. ¿Agendamos despliegue hoy mismo?",
+                web: "He escaneado tu modelo de negocio. Al pegar mi línea de código en tu WordPress, interceptaré a cada visitante nocturno, resolveré dudas de precios al instante y agendaré citas en tu calendario mientras duermes.",
+                familia: "Activando protocolo familiar. Configuro monitoreo preventivo contra phishing, verificación de enlaces sospechosos y blindaje de identidades digitales en tu hogar contra extorsiones telefónicas."
+            },
+            runSim: function(type, btn) {
+                document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
+                if (btn) btn.classList.add('active');
+                const out = document.getElementById('sim-output');
+                if (out) {
+                    out.style.opacity = 0;
+                    setTimeout(() => {
+                        out.textContent = this.simResponses[type] || '';
+                        out.style.transition = 'opacity 0.3s';
+                        out.style.opacity = 1;
+                    }, 150);
+                }
+            },
+            selectEdition: function(id, name) {
+                this.selectedPlanId = id;
+                this.selectedPlanName = name;
+                document.getElementById('trogo-modal-edition-name').textContent = name;
+                document.getElementById('trogo-checkout-modal').style.display = 'flex';
+            },
+            submitRequest: async function(e) {
+                e.preventDefault();
+                const btn = document.getElementById('tr-submit-btn');
+                const status = document.getElementById('tr-status');
+                const biz = document.getElementById('tr-biz').value.trim();
+                const url = document.getElementById('tr-url').value.trim();
+                const phone = document.getElementById('tr-phone').value.trim();
+                const email = document.getElementById('tr-email').value.trim();
+
+                btn.disabled = true;
+                btn.textContent = 'REGISTRANDO SOLICITUD...';
+
+                const endpoint = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                    ? 'http://127.0.0.1:5001/robotiax/us-central1/submitFinalOrder'
+                    : 'https://us-central1-robotiax.cloudfunctions.net/submitFinalOrder';
+
+                const folio = 'TRG-' + Date.now().toString().slice(-6);
+                try {
+                    await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-robotiax-token': 'RBX-PRT-99-MXN-SECURE-2025' },
+                        body: JSON.stringify({
+                            template: this.selectedPlanId,
+                            details: {
+                                folio: folio,
+                                negocio: biz,
+                                websiteUrl: url || 'Sin web externa',
+                                telefono: phone,
+                                email: email,
+                                servicios: this.selectedPlanName,
+                                isDraft: true,
+                                timestamp: new Date().toISOString()
+                            }
+                        })
+                    });
+                    status.style.display = 'block';
+                    status.style.color = '#4ade80';
+                    status.textContent = '✓ Registro guardado (' + folio + '). Te contactaremos con tu script y pasarela.';
+                    btn.textContent = '✓ SOLICITUD REGISTRADA';
+                } catch (err) {
+                    status.style.display = 'block';
+                    status.style.color = '#fda4af';
+                    status.textContent = 'Error de red. Escríbenos a contacto@robotiax.shop.';
+                    btn.disabled = false;
+                }
+            }
+        };
+    </script>
+</body>
+</html>
